@@ -18,110 +18,261 @@
 #
 #
 # AUTHOR:  Damir Salantic, Croatia Control Ltd.
+# ENHANCED: 2025-10-17 for DO-278A AL-3 compliance and multi-platform packaging
 
-cmake_minimum_required(VERSION 2.8.4)
+cmake_minimum_required(VERSION 3.12)
 
-project(asterix)
+# Project version - update for releases
+project(asterix
+    VERSION 2.8.9
+    DESCRIPTION "ASTERIX protocol decoder library and tools"
+    LANGUAGES C CXX)
 
-set(EXECUTABLE_OUTPUT_PATH install)
+# Build options
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(BUILD_STATIC_LIBS "Build static libraries" ON)
+option(BUILD_EXECUTABLE "Build command-line executable" ON)
+option(BUILD_TESTING "Build tests" OFF)
+option(ENABLE_COVERAGE "Enable code coverage" OFF)
 
+# C++ standard
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD 99)
 
-#set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
-#set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+# Output directories
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-include_directories(src/asterix)
-include_directories(src/engine)
-include_directories(src/main)
+# Include directories
+include_directories(
+    ${CMAKE_SOURCE_DIR}/src/asterix
+    ${CMAKE_SOURCE_DIR}/src/engine
+    ${CMAKE_SOURCE_DIR}/src/main
+)
 
+# Find dependencies
 include(FindEXPAT)
 find_package(EXPAT REQUIRED)
 include_directories(${EXPAT_INCLUDE_DIRS})
 
-add_executable(${PROJECT_NAME}
-        src/asterix/AsterixData.cpp
-        src/asterix/AsterixData.h
-        src/asterix/AsterixDefinition.cpp
-        src/asterix/AsterixDefinition.h
-        src/asterix/asterixfinalsubformat.cxx
-        src/asterix/asterixfinalsubformat.hxx
-        src/asterix/asterixformat.cxx
-        src/asterix/asterixformat.hxx
-        src/asterix/asterixformatdescriptor.hxx
-        src/asterix/asterixgpssubformat.cxx
-        src/asterix/asterixgpssubformat.hxx
-        src/asterix/asterixhdlcparsing.c
-        src/asterix/asterixhdlcparsing.h
-        src/asterix/asterixhdlcsubformat.cxx
-        src/asterix/asterixhdlcsubformat.hxx
-        src/asterix/asterixpcapsubformat.cxx
-        src/asterix/asterixpcapsubformat.hxx
-        src/asterix/asterixrawsubformat.cxx
-        src/asterix/asterixrawsubformat.hxx
-        src/asterix/Category.cpp
-        src/asterix/Category.h
-        src/asterix/DataBlock.cpp
-        src/asterix/DataBlock.h
-        src/asterix/DataItem.cpp
-        src/asterix/DataItem.h
-        src/asterix/DataItemBits.cpp
-        src/asterix/DataItemBits.h
-        src/asterix/DataItemDescription.cpp
-        src/asterix/DataItemDescription.h
-        src/asterix/DataItemFormat.cpp
-        src/asterix/DataItemFormat.h
-        src/asterix/DataItemFormatBDS.cpp
-        src/asterix/DataItemFormatBDS.h
-        src/asterix/DataItemFormatCompound.cpp
-        src/asterix/DataItemFormatCompound.h
-        src/asterix/DataItemFormatExplicit.cpp
-        src/asterix/DataItemFormatExplicit.h
-        src/asterix/DataItemFormatFixed.cpp
-        src/asterix/DataItemFormatFixed.h
-        src/asterix/DataItemFormatRepetitive.cpp
-        src/asterix/DataItemFormatRepetitive.h
-        src/asterix/DataItemFormatVariable.cpp
-        src/asterix/DataItemFormatVariable.h
-        src/asterix/DataRecord.cpp
-        src/asterix/DataRecord.h
-        src/asterix/InputParser.cpp
-        src/asterix/InputParser.h
-        src/asterix/Tracer.cpp
-        src/asterix/Tracer.h
-        src/asterix/UAP.cpp
-        src/asterix/UAP.h
-        src/asterix/UAPItem.cpp
-        src/asterix/UAPItem.h
-        src/asterix/Utils.cpp
-        src/asterix/Utils.h
-        src/asterix/XMLParser.cpp
-        src/asterix/XMLParser.h
-        src/engine/basedevice.hxx
-        src/engine/baseformat.hxx
-        src/engine/baseformatdescriptor.hxx
-        src/engine/basepacket.hxx
-        src/engine/channel.hxx
-        src/engine/channelfactory.cxx
-        src/engine/channelfactory.hxx
-        src/engine/converterengine.cxx
-        src/engine/converterengine.hxx
-        src/engine/descriptor.cxx
-        src/engine/descriptor.hxx
-        src/engine/devicefactory.cxx
-        src/engine/devicefactory.hxx
-        src/engine/diskdevice.cxx
-        src/engine/diskdevice.hxx
-        src/engine/serialdevice.cxx
-        src/engine/serialdevice.hxx
-        src/engine/singleton.hxx
-        src/engine/stddevice.cxx
-        src/engine/stddevice.hxx
-        src/engine/tcpdevice.cxx
-        src/engine/tcpdevice.hxx
-        src/engine/udpdevice.cxx
-        src/engine/udpdevice.hxx
+# Coverage flags (if enabled)
+if(ENABLE_COVERAGE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+endif()
+
+# Library source files
+set(ASTERIX_LIB_SOURCES
+    # Core ASTERIX parsing
+    src/asterix/AsterixData.cpp
+    src/asterix/AsterixDefinition.cpp
+    src/asterix/Category.cpp
+    src/asterix/DataBlock.cpp
+    src/asterix/DataItem.cpp
+    src/asterix/DataItemBits.cpp
+    src/asterix/DataItemDescription.cpp
+    src/asterix/DataItemFormat.cpp
+    src/asterix/DataItemFormatBDS.cpp
+    src/asterix/DataItemFormatCompound.cpp
+    src/asterix/DataItemFormatExplicit.cpp
+    src/asterix/DataItemFormatFixed.cpp
+    src/asterix/DataItemFormatRepetitive.cpp
+    src/asterix/DataItemFormatVariable.cpp
+    src/asterix/DataRecord.cpp
+    src/asterix/InputParser.cpp
+    src/asterix/Tracer.cpp
+    src/asterix/UAP.cpp
+    src/asterix/UAPItem.cpp
+    src/asterix/Utils.cpp
+    src/asterix/XMLParser.cpp
+
+    # Format handlers
+    src/asterix/asterixformat.cxx
+    src/asterix/asterixrawsubformat.cxx
+    src/asterix/asterixpcapsubformat.cxx
+    src/asterix/asterixfinalsubformat.cxx
+    src/asterix/asterixhdlcsubformat.cxx
+    src/asterix/asterixhdlcparsing.c
+    src/asterix/asterixgpssubformat.cxx
+
+    # Engine
+    src/engine/channelfactory.cxx
+    src/engine/converterengine.cxx
+    src/engine/descriptor.cxx
+    src/engine/devicefactory.cxx
+    src/engine/diskdevice.cxx
+    src/engine/serialdevice.cxx
+    src/engine/stddevice.cxx
+    src/engine/tcpdevice.cxx
+    src/engine/udpdevice.cxx
+)
+
+set(ASTERIX_LIB_HEADERS
+    src/asterix/AsterixData.h
+    src/asterix/AsterixDefinition.h
+    src/asterix/Category.h
+    src/asterix/DataBlock.h
+    src/asterix/DataItem.h
+    src/asterix/DataItemBits.h
+    src/asterix/DataItemDescription.h
+    src/asterix/DataItemFormat.h
+    src/asterix/DataItemFormatBDS.h
+    src/asterix/DataItemFormatCompound.h
+    src/asterix/DataItemFormatExplicit.h
+    src/asterix/DataItemFormatFixed.h
+    src/asterix/DataItemFormatRepetitive.h
+    src/asterix/DataItemFormatVariable.h
+    src/asterix/DataRecord.h
+    src/asterix/InputParser.h
+    src/asterix/Tracer.h
+    src/asterix/UAP.h
+    src/asterix/UAPItem.h
+    src/asterix/Utils.h
+    src/asterix/XMLParser.h
+)
+
+# Build shared library
+if(BUILD_SHARED_LIBS)
+    add_library(asterix_shared SHARED ${ASTERIX_LIB_SOURCES})
+    set_target_properties(asterix_shared PROPERTIES
+        OUTPUT_NAME asterix
+        VERSION ${PROJECT_VERSION}
+        SOVERSION ${PROJECT_VERSION_MAJOR}
+        PUBLIC_HEADER "${ASTERIX_LIB_HEADERS}"
+    )
+    target_link_libraries(asterix_shared ${EXPAT_LIBRARIES})
+
+    # Install shared library
+    install(TARGETS asterix_shared
+        LIBRARY DESTINATION lib
+        PUBLIC_HEADER DESTINATION include/asterix
+    )
+endif()
+
+# Build static library
+if(BUILD_STATIC_LIBS)
+    add_library(asterix_static STATIC ${ASTERIX_LIB_SOURCES})
+    set_target_properties(asterix_static PROPERTIES
+        OUTPUT_NAME asterix
+        VERSION ${PROJECT_VERSION}
+        PUBLIC_HEADER "${ASTERIX_LIB_HEADERS}"
+    )
+    target_link_libraries(asterix_static ${EXPAT_LIBRARIES})
+
+    # Install static library
+    install(TARGETS asterix_static
+        ARCHIVE DESTINATION lib
+        PUBLIC_HEADER DESTINATION include/asterix
+    )
+endif()
+
+# Build executable (CLI)
+if(BUILD_EXECUTABLE)
+    add_executable(asterix_exe
         src/main/asterix.cpp
         src/main/asterix.h
-        src/main/version.h)
+        src/main/version.h
+    )
 
-target_link_libraries(${PROJECT_NAME} ${EXPAT_LIBRARIES})
+    set_target_properties(asterix_exe PROPERTIES
+        OUTPUT_NAME asterix
+    )
+
+    # Link with shared library if available, otherwise static
+    if(BUILD_SHARED_LIBS)
+        target_link_libraries(asterix_exe asterix_shared)
+    elseif(BUILD_STATIC_LIBS)
+        target_link_libraries(asterix_exe asterix_static)
+    else()
+        message(FATAL_ERROR "Must build either shared or static library to build executable")
+    endif()
+
+    # Install executable
+    install(TARGETS asterix_exe
+        RUNTIME DESTINATION bin
+    )
+endif()
+
+# Install configuration files
+install(DIRECTORY asterix/config/
+    DESTINATION share/asterix/config
+    FILES_MATCHING PATTERN "*.xml" PATTERN "*.dtd" PATTERN "*.ini"
+)
+
+# Install sample data (optional)
+install(DIRECTORY asterix/sample_data/
+    DESTINATION share/asterix/samples
+    FILES_MATCHING PATTERN "*"
+)
+
+# Install documentation
+install(FILES
+    README.md
+    CLAUDE.md
+    DO-278_IMPLEMENTATION_GUIDE.md
+    DESTINATION share/doc/asterix
+)
+
+# Testing (if enabled)
+if(BUILD_TESTING)
+    enable_testing()
+    # TODO: Add test targets
+    # add_subdirectory(tests)
+endif()
+
+# CPack configuration for packaging
+set(CPACK_PACKAGE_NAME "asterix")
+set(CPACK_PACKAGE_VENDOR "Croatia Control Ltd.")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "ASTERIX protocol decoder")
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_CONTACT "https://github.com/montge/asterix")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
+
+# DEB package configuration
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "ASTERIX Maintainers")
+set(CPACK_DEBIAN_PACKAGE_SECTION "libs")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libexpat1 (>= 2.1)")
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/montge/asterix")
+set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+
+# RPM package configuration
+set(CPACK_RPM_PACKAGE_LICENSE "GPLv3")
+set(CPACK_RPM_PACKAGE_GROUP "Development/Libraries")
+set(CPACK_RPM_PACKAGE_REQUIRES "expat >= 2.1")
+set(CPACK_RPM_PACKAGE_URL "https://github.com/montge/asterix")
+set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
+
+# Package generators
+set(CPACK_GENERATOR "TGZ;ZIP")
+
+# Add DEB generator on Debian/Ubuntu
+if(UNIX AND NOT APPLE)
+    if(EXISTS "/etc/debian_version")
+        list(APPEND CPACK_GENERATOR "DEB")
+    endif()
+    if(EXISTS "/etc/redhat-release")
+        list(APPEND CPACK_GENERATOR "RPM")
+    endif()
+endif()
+
+include(CPack)
+
+# Print build configuration
+message(STATUS "")
+message(STATUS "ASTERIX ${PROJECT_VERSION} Build Configuration:")
+message(STATUS "  Build shared library: ${BUILD_SHARED_LIBS}")
+message(STATUS "  Build static library: ${BUILD_STATIC_LIBS}")
+message(STATUS "  Build executable: ${BUILD_EXECUTABLE}")
+message(STATUS "  Build testing: ${BUILD_TESTING}")
+message(STATUS "  Enable coverage: ${ENABLE_COVERAGE}")
+message(STATUS "  C++ Standard: ${CMAKE_CXX_STANDARD}")
+message(STATUS "  Install prefix: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "  Package generators: ${CPACK_GENERATOR}")
+message(STATUS "")
