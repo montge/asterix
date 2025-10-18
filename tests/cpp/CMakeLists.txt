@@ -41,12 +41,22 @@ add_executable(test_integration_cat048
     test_integration_cat048.cpp
 )
 
+add_executable(test_integration_cat062
+    test_integration_cat062.cpp
+)
+
+add_executable(test_integration_cat065
+    test_integration_cat065.cpp
+)
+
 # Link tests with Google Test and asterix library
 if(TARGET asterix_static)
     target_link_libraries(test_category GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_dataitem GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_utils GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_integration_cat048 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat062 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat065 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
 else()
     message(WARNING "asterix_static target not found, C++ tests will not be built")
 endif()
@@ -57,6 +67,8 @@ gtest_discover_tests(test_category)
 gtest_discover_tests(test_dataitem)
 gtest_discover_tests(test_utils)
 gtest_discover_tests(test_integration_cat048)
+gtest_discover_tests(test_integration_cat062)
+gtest_discover_tests(test_integration_cat065)
 
 # Coverage flags (if enabled)
 if(ENABLE_COVERAGE)
@@ -64,9 +76,13 @@ if(ENABLE_COVERAGE)
     target_compile_options(test_dataitem PRIVATE --coverage)
     target_compile_options(test_utils PRIVATE --coverage)
     target_compile_options(test_integration_cat048 PRIVATE --coverage)
+    target_compile_options(test_integration_cat062 PRIVATE --coverage)
+    target_compile_options(test_integration_cat065 PRIVATE --coverage)
 
     target_link_options(test_category PRIVATE --coverage)
     target_link_options(test_dataitem PRIVATE --coverage)
     target_link_options(test_utils PRIVATE --coverage)
     target_link_options(test_integration_cat048 PRIVATE --coverage)
+    target_link_options(test_integration_cat062 PRIVATE --coverage)
+    target_link_options(test_integration_cat065 PRIVATE --coverage)
 endif()
