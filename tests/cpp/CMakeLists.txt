@@ -49,6 +49,10 @@ add_executable(test_integration_cat065
     test_integration_cat065.cpp
 )
 
+add_executable(test_integration_error_handling
+    test_integration_error_handling.cpp
+)
+
 # Link tests with Google Test and asterix library
 if(TARGET asterix_static)
     target_link_libraries(test_category GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
@@ -57,6 +61,7 @@ if(TARGET asterix_static)
     target_link_libraries(test_integration_cat048 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_integration_cat062 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_integration_cat065 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_error_handling GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
 else()
     message(WARNING "asterix_static target not found, C++ tests will not be built")
 endif()
@@ -69,6 +74,7 @@ gtest_discover_tests(test_utils)
 gtest_discover_tests(test_integration_cat048)
 gtest_discover_tests(test_integration_cat062)
 gtest_discover_tests(test_integration_cat065)
+gtest_discover_tests(test_integration_error_handling)
 
 # Coverage flags (if enabled)
 if(ENABLE_COVERAGE)
@@ -78,6 +84,7 @@ if(ENABLE_COVERAGE)
     target_compile_options(test_integration_cat048 PRIVATE --coverage)
     target_compile_options(test_integration_cat062 PRIVATE --coverage)
     target_compile_options(test_integration_cat065 PRIVATE --coverage)
+    target_compile_options(test_integration_error_handling PRIVATE --coverage)
 
     target_link_options(test_category PRIVATE --coverage)
     target_link_options(test_dataitem PRIVATE --coverage)
@@ -85,4 +92,5 @@ if(ENABLE_COVERAGE)
     target_link_options(test_integration_cat048 PRIVATE --coverage)
     target_link_options(test_integration_cat062 PRIVATE --coverage)
     target_link_options(test_integration_cat065 PRIVATE --coverage)
+    target_link_options(test_integration_error_handling PRIVATE --coverage)
 endif()
