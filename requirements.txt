@@ -1,0 +1,8 @@
+# Runtime dependencies for asterix_decoder
+#
+# Core functionality works without these, but some features require them:
+# - lxml: Required for describeXML() functionality (XML output of parsed data)
+#
+
+# Optional but recommended for full functionality
+lxml>=4.9.0

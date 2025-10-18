@@ -109,4 +109,16 @@ setup(name='asterix_decoder',
       platforms=['any'],
       url="https://github.com/CroatiaControlLtd/asterix",
       classifiers=CLASSIFIERS,
+      install_requires=[
+          # lxml is optional but recommended for XML output functionality
+      ],
+      extras_require={
+          'xml': ['lxml>=4.9.0'],
+          'dev': [
+              'pytest>=7.0.0',
+              'pytest-cov>=4.0.0',
+              'coverage>=7.0.0',
+              'memory-profiler>=0.60.0',
+          ],
+      },
       )

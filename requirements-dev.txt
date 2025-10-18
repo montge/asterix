@@ -1,0 +1,20 @@
+# Development and testing dependencies for asterix_decoder
+#
+# Install with: pip install -r requirements-dev.txt
+#
+
+# Include runtime requirements
+-r requirements.txt
+
+# Testing framework
+pytest>=7.0.0
+pytest-cov>=4.0.0
+coverage>=7.0.0
+
+# Development tools (optional)
+# pylint>=2.15.0
+# flake8>=5.0.0
+# black>=22.0.0
+
+# Memory profiling (for performance testing)
+memory-profiler>=0.60.0
