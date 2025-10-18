@@ -219,8 +219,7 @@ install(FILES
 # Testing (if enabled)
 if(BUILD_TESTING)
     enable_testing()
-    # TODO: Add test targets
-    # add_subdirectory(tests)
+    add_subdirectory(tests/cpp)
 endif()
 
 # CPack configuration for packaging
