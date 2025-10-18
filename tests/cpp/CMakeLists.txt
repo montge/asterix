@@ -36,6 +36,10 @@ add_executable(test_utils
     test_utils.cpp
 )
 
+add_executable(test_dataitembits
+    test_dataitembits.cpp
+)
+
 # Integration tests
 add_executable(test_integration_cat048
     test_integration_cat048.cpp
@@ -62,6 +66,7 @@ if(TARGET asterix_static)
     target_link_libraries(test_category GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_dataitem GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_utils GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_dataitembits GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_integration_cat048 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_integration_cat062 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_integration_cat065 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
@@ -76,6 +81,7 @@ include(GoogleTest)
 gtest_discover_tests(test_category)
 gtest_discover_tests(test_dataitem)
 gtest_discover_tests(test_utils)
+gtest_discover_tests(test_dataitembits)
 gtest_discover_tests(test_integration_cat048)
 gtest_discover_tests(test_integration_cat062)
 gtest_discover_tests(test_integration_cat065)
@@ -87,6 +93,7 @@ if(ENABLE_COVERAGE)
     target_compile_options(test_category PRIVATE --coverage)
     target_compile_options(test_dataitem PRIVATE --coverage)
     target_compile_options(test_utils PRIVATE --coverage)
+    target_compile_options(test_dataitembits PRIVATE --coverage)
     target_compile_options(test_integration_cat048 PRIVATE --coverage)
     target_compile_options(test_integration_cat062 PRIVATE --coverage)
     target_compile_options(test_integration_cat065 PRIVATE --coverage)
@@ -96,6 +103,7 @@ if(ENABLE_COVERAGE)
     target_link_options(test_category PRIVATE --coverage)
     target_link_options(test_dataitem PRIVATE --coverage)
     target_link_options(test_utils PRIVATE --coverage)
+    target_link_options(test_dataitembits PRIVATE --coverage)
     target_link_options(test_integration_cat048 PRIVATE --coverage)
     target_link_options(test_integration_cat062 PRIVATE --coverage)
     target_link_options(test_integration_cat065 PRIVATE --coverage)
