@@ -9,3 +9,29 @@
 **.pyc
 /.venv/
 /venv/
+
+# Coverage reports
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+coverage.info
+coverage_html/
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.egg-info/
+dist/
+*.egg
+
+# Test outputs
+valgrind.result
+
+# IDE
+.vscode/
+*.swp
+*.swo
