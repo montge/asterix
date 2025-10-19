@@ -228,7 +228,7 @@ make
 ### CI/CD Pipeline
 
 All commits are automatically tested across:
-- **Python versions**: 3.8, 3.9, 3.10, 3.11, 3.12
+- **Python versions**: 3.8, 3.9, 3.10, 3.11, 3.12, 3.13
 - **Build systems**: Make, CMake
 - **Quality checks**: Coverage analysis, memory checks (Valgrind), static analysis
 - **Security**: CodeQL scanning for C++ and Python
