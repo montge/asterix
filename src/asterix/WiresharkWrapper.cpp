@@ -111,6 +111,10 @@ int fulliautomatix_start(ptExtVoidPrintf pPrintFunc, const char* ini_file_path)
 static fulliautomatix_definitions* newDefinition(fulliautomatix_definitions* prev, int pid, char *name, char *abbrev, int type, int display, void *strings, unsigned long bitmask, const char *blurb)
 {
   fulliautomatix_definitions* newdef = (fulliautomatix_definitions*)malloc(sizeof(fulliautomatix_definitions));
+  // Security fix: Check malloc return value to prevent null pointer dereference
+  if (newdef == NULL) {
+    return NULL;
+  }
   memset(newdef,0,sizeof(fulliautomatix_definitions));
 
   newdef->pid = pid;
@@ -181,6 +185,10 @@ void fulliautomatix_destroy_definitions(fulliautomatix_definitions* pDef)
 fulliautomatix_data* newDataString(fulliautomatix_data* prev, int pid, int bytenr, int length, char* val)
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
+  // Security fix: Check malloc return value to prevent null pointer dereference
+  if (newdata == NULL) {
+    return NULL;
+  }
   memset(newdata,0,sizeof(fulliautomatix_data));
 
   newdata->tree = 0;
@@ -199,6 +207,10 @@ fulliautomatix_data* newDataString(fulliautomatix_data* prev, int pid, int byten
 fulliautomatix_data* newDataMessage(fulliautomatix_data* prev, int bytenr, int length, int err, char* val)
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
+  // Security fix: Check malloc return value to prevent null pointer dereference
+  if (newdata == NULL) {
+    return NULL;
+  }
   memset(newdata,0,sizeof(fulliautomatix_data));
 
   if (prev)
@@ -216,6 +228,10 @@ fulliautomatix_data* newDataMessage(fulliautomatix_data* prev, int bytenr, int l
 fulliautomatix_data* newDataBytes(fulliautomatix_data* prev, int pid, int bytenr, int length, unsigned char* val)
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
+  // Security fix: Check malloc return value to prevent null pointer dereference
+  if (newdata == NULL) {
+    return NULL;
+  }
   memset(newdata,0,sizeof(fulliautomatix_data));
 
   newdata->tree = 0;
@@ -228,13 +244,20 @@ fulliautomatix_data* newDataBytes(fulliautomatix_data* prev, int pid, int bytenr
   newdata->length = length;
   newdata->type = FA_FT_BYTES;
   newdata->val.str = (char*)malloc(length);
-  memcpy(newdata->val.str, val, length);
+  // Security fix: Check malloc return value to prevent null pointer dereference
+  if (newdata->val.str != NULL) {
+    memcpy(newdata->val.str, val, length);
+  }
   return newdata;
 }
 
 fulliautomatix_data* newDataUL(fulliautomatix_data* prev, int pid, int bytenr, int length, unsigned long val)
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
+  // Security fix: Check malloc return value to prevent null pointer dereference
+  if (newdata == NULL) {
+    return NULL;
+  }
   memset(newdata,0,sizeof(fulliautomatix_data));
 
   newdata->tree = 0;
@@ -253,6 +276,10 @@ fulliautomatix_data* newDataUL(fulliautomatix_data* prev, int pid, int bytenr, i
 fulliautomatix_data* newDataSL(fulliautomatix_data* prev, int pid, int bytenr, int length, signed long val)
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
+  // Security fix: Check malloc return value to prevent null pointer dereference
+  if (newdata == NULL) {
+    return NULL;
+  }
   memset(newdata,0,sizeof(fulliautomatix_data));
 
   newdata->tree = 0;
@@ -271,6 +298,10 @@ fulliautomatix_data* newDataSL(fulliautomatix_data* prev, int pid, int bytenr, i
 fulliautomatix_data* newDataTree(fulliautomatix_data* prev, int bytenr, int length, char* description)
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
+  // Security fix: Check malloc return value to prevent null pointer dereference
+  if (newdata == NULL) {
+    return NULL;
+  }
   memset(newdata,0,sizeof(fulliautomatix_data));
 
   newdata->tree = 1;
@@ -287,6 +318,10 @@ fulliautomatix_data* newDataTree(fulliautomatix_data* prev, int bytenr, int leng
 fulliautomatix_data* newDataTreeEnd(fulliautomatix_data* prev, int offset)
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
+  // Security fix: Check malloc return value to prevent null pointer dereference
+  if (newdata == NULL) {
+    return NULL;
+  }
   memset(newdata,0,sizeof(fulliautomatix_data));
 
   newdata->tree = -1;
