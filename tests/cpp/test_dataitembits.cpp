@@ -880,6 +880,409 @@ TEST_F(DataItemBitsTest, GetTextAllEncodingsEJSONE) {
     }
 }
 
+/**
+ * Test Case: TC-CPP-BITS-033
+ * Requirement: REQ-LLR-BITS-001
+ *
+ * Test getText() with EOut format and scaling
+ */
+TEST_F(DataItemBitsTest, GetTextEOutFormatWithScaling) {
+    DataItemBits bits(16);
+    bits.m_strShortName = "RANGE";
+    bits.m_strName = "Target Range";
+    bits.m_nFrom = 1;
+    bits.m_nTo = 16;
+    bits.m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+    bits.m_dScale = 0.5; // Resolution 0.5
+    bits.m_strUnit = "NM";
+
+    unsigned char data[] = {0x00, 0x64}; // 100 decimal * 0.5 = 50.0
+    std::string result, header = "062.105";
+
+    bool success = bits.getText(result, header, CAsterixFormat::EOut, data, 2);
+    EXPECT_TRUE(success);
+    EXPECT_NE(result.find("062.105.RANGE"), std::string::npos);
+    EXPECT_NE(result.find("100"), std::string::npos);
+    EXPECT_NE(result.find("50"), std::string::npos); // Scaled value
+    EXPECT_NE(result.find("NM"), std::string::npos);
+}
+
+/**
+ * Test Case: TC-CPP-BITS-034
+ * Requirement: REQ-LLR-BITS-001
+ *
+ * Test getText() with EOut format and value lookup
+ */
+TEST_F(DataItemBitsTest, GetTextEOutFormatWithValueLookup) {
+    DataItemBits bits(8);
+    bits.m_strShortName = "MODE";
+    bits.m_strName = "Track Mode";
+    bits.m_nFrom = 1;
+    bits.m_nTo = 8;
+    bits.m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+
+    // Add value descriptions
+    bits.m_lValue.push_back(new BitsValue(0, "Maintaining"));
+    bits.m_lValue.push_back(new BitsValue(1, "Climbing"));
+    bits.m_lValue.push_back(new BitsValue(2, "Descending"));
+
+    unsigned char data[] = {0x01}; // Value 1 = "Climbing"
+    std::string result, header = "062.380";
+
+    bool success = bits.getText(result, header, CAsterixFormat::EOut, data, 1);
+    EXPECT_TRUE(success);
+    EXPECT_NE(result.find("062.380.MODE"), std::string::npos);
+    EXPECT_NE(result.find("Climbing"), std::string::npos);
+}
+
+/**
+ * Test Case: TC-CPP-BITS-035
+ * Requirement: REQ-LLR-BITS-001
+ *
+ * Test getText() with EOut format and unknown value lookup
+ */
+TEST_F(DataItemBitsTest, GetTextEOutFormatValueLookupNoMatch) {
+    DataItemBits bits(8);
+    bits.m_strShortName = "STATUS";
+    bits.m_strName = "Track Status";
+    bits.m_nFrom = 1;
+    bits.m_nTo = 8;
+    bits.m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+
+    // Add value descriptions
+    bits.m_lValue.push_back(new BitsValue(1, "Confirmed"));
+    bits.m_lValue.push_back(new BitsValue(2, "Tentative"));
+
+    unsigned char data[] = {0x99}; // Value 153 - not in list
+    std::string result, header = "048.170";
+
+    bool success = bits.getText(result, header, CAsterixFormat::EOut, data, 1);
+    EXPECT_TRUE(success);
+    EXPECT_NE(result.find("048.170.STATUS"), std::string::npos);
+    EXPECT_NE(result.find("??????"), std::string::npos); // Unknown value marker
+}
+
+/**
+ * Test Case: TC-CPP-BITS-036
+ * Requirement: REQ-LLR-BITS-001
+ *
+ * Test getText() with EOut format and const value warning
+ */
+TEST_F(DataItemBitsTest, GetTextEOutFormatConstValueWarning) {
+    DataItemBits bits(8);
+    bits.m_strShortName = "FIXED";
+    bits.m_strName = "Fixed Value";
+    bits.m_nFrom = 1;
+    bits.m_nTo = 8;
+    bits.m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+    bits.m_bIsConst = true;
+    bits.m_nConst = 0;
+
+    // Value should be 0, but is 5
+    unsigned char data[] = {0x05};
+    std::string result, header = "062.290";
+
+    bool success = bits.getText(result, header, CAsterixFormat::EOut, data, 1);
+    EXPECT_TRUE(success);
+    EXPECT_NE(result.find("Warning"), std::string::npos);
+    EXPECT_NE(result.find("should be set to"), std::string::npos);
+}
+
+/**
+ * Test Case: TC-CPP-BITS-037
+ * Requirement: REQ-LLR-BITS-001
+ *
+ * Test getText() with EOut format and max value warning
+ */
+TEST_F(DataItemBitsTest, GetTextEOutFormatMaxValueWarning) {
+    DataItemBits bits(16);
+    bits.m_strShortName = "ALTITUDE";
+    bits.m_strName = "Geometric Altitude";
+    bits.m_nFrom = 1;
+    bits.m_nTo = 16;
+    bits.m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+    bits.m_dScale = 6.25; // feet
+    bits.m_strUnit = "ft";
+    bits.m_bMaxValueSet = true;
+    bits.m_dMaxValue = 150000.0;
+
+    // Value 30000 * 6.25 = 187500 exceeds max 150000
+    unsigned char data[] = {0x75, 0x30}; // 30000 decimal
+    std::string result, header = "021.008";
+
+    bool success = bits.getText(result, header, CAsterixFormat::EOut, data, 2);
+    EXPECT_TRUE(success);
+    EXPECT_NE(result.find("Warning"), std::string::npos);
+    EXPECT_NE(result.find("larger than max"), std::string::npos);
+}
+
+/**
+ * Test Case: TC-CPP-BITS-038
+ * Requirement: REQ-LLR-BITS-001
+ *
+ * Test getText() with EOut format and min value warning
+ */
+TEST_F(DataItemBitsTest, GetTextEOutFormatMinValueWarning) {
+    DataItemBits bits(16);
+    bits.m_strShortName = "RATE";
+    bits.m_strName = "Rate of Climb/Descent";
+    bits.m_nFrom = 1;
+    bits.m_nTo = 16;
+    bits.m_eEncoding = DataItemBits::DATAITEM_ENCODING_SIGNED;
+    bits.m_dScale = 6.25; // ft/min
+    bits.m_strUnit = "ft/min";
+    bits.m_bMinValueSet = true;
+    bits.m_dMinValue = -6000.0;
+
+    // Value -2000 * 6.25 = -12500 is below min -6000
+    unsigned char data[] = {0xF8, 0x30}; // -2000 in signed 16-bit
+    std::string result, header = "062.220";
+
+    bool success = bits.getText(result, header, CAsterixFormat::EOut, data, 2);
+    EXPECT_TRUE(success);
+    EXPECT_NE(result.find("Warning"), std::string::npos);
+    EXPECT_NE(result.find("smaller than min"), std::string::npos);
+}
+
+/**
+ * Test Case: TC-CPP-BITS-039
+ * Requirement: REQ-LLR-BITS-001
+ *
+ * Test getText() with EJSONE format and scaling (unsigned)
+ */
+TEST_F(DataItemBitsTest, GetTextEJSONEWithScaling) {
+    DataItemBits bits(16);
+    bits.m_strShortName = "VELOCITY";
+    bits.m_strName = "Ground Speed";
+    bits.m_nFrom = 1;
+    bits.m_nTo = 16;
+    bits.m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+    bits.m_dScale = 0.25; // kt
+    bits.m_strUnit = "kt";
+
+    unsigned char data[] = {0x01, 0x90}; // 400 * 0.25 = 100.0 kt
+    std::string result, header;
+
+    bool success = bits.getText(result, header, CAsterixFormat::EJSONE, data, 2);
+    EXPECT_TRUE(success);
+    EXPECT_NE(result.find("\"val\"=100"), std::string::npos); // Scaled value
+    EXPECT_NE(result.find("\"hex\""), std::string::npos);
+    EXPECT_NE(result.find("\"name\""), std::string::npos);
+}
+
+/**
+ * Test Case: TC-CPP-BITS-040
+ * Requirement: REQ-LLR-BITS-001
+ *
+ * Test getText() with EJSONE format and value lookup with match
+ */
+TEST_F(DataItemBitsTest, GetTextEJSONEWithValueLookupMatch) {
+    DataItemBits bits(8);
+    bits.m_strShortName = "CNF";
+    bits.m_strName = "Confirmed Flag";
+    bits.m_nFrom = 1;
+    bits.m_nTo = 8;
+    bits.m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+
+    // Add value descriptions
+    bits.m_lValue.push_back(new BitsValue(0, "Confirmed track"));
+    bits.m_lValue.push_back(new BitsValue(1, "Tentative track"));
+
+    unsigned char data[] = {0x01}; // Value 1
+    std::string result, header;
+
+    bool success = bits.getText(result, header, CAsterixFormat::EJSONE, data, 1);
+    EXPECT_TRUE(success);
+    EXPECT_NE(result.find("\"val\"=1"), std::string::npos);
+    EXPECT_NE(result.find("\"meaning\"=\"Tentative track\""), std::string::npos);
+    EXPECT_NE(result.find("\"hex\""), std::string::npos);
+}
+
+/**
+ * Test Case: TC-CPP-BITS-041
+ * Requirement: REQ-LLR-BITS-001
+ *
+ * Test getText() with EJSONE format and value lookup with no match
+ */
+TEST_F(DataItemBitsTest, GetTextEJSONEWithValueLookupNoMatch) {
+    DataItemBits bits(8);
+    bits.m_strShortName = "TYP";
+    bits.m_strName = "Target Type";
+    bits.m_nFrom = 1;
+    bits.m_nTo = 8;
+    bits.m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+
+    // Add value descriptions
+    bits.m_lValue.push_back(new BitsValue(1, "SSR track"));
+    bits.m_lValue.push_back(new BitsValue(2, "Combined track"));
+
+    unsigned char data[] = {0xAA}; // Value 170 - not in list
+    std::string result, header;
+
+    bool success = bits.getText(result, header, CAsterixFormat::EJSONE, data, 1);
+    EXPECT_TRUE(success);
+    EXPECT_NE(result.find("\"val\"=170"), std::string::npos);
+    EXPECT_NE(result.find("??????"), std::string::npos); // Unknown value marker
+}
+
+/**
+ * Test Case: TC-CPP-BITS-042
+ * Requirement: REQ-LLR-BITS-001
+ *
+ * Test getText() with 64-bit field (large multi-byte)
+ */
+TEST_F(DataItemBitsTest, Get64BitField) {
+    DataItemBits bits(64);
+    bits.m_strShortName = "TIMESTAMP";
+    bits.m_strName = "High Resolution Timestamp";
+    bits.m_nFrom = 1;
+    bits.m_nTo = 48; // 6 bytes = 48 bits
+    bits.m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+    bits.m_dScale = 0.0078125; // 1/128 seconds
+    bits.m_strUnit = "s";
+
+    unsigned char data[8] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00};
+    std::string result, header;
+
+    bool success = bits.getText(result, header, CAsterixFormat::ETxt, data, 8);
+    EXPECT_TRUE(success);
+    EXPECT_NE(result.find("High Resolution Timestamp"), std::string::npos);
+}
+
+/**
+ * Test Case: TC-CPP-BITS-043
+ * Requirement: REQ-LLR-BITS-001
+ *
+ * Test getText() with non-aligned bit field (3-19)
+ */
+TEST_F(DataItemBitsTest, GetTextNonAlignedBitField) {
+    DataItemBits bits(24);
+    bits.m_strShortName = "PARTIAL";
+    bits.m_strName = "Partial Field";
+    bits.m_nFrom = 3; // Start at bit 3
+    bits.m_nTo = 19;  // End at bit 19 (17 bits total, spanning 3 bytes)
+    bits.m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+
+    unsigned char data[] = {0xFF, 0xFF, 0xFF}; // All bits set
+    std::string result, header;
+
+    bool success = bits.getText(result, header, CAsterixFormat::ETxt, data, 3);
+    EXPECT_TRUE(success);
+    EXPECT_NE(result.find("Partial Field"), std::string::npos);
+}
+
+/**
+ * Test Case: TC-CPP-BITS-044
+ * Requirement: REQ-LLR-BITS-001
+ *
+ * Test ASCII encoding with non-printable characters
+ */
+TEST_F(DataItemBitsTest, GetTextASCIINonPrintable) {
+    DataItemBits bits(32);
+    bits.m_strShortName = "MIXED";
+    bits.m_strName = "Mixed ASCII";
+    bits.m_nFrom = 1;
+    bits.m_nTo = 32;
+    bits.m_eEncoding = DataItemBits::DATAITEM_ENCODING_ASCII;
+
+    // Mix of printable and non-printable (0x01, 0x1F are non-printable)
+    unsigned char data[] = {'A', 0x01, 'B', 0x1F};
+    std::string result, header;
+
+    bool success = bits.getText(result, header, CAsterixFormat::ETxt, data, 4);
+    EXPECT_TRUE(success);
+    EXPECT_NE(result.find("Mixed ASCII"), std::string::npos);
+    // Non-printable chars should be replaced with spaces
+}
+
+/**
+ * Test Case: TC-CPP-BITS-045
+ * Requirement: REQ-LLR-BITS-001
+ *
+ * Test copy constructor creates independent copy
+ */
+TEST_F(DataItemBitsTest, CopyConstructorCreatesIndependentCopy) {
+    DataItemBits original(8);
+    original.m_strShortName = "SAC";
+    original.m_strName = "System Area Code";
+    original.m_nFrom = 1;
+    original.m_nTo = 8;
+    original.m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+    original.m_dScale = 1.0;
+    original.m_bFiltered = false;
+
+    // Add a value
+    original.m_lValue.push_back(new BitsValue(1, "Test Value"));
+
+    // Create copy
+    DataItemBits copy(original);
+
+    // Verify copy has same values
+    EXPECT_EQ(copy.m_strShortName, original.m_strShortName);
+    EXPECT_EQ(copy.m_strName, original.m_strName);
+    EXPECT_EQ(copy.m_nFrom, original.m_nFrom);
+    EXPECT_EQ(copy.m_nTo, original.m_nTo);
+    EXPECT_EQ(copy.m_eEncoding, original.m_eEncoding);
+    EXPECT_EQ(copy.m_dScale, original.m_dScale);
+    EXPECT_EQ(copy.m_bFiltered, original.m_bFiltered);
+    EXPECT_EQ(copy.m_lValue.size(), original.m_lValue.size());
+
+    // Modify copy and ensure original is unchanged
+    copy.m_strShortName = "SIC";
+    EXPECT_EQ(original.m_strShortName, "SAC");
+    EXPECT_EQ(copy.m_strShortName, "SIC");
+}
+
+/**
+ * Test Case: TC-CPP-BITS-046
+ * Requirement: REQ-LLR-BITS-001
+ *
+ * Test getText() with empty short name (copies from full name)
+ */
+TEST_F(DataItemBitsTest, GetTextEmptyShortNameCopiesFromFullName) {
+    DataItemBits bits(8);
+    bits.m_strShortName = ""; // Empty
+    bits.m_strName = "Full Name Only";
+    bits.m_nFrom = 1;
+    bits.m_nTo = 8;
+    bits.m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+
+    unsigned char data[] = {0x42};
+    std::string result, header;
+
+    bool success = bits.getText(result, header, CAsterixFormat::ETxt, data, 1);
+    EXPECT_TRUE(success);
+    // After getText, m_strShortName should be copied from m_strName
+    EXPECT_EQ(bits.m_strShortName, "Full Name Only");
+}
+
+/**
+ * Test Case: TC-CPP-BITS-047
+ * Requirement: REQ-LLR-BITS-001
+ *
+ * Test getText() with signed encoding in EOut format
+ */
+TEST_F(DataItemBitsTest, GetTextSignedEOutFormat) {
+    DataItemBits bits(16);
+    bits.m_strShortName = "VRATE";
+    bits.m_strName = "Vertical Rate";
+    bits.m_nFrom = 1;
+    bits.m_nTo = 16;
+    bits.m_eEncoding = DataItemBits::DATAITEM_ENCODING_SIGNED;
+    bits.m_dScale = 6.25; // ft/min
+    bits.m_strUnit = "ft/min";
+
+    // Negative value: -1000
+    unsigned char data[] = {0xFC, 0x18}; // -1000 in signed 16-bit
+    std::string result, header = "062.220";
+
+    bool success = bits.getText(result, header, CAsterixFormat::EOut, data, 2);
+    EXPECT_TRUE(success);
+    EXPECT_NE(result.find("062.220.VRATE"), std::string::npos);
+    EXPECT_NE(result.find("-1000"), std::string::npos);
+    EXPECT_NE(result.find("ft/min"), std::string::npos);
+}
+
 // Run all tests
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
