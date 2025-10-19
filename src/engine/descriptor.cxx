@@ -36,7 +36,9 @@ CDescriptor::CDescriptor(const char *description, const char *delimiters, bool m
     if (size != 0) {
         size++; // Null terminator
         _description = new char[size];
-        strcpy(_description, description);
+        // Security fix: Use strncpy to prevent buffer overflow
+        strncpy(_description, description, size - 1);
+        _description[size - 1] = '\0';
     } else {
         // Make an empty string to avoid special handling with NULL pointers.
         _description = new char[1];

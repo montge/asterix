@@ -272,7 +272,8 @@ unsigned char *DataItemBits::getHexBitString(unsigned char *pData, int bytes, in
     int numberOfBytes = (numberOfCharacters + 1) / 2;
     int i;
     for (i = 0; i < numberOfBytes; i++) {
-        sprintf((char *) &str[i * 2], "%02X", pB[i]);
+        // Security fix: Use snprintf to prevent buffer overflow
+        snprintf((char *) &str[i * 2], 3, "%02X", pB[i]);
     }
 
     delete[] pB;
@@ -309,7 +310,8 @@ unsigned char *DataItemBits::getHexBitStringFullByte(unsigned char *pData, int b
     int numberOfBytes = (numberOfCharacters + 1) / 2;
     int i;
     for (i = 0; i < numberOfBytes; i++) {
-        sprintf((char *) &str[i * 2], "%02X", pB[i]);
+        // Security fix: Use snprintf to prevent buffer overflow
+        snprintf((char *) &str[i * 2], 3, "%02X", pB[i]);
     }
 
     delete[] pB;
@@ -908,6 +910,10 @@ def->strings = NULL;
 if (m_lValue.size() > 0)
 {
 def->strings = (fulliautomatix_value_string*)malloc((1+m_lValue.size()) * sizeof(fulliautomatix_value_string));
+// Security fix: Check malloc return value to prevent null pointer dereference
+if (def->strings == NULL) {
+    return def;
+}
 
 std::list<BitsValue*>::iterator it;
 BitsValue* bv = NULL;

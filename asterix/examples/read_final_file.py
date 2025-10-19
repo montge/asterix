@@ -5,7 +5,8 @@ import struct
 import datetime
 
 # Read example file from packet resources
-sample_filename = '/home/dsalanti/PycharmProjects/asterix/install/my_samples/REC_RECSDPS_MAIN_ACC_SYS_TK.ff'
+# NOTE: Update this path to point to your actual FINAL format file
+sample_filename = 'path/to/your/sample_file.ff'  # Example path - update before use
 
 final_header_format = ">hBBBBBB"
 final_header_size = struct.calcsize(final_header_format)

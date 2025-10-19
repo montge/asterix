@@ -275,9 +275,12 @@ bool CDiskDevice::Init(const char *path) {
             if( (_tempName == NULL) || (strlen(_tempName) == 0) )
             {
                 strncpy(_tempName, fname, MAXPATHLEN); // store actual name in _tempName
+                _tempName[MAXPATHLEN] = '\0'; // Ensure null termination
                 static char tn[MAXPATHLEN];
                 strncpy(tn, fname, MAXPATHLEN-11);
-                strcat(tn, ".tmp.XXXXXX");
+                tn[MAXPATHLEN-11] = '\0';
+                // Security fix: Use strncat to prevent buffer overflow
+                strncat(tn, ".tmp.XXXXXX", 10);
                 fname = mktemp(tn);
                 if((fname == NULL) || (strlen(fname) == 0))
                 {
@@ -397,14 +400,17 @@ bool CDiskDevice::DoneWithFile(bool allDone) {
             const char *sfxBase = _input ? ".ci%d_%%y%%m%%d%%H%%M%%S"
                                          : ".co%d_%%y%%m%%d%%H%%M%%S";
 
-            sprintf(sfxFormat, sfxBase, (int) getpid());
+            // Security fix: Use snprintf to prevent buffer overflow
+            snprintf(sfxFormat, sizeof(sfxFormat), sfxBase, (int) getpid());
 
             time_t t = time(NULL);
             struct tm *stm = gmtime(&t);
             strftime(suffix, 25, sfxFormat, stm);
 
             strncpy(newName, _fileName, MAXPATHLEN);
-            strcat(newName, suffix);
+            newName[MAXPATHLEN] = '\0';
+            // Security fix: Use strncat to prevent buffer overflow
+            strncat(newName, suffix, 31);
 
             if (rename(_fileName, newName)) {
                 LOGERROR(1, "Rename of file failed\n");
@@ -472,17 +478,25 @@ char *CDiskDevice::NextFileName() {
     static char cnt[32];
     static char newName[MAXPATHLEN+1];
 
-    sprintf(cnt, "_%08d", _seqNo);
+    // Security fix: Use snprintf to prevent buffer overflow
+    snprintf(cnt, sizeof(cnt), "_%08d", _seqNo);
 
     char *posExt = strrchr(_baseName, '.');
     if (posExt) {
-        strncpy(newName, _baseName, posExt - _baseName); // base name
-        strncpy(newName + (posExt - _baseName), cnt, MAXPATHLEN-(posExt - _baseName)); // sequence counter
-        strcat(newName, posExt); // extension
+        size_t baseLen = posExt - _baseName;
+        if (baseLen > MAXPATHLEN) baseLen = MAXPATHLEN;
+        strncpy(newName, _baseName, baseLen); // base name
+        newName[baseLen] = '\0';
+        // Security fix: Use strncat to prevent buffer overflow
+        strncat(newName, cnt, MAXPATHLEN - baseLen);
+        strncat(newName, posExt, MAXPATHLEN - strlen(newName)); // extension
     } else {
         strncpy(newName, _baseName, MAXPATHLEN-32);
-        strcat(newName, cnt);
+        newName[MAXPATHLEN-32] = '\0';
+        // Security fix: Use strncat to prevent buffer overflow
+        strncat(newName, cnt, 31);
     }
+    newName[MAXPATHLEN] = '\0'; // Ensure null termination
 
     return newName;
 }
@@ -510,14 +524,17 @@ void CDiskDevice::Close() {
 
                 // rename the existing file to <name>.nnnn, where nnnn is the first available decimal number with leading zeros
                 char backupName[MAXPATHLEN];
-                strcpy(backupName, _tempName);
+                // Security fix: Use strncpy to prevent buffer overflow
+                strncpy(backupName, _tempName, MAXPATHLEN - 1);
+                backupName[MAXPATHLEN - 1] = '\0';
                 int bnPos=strlen(backupName);
 
                 if(bnPos + 6 <= MAXPATHLEN)
                 {
                     for(int b=0; b<=9999; b++)
                     {
-                        sprintf(backupName+bnPos, ".%04d", b);
+                        // Security fix: Use snprintf to prevent buffer overflow
+                        snprintf(backupName+bnPos, MAXPATHLEN - bnPos, ".%04d", b);
                         mvrc = (stat(backupName, &fs) != 0);
                         if(mvrc)
                             break;
@@ -552,7 +569,9 @@ void CDiskDevice::Close() {
                 }
             }
 
-            strcpy(_fileName, _tempName);
+            // Security fix: Use strncpy to prevent buffer overflow
+            strncpy(_fileName, _tempName, MAXPATHLEN);
+            _fileName[MAXPATHLEN] = '\0';
             _tempName[0] = '\0';
         }
 */

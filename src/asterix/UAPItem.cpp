@@ -76,6 +76,10 @@ fulliautomatix_definitions* UAPItem::getWiresharkDefinitions()
   def->bitmask <<= (7-m_nBit%8);
 
   def->strings = (fulliautomatix_value_string*)malloc(3 * sizeof(fulliautomatix_value_string));
+  // Security fix: Check malloc return value to prevent null pointer dereference
+  if (def->strings == NULL) {
+    return def;
+  }
   def->strings[0].value = 0;
   def->strings[0].strptr = strdup(" Not present");
   def->strings[1].value = 1;

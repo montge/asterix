@@ -217,7 +217,11 @@ static void debug_trace(char const *format, ...) {
     va_start (args, format);
     vsnprintf(buffer, 1024, format, args);
     va_end (args);
-    strcat(buffer, "\n");
+    // Security fix: Use strncat to prevent buffer overflow
+    size_t len = strlen(buffer);
+    if (len < 1024) {
+        strncat(buffer, "\n", 1024 - len);
+    }
     LOGERROR(1, "%s", buffer);
 }
 

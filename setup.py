@@ -9,7 +9,13 @@ from os import listdir
 import sys
 import platform
 
-exec(open('asterix/version.py').read())
+# Safely load version without using exec()
+__version__ = None
+with open('asterix/version.py', 'r') as version_file:
+    for line in version_file:
+        if line.startswith('__version__'):
+            # Parse the version string safely
+            __version__ = line.split('=')[1].strip().strip('"').strip("'")
 
 CLASSIFIERS = [
     'Development Status :: 3 - Alpha',

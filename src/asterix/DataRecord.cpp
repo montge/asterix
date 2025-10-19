@@ -72,6 +72,11 @@ DataRecord::DataRecord(Category *cat, int nID, unsigned long len, const unsigned
     } while (!lastFSPEC && nUnparsed > 0);
 
     m_pFSPECData = (unsigned char *) malloc(m_nFSPECLength);
+    // Security fix: Check malloc return value to prevent null pointer dereference
+    if (m_pFSPECData == NULL) {
+        Tracer::Error("Memory allocation failed for FSPEC data");
+        return;
+    }
     memcpy(m_pFSPECData, data, m_nFSPECLength);
 
     if (nUnparsed < 0) {
@@ -138,8 +143,13 @@ DataRecord::DataRecord(Category *cat, int nID, unsigned long len, const unsigned
 
         // build hexdata string
         m_pHexData = (char *) calloc(m_nLength  * 2 + 1 /* null */, sizeof(char));
-        for (i = 0; i < m_nLength; i++) {
-            snprintf(m_pHexData + sizeof(char) * i * 2, 3, "%02X", data[i]);
+        // Security fix: Check calloc return value to prevent null pointer dereference
+        if (m_pHexData != NULL) {
+            for (i = 0; i < m_nLength; i++) {
+                snprintf(m_pHexData + sizeof(char) * i * 2, 3, "%02X", data[i]);
+            }
+        } else {
+            Tracer::Error("Memory allocation failed for hex data");
         }
     }
 }
@@ -345,7 +355,8 @@ PyObject* DataRecord::getData(int verbose)
     Py_DECREF(v2);
 
     char hexcrc[9];
-    sprintf(hexcrc, "%08X", m_nCrc);
+    // Security fix: Use snprintf to prevent buffer overflow
+    snprintf(hexcrc, sizeof(hexcrc), "%08X", m_nCrc);
     PyObject* k3 = Py_BuildValue("s", "crc");
     PyObject* v3 = Py_BuildValue("s", hexcrc);
     PyDict_SetItem(p, k3, v3);

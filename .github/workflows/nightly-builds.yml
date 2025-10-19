@@ -11,6 +11,10 @@ on:
         required: false
         default: 'false'
 
+permissions:
+  contents: write  # Required for creating releases
+  actions: read    # Required for checking CI status
+
 env:
   NIGHTLY_VERSION: "2.8.9-nightly"
 
@@ -279,7 +283,7 @@ jobs:
       continue-on-error: true
 
     - name: Create nightly pre-release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191  # v2.0.8
       with:
         tag_name: nightly
         name: "Nightly Build ($(date +%Y-%m-%d))"

@@ -9,6 +9,9 @@ on:
     # Run nightly at 2 AM UTC
     - cron: '0 2 * * *'
 
+permissions:
+  contents: read
+
 env:
   COVERAGE_TARGET_OVERALL: 90
   COVERAGE_TARGET_MODULE: 80
@@ -112,7 +115,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload Python coverage
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@5eccb36ff5b2bd36c93d8c4b50d2d0d48220f0d3  # v5.1.2
       with:
         files: ./coverage.xml
         flags: python
@@ -155,7 +158,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@5eccb36ff5b2bd36c93d8c4b50d2d0d48220f0d3  # v5.1.2
       with:
         files: ./coverage.info
         flags: cpp
