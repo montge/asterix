@@ -148,10 +148,43 @@ jobs:
         make debug
         make debug install
 
+    - name: Verify debug executable exists
+      run: |
+        echo "=== Checking for debug executable ==="
+        ls -la obj/main/debug/ || echo "DEBUG DIRECTORY NOT FOUND"
+        if [ -f obj/main/debug/asterix ]; then
+          echo "✓ Debug executable exists"
+          file obj/main/debug/asterix
+          obj/main/debug/asterix --version || echo "Failed to run --version"
+        else
+          echo "✗ DEBUG EXECUTABLE MISSING!"
+          echo "Directory contents:"
+          find obj/main -type f -name "asterix" || echo "No asterix executables found"
+        fi
+
     - name: Run tests
+      id: run_tests
       run: |
         cd install/test
         ./test.sh
+      continue-on-error: true
+
+    - name: Show valgrind results if tests failed
+      if: always()
+      run: |
+        cd install/test
+        if [ -f valgrind.result ]; then
+          echo "=== Valgrind output ==="
+          cat valgrind.result
+        else
+          echo "No valgrind.result file found"
+        fi
+
+    - name: Check test results
+      if: steps.run_tests.outcome == 'failure'
+      run: |
+        echo "Tests failed - check logs above"
+        exit 1
 
     - name: Generate coverage report (placeholder)
       run: |
