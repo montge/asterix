@@ -38,6 +38,11 @@ do-278/
 
 ### 1. Build the Project
 
+**Prerequisites:**
+- C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017 15.3+)
+- CMake 3.12+ or GNU Make
+- libexpat library
+
 ```bash
 # C++ executable
 cd src

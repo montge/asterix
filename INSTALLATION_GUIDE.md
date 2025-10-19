@@ -9,7 +9,36 @@
 
 ## System-Level Tools (Require sudo)
 
-### 1. Install C++ Coverage Tools
+### 1. Install C++17 Compatible Compiler
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get update
+sudo apt-get install -y build-essential
+```
+
+**Verify C++17 Support:**
+```bash
+g++ --version
+# Minimum: GCC 7.0 (Ubuntu 18.04+)
+# Recommended: GCC 9.0+ (Ubuntu 20.04+)
+```
+
+**Compiler Version Requirements:**
+- **GCC**: 7.0+ (recommended: 9.0+)
+- **Clang**: 5.0+ (recommended: 9.0+)
+- **MSVC**: 2017 15.3+ (Visual Studio 2017+)
+- **AppleClang**: 9.1+ (Xcode 9.3+)
+
+**If you have an older compiler on Ubuntu 18.04:**
+```bash
+# Install GCC 9 for better C++17 support
+sudo apt-get install -y gcc-9 g++-9
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 90
+```
+
+### 2. Install C++ Coverage Tools
 
 ```bash
 sudo apt-get update
@@ -27,7 +56,7 @@ lcov --version
 # Expected: lcov: LCOV version 2.x
 ```
 
-### 2. Install Memory Analysis Tools
+### 3. Install Memory Analysis Tools
 
 ```bash
 sudo apt-get install -y valgrind
@@ -43,15 +72,22 @@ valgrind --version
 # Expected: valgrind-3.x
 ```
 
-### 3. Install Build Tools (if missing)
+### 4. Install Build Tools (if missing)
 
 ```bash
-sudo apt-get install -y build-essential cmake git
+sudo apt-get install -y cmake git libexpat-dev
 ```
 
 **What it does:**
-- Ensures GCC, G++, Make, CMake are available
-- Required for building the ASTERIX decoder
+- Ensures CMake, Git, and libexpat are available
+- CMake 3.12+ is required for building
+- libexpat is required for XML parsing
+
+**Verification:**
+```bash
+cmake --version
+# Expected: cmake version 3.12 or higher
+```
 
 ---
 
@@ -129,11 +165,14 @@ cd build
 
 ```bash
 cmake .. \
+  -DCMAKE_CXX_STANDARD=17 \
   -DBUILD_TESTING=ON \
   -DENABLE_COVERAGE=ON \
   -DBUILD_SHARED_LIBS=ON \
   -DBUILD_STATIC_LIBS=ON
 ```
+
+**Note:** C++17 is set by default in CMakeLists.txt, but you can explicitly specify it with `-DCMAKE_CXX_STANDARD=17`.
 
 ### 3. Build the Project
 

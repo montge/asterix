@@ -80,7 +80,7 @@ asterix_module = Extension('_asterix',
                                     ],
 
                            include_dirs=['./asterix/python', './src/asterix', './src/engine'],
-                           extra_compile_args=['-DPYTHON_WRAPPER'],
+                           extra_compile_args=['-DPYTHON_WRAPPER', '-std=c++17'],
                            extra_link_args=['-lexpat'])
 
 f = open('README.rst')
