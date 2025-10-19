@@ -541,6 +541,29 @@ TEST(CategoryTest, GetDataItemDescriptionCreatesCorrectID) {
     EXPECT_EQ(item->m_strID, "140");
 }
 
+/**
+ * Test Case: TC-CPP-CAT-031
+ * Requirement: REQ-LLR-UAP-002
+ *
+ * Test UAPItem copy constructor
+ */
+TEST(CategoryTest, UAPItemCopyConstructor) {
+    UAPItem original;
+    original.m_nBit = 3;
+    original.m_nFRN = 5;
+    original.m_bFX = false;
+    original.m_nLen = 2;
+    original.m_strItemID = "010";
+
+    UAPItem copy(original);
+
+    EXPECT_EQ(copy.m_nBit, 3);
+    EXPECT_EQ(copy.m_nFRN, 5);
+    EXPECT_FALSE(copy.m_bFX);
+    EXPECT_EQ(copy.m_nLen, 2);
+    EXPECT_STREQ(copy.m_strItemID.c_str(), "010");
+}
+
 // Main function for running tests
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
