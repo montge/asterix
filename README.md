@@ -1,6 +1,7 @@
 # ASTERIX Decoder
 
 [![CI Status](https://github.com/montge/asterix/actions/workflows/ci-verification.yml/badge.svg)](https://github.com/montge/asterix/actions/workflows/ci-verification.yml)
+[![CodeQL](https://github.com/montge/asterix/workflows/CodeQL/badge.svg)](https://github.com/montge/asterix/security/code-scanning)
 [![Coverage](https://img.shields.io/badge/coverage-92.2%25-brightgreen)](https://github.com/montge/asterix)
 [![PyPI](https://img.shields.io/pypi/v/asterix_decoder.svg)](https://pypi.org/project/asterix_decoder/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/asterix_decoder.svg)](https://pypi.org/project/asterix_decoder/)
