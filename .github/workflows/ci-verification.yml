@@ -135,7 +135,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libexpat1-dev lcov gcovr
+        sudo apt-get install -y libexpat1-dev lcov gcovr valgrind
 
     - name: Build with coverage flags
       run: |
@@ -278,7 +278,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libexpat1-dev
+        sudo apt-get install -y libexpat1-dev valgrind
         python -m pip install --upgrade pip
         pip install setuptools wheel
 
