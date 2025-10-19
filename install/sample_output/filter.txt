@@ -73,8 +73,8 @@ CAT001:I100:QB1
 CAT001:I100:QD1                                              
 CAT001:I100:QB2                                              
 CAT001:I100:QD2                                              
-CAT001:I100:QB1                                              
-CAT001:I100:QD1                                              
+CAT001:I100:QB4                                              
+CAT001:I100:QD4                                              
 CAT001:I120:mrdp                                             Speed
 CAT001:I130:Ind                                              Indicator
 CAT001:I130:FX                                               extension into next extent
