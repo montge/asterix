@@ -57,18 +57,19 @@ ifeq ($(MODE), DEBUG)
 # Debug version
 CWARNING := -Wall
 DEBUGFLAGS := -g -O0
-CFLAGS := $(DEBUGFLAGS) $(CWARNING) -D_DEBUG $(GLOBAL_DEFINES)
+BASE_FLAGS := $(DEBUGFLAGS) $(CWARNING) -D_DEBUG $(GLOBAL_DEFINES)
 OBJ_DIR_SHORT = debug
 OBJ_DIR = $(TOP)/obj/$(CUR_DIR)/$(OBJ_DIR_SHORT)
 else
 # Retail version
 CWARNING := -Wall
-CFLAGS := $(CWARNING) -O2 $(GLOBAL_DEFINES)
+BASE_FLAGS := $(CWARNING) -O2 $(GLOBAL_DEFINES)
 OBJ_DIR_SHORT = release
 OBJ_DIR = $(TOP)/obj/$(CUR_DIR)/$(OBJ_DIR_SHORT)
 endif
 
-# C++ standard version
+# C17 and C++17 standard versions
+CSTD   := -std=c17
 CXXSTD := -std=c++17
 
 INCLUDEDIRS   = -I$(TOP)/src/engine \
@@ -78,7 +79,8 @@ INCLUDEDIRS   = -I$(TOP)/src/engine \
 LIBDIRS       = -L$(TOP)/lib/$(OBJ_DIR_SHORT)
 ARFLAGS       = rcs
 LDFLAGS       = $(LIBDIRS)
-CXXFLAGS      = $(CFLAGS) $(CXXSTD)
+CFLAGS        = $(BASE_FLAGS) $(CSTD)
+CXXFLAGS      = $(BASE_FLAGS) $(CXXSTD)
 EXTRACFLAGS   = $(INCLUDEDIRS)
 EXTRACXXFLAGS = $(EXTRACFLAGS)
 .PHONY: depend clean install all
