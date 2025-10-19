@@ -1,0 +1,4 @@
+usr/bin/asterix
+usr/share/asterix/config/*
+usr/share/asterix/samples/*
+usr/share/doc/asterix/*
