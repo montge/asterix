@@ -1226,3 +1226,762 @@ TEST_F(XMLParserTest, ParseDataItemRules) {
     EXPECT_EQ(item020->m_eRule, DataItemDescription::DATAITEM_OPTIONAL);
     EXPECT_EQ(item030->m_eRule, DataItemDescription::DATAITEM_UNKNOWN);
 }
+
+/**
+ * Test Case: TC-CPP-XMLP-034
+ * Requirement: REQ-HLR-XML-001
+ * Description: Verify parser handles Compound within Compound
+ */
+TEST_F(XMLParserTest, ParseCompoundWithinCompound) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test Category" ver="1.0">
+    <DataItem id="010" rule="optional">
+        <DataItemName>Nested Compound</DataItemName>
+        <DataItemDefinition>Test nested compound</DataItemDefinition>
+        <DataItemFormat desc="Nested compound">
+            <Compound>
+                <Variable>
+                    <Fixed length="1">
+                        <Bits bit="8">
+                            <BitsShortName>A</BitsShortName>
+                        </Bits>
+                        <Bits bit="7">
+                            <BitsShortName>B</BitsShortName>
+                        </Bits>
+                        <Bits bit="1" fx="1">
+                            <BitsShortName>FX</BitsShortName>
+                        </Bits>
+                    </Fixed>
+                </Variable>
+                <Compound>
+                    <Variable>
+                        <Fixed length="1">
+                            <Bits bit="8">
+                                <BitsShortName>C</BitsShortName>
+                            </Bits>
+                            <Bits bit="1" fx="1">
+                                <BitsShortName>FX</BitsShortName>
+                            </Bits>
+                        </Fixed>
+                    </Variable>
+                    <Fixed length="2">
+                        <Bits from="16" to="1">
+                            <BitsShortName>DATA</BitsShortName>
+                        </Bits>
+                    </Fixed>
+                </Compound>
+                <Fixed length="1">
+                    <Bits from="8" to="1">
+                        <BitsShortName>E</BitsShortName>
+                    </Bits>
+                </Fixed>
+            </Compound>
+        </DataItemFormat>
+    </DataItem>
+    <UAP>
+        <UAPItem bit="1" frn="1">010</UAPItem>
+    </UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_TRUE(parseTestFile());
+
+    Category* cat = definition->getCategory(48);
+    ASSERT_NE(cat, nullptr);
+
+    DataItemDescription* item = cat->getDataItemDescription("010");
+    ASSERT_NE(item, nullptr);
+    EXPECT_TRUE(item->m_pFormat->isCompound());
+    EXPECT_GT(item->m_pFormat->m_lSubItems.size(), 0);
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-035
+ * Requirement: REQ-HLR-XML-001
+ * Description: Verify parser handles Explicit with Compound
+ */
+TEST_F(XMLParserTest, ParseExplicitWithCompound) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test Category" ver="1.0">
+    <DataItem id="010" rule="optional">
+        <DataItemName>Explicit Compound</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Explicit">
+            <Explicit>
+                <Compound>
+                    <Variable>
+                        <Fixed length="1">
+                            <Bits bit="8">
+                                <BitsShortName>A</BitsShortName>
+                            </Bits>
+                            <Bits bit="1" fx="1">
+                                <BitsShortName>FX</BitsShortName>
+                            </Bits>
+                        </Fixed>
+                    </Variable>
+                    <Fixed length="2">
+                        <Bits from="16" to="1">
+                            <BitsShortName>DATA</BitsShortName>
+                        </Bits>
+                    </Fixed>
+                </Compound>
+            </Explicit>
+        </DataItemFormat>
+    </DataItem>
+    <UAP>
+        <UAPItem bit="1" frn="1">010</UAPItem>
+    </UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_TRUE(parseTestFile());
+
+    Category* cat = definition->getCategory(48);
+    ASSERT_NE(cat, nullptr);
+
+    DataItemDescription* item = cat->getDataItemDescription("010");
+    ASSERT_NE(item, nullptr);
+    EXPECT_TRUE(item->m_pFormat->isExplicit());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-036
+ * Requirement: REQ-HLR-XML-001
+ * Description: Verify parser handles HEX encoding
+ */
+TEST_F(XMLParserTest, ParseHexEncoding) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test Category" ver="1.0">
+    <DataItem id="010" rule="mandatory">
+        <DataItemName>Hex Item</DataItemName>
+        <DataItemDefinition>Test hex encoding</DataItemDefinition>
+        <DataItemFormat desc="Fixed">
+            <Fixed length="2">
+                <Bits from="16" to="1" encode="hex">
+                    <BitsShortName>HEX</BitsShortName>
+                    <BitsName>Hex Value</BitsName>
+                </Bits>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP>
+        <UAPItem bit="1" frn="1">010</UAPItem>
+    </UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_TRUE(parseTestFile());
+
+    Category* cat = definition->getCategory(48);
+    ASSERT_NE(cat, nullptr);
+
+    DataItemDescription* item = cat->getDataItemDescription("010");
+    ASSERT_NE(item, nullptr);
+    ASSERT_TRUE(item->m_pFormat->isFixed());
+    EXPECT_GT(item->m_pFormat->m_lSubItems.size(), 0);
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-037
+ * Requirement: REQ-HLR-XML-001
+ * Description: Verify parser handles UAP with len attribute
+ */
+TEST_F(XMLParserTest, ParseUAPItemWithLen) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test Category" ver="1.0">
+    <DataItem id="010" rule="mandatory">
+        <DataItemName>Item 010</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Fixed">
+            <Fixed length="2">
+                <Bits from="16" to="1">
+                    <BitsShortName>DATA</BitsShortName>
+                </Bits>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP>
+        <UAPItem bit="1" frn="1" len="2">010</UAPItem>
+    </UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_TRUE(parseTestFile());
+
+    Category* cat = definition->getCategory(48);
+    ASSERT_NE(cat, nullptr);
+    EXPECT_GT(cat->m_lUAPs.size(), 0);
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-038
+ * Requirement: REQ-HLR-XML-001
+ * Description: Verify parser handles Repetitive within Explicit
+ */
+TEST_F(XMLParserTest, ParseRepetitiveInExplicit) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test Category" ver="1.0">
+    <DataItem id="010" rule="optional">
+        <DataItemName>Explicit Repetitive</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Explicit">
+            <Explicit>
+                <Repetitive>
+                    <Fixed length="3">
+                        <Bits from="24" to="1">
+                            <BitsShortName>DATA</BitsShortName>
+                        </Bits>
+                    </Fixed>
+                </Repetitive>
+            </Explicit>
+        </DataItemFormat>
+    </DataItem>
+    <UAP>
+        <UAPItem bit="1" frn="1">010</UAPItem>
+    </UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_TRUE(parseTestFile());
+
+    Category* cat = definition->getCategory(48);
+    ASSERT_NE(cat, nullptr);
+
+    DataItemDescription* item = cat->getDataItemDescription("010");
+    ASSERT_NE(item, nullptr);
+    EXPECT_TRUE(item->m_pFormat->isExplicit());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-039
+ * Requirement: REQ-HLR-XML-001
+ * Description: Verify parser handles Variable within Explicit
+ */
+TEST_F(XMLParserTest, ParseVariableInExplicit) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test Category" ver="1.0">
+    <DataItem id="010" rule="optional">
+        <DataItemName>Explicit Variable</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Explicit">
+            <Explicit>
+                <Variable>
+                    <Fixed length="1">
+                        <Bits from="8" to="2">
+                            <BitsShortName>DATA</BitsShortName>
+                        </Bits>
+                        <Bits bit="1" fx="1">
+                            <BitsShortName>FX</BitsShortName>
+                        </Bits>
+                    </Fixed>
+                    <Fixed length="1">
+                        <Bits from="8" to="1">
+                            <BitsShortName>EXT</BitsShortName>
+                        </Bits>
+                    </Fixed>
+                </Variable>
+            </Explicit>
+        </DataItemFormat>
+    </DataItem>
+    <UAP>
+        <UAPItem bit="1" frn="1">010</UAPItem>
+    </UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_TRUE(parseTestFile());
+
+    Category* cat = definition->getCategory(48);
+    ASSERT_NE(cat, nullptr);
+
+    DataItemDescription* item = cat->getDataItemDescription("010");
+    ASSERT_NE(item, nullptr);
+    EXPECT_TRUE(item->m_pFormat->isExplicit());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-040
+ * Requirement: REQ-HLR-XML-001
+ * Description: Verify parser handles all encoding types together
+ */
+TEST_F(XMLParserTest, ParseAllEncodings) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test Category" ver="1.0">
+    <DataItem id="010" rule="mandatory">
+        <DataItemName>All Encodings</DataItemName>
+        <DataItemDefinition>Test all encoding types</DataItemDefinition>
+        <DataItemFormat desc="Fixed">
+            <Fixed length="7">
+                <Bits from="56" to="49" encode="unsigned">
+                    <BitsShortName>U</BitsShortName>
+                </Bits>
+                <Bits from="48" to="41" encode="signed">
+                    <BitsShortName>S</BitsShortName>
+                </Bits>
+                <Bits from="40" to="33" encode="6bitschar">
+                    <BitsShortName>C6</BitsShortName>
+                </Bits>
+                <Bits from="32" to="25" encode="octal">
+                    <BitsShortName>OCT</BitsShortName>
+                </Bits>
+                <Bits from="24" to="17" encode="ascii">
+                    <BitsShortName>ASC</BitsShortName>
+                </Bits>
+                <Bits from="16" to="9" encode="hex">
+                    <BitsShortName>HEX</BitsShortName>
+                </Bits>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP>
+        <UAPItem bit="1" frn="1">010</UAPItem>
+    </UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_TRUE(parseTestFile());
+
+    Category* cat = definition->getCategory(48);
+    ASSERT_NE(cat, nullptr);
+
+    DataItemDescription* item = cat->getDataItemDescription("010");
+    ASSERT_NE(item, nullptr);
+    EXPECT_EQ(item->m_pFormat->m_lSubItems.size(), 6);
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-041
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles wrong encode attribute
+ */
+TEST_F(XMLParserTest, WrongEncodeAttributeError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test Category" ver="1.0">
+    <DataItem id="010" rule="mandatory">
+        <DataItemName>Item 010</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Fixed">
+            <Fixed length="1">
+                <Bits from="8" to="1" encode="invalid">
+                    <BitsShortName>DATA</BitsShortName>
+                </Bits>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP></UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-042
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles unknown Category attribute
+ */
+TEST_F(XMLParserTest, UnknownCategoryAttributeError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test" ver="1.0" invalid="xyz">
+    <UAP></UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-043
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles unknown DataItem attribute
+ */
+TEST_F(XMLParserTest, UnknownDataItemAttributeError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test" ver="1.0">
+    <DataItem id="010" rule="mandatory" invalid="xyz">
+        <DataItemName>Item</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Fixed">
+            <Fixed length="1">
+                <Bits from="8" to="1">
+                    <BitsShortName>DATA</BitsShortName>
+                </Bits>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP></UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-044
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles unknown DataItemFormat attribute
+ */
+TEST_F(XMLParserTest, UnknownFormatAttributeError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test" ver="1.0">
+    <DataItem id="010" rule="mandatory">
+        <DataItemName>Item</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Fixed" invalid="xyz">
+            <Fixed length="1">
+                <Bits from="8" to="1">
+                    <BitsShortName>DATA</BitsShortName>
+                </Bits>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP></UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-045
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles unknown Fixed attribute
+ */
+TEST_F(XMLParserTest, UnknownFixedAttributeError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test" ver="1.0">
+    <DataItem id="010" rule="mandatory">
+        <DataItemName>Item</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Fixed">
+            <Fixed length="1" invalid="xyz">
+                <Bits from="8" to="1">
+                    <BitsShortName>DATA</BitsShortName>
+                </Bits>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP></UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-046
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles unknown Bits attribute
+ */
+TEST_F(XMLParserTest, UnknownBitsAttributeError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test" ver="1.0">
+    <DataItem id="010" rule="mandatory">
+        <DataItemName>Item</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Fixed">
+            <Fixed length="1">
+                <Bits from="8" to="1" invalid="xyz">
+                    <BitsShortName>DATA</BitsShortName>
+                </Bits>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP></UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-047
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles unknown UAP attribute
+ */
+TEST_F(XMLParserTest, UnknownUAPAttributeError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test" ver="1.0">
+    <DataItem id="010" rule="mandatory">
+        <DataItemName>Item</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Fixed">
+            <Fixed length="1">
+                <Bits from="8" to="1">
+                    <BitsShortName>DATA</BitsShortName>
+                </Bits>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP invalid="xyz">
+        <UAPItem bit="1" frn="1">010</UAPItem>
+    </UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-048
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles unknown UAPItem attribute
+ */
+TEST_F(XMLParserTest, UnknownUAPItemAttributeError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test" ver="1.0">
+    <DataItem id="010" rule="mandatory">
+        <DataItemName>Item</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Fixed">
+            <Fixed length="1">
+                <Bits from="8" to="1">
+                    <BitsShortName>DATA</BitsShortName>
+                </Bits>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP>
+        <UAPItem bit="1" frn="1" invalid="xyz">010</UAPItem>
+    </UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-049
+ * Requirement: REQ-HLR-XML-001
+ * Description: Verify parser handles Bits with BitsName
+ */
+TEST_F(XMLParserTest, ParseBitsName) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test Category" ver="1.0">
+    <DataItem id="010" rule="mandatory">
+        <DataItemName>Item with BitsName</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Fixed">
+            <Fixed length="2">
+                <Bits from="16" to="1">
+                    <BitsShortName>SAC</BitsShortName>
+                    <BitsName>System Area Code</BitsName>
+                </Bits>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP>
+        <UAPItem bit="1" frn="1">010</UAPItem>
+    </UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_TRUE(parseTestFile());
+
+    Category* cat = definition->getCategory(48);
+    ASSERT_NE(cat, nullptr);
+
+    DataItemDescription* item = cat->getDataItemDescription("010");
+    ASSERT_NE(item, nullptr);
+    EXPECT_GT(item->m_pFormat->m_lSubItems.size(), 0);
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-050
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles negative bit value
+ */
+TEST_F(XMLParserTest, NegativeBitValueError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test" ver="1.0">
+    <DataItem id="010" rule="mandatory">
+        <DataItemName>Item</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Fixed">
+            <Fixed length="1">
+                <Bits from="-1" to="1">
+                    <BitsShortName>DATA</BitsShortName>
+                </Bits>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP></UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-051
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles negative Fixed length
+ */
+TEST_F(XMLParserTest, NegativeFixedLengthError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test" ver="1.0">
+    <DataItem id="010" rule="mandatory">
+        <DataItemName>Item</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Fixed">
+            <Fixed length="-1">
+                <Bits from="8" to="1">
+                    <BitsShortName>DATA</BitsShortName>
+                </Bits>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP></UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-052
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles Format without DataItem
+ */
+TEST_F(XMLParserTest, FormatWithoutDataItemError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test" ver="1.0">
+    <DataItemFormat desc="Orphan">
+        <Fixed length="1">
+            <Bits from="8" to="1">
+                <BitsShortName>DATA</BitsShortName>
+            </Bits>
+        </Fixed>
+    </DataItemFormat>
+    <UAP></UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-053
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles UAPItem without UAP
+ */
+TEST_F(XMLParserTest, UAPItemWithoutUAPError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test" ver="1.0">
+    <UAPItem bit="1" frn="1">010</UAPItem>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-054
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles UAP without Category
+ */
+TEST_F(XMLParserTest, UAPWithoutCategoryError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<UAP>
+    <UAPItem bit="1" frn="1">010</UAPItem>
+</UAP>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-055
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles BitsValue without Bits
+ */
+TEST_F(XMLParserTest, BitsValueWithoutBitsError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test" ver="1.0">
+    <DataItem id="010" rule="mandatory">
+        <DataItemName>Item</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Fixed">
+            <Fixed length="1">
+                <BitsValue val="0">Invalid</BitsValue>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP></UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-056
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles BitsUnit without Bits
+ */
+TEST_F(XMLParserTest, BitsUnitWithoutBitsError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test" ver="1.0">
+    <DataItem id="010" rule="mandatory">
+        <DataItemName>Item</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Fixed">
+            <Fixed length="1">
+                <BitsUnit scale="1.0">FL</BitsUnit>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP></UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}
+
+/**
+ * Test Case: TC-CPP-XMLP-057
+ * Requirement: REQ-HLR-XML-003
+ * Description: Verify parser handles BitsConst without Bits
+ */
+TEST_F(XMLParserTest, BitsConstWithoutBitsError) {
+    const char* xml = R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Category SYSTEM "asterix.dtd">
+<Category id="48" name="Test" ver="1.0">
+    <DataItem id="010" rule="mandatory">
+        <DataItemName>Item</DataItemName>
+        <DataItemDefinition>Test</DataItemDefinition>
+        <DataItemFormat desc="Fixed">
+            <Fixed length="1">
+                <BitsConst>0</BitsConst>
+            </Fixed>
+        </DataItemFormat>
+    </DataItem>
+    <UAP></UAP>
+</Category>)";
+
+    createTestXML(xml);
+    EXPECT_FALSE(parseTestFile());
+}

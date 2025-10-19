@@ -736,7 +736,7 @@ void XMLParser::ElementHandlerEnd(void *data, const char *el) {
  */
 XMLParser::XMLParser()
         : m_bErrorDetectedStopParsing(false), m_pDef(NULL), m_pCategory(NULL), m_pDataItem(NULL), m_pFormat(NULL),
-          m_pUAPItem(NULL), m_pstrCData(NULL), m_pintCData(NULL), m_pFileName(NULL) {
+          m_pBitsValue(NULL), m_pUAPItem(NULL), m_pUAP(NULL), m_pstrCData(NULL), m_pintCData(NULL), m_pFileName(NULL) {
     m_Parser = XML_ParserCreate(NULL);
     if (!m_Parser) {
 #ifdef PYTHON_WRAPPER
