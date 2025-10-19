@@ -5,7 +5,7 @@
 [![Coverage](https://img.shields.io/badge/coverage-92.2%25-brightgreen)](https://github.com/montge/asterix)
 [![PyPI](https://img.shields.io/pypi/v/asterix_decoder.svg)](https://pypi.org/project/asterix_decoder/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/asterix_decoder.svg)](https://pypi.org/project/asterix_decoder/)
-[![License](https://img.shields.io/badge/license-GPL--2.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 
 > Professional ASTERIX protocol decoder for Air Traffic Management surveillance data
 
@@ -277,9 +277,9 @@ Contributions are welcome! Please see our contributing guidelines (coming soon).
 
 ## License
 
-This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License version 2 as published by the Free Software Foundation.
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program comes with ABSOLUTELY NO WARRANTY. See [LICENSE](LICENSE) for details.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See [LICENSE](LICENSE) for details.
 
 ## Credits
 
