@@ -85,9 +85,13 @@ Have an idea for a new feature? Open an issue describing:
 
 **System Requirements:**
 - Linux, macOS, or Windows (with Cygwin)
-- Python 3.7 or higher
-- GCC/G++ compiler
-- CMake 3.10 or higher
+- Python 3.8 or higher
+- **C++17 compatible compiler**:
+  - GCC 7.0+ (recommended: GCC 9+)
+  - Clang 5.0+ (recommended: Clang 9+)
+  - MSVC 2017 15.3+ (Visual Studio 2017+)
+  - AppleClang 9.1+ (Xcode 9.3+)
+- CMake 3.12 or higher
 - Git
 
 **Required Libraries:**
@@ -228,6 +232,19 @@ pylint asterix/*.py
 
 ### C++ Code Style
 
+**Language Standard:** C++17
+
+The project requires C++17 and developers can use modern C++17 features including:
+- **Structured bindings**: `auto [key, value] = map.insert(...)`
+- **std::optional**: For optional return values and nullable types
+- **std::string_view**: For efficient string parameter passing
+- **if constexpr**: For compile-time conditionals
+- **Inline variables**: For header-only constants
+- **Nested namespaces**: `namespace A::B::C { }`
+- **std::variant**: For type-safe unions
+- **std::any**: For type-erased values
+- **Fold expressions**: For variadic template expansion
+
 **General Guidelines:**
 - Follow the existing code style in the repository
 - Use consistent indentation (4 spaces, no tabs)
@@ -235,6 +252,7 @@ pylint asterix/*.py
 - Function names use camelCase: `parseDataBlock`, `getText`
 - Member variables use m_ prefix: `m_pData`, `m_nLength`
 - Pointer variables use p prefix: `pDesc`, `m_pDescription`
+- Prefer C++17 features over older alternatives when appropriate
 
 **Header Files:**
 - Include guards for all header files
@@ -279,9 +297,18 @@ DataItem* parseDataItem(const unsigned char* pData, size_t nLength, int category
 
 **Memory Management:**
 - Use RAII principles
+- Prefer smart pointers (`std::unique_ptr`, `std::shared_ptr`) over raw pointers
+- Use `std::optional` instead of nullable pointers when appropriate
 - Avoid manual memory management when possible
-- Delete allocated memory in destructors
+- Delete allocated memory in destructors (for legacy code)
 - Check for null pointers before use
+
+**C++17 Best Practices:**
+- Use `std::string_view` for read-only string parameters instead of `const std::string&`
+- Use structured bindings for clearer tuple/pair unpacking
+- Prefer `if constexpr` over SFINAE for template metaprogramming
+- Use inline variables for constants in headers
+- Leverage `[[nodiscard]]` attribute for important return values
 
 ## Testing Requirements
 

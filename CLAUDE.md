@@ -10,6 +10,15 @@ ASTERIX (All Purpose STructured EUROCONTROL SuRveillance Information EXchange) i
 
 ### C++ Executable
 
+**Requirements:**
+- **C++17 compatible compiler**:
+  - GCC 7.0+ (recommended: GCC 9+ for better C++17 support)
+  - Clang 5.0+ (recommended: Clang 9+ for better C++17 support)
+  - MSVC 2017 15.3+ (Visual Studio 2017 version 15.3 or later)
+  - AppleClang 9.1+ (Xcode 9.3 or later)
+- libexpat-devel (for XML parsing)
+- CMake 3.12+ or GNU Make
+
 **Using Make (Primary method):**
 ```bash
 # Build from src/ directory
@@ -30,7 +39,7 @@ make
 
 The executable will be created at `install/asterix` (not asterix.exe despite documentation).
 
-**Dependencies:** libexpat-devel (for XML parsing)
+**C++ Standard:** The project uses C++17 (set in CMakeLists.txt via `CMAKE_CXX_STANDARD 17`)
 
 ### Python Module
 
@@ -152,6 +161,17 @@ Then copy to `asterix/config/` and `install/config/`.
 
 ### C++ Code Organization
 
+**Language Standard:** C++17
+
+The codebase uses modern C++17 features including:
+- Structured bindings
+- `std::optional` for optional values
+- `std::string_view` for efficient string handling
+- `if constexpr` for compile-time conditionals
+- Inline variables
+- Nested namespaces
+
+**Code Structure:**
 - Header/implementation pairs in `src/asterix/`
 - Pure virtual base classes for extensibility (`DataItemFormat`, `BaseDevice`, `BaseFormat`)
 - Factory patterns in engine layer (`DeviceFactory`, `ChannelFactory`)

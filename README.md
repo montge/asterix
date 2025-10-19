@@ -72,6 +72,11 @@ python setup.py install
 ```
 
 **Dependencies:**
+- **C++17 compatible compiler**:
+  - GCC 7.0+ (recommended: GCC 9+)
+  - Clang 5.0+ (recommended: Clang 9+)
+  - MSVC 2017 15.3+ / Visual Studio 2017+
+  - AppleClang 9.1+ / Xcode 9.3+
 - Linux/macOS: `libexpat-devel` (XML parsing)
 - Windows: See [BUILD_WINDOWS.md](BUILD_WINDOWS.md)
 
@@ -209,6 +214,11 @@ cd install/test
 
 ### Build System
 
+**Requirements:**
+- C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017+)
+- CMake 3.12+ or GNU Make
+- libexpat library for XML parsing
+
 **Make (Primary):**
 ```bash
 cd src
@@ -224,6 +234,8 @@ make test         # Run test suite
 cmake .
 make
 ```
+
+**Note:** The project uses C++17 features and requires a modern compiler.
 
 ### CI/CD Pipeline
 
