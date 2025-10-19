@@ -1,0 +1,3 @@
+usr/include/asterix/*
+usr/lib/*/libasterix.so
+usr/lib/*/libasterix.a

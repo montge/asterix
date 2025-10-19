@@ -1,0 +1,18 @@
+asterix (2.8.9-1) unstable; urgency=medium
+
+  * New upstream release 2.8.9
+  * Achieve 92.2% test coverage (DO-278A AL-3 compliance progress)
+  * Fix critical bug: Uninitialized pointers in XMLParser
+  * Add 560+ comprehensive unit tests with Google Test
+  * Update GitHub Actions workflows to latest versions
+  * Improve multi-platform packaging support
+
+ -- ASTERIX Maintainers <noreply@github.com>  Sat, 19 Oct 2024 10:00:00 +0000
+
+asterix (2.8.8-1) unstable; urgency=medium
+
+  * Initial Debian package release
+  * Support for Debian 11 (Bullseye), Debian 12 (Bookworm)
+  * Support for Ubuntu 20.04 LTS, 22.04 LTS, 24.04 LTS
+
+ -- ASTERIX Maintainers <noreply@github.com>  Fri, 18 Oct 2024 00:00:00 +0000

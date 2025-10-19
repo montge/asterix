@@ -1,0 +1,50 @@
+Source: asterix
+Section: libs
+Priority: optional
+Maintainer: ASTERIX Maintainers <noreply@github.com>
+Build-Depends: debhelper-compat (= 13),
+               cmake (>= 3.12),
+               libexpat1-dev (>= 2.1),
+               pkg-config
+Standards-Version: 4.6.0
+Homepage: https://github.com/montge/asterix
+Vcs-Git: https://github.com/montge/asterix.git
+Vcs-Browser: https://github.com/montge/asterix
+Rules-Requires-Root: no
+
+Package: libasterix2
+Architecture: any
+Multi-Arch: same
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: ASTERIX protocol decoder library
+ ASTERIX (All Purpose STructured EUROCONTROL Surveillance Information
+ EXchange) is a data format used in Air Traffic Management (ATM) for
+ exchanging surveillance and other data between ATM systems.
+ .
+ This package contains the shared library.
+
+Package: libasterix-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends: libasterix2 (= ${binary:Version}),
+         libexpat1-dev,
+         ${misc:Depends}
+Description: ASTERIX protocol decoder library - development files
+ ASTERIX (All Purpose STructured EUROCONTROL Surveillance Information
+ EXchange) is a data format used in Air Traffic Management (ATM) for
+ exchanging surveillance and other data between ATM systems.
+ .
+ This package contains the development files (headers, static library).
+
+Package: asterix-tools
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: ASTERIX protocol decoder - command-line tools
+ ASTERIX (All Purpose STructured EUROCONTROL Surveillance Information
+ EXchange) is a data format used in Air Traffic Management (ATM) for
+ exchanging surveillance and other data between ATM systems.
+ .
+ This package contains command-line tools for parsing ASTERIX data from
+ files, network streams (multicast), and PCAP captures. Supports output
+ in text, JSON, and XML formats.

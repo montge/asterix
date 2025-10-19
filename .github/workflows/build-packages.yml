@@ -1,0 +1,266 @@
+name: Build Release Packages
+
+on:
+  release:
+    types: [created, published]
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g., 2.8.9)'
+        required: false
+        default: '2.8.9'
+
+env:
+  PACKAGE_VERSION: ${{ github.event.inputs.version || '2.8.9' }}
+
+jobs:
+  # Build Debian/Ubuntu packages
+  build-deb:
+    name: Build DEB (${{ matrix.distro }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - distro: ubuntu:20.04
+            name: ubuntu-20.04-focal
+          - distro: ubuntu:22.04
+            name: ubuntu-22.04-jammy
+          - distro: ubuntu:24.04
+            name: ubuntu-24.04-noble
+          - distro: debian:11
+            name: debian-11-bullseye
+          - distro: debian:12
+            name: debian-12-bookworm
+
+    container:
+      image: ${{ matrix.distro }}
+
+    steps:
+    - name: Install build dependencies
+      run: |
+        apt-get update
+        DEBIAN_FRONTEND=noninteractive apt-get install -y \
+          build-essential \
+          cmake \
+          debhelper \
+          devscripts \
+          libexpat1-dev \
+          pkg-config \
+          git \
+          ca-certificates
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Build Debian package
+      run: |
+        # Build package
+        dpkg-buildpackage -us -uc -b
+
+    - name: List built packages
+      run: |
+        ls -lh ../*.deb
+
+    - name: Upload DEB packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: deb-packages-${{ matrix.name }}
+        path: ../*.deb
+        retention-days: 30
+
+  # Build RPM packages
+  build-rpm:
+    name: Build RPM (${{ matrix.distro }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - distro: rockylinux:8
+            name: rockylinux-8
+          - distro: rockylinux:9
+            name: rockylinux-9
+          - distro: fedora:38
+            name: fedora-38
+          - distro: fedora:39
+            name: fedora-39
+          - distro: fedora:40
+            name: fedora-40
+
+    container:
+      image: ${{ matrix.distro }}
+
+    steps:
+    - name: Install build dependencies
+      run: |
+        if command -v dnf &> /dev/null; then
+          dnf install -y \
+            rpm-build \
+            rpmdevtools \
+            cmake \
+            gcc-c++ \
+            expat-devel \
+            make \
+            git
+        else
+          yum install -y \
+            rpm-build \
+            rpmdevtools \
+            cmake \
+            gcc-c++ \
+            expat-devel \
+            make \
+            git
+        fi
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup RPM build environment
+      run: |
+        rpmdev-setuptree
+
+    - name: Create source tarball
+      run: |
+        mkdir -p /tmp/asterix-${PACKAGE_VERSION}
+        cp -r . /tmp/asterix-${PACKAGE_VERSION}/
+        cd /tmp
+        tar czf ~/rpmbuild/SOURCES/asterix-${PACKAGE_VERSION}.tar.gz asterix-${PACKAGE_VERSION}
+
+    - name: Build RPM package
+      run: |
+        rpmbuild -ba asterix.spec
+
+    - name: List built packages
+      run: |
+        ls -lh ~/rpmbuild/RPMS/*/*.rpm
+
+    - name: Upload RPM packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: rpm-packages-${{ matrix.name }}
+        path: ~/rpmbuild/RPMS/*/*.rpm
+        retention-days: 30
+
+  # Build source tarballs and generic packages
+  build-source:
+    name: Build Source Packages
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake libexpat1-dev
+
+    - name: Configure CMake
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_STATIC_LIBS=ON \
+          -DBUILD_EXECUTABLE=ON
+
+    - name: Build source packages
+      run: |
+        cd build
+        make package_source
+
+    - name: Build binary packages
+      run: |
+        cd build
+        make package
+
+    - name: List packages
+      run: |
+        ls -lh build/*.tar.gz build/*.zip
+
+    - name: Upload source packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: source-packages
+        path: |
+          build/*.tar.gz
+          build/*.zip
+        retention-days: 90
+
+  # Create GitHub Release with all packages
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [build-deb, build-rpm, build-source]
+    if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/')
+
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts/
+
+    - name: Display structure of downloaded files
+      run: ls -R artifacts/
+
+    - name: Upload packages to release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          artifacts/**/*.deb
+          artifacts/**/*.rpm
+          artifacts/**/*.tar.gz
+          artifacts/**/*.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Test installation of packages
+  test-deb-install:
+    name: Test DEB Installation
+    runs-on: ubuntu-22.04
+    needs: [build-deb]
+
+    steps:
+    - name: Download DEB packages
+      uses: actions/download-artifact@v4
+      with:
+        name: deb-packages-ubuntu-22.04-jammy
+        path: packages/
+
+    - name: Install package
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ./packages/*.deb
+
+    - name: Test installation
+      run: |
+        asterix --version
+        asterix --help
+        test -f /usr/bin/asterix
+        test -f /usr/lib/*/libasterix.so.*
+
+  test-rpm-install:
+    name: Test RPM Installation
+    runs-on: ubuntu-latest
+    needs: [build-rpm]
+    container:
+      image: rockylinux:9
+
+    steps:
+    - name: Download RPM packages
+      uses: actions/download-artifact@v4
+      with:
+        name: rpm-packages-rockylinux-9
+        path: packages/
+
+    - name: Install package
+      run: |
+        dnf install -y packages/*.rpm
+
+    - name: Test installation
+      run: |
+        asterix --version
+        asterix --help
+        test -f /usr/bin/asterix
+        test -f /usr/lib64/libasterix.so.*
