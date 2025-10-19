@@ -64,6 +64,10 @@ add_executable(test_dataitemformatcompound
     test_dataitemformatcompound.cpp
 )
 
+add_executable(test_asterixdefinition
+    test_asterixdefinition.cpp
+)
+
 # Integration tests
 add_executable(test_integration_cat048
     test_integration_cat048.cpp
@@ -97,6 +101,7 @@ if(TARGET asterix_static)
     target_link_libraries(test_dataitemformatvariable GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_dataitemformatbds GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_dataitemformatcompound GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_asterixdefinition GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_integration_cat048 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_integration_cat062 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_integration_cat065 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
@@ -118,6 +123,7 @@ gtest_discover_tests(test_dataitemformatrepetitive)
 gtest_discover_tests(test_dataitemformatvariable)
 gtest_discover_tests(test_dataitemformatbds)
 gtest_discover_tests(test_dataitemformatcompound)
+gtest_discover_tests(test_asterixdefinition)
 gtest_discover_tests(test_integration_cat048)
 gtest_discover_tests(test_integration_cat062)
 gtest_discover_tests(test_integration_cat065)
@@ -136,6 +142,7 @@ if(ENABLE_COVERAGE)
     target_compile_options(test_dataitemformatvariable PRIVATE --coverage)
     target_compile_options(test_dataitemformatbds PRIVATE --coverage)
     target_compile_options(test_dataitemformatcompound PRIVATE --coverage)
+    target_compile_options(test_asterixdefinition PRIVATE --coverage)
     target_compile_options(test_integration_cat048 PRIVATE --coverage)
     target_compile_options(test_integration_cat062 PRIVATE --coverage)
     target_compile_options(test_integration_cat065 PRIVATE --coverage)
@@ -152,6 +159,7 @@ if(ENABLE_COVERAGE)
     target_link_options(test_dataitemformatvariable PRIVATE --coverage)
     target_link_options(test_dataitemformatbds PRIVATE --coverage)
     target_link_options(test_dataitemformatcompound PRIVATE --coverage)
+    target_link_options(test_asterixdefinition PRIVATE --coverage)
     target_link_options(test_integration_cat048 PRIVATE --coverage)
     target_link_options(test_integration_cat062 PRIVATE --coverage)
     target_link_options(test_integration_cat065 PRIVATE --coverage)
