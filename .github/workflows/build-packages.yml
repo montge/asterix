@@ -200,7 +200,7 @@ jobs:
 
     steps:
     - name: Download all artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         path: artifacts/
 
@@ -226,7 +226,7 @@ jobs:
 
     steps:
     - name: Download DEB packages
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: deb-packages-ubuntu-22.04-jammy
         path: packages/
@@ -252,7 +252,7 @@ jobs:
 
     steps:
     - name: Download RPM packages
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: rpm-packages-rockylinux-9
         path: packages/
