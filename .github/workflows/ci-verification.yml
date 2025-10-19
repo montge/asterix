@@ -144,12 +144,13 @@ jobs:
         make clean
         make
         make install
+        make debug
+        make debug install
 
     - name: Run tests
       run: |
         cd install/test
         ./test.sh
-      continue-on-error: true  # Known legacy memory leaks in valgrind tests
 
     - name: Generate coverage report (placeholder)
       run: |
@@ -253,6 +254,8 @@ jobs:
         make clean
         make
         make install
+        make debug
+        make debug install
 
     - name: Build Python module
       run: |
@@ -263,7 +266,6 @@ jobs:
       run: |
         cd install/test
         ./test.sh
-      continue-on-error: true  # Known legacy memory leaks in valgrind tests
 
     - name: Test Python examples
       run: |
