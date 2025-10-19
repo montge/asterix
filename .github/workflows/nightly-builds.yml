@@ -283,7 +283,7 @@ jobs:
       continue-on-error: true
 
     - name: Create nightly pre-release
-      uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191  # v2.0.8
+      uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090  # v2.4.1
       with:
         tag_name: nightly
         name: "Nightly Build ($(date +%Y-%m-%d))"
