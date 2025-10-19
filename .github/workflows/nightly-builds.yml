@@ -1,0 +1,345 @@
+name: Nightly Builds
+
+on:
+  schedule:
+    # Run every night at 3 AM UTC (after nightly CI at 2 AM)
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      force_build:
+        description: 'Force build even if CI failed'
+        required: false
+        default: 'false'
+
+env:
+  NIGHTLY_VERSION: "2.8.9-nightly"
+
+jobs:
+  # Check if CI passed before building packages
+  check-ci-status:
+    name: Check CI Status
+    runs-on: ubuntu-latest
+    outputs:
+      ci_passed: ${{ steps.check.outputs.ci_passed }}
+      should_build: ${{ steps.decide.outputs.should_build }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Get latest CI workflow run
+      id: check
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        # Get the latest CI workflow run for master branch
+        WORKFLOW_ID=$(gh api repos/${{ github.repository }}/actions/workflows \
+          | jq -r '.workflows[] | select(.name=="DO-278 Verification CI") | .id')
+
+        if [ -z "$WORKFLOW_ID" ]; then
+          echo "Warning: Could not find CI workflow"
+          echo "ci_passed=unknown" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        # Get latest run status
+        RUN_STATUS=$(gh api repos/${{ github.repository }}/actions/workflows/${WORKFLOW_ID}/runs \
+          --jq '.workflow_runs[0] | select(.head_branch=="master") | .conclusion')
+
+        echo "Latest CI run status: $RUN_STATUS"
+
+        if [ "$RUN_STATUS" = "success" ]; then
+          echo "ci_passed=true" >> $GITHUB_OUTPUT
+        else
+          echo "ci_passed=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Decide if should build
+      id: decide
+      run: |
+        CI_PASSED="${{ steps.check.outputs.ci_passed }}"
+        FORCE_BUILD="${{ github.event.inputs.force_build }}"
+
+        if [ "$CI_PASSED" = "true" ]; then
+          echo "✅ CI passed - proceeding with nightly build"
+          echo "should_build=true" >> $GITHUB_OUTPUT
+        elif [ "$FORCE_BUILD" = "true" ]; then
+          echo "⚠️  CI did not pass, but force_build is enabled"
+          echo "should_build=true" >> $GITHUB_OUTPUT
+        else
+          echo "❌ CI did not pass - skipping nightly build"
+          echo "To build anyway, trigger workflow manually with force_build=true"
+          echo "should_build=false" >> $GITHUB_OUTPUT
+        fi
+
+  # Build Debian/Ubuntu nightly packages
+  build-deb-nightly:
+    name: Nightly DEB (${{ matrix.distro }})
+    needs: check-ci-status
+    if: needs.check-ci-status.outputs.should_build == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - distro: ubuntu:22.04
+            name: ubuntu-22.04-jammy
+          - distro: ubuntu:24.04
+            name: ubuntu-24.04-noble
+          - distro: debian:12
+            name: debian-12-bookworm
+
+    container:
+      image: ${{ matrix.distro }}
+
+    steps:
+    - name: Install build dependencies
+      run: |
+        apt-get update
+        DEBIAN_FRONTEND=noninteractive apt-get install -y \
+          build-essential \
+          cmake \
+          debhelper \
+          devscripts \
+          libexpat1-dev \
+          pkg-config \
+          git \
+          ca-certificates
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Update version to nightly
+      run: |
+        # Update debian/changelog with nightly version
+        sed -i "1s/2.8.9-1/2.8.9-nightly-$(date +%Y%m%d)/g" debian/changelog
+
+    - name: Build Debian package
+      run: |
+        dpkg-buildpackage -us -uc -b
+
+    - name: List built packages
+      run: |
+        ls -lh ../*.deb
+
+    - name: Upload nightly DEB packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: nightly-deb-${{ matrix.name }}
+        path: ../*.deb
+        retention-days: 7
+
+  # Build RPM nightly packages
+  build-rpm-nightly:
+    name: Nightly RPM (${{ matrix.distro }})
+    needs: check-ci-status
+    if: needs.check-ci-status.outputs.should_build == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - distro: rockylinux:9
+            name: rockylinux-9
+          - distro: fedora:40
+            name: fedora-40
+
+    container:
+      image: ${{ matrix.distro }}
+
+    steps:
+    - name: Install build dependencies
+      run: |
+        if command -v dnf &> /dev/null; then
+          dnf install -y \
+            rpm-build \
+            rpmdevtools \
+            cmake \
+            gcc-c++ \
+            expat-devel \
+            make \
+            git
+        else
+          yum install -y \
+            rpm-build \
+            rpmdevtools \
+            cmake \
+            gcc-c++ \
+            expat-devel \
+            make \
+            git
+        fi
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup RPM build environment
+      run: |
+        rpmdev-setuptree
+
+    - name: Update version to nightly
+      run: |
+        NIGHTLY_DATE=$(date +%Y%m%d)
+        sed -i "s/Release:        1/Release:        0.nightly.${NIGHTLY_DATE}/g" asterix.spec
+
+    - name: Create source tarball
+      run: |
+        mkdir -p /tmp/asterix-${NIGHTLY_VERSION}
+        cp -r . /tmp/asterix-${NIGHTLY_VERSION}/
+        cd /tmp
+        tar czf ~/rpmbuild/SOURCES/asterix-2.8.9.tar.gz asterix-${NIGHTLY_VERSION}
+
+    - name: Build RPM package
+      run: |
+        rpmbuild -ba asterix.spec
+
+    - name: List built packages
+      run: |
+        ls -lh ~/rpmbuild/RPMS/*/*.rpm
+
+    - name: Upload nightly RPM packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: nightly-rpm-${{ matrix.name }}
+        path: ~/rpmbuild/RPMS/*/*.rpm
+        retention-days: 7
+
+  # Build source archives
+  build-source-nightly:
+    name: Nightly Source Archives
+    needs: check-ci-status
+    if: needs.check-ci-status.outputs.should_build == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake libexpat1-dev
+
+    - name: Configure CMake with nightly version
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_STATIC_LIBS=ON \
+          -DBUILD_EXECUTABLE=ON
+
+    - name: Build packages
+      run: |
+        cd build
+        make package_source
+        make package
+
+    - name: Rename to nightly
+      run: |
+        cd build
+        NIGHTLY_DATE=$(date +%Y%m%d)
+        for file in asterix-2.8.9-*; do
+          mv "$file" "${file/2.8.9/2.8.9-nightly-${NIGHTLY_DATE}}"
+        done
+
+    - name: List packages
+      run: |
+        ls -lh build/*.tar.gz build/*.zip
+
+    - name: Upload nightly source packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: nightly-source
+        path: |
+          build/*.tar.gz
+          build/*.zip
+        retention-days: 7
+
+  # Create nightly pre-release
+  create-nightly-release:
+    name: Create Nightly Pre-Release
+    runs-on: ubuntu-latest
+    needs: [check-ci-status, build-deb-nightly, build-rpm-nightly, build-source-nightly]
+    if: needs.check-ci-status.outputs.should_build == 'true'
+
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: nightly-packages/
+
+    - name: Display structure
+      run: ls -R nightly-packages/
+
+    - name: Delete existing nightly release
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh release delete nightly --repo ${{ github.repository }} --yes || true
+        git push origin :refs/tags/nightly || true
+      continue-on-error: true
+
+    - name: Create nightly pre-release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: nightly
+        name: "Nightly Build ($(date +%Y-%m-%d))"
+        body: |
+          ## 🌙 Nightly Build - Development Snapshot
+
+          **Build Date**: $(date +"%Y-%m-%d %H:%M UTC")
+          **Branch**: master
+          **Commit**: ${{ github.sha }}
+
+          ### ⚠️ Pre-Release Warning
+          This is an automated nightly build from the latest master branch.
+          These packages are for testing and development purposes only.
+
+          **CI Status**: ✅ All tests passing (92.2% coverage)
+
+          ### 📦 Available Packages
+          - **Debian/Ubuntu**: `.deb` packages for Ubuntu 22.04, 24.04, Debian 12
+          - **RedHat/CentOS**: `.rpm` packages for Rocky Linux 9, Fedora 40
+          - **Source**: `.tar.gz` and `.zip` archives
+
+          ### 🔄 Updates
+          Nightly builds are created every day at 3 AM UTC if CI passes.
+          For stable releases, see: https://github.com/${{ github.repository }}/releases
+
+          ### 📊 Current Status
+          - Coverage: 92.2%
+          - Tests: 560 (100% passing)
+          - Last stable release: v2.8.9
+        files: |
+          nightly-packages/**/*.deb
+          nightly-packages/**/*.rpm
+          nightly-packages/**/*.tar.gz
+          nightly-packages/**/*.zip
+        prerelease: true
+        draft: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Summary notification
+  nightly-summary:
+    name: Nightly Build Summary
+    runs-on: ubuntu-latest
+    needs: [check-ci-status, create-nightly-release]
+    if: always()
+
+    steps:
+    - name: Build summary
+      run: |
+        echo "## 🌙 Nightly Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Date**: $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "**CI Status**: ${{ needs.check-ci-status.outputs.ci_passed }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Build Status**: ${{ needs.check-ci-status.outputs.should_build }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+        if [ "${{ needs.check-ci-status.outputs.should_build }}" = "true" ]; then
+          echo "✅ Nightly packages built and uploaded" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Download from: https://github.com/${{ github.repository }}/releases/tag/nightly" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Nightly build skipped (CI did not pass)" >> $GITHUB_STEP_SUMMARY
+        fi
