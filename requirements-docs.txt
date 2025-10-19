@@ -1,0 +1,25 @@
+# Documentation build dependencies for ReadTheDocs
+#
+# These packages are required to build the Sphinx documentation
+# on ReadTheDocs.org
+#
+# Install with: pip install -r requirements-docs.txt
+#
+
+# Sphinx core
+sphinx>=5.0.0
+
+# ReadTheDocs theme (modern, responsive theme)
+sphinx-rtd-theme>=1.2.0
+
+# Sphinx extensions used in conf.py
+# Note: sphinx.ext.* extensions are built into Sphinx
+# The following are already included:
+# - sphinx.ext.autodoc
+# - sphinx.ext.doctest
+# - sphinx.ext.todo
+# - sphinx.ext.coverage
+# - sphinx.ext.ifconfig
+# - sphinx.ext.viewcode
+
+# No additional extension packages needed for the current configuration

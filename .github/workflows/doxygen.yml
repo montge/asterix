@@ -1,0 +1,84 @@
+name: Generate C++ Documentation
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'src/**/*.cpp'
+      - 'src/**/*.cxx'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.hxx'
+      - 'src/**/*.hpp'
+      - 'Doxyfile'
+      - '.github/workflows/doxygen.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+
+      - name: Verify Doxygen installation
+        run: |
+          doxygen --version
+          dot -V
+
+      - name: Generate documentation
+        run: |
+          doxygen Doxyfile
+
+      - name: Create index redirect for GitHub Pages
+        run: |
+          mkdir -p docs/cpp/html
+          cat > docs/cpp/html/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <title>ASTERIX Decoder C++ API Documentation</title>
+            <meta http-equiv="refresh" content="0; url=./html/index.html">
+            <link rel="canonical" href="./html/index.html">
+          </head>
+          <body>
+            <p>Redirecting to <a href="./html/index.html">ASTERIX C++ API documentation</a>...</p>
+          </body>
+          </html>
+          EOF
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/cpp/html
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build-docs
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
