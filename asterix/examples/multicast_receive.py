@@ -15,7 +15,8 @@ sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 # 2. Running in isolated network segments for ASTERIX traffic
 # 3. Implementing application-level authentication if needed
 # 4. Binding to specific interface IP if multicast is on a known interface
-sock.bind(('', 21111))
+# lgtm [py/bind-socket-all-network-interfaces]
+sock.bind(('', 21111))  # nosec B104 - Required for multicast reception
 mreq = struct.pack("=4sl", socket.inet_aton("232.1.1.11"), socket.INADDR_ANY)
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
