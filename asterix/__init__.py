@@ -140,13 +140,11 @@ def parse(data, **kwargs):
     else:
         verbose = 1
 
-    if sys.version_info <= (2, 7):
-        return _asterix.parse(buffer(data), verbose)
     return _asterix.parse(bytes(data), verbose)
 
 
 def parse_with_offset(data, offset=0, blocks_count=1000, **kwargs):
-    """ Parse raw asterix data with bytes offset with returning number of blocks of data 
+    """ Parse raw asterix data with bytes offset with returning number of blocks of data
     passed with arguments
     Args:
         data: Bytes to be parsed
@@ -164,8 +162,6 @@ def parse_with_offset(data, offset=0, blocks_count=1000, **kwargs):
     else:
         verbose = 1
 
-    if sys.version_info <= (2, 7):
-        return _asterix.parse_with_offset(buffer(data), offset, blocks_count, verbose)
     return _asterix.parse_with_offset(bytes(data), offset, blocks_count, verbose)
 
 
