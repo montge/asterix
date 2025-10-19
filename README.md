@@ -4,7 +4,7 @@
 [![CodeQL](https://github.com/montge/asterix/workflows/CodeQL/badge.svg)](https://github.com/montge/asterix/security/code-scanning)
 [![Coverage](https://img.shields.io/badge/coverage-92.2%25-brightgreen)](https://github.com/montge/asterix)
 [![PyPI](https://img.shields.io/pypi/v/asterix_decoder.svg)](https://pypi.org/project/asterix_decoder/)
-[![Python Versions](https://img.shields.io/pypi/pyversions/asterix_decoder.svg)](https://pypi.org/project/asterix_decoder/)
+[![Python Versions](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://github.com/montge/asterix)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 
 > Professional ASTERIX protocol decoder for Air Traffic Management surveillance data
