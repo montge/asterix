@@ -713,6 +713,594 @@ TEST_F(DataRecordTest, TimestampPreservation) {
     pCategory = nullptr;
 }
 
+/**
+ * Test Case: TC-CPP-RECORD-026
+ * Test UAP item reference to non-existent DataItemDescription (line 59-60)
+ * This tests the error path where FSPEC indicates an item but description doesn't exist
+ */
+TEST_F(DataRecordTest, FSPECItemDescriptionNotFound) {
+    pCategory = createTestCategory(62);
+    // Add UAP item that references "010" but don't create the description
+    addUAPItem(pUAP, 1, "010");
+    // Deliberately NOT calling addDataItem, so description won't exist
+
+    unsigned char data[] = {0x80, 0x12, 0x34};
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    // Should fail - description not found
+    EXPECT_FALSE(record.m_bFormatOK);
+    EXPECT_EQ(record.m_lDataItems.size(), 0);
+    EXPECT_EQ(record.m_pHexData, nullptr);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-027
+ * Test FSPEC that consumes all available data
+ * This tests edge case where FSPEC leaves no room for data items
+ */
+TEST_F(DataRecordTest, NegativeUnparsedBytes) {
+    pCategory = createTestCategory(62);
+
+    // Create a scenario where FSPEC with FX extensions consumes all data
+    // FSPEC: 0x01 = extension bit set, expects another byte
+    // Provide minimal data: 2 bytes total for FSPEC
+    unsigned char data[] = {0x01, 0x00};  // FSPEC with extension, then terminating byte
+
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    // With no data items defined in FSPEC, this should succeed with empty items
+    // The nUnparsed will be 0 after parsing FSPEC
+    EXPECT_EQ(record.m_nFSPECLength, 2);
+    EXPECT_EQ(record.m_lDataItems.size(), 0);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-028
+ * Test getText() with bFormatOK = false (line 164-165)
+ */
+TEST_F(DataRecordTest, GetTextWithFormatNotOK) {
+    pCategory = createTestCategory(62);
+    // Create invalid record by not adding UAP
+    unsigned char data[] = {0x80, 0x12, 0x34};
+
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    // Force format to be not OK by deleting UAP
+    delete pUAP;
+    pCategory->m_lUAPs.clear();
+    pUAP = nullptr;
+
+    // Create new record with no UAP
+    DataRecord badRecord(pCategory, 2, sizeof(data), data, 0.0);
+    ASSERT_FALSE(badRecord.m_bFormatOK);
+
+    std::string result, header;
+    bool ret = badRecord.getText(result, header, CAsterixFormat::EJSON);
+
+    EXPECT_FALSE(ret);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-029
+ * Test EJSONH format with multiple items to trigger comma separation (line 213-216)
+ */
+TEST_F(DataRecordTest, GetTextJSONHMultipleItemsComma) {
+    pCategory = createTestCategory(62);
+    addDataItem(pCategory, "010", 1);
+    addDataItem(pCategory, "020", 1);
+    addDataItem(pCategory, "030", 1);
+    addUAPItem(pUAP, 1, "010");
+    addUAPItem(pUAP, 2, "020");
+    addUAPItem(pUAP, 3, "030");
+
+    unsigned char data[] = {0xE0, 0xAA, 0xBB, 0xCC};
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    ASSERT_TRUE(record.m_bFormatOK);
+    ASSERT_EQ(record.m_lDataItems.size(), 3);
+
+    std::string result, header;
+    bool ret = record.getText(result, header, CAsterixFormat::EJSONH);
+
+    EXPECT_TRUE(ret);
+    // Should have comma-newline separators between items
+    EXPECT_NE(result.find(",\n"), std::string::npos);
+    EXPECT_NE(result.find("}},\n"), std::string::npos);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-030
+ * Test EJSONE format with multiple items (line 214-216)
+ */
+TEST_F(DataRecordTest, GetTextJSONEMultipleItems) {
+    pCategory = createTestCategory(48);
+    addDataItem(pCategory, "010", 2);
+    addDataItem(pCategory, "020", 2);
+    addUAPItem(pUAP, 1, "010");
+    addUAPItem(pUAP, 2, "020");
+
+    unsigned char data[] = {0xC0, 0x11, 0x22, 0x33, 0x44};
+    DataRecord record(pCategory, 5, sizeof(data), data, 123.456);
+
+    ASSERT_TRUE(record.m_bFormatOK);
+
+    std::string result, header;
+    bool ret = record.getText(result, header, CAsterixFormat::EJSONE);
+
+    EXPECT_TRUE(ret);
+    EXPECT_NE(result.find(",\n"), std::string::npos);
+    EXPECT_NE(result.find("\"timestamp\":123.456"), std::string::npos);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-031
+ * Test with 3-byte FSPEC (complex multi-byte)
+ */
+TEST_F(DataRecordTest, ThreeByteFSPEC) {
+    pCategory = createTestCategory(62);
+
+    // Add items for FRN 1, 2, 8, 15
+    // FRN 1-7 are in first FSPEC byte (bits 7-1)
+    // FRN 8-14 are in second FSPEC byte (bits 7-1)
+    // FRN 15-21 are in third FSPEC byte (bits 7-1)
+    addDataItem(pCategory, "010", 1);
+    addDataItem(pCategory, "020", 1);
+    addDataItem(pCategory, "080", 1);
+    addDataItem(pCategory, "150", 1);
+    addUAPItem(pUAP, 1, "010");
+    addUAPItem(pUAP, 2, "020");
+    addUAPItem(pUAP, 8, "080");
+    addUAPItem(pUAP, 15, "150");
+
+    // FSPEC: 0xC1 = bits 7,6 set (FRN 1,2) + extension bit
+    //        0x81 = bit 7 set (FRN 8) + extension bit
+    //        0x80 = bit 7 set (FRN 15), no extension
+    unsigned char data[] = {0xC1, 0x81, 0x80, 0x01, 0x02, 0x03, 0x04};
+
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    EXPECT_EQ(record.m_nFSPECLength, 3);
+    EXPECT_TRUE(record.m_bFormatOK);
+    EXPECT_EQ(record.m_lDataItems.size(), 4);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-032
+ * Test with very long FSPEC (4 bytes)
+ */
+TEST_F(DataRecordTest, FourByteFSPEC) {
+    pCategory = createTestCategory(62);
+
+    // Add items at FRN 1, 4, 8, 11, 15, 22
+    // FRN 1-7: first byte bits 7-1
+    // FRN 8-14: second byte bits 7-1
+    // FRN 15-21: third byte bits 7-1
+    // FRN 22-28: fourth byte bits 7-1
+    addDataItem(pCategory, "010", 1);
+    addDataItem(pCategory, "040", 1);
+    addDataItem(pCategory, "080", 1);
+    addDataItem(pCategory, "110", 1);
+    addDataItem(pCategory, "150", 1);
+    addDataItem(pCategory, "220", 1);
+    addUAPItem(pUAP, 1, "010");
+    addUAPItem(pUAP, 4, "040");
+    addUAPItem(pUAP, 8, "080");
+    addUAPItem(pUAP, 11, "110");
+    addUAPItem(pUAP, 15, "150");
+    addUAPItem(pUAP, 22, "220");
+
+    // FSPEC: 0x91 = bits 7,4 set + extension (FRN 1,4)
+    //        0x91 = bits 7,4 set + extension (FRN 8,11)
+    //        0x81 = bit 7 set + extension (FRN 15)
+    //        0x80 = bit 7 set, no extension (FRN 22)
+    unsigned char data[] = {0x91, 0x91, 0x81, 0x80,
+                           0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
+
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    EXPECT_EQ(record.m_nFSPECLength, 4);
+    EXPECT_TRUE(record.m_bFormatOK);
+    EXPECT_EQ(record.m_lDataItems.size(), 6);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-033
+ * Test FSPEC with sparse item distribution
+ */
+TEST_F(DataRecordTest, FSPECSparseItems) {
+    pCategory = createTestCategory(62);
+
+    // Only add items at FRN 1 and 7
+    addDataItem(pCategory, "010", 2);
+    addDataItem(pCategory, "070", 3);
+    addUAPItem(pUAP, 1, "010");
+    addUAPItem(pUAP, 7, "070");
+
+    // FSPEC: 0x82 = bits 7 and 1 set (FRN 1 and 7), no extension
+    unsigned char data[] = {0x82, 0x11, 0x22, 0x33, 0x44, 0x55};
+
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    EXPECT_TRUE(record.m_bFormatOK);
+    EXPECT_EQ(record.m_lDataItems.size(), 2);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-034
+ * Test record with many data items (stress test)
+ */
+TEST_F(DataRecordTest, RecordWithManyItems) {
+    pCategory = createTestCategory(62);
+
+    // Add 10 items
+    for (int i = 1; i <= 10; i++) {
+        char itemId[10];
+        snprintf(itemId, sizeof(itemId), "%03d", i * 10);
+        addDataItem(pCategory, itemId, 1);
+        addUAPItem(pUAP, i, itemId);
+    }
+
+    // FSPEC with all 7 items in first byte + 3 in second
+    unsigned char data[] = {0xFF, 0xE0,  // FSPEC
+                           0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,  // First 7
+                           0x08, 0x09, 0x0A};  // Next 3
+
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    EXPECT_TRUE(record.m_bFormatOK);
+    EXPECT_EQ(record.m_lDataItems.size(), 10);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-035
+ * Test getText in all format types with same record
+ */
+TEST_F(DataRecordTest, GetTextAllFormats) {
+    pCategory = createTestCategory(62);
+    addDataItem(pCategory, "010", 2);
+    addUAPItem(pUAP, 1, "010");
+
+    unsigned char data[] = {0x80, 0x12, 0x34};
+    DataRecord record(pCategory, 100, sizeof(data), data, 999.999);
+
+    ASSERT_TRUE(record.m_bFormatOK);
+
+    // Test all format types
+    std::string result, header;
+
+    EXPECT_TRUE(record.getText(result, header, CAsterixFormat::ETxt));
+    result.clear();
+
+    EXPECT_TRUE(record.getText(result, header, CAsterixFormat::EJSON));
+    result.clear();
+
+    EXPECT_TRUE(record.getText(result, header, CAsterixFormat::EJSONH));
+    result.clear();
+
+    EXPECT_TRUE(record.getText(result, header, CAsterixFormat::EJSONE));
+    result.clear();
+
+    EXPECT_TRUE(record.getText(result, header, CAsterixFormat::EXML));
+    result.clear();
+
+    EXPECT_TRUE(record.getText(result, header, CAsterixFormat::EXMLH));
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-036
+ * Test getItem with multiple items (iterate through list)
+ */
+TEST_F(DataRecordTest, GetItemMultipleIterations) {
+    pCategory = createTestCategory(62);
+    addDataItem(pCategory, "010", 1);
+    addDataItem(pCategory, "020", 1);
+    addDataItem(pCategory, "030", 1);
+    addDataItem(pCategory, "040", 1);
+    addUAPItem(pUAP, 1, "010");
+    addUAPItem(pUAP, 2, "020");
+    addUAPItem(pUAP, 3, "030");
+    addUAPItem(pUAP, 4, "040");
+
+    unsigned char data[] = {0xF0, 0x01, 0x02, 0x03, 0x04};
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    ASSERT_TRUE(record.m_bFormatOK);
+    ASSERT_EQ(record.m_lDataItems.size(), 4);
+
+    // Search for item in middle of list
+    DataItem* item030 = record.getItem("030");
+    ASSERT_NE(item030, nullptr);
+    EXPECT_EQ(item030->m_pDescription->m_strID, "030");
+
+    // Search for last item
+    DataItem* item040 = record.getItem("040");
+    ASSERT_NE(item040, nullptr);
+    EXPECT_EQ(item040->m_pDescription->m_strID, "040");
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-037
+ * Test hexdata generation with various byte patterns
+ */
+TEST_F(DataRecordTest, HexDataVariousPatterns) {
+    pCategory = createTestCategory(62);
+    addDataItem(pCategory, "010", 4);
+    addUAPItem(pUAP, 1, "010");
+
+    unsigned char data[] = {0x80, 0x00, 0xFF, 0xA5, 0x5A};
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    ASSERT_TRUE(record.m_bFormatOK);
+    ASSERT_NE(record.m_pHexData, nullptr);
+
+    std::string hexdata(record.m_pHexData);
+    EXPECT_EQ(hexdata, "8000FFA55A");
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-038
+ * Test CRC with different data patterns
+ */
+TEST_F(DataRecordTest, CRCDifferentData) {
+    pCategory = createTestCategory(62);
+    addDataItem(pCategory, "010", 2);
+    addUAPItem(pUAP, 1, "010");
+
+    unsigned char data1[] = {0x80, 0x12, 0x34};
+    unsigned char data2[] = {0x80, 0x56, 0x78};
+
+    DataRecord record1(pCategory, 1, sizeof(data1), data1, 0.0);
+    DataRecord record2(pCategory, 1, sizeof(data2), data2, 0.0);
+
+    ASSERT_TRUE(record1.m_bFormatOK);
+    ASSERT_TRUE(record2.m_bFormatOK);
+
+    // Different data should produce different CRCs
+    EXPECT_NE(record1.m_nCrc, record2.m_nCrc);
+    EXPECT_NE(record1.m_nCrc, 0);
+    EXPECT_NE(record2.m_nCrc, 0);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-039
+ * Test record with zero timestamp
+ */
+TEST_F(DataRecordTest, ZeroTimestamp) {
+    pCategory = createTestCategory(62);
+    addDataItem(pCategory, "010", 1);
+    addUAPItem(pUAP, 1, "010");
+
+    unsigned char data[] = {0x80, 0xFF};
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    EXPECT_DOUBLE_EQ(record.m_nTimestamp, 0.0);
+
+    std::string result, header;
+    record.getText(result, header, CAsterixFormat::EJSON);
+    EXPECT_NE(result.find("\"timestamp\":0"), std::string::npos);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-040
+ * Test record with negative timestamp
+ */
+TEST_F(DataRecordTest, NegativeTimestamp) {
+    pCategory = createTestCategory(62);
+    addDataItem(pCategory, "010", 1);
+    addUAPItem(pUAP, 1, "010");
+
+    unsigned char data[] = {0x80, 0xFF};
+    double negativeTime = -12345.678;
+    DataRecord record(pCategory, 1, sizeof(data), data, negativeTime);
+
+    EXPECT_DOUBLE_EQ(record.m_nTimestamp, negativeTime);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-041
+ * Test destructor with empty item list
+ */
+TEST_F(DataRecordTest, DestructorEmptyList) {
+    pCategory = createTestCategory(62);
+
+    // FSPEC with no items present
+    unsigned char data[] = {0x00};
+
+    {
+        DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+        EXPECT_EQ(record.m_lDataItems.size(), 0);
+        // Destructor called when leaving scope
+    }
+    // If we get here, destructor handled empty list correctly
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-042
+ * Test FSPEC parsing with all bits except FX set
+ */
+TEST_F(DataRecordTest, FSPECAllBitsExceptFX) {
+    pCategory = createTestCategory(62);
+
+    // Add 7 items
+    for (int i = 1; i <= 7; i++) {
+        char itemId[10];
+        snprintf(itemId, sizeof(itemId), "%03d", i * 10);
+        addDataItem(pCategory, itemId, 1);
+        addUAPItem(pUAP, i, itemId);
+    }
+
+    // FSPEC: 0xFE = all bits set except FX (no extension)
+    unsigned char data[] = {0xFE, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
+
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    EXPECT_EQ(record.m_nFSPECLength, 1);
+    EXPECT_TRUE(record.m_bFormatOK);
+    EXPECT_EQ(record.m_lDataItems.size(), 7);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-043
+ * Test with alternating FSPEC bit pattern
+ */
+TEST_F(DataRecordTest, FSPECAlternatingBits) {
+    pCategory = createTestCategory(62);
+
+    // Add items at FRN 1, 3, 5, 7
+    addDataItem(pCategory, "010", 1);
+    addDataItem(pCategory, "030", 1);
+    addDataItem(pCategory, "050", 1);
+    addDataItem(pCategory, "070", 1);
+    addUAPItem(pUAP, 1, "010");
+    addUAPItem(pUAP, 3, "030");
+    addUAPItem(pUAP, 5, "050");
+    addUAPItem(pUAP, 7, "070");
+
+    // FSPEC: 0xAA = 10101010 (alternating pattern)
+    unsigned char data[] = {0xAA, 0x01, 0x02, 0x03, 0x04};
+
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    EXPECT_TRUE(record.m_bFormatOK);
+    EXPECT_EQ(record.m_lDataItems.size(), 4);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-044
+ * Test large record ID
+ */
+TEST_F(DataRecordTest, LargeRecordID) {
+    pCategory = createTestCategory(62);
+    addDataItem(pCategory, "010", 1);
+    addUAPItem(pUAP, 1, "010");
+
+    unsigned char data[] = {0x80, 0xFF};
+    int largeID = 999999;
+    DataRecord record(pCategory, largeID, sizeof(data), data, 0.0);
+
+    EXPECT_EQ(record.m_nID, largeID);
+
+    std::string result, header;
+    record.getText(result, header, CAsterixFormat::ETxt);
+    EXPECT_NE(result.find("Data Record 999999"), std::string::npos);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-045
+ * Test record length adjustment with multiple unparsed bytes
+ */
+TEST_F(DataRecordTest, MultipleUnparsedBytes) {
+    pCategory = createTestCategory(62);
+    addDataItem(pCategory, "010", 1);
+    addUAPItem(pUAP, 1, "010");
+
+    // FSPEC + 1 data byte + 10 extra bytes
+    unsigned char data[] = {0x80, 0xFF,
+                           0x00, 0x01, 0x02, 0x03, 0x04,
+                           0x05, 0x06, 0x07, 0x08, 0x09};
+
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    EXPECT_TRUE(record.m_bFormatOK);
+    EXPECT_EQ(record.m_nLength, 2);  // Only FSPEC + 1 data byte
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-046
+ * Test UAP item lookup failure during FSPEC parsing (line 59-60)
+ * This specifically targets the case where getDataItemIDByUAPfrn returns empty
+ */
+TEST_F(DataRecordTest, UAPItemLookupFailure) {
+    pCategory = createTestCategory(62);
+
+    // Add a UAP item but intentionally make it not findable
+    // by setting up FSPEC that references non-existent FRN
+    UAPItem* uapItem = pUAP->newUAPItem();
+    uapItem->m_nFRN = 1;
+    uapItem->m_strItemID = "";  // Empty ID will cause lookup to fail
+
+    // FSPEC with bit 7 set (FRN 1)
+    unsigned char data[] = {0x80, 0x12, 0x34};
+
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    // Should fail - UAP item ID is empty/invalid
+    EXPECT_FALSE(record.m_bFormatOK);
+
+    pCategory = nullptr;
+}
+
+/**
+ * Test Case: TC-CPP-RECORD-047
+ * Test insufficient data without error flag (line 115)
+ * This happens when parsing stops early without errorReported being set
+ */
+TEST_F(DataRecordTest, InsufficientDataNoErrorFlag) {
+    pCategory = createTestCategory(62);
+
+    // Create a tricky scenario: Add an item that claims to be 100 bytes
+    // but we only have 2 bytes of data
+    DataItemDescription* desc = pCategory->getDataItemDescription("010");
+    desc->m_strName = "Large Item";
+
+    // Create a format that will consume all available data and ask for more
+    DataItemFormatFixed* format = new DataItemFormatFixed(100);
+    format->m_nLength = 100;
+    desc->m_pFormat = format;
+
+    addUAPItem(pUAP, 1, "010");
+
+    // Only 2 bytes of data, but item expects 100
+    unsigned char data[] = {0x80, 0x12};
+
+    DataRecord record(pCategory, 1, sizeof(data), data, 0.0);
+
+    // Should fail due to insufficient data
+    EXPECT_FALSE(record.m_bFormatOK);
+
+    pCategory = nullptr;
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
