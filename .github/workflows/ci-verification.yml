@@ -303,8 +303,11 @@ jobs:
 
     - name: Test Python examples
       run: |
+        # Test simple examples that complete immediately
         python asterix/examples/read_raw_bytes.py
-        python asterix/examples/multicast_receive.py --help || true
+        # Verify multicast examples are syntactically valid (don't run - requires network)
+        python -m py_compile asterix/examples/multicast_receive.py
+        python -m py_compile asterix/examples/multicast_send_receive.py
       continue-on-error: true
 
   # Build status summary
