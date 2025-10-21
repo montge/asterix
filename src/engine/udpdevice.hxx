@@ -61,6 +61,7 @@ private:
     int _port;
     std::vector<int> _socketDesc;
     fd_set _descToRead;
+    fd_set _descToReadTemplate;  // PERFORMANCE: Persistent template to avoid rebuilding on every Select()
     int _countToRead;
     int _maxValSocketDesc;
 
