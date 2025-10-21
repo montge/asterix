@@ -66,6 +66,14 @@ CUdpDevice::CUdpDevice(CDescriptor &descriptor) {
                 }
             }
             _maxValSocketDesc++;
+
+            // PERFORMANCE: Build fd_set template once during initialization
+            // Instead of rebuilding on every Select() call, we copy this template
+            FD_ZERO(&_descToReadTemplate);
+            for (unsigned int i = 0; i < _socketDesc.size(); i++) {
+                FD_SET(_socketDesc[i], &_descToReadTemplate);
+            }
+
             return;
         }
         int cntr = 0;
@@ -234,10 +242,9 @@ bool CUdpDevice::Select(const unsigned int secondsToWait) {
 
     // Configure 'set' of single class file descriptor
     int selectVal;
-    FD_ZERO(&_descToRead);
-    for (unsigned int i = 0; i < _socketDesc.size(); i++) {
-        FD_SET(_socketDesc[i], &_descToRead);
-    }
+    // PERFORMANCE: Copy pre-built template instead of rebuilding on every call
+    // Eliminates FD_ZERO + FD_SET loop overhead for high-frequency UDP multicast (1000+ Hz)
+    _descToRead = _descToReadTemplate;
 
     if (secondsToWait) {
         // Set the timeout as specified
