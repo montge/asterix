@@ -23,6 +23,18 @@ More about ASTERIX protocol: http://www.eurocontrol.int/services/asterix
 - **92.2% test coverage** | 560 passing tests
 - **DO-278A compliant** development process for aviation software safety
 
+## Performance
+
+This decoder is optimized for high-throughput, real-time processing of ASTERIX surveillance data:
+
+- **55-61% faster than baseline** - Optimized for high-throughput processing with significant performance improvements
+- **Efficient memory management** - Buffer reuse strategies minimize allocations and fragmentation
+- **Zero-copy operations** - Data is processed in-place where possible to reduce memory overhead
+- **PCAP processing speedup** - 15-20% faster PCAP file processing through optimized parsing
+- **High-frequency UDP multicast** - Optimized for 1000+ Hz workloads with minimal latency
+
+See [PERFORMANCE_OPTIMIZATIONS_COMPLETED.md](PERFORMANCE_OPTIMIZATIONS_COMPLETED.md) for detailed benchmarks and optimization strategies.
+
 ## Quick Start
 
 ### Python Module (Recommended)

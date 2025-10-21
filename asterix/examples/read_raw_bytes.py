@@ -54,6 +54,27 @@ def main():
     The example packet structure:
     - Bytes 0-2: ASTERIX header (0x30 0x00 0x30 = CAT048, 48 bytes)
     - Bytes 3+: FSPEC (Field Specification) and data items
+
+    Returns:
+        None
+
+    Example:
+        >>> main()
+        Data Block 1/1
+          Category: 048 (Monoradar Target Reports)
+          Length: 48 bytes
+          Records: 1
+            Record 1:
+              I010 (Data Source Identifier)
+                SAC: 2
+                SIC: 25
+              I140 (Time of Day)
+                ToD: 12345.67 seconds
+              ...
+
+    Note:
+        The example uses a predefined CAT048 packet. For parsing your own
+        ASTERIX data, replace the asterix_packet bytearray with your data.
     """
     # This is binary presentation of asterix packet of CAT048
     #                  len  cat 048

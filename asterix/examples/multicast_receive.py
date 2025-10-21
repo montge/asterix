@@ -76,6 +76,7 @@ def setup_multicast_receiver(multicast_group, port):
 
     Args:
         multicast_group (str): Multicast IP address (e.g., "232.1.1.11")
+            Must be in the range 224.0.0.0 to 239.255.255.255
         port (int): UDP port number (e.g., 21111)
 
     Returns:
@@ -85,9 +86,20 @@ def setup_multicast_receiver(multicast_group, port):
         socket.error: If socket setup fails or multicast join fails
         OSError: If port is already in use without SO_REUSEADDR
 
+    Example:
+        >>> sock = setup_multicast_receiver("232.1.1.11", 21111)
+        >>> data = sock.recv(10240)  # Receive up to 10KB
+        >>> print(f"Received {len(data)} bytes")
+        Received 48 bytes
+
     Note:
         The socket binds to '' (all interfaces) which is required for multicast
         to work correctly. This is a security consideration in production.
+
+        Multicast IP Address Ranges:
+        - 224.0.0.0 - 224.0.0.255: Reserved for local network control
+        - 224.0.1.0 - 238.255.255.255: Globally scoped multicast
+        - 239.0.0.0 - 239.255.255.255: Administratively scoped (organization-local)
     """
     # Create UDP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
@@ -127,10 +139,32 @@ def main():
 
     The loop runs indefinitely until interrupted (Ctrl+C).
 
+    Returns:
+        None
+
     Raises:
         KeyboardInterrupt: When user presses Ctrl+C
         socket.error: On network errors
         asterix.ParseError: If ASTERIX data is malformed
+
+    Example:
+        >>> main()
+        Listening for ASTERIX data on multicast 232.1.1.11:21111
+        Press Ctrl+C to stop...
+        1. Receiver received = [{'cat': 48, 'len': 48, 'records': [...]}]
+        2. Receiver received = [{'cat': 48, 'len': 48, 'records': [...]}]
+        3. Receiver received = [{'cat': 34, 'len': 26, 'records': [...]}]
+        ^C
+        Receiver stopped by user
+
+    Note:
+        To test this script without a real ASTERIX multicast source, you can:
+        1. Run multicast_send_receive.py in another terminal
+        2. Use a network traffic generator
+        3. Configure the multicast group to match your network's ASTERIX source
+
+        To change the multicast configuration, modify MULTICAST_GROUP and PORT
+        constants in the main() function.
     """
     # Multicast configuration
     MULTICAST_GROUP = "232.1.1.11"

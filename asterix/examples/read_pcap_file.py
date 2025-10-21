@@ -58,9 +58,29 @@ def main():
     The sample file contains CAT034 (Service Messages) and CAT048
     (Monoradar Target Reports) packets.
 
+    Returns:
+        None
+
     Raises:
         FileNotFoundError: If the sample PCAP file cannot be found
         dpkt.dpkt.NeedData: If PCAP file is corrupted or incomplete
+        AttributeError: If packet structure doesn't match expected Ethernet/IP/UDP
+
+    Example:
+        >>> main()
+        Parsing packet 1 : 30:00:1e:fd:f7:02:19:c7:13:84:...
+        [{'cat': 48, 'len': 30, 'records': [{'010': {'SAC': 2, 'SIC': 25}, ...}]}]
+
+        Parsing packet 2 : 22:00:1a:fd:e0:02:19:c7:15:8a:...
+        [{'cat': 34, 'len': 26, 'records': [...]}]
+
+    Note:
+        To parse your own PCAP files, replace the get_sample_file() call
+        with your file path:
+
+        >>> with open('/path/to/your/file.pcap', 'rb') as f:
+        >>>     pcap = dpkt.pcap.Reader(f)
+        >>>     # ... rest of processing
     """
     # Get the path to the bundled sample PCAP file
     # This file contains mixed CAT034 and CAT048 packets

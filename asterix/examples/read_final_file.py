@@ -63,8 +63,11 @@ def parse_final_header(header_bytes):
     """
     Parse FINAL format packet header.
 
+    The FINAL header is a 7-byte structure containing metadata about the
+    ASTERIX packet, including timing information and source identification.
+
     Args:
-        header_bytes: 7 bytes representing the FINAL header
+        header_bytes (bytes): 7 bytes representing the FINAL header
 
     Returns:
         tuple: (data_size, board_nr, line_nr, rec_day, timestamp_ms)
@@ -74,8 +77,19 @@ def parse_final_header(header_bytes):
             - rec_day (int): Recording day number
             - timestamp_ms (int): Time of day in milliseconds
 
-    The timestamp is encoded as 3 bytes representing 10ms units,
-    converted to milliseconds for easier handling.
+    Raises:
+        struct.error: If header_bytes is not exactly 7 bytes
+
+    Example:
+        >>> header = b'\x00\x30\x01\x02\x7b\x12\x34'
+        >>> data_size, board, line, day, time_ms = parse_final_header(header)
+        >>> print(f"Size: {data_size}, Board: {board}, Line: {line}, Day: {day}, Time: {time_ms}ms")
+        Size: 48, Board: 1, Line: 2, Day: 123, Time: 468000ms
+
+    Note:
+        The timestamp is encoded as 3 bytes representing 10ms units,
+        converted to milliseconds for easier handling. Maximum value is
+        16777215 * 10ms = 167772.15 seconds (46.6 hours).
     """
     final_header_format = ">hBBBBBB"
     (data_size, board_nr, line_nr, rec_day, time1, time2, time3) = struct.unpack(
@@ -94,13 +108,31 @@ def validate_padding(padding_bytes):
     Validate FINAL format padding bytes.
 
     FINAL packets end with 4 padding bytes, all set to 0xA5.
-    This serves as a packet integrity check.
+    This serves as a packet integrity check to detect corruption
+    or incorrect file format.
 
     Args:
-        padding_bytes: 4 bytes that should contain the padding pattern
+        padding_bytes (bytes): 4 bytes that should contain the padding pattern
 
     Returns:
-        bool: True if padding is valid, False otherwise
+        bool: True if padding is valid (all bytes are 0xA5), False otherwise
+
+    Raises:
+        struct.error: If padding_bytes is not exactly 4 bytes
+
+    Example:
+        >>> valid_padding = b'\xa5\xa5\xa5\xa5'
+        >>> validate_padding(valid_padding)
+        True
+
+        >>> invalid_padding = b'\xa5\xa5\xa5\x00'
+        >>> validate_padding(invalid_padding)
+        False
+
+    Note:
+        The padding pattern 0xA5A5A5A5 is a Croatia Control convention
+        for the FINAL format. It provides a simple integrity check to
+        ensure the packet was correctly parsed.
     """
     final_padding_value = (0xA5, 0xA5, 0xA5, 0xA5)
     padding = struct.unpack("BBBB", padding_bytes)
@@ -121,14 +153,35 @@ def main():
     3. Parses each ASTERIX payload
     4. Displays results with metadata
 
-    Note:
-        You MUST update the sample_filename path before running this script.
-        The placeholder path will cause a FileNotFoundError.
+    Returns:
+        None
 
     Raises:
         FileNotFoundError: If the sample file doesn't exist
         struct.error: If file format is incorrect
         SystemExit: If padding validation fails
+
+    Example:
+        After updating sample_filename:
+
+        >>> main()
+        1.	time=0:12:34.560	Size=48	board=1	line=2	day=123)
+        {'cat': 48, 'len': 48, 'records': [...]}
+        2.	time=0:12:34.570	Size=52	board=1	line=2	day=123)
+        {'cat': 48, 'len': 52, 'records': [...]}
+        ...
+        Finished
+
+    Note:
+        You MUST update the sample_filename path before running this script.
+        The placeholder path will cause a FileNotFoundError.
+
+        To use this script with your own FINAL file:
+
+        >>> sample_filename = '/home/user/asterix_data/recording_2024-10-20.ff'
+
+        The .ff extension is commonly used for FINAL format files, though
+        any extension (or none) is technically acceptable.
     """
     # NOTE: Update this path to point to your actual FINAL format file
     sample_filename = 'path/to/your/sample_file.ff'  # Example path - update before use

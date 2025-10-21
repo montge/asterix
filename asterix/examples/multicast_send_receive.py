@@ -111,6 +111,10 @@ class SenderThread(threading.Thread):
             threadID (int): Unique thread identifier
             name (str): Thread name for logging
             counter (int): Number of packets to send before stopping
+
+        Example:
+            >>> sender = SenderThread(1, "ASTERIX Sender", 1000)
+            >>> sender.start()  # Begin sending packets
         """
         threading.Thread.__init__(self)
         self.threadID = threadID
@@ -136,6 +140,21 @@ class SenderThread(threading.Thread):
         4. Stops when counter reaches zero or exitFlag is set
 
         The method handles the exitFlag for graceful shutdown.
+
+        Returns:
+            None
+
+        Example:
+            After starting the thread:
+            >>> sender = SenderThread(1, "Sender", 5)
+            >>> sender.start()
+            Starting Sender
+            5. Sender sending : b'0\x00...'
+            4. Sender sending : b'0\x00...'
+            3. Sender sending : b'0\x00...'
+            2. Sender sending : b'0\x00...'
+            1. Sender sending : b'0\x00...'
+            Exiting Sender
         """
         print("Starting " + self.name)
 
@@ -182,6 +201,10 @@ class ReceiverThread(threading.Thread):
             threadID (int): Unique thread identifier
             name (str): Thread name for logging
             counter (int): Number of packets to receive before stopping
+
+        Example:
+            >>> receiver = ReceiverThread(1, "ASTERIX Receiver", 1000)
+            >>> receiver.start()  # Begin receiving packets
         """
         threading.Thread.__init__(self)
         self.threadID = threadID
@@ -208,6 +231,24 @@ class ReceiverThread(threading.Thread):
 
         The method handles the exitFlag for graceful shutdown and formats
         output using asterix.describe() for human readability.
+
+        Returns:
+            None
+
+        Example:
+            After starting the thread:
+            >>> receiver = ReceiverThread(1, "Receiver", 2)
+            >>> receiver.start()
+            Starting Receiver
+            Data Block 1/1
+              Category: 048 (Monoradar Target Reports)
+              Length: 48 bytes
+              ...
+            Data Block 1/1
+              Category: 048 (Monoradar Target Reports)
+              Length: 48 bytes
+              ...
+            Exiting Receiver
         """
         print("Starting " + self.name)
 
@@ -255,15 +296,36 @@ def main():
     The threads will run until their counters reach zero or the process
     is interrupted.
 
+    Returns:
+        None
+
     Thread Configuration:
         - Both threads configured for 100,000 iterations
         - Sender transmits every 100ms
         - Receiver processes packets as they arrive
         - Total runtime: ~2.7 hours if not interrupted
 
+    Example:
+        >>> main()
+        Starting Sender
+        Starting Receiver
+        Exiting Main Thread
+        1. Sender sending : b'0\x00...'
+        Data Block 1/1
+          Category: 048 (Monoradar Target Reports)
+          ...
+        2. Sender sending : b'0\x00...'
+        ...
+
     Note:
-        The sender and receiver use different multicast configurations
-        to demonstrate independent communication channels.
+        The sender and receiver use the same multicast group (224.51.105.104:5000)
+        so packets sent by the sender are received by the receiver. This creates
+        a complete loopback test environment.
+
+        To customize the behavior:
+        - Modify 'repeat' variable to change number of packets
+        - Adjust sleep duration in SenderThread.run() to change transmission rate
+        - Change multicast group/port in thread classes for different configurations
     """
     # Number of packets to send/receive
     # Set to large number for long-running demo
