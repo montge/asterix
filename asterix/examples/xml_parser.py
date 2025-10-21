@@ -120,8 +120,18 @@ def printJS(line):
     Args:
         line (str): Tab-separated field definition line
 
+    Returns:
+        None
+
     Side Effects:
         Updates global resultJS dictionary with field definitions
+
+    Example:
+        >>> printJS("I010\tSAC\t\t\tSystem Area Code")
+        # Adds to resultJS: {"i010_sac": "System Area Code"}
+
+        >>> printJS("I500\tDOP\tDOP_x\tDilation of Precision\tX-component")
+        # Adds to resultJS: {"i500_dop_dop_x": "X-component"}
     """
     print(line)
     row = line.split("\t", -1)
@@ -150,9 +160,17 @@ def getBit(Bit, **kwargs):
 
     Args:
         Bit: XML element containing bit information
+        **kwargs: Optional context parameters (unused)
 
     Returns:
         str: Text content of the element, or None if empty
+
+    Example:
+        >>> # XML: <BitsShortName>SAC</BitsShortName>
+        >>> element = ... # XML element
+        >>> text = getBit(element)
+        >>> print(text)
+        SAC
     """
     for text in Bit.childNodes:
         return text.nodeValue
@@ -304,6 +322,17 @@ def getDataItemId(DataItem):
 
     Returns:
         str: Data item ID prefixed with 'I' (e.g., "I010"), or -1 if not found
+
+    Example:
+        >>> # XML: <DataItem id="010">...</DataItem>
+        >>> element = ... # XML element
+        >>> item_id = getDataItemId(element)
+        >>> print(item_id)
+        I010
+
+    Note:
+        Returns -1 (integer) instead of None when the id attribute is missing.
+        This is used for error handling in the parsing logic.
     """
     if type(DataItem._attrs) == dict:
         return "I" + DataItem._attrs["id"]._value
@@ -486,11 +515,25 @@ def json2sql(map):
     """
     Convert complete field dictionary to SQL CREATE TABLE statement.
 
+    This function processes the entire parsed ASTERIX category definition
+    and generates SQL column definitions suitable for database schema creation.
+
     Args:
-        map (dict): Complete field dictionary
+        map (dict): Complete field dictionary from ASTERIX XML parsing
 
     Returns:
-        list: List of SQL column definitions
+        list: List of SQL column definitions (strings)
+
+    Example:
+        >>> field_map = {
+        ...     "i010_sac": "System Area Code",
+        ...     "i010_sic": "System Identification Code"
+        ... }
+        >>> sql_lines = json2sql(field_map)
+        >>> for line in sql_lines:
+        ...     print(line)
+         `i010_sac` STRING comment "System Area Code"
+         `i010_sic` STRING comment "System Identification Code"
     """
     rows = []
     for key in map.keys():
@@ -515,10 +558,48 @@ def main():
     The script processes ASTERIX category definitions following the DTD
     structure and extracts comprehensive field information.
 
+    Returns:
+        None
+
     Output Structure:
         1. Tab-separated text (for parsing/processing)
         2. JSON (for programmatic use)
         3. SQL (for database schema creation)
+
+    Example:
+        >>> main()
+        I010	SAC		System Area Code
+        I010	SIC		System Identification Code
+        I015	SI		Service Identification
+        ...
+
+        ===================================================================================
+        ======                         json                                        =======
+        ===================================================================================
+        {
+            "i010_sac": "System Area Code",
+            "i010_sic": "System Identification Code",
+            ...
+        }
+
+        ===================================================================================
+        ======                    create table sql                                 =======
+        ===================================================================================
+        CREATE TABLE IF NOT EXISTS TABLE_NAME (
+            `i010_sac` STRING COMMENT "System Area Code",
+            `i010_sic` STRING COMMENT "System Identification Code",
+            ...
+        );
+
+    Note:
+        To parse a different ASTERIX category, modify the xml_file variable
+        at the top of the script:
+
+        >>> xml_file = "asterix/config/asterix_cat048_1_27.xml"
+
+        The script supports all ASTERIX categories defined in the asterix/config/
+        directory, including CAT001, CAT002, CAT008, CAT019, CAT020, CAT021,
+        CAT023, CAT025, CAT034, CAT048, CAT062, CAT063, CAT065, and CAT252.
     """
     # Process all data items in the XML
     for DataItem in root.childNodes:

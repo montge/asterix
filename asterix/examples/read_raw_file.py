@@ -79,6 +79,44 @@ def main():
 
     Each data block may contain multiple records, and each record
     contains multiple data items (fields).
+
+    Returns:
+        None
+
+    Example:
+        >>> main()
+        asterix_decoder version: 0.8.0
+
+        Items with description
+        ----------------------
+        ('I010', {'SAC': (1, 'System Area Code'), 'SIC': (2, 'System Identification Code')})
+        ('I015', {'SI': (3, 'Service Identification')})
+
+        Items without description
+        ----------------------
+        ('I010', {'SAC': 1, 'SIC': 2})
+        ('I015', {'SI': 3})
+
+        Textual description of data
+        ----------------------
+        Data Block 1/2
+          Category: 062
+          Length: 156 bytes
+          Records: 1
+            Record 1:
+              I010 (Data Source Identifier)
+                SAC: 1
+                SIC: 2
+              ...
+
+    Note:
+        Use verbose=False parameter in asterix.parse() for more efficient
+        parsing when descriptions are not needed:
+
+        >>> parsed = asterix.parse(data, verbose=False)
+
+        This is recommended for high-performance applications or when
+        processing large volumes of ASTERIX data.
     """
     # Display library version for troubleshooting
     print(asterix.__version__)
