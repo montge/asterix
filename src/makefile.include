@@ -57,13 +57,17 @@ ifeq ($(MODE), DEBUG)
 # Debug version
 CWARNING := -Wall
 DEBUGFLAGS := -g -O0
-BASE_FLAGS := $(DEBUGFLAGS) $(CWARNING) -D_DEBUG $(GLOBAL_DEFINES)
+# SECURITY: Stack protection for debug builds
+SECURITY_FLAGS := -fstack-protector-strong
+BASE_FLAGS := $(DEBUGFLAGS) $(CWARNING) $(SECURITY_FLAGS) -D_DEBUG $(GLOBAL_DEFINES)
 OBJ_DIR_SHORT = debug
 OBJ_DIR = $(TOP)/obj/$(CUR_DIR)/$(OBJ_DIR_SHORT)
 else
 # Retail version
 CWARNING := -Wall
-BASE_FLAGS := $(CWARNING) -O2 $(GLOBAL_DEFINES)
+# SECURITY: Stack protection + buffer overflow detection (requires -O2)
+SECURITY_FLAGS := -fstack-protector-strong -D_FORTIFY_SOURCE=2
+BASE_FLAGS := $(CWARNING) -O2 $(SECURITY_FLAGS) $(GLOBAL_DEFINES)
 OBJ_DIR_SHORT = release
 OBJ_DIR = $(TOP)/obj/$(CUR_DIR)/$(OBJ_DIR_SHORT)
 endif
@@ -78,7 +82,8 @@ INCLUDEDIRS   = -I$(TOP)/src/engine \
 
 LIBDIRS       = -L$(TOP)/lib/$(OBJ_DIR_SHORT)
 ARFLAGS       = rcs
-LDFLAGS       = $(LIBDIRS)
+# SECURITY: Read-only relocations for hardening against GOT/PLT attacks
+LDFLAGS       = $(LIBDIRS) -Wl,-z,relro,-z,now
 CFLAGS        = $(BASE_FLAGS) $(CSTD)
 CXXFLAGS      = $(BASE_FLAGS) $(CXXSTD)
 EXTRACFLAGS   = $(INCLUDEDIRS)

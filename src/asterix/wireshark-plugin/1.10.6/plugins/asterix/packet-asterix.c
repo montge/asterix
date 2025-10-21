@@ -102,24 +102,46 @@ static void dissect_asterix_pdu(tvbuff_t *tvb, packet_info *pinfo,
     char tmpstr[256];
     char tmp2[64];
     int error = 0;
+    size_t tmpstr_len = 0;
+    const size_t tmpstr_max = sizeof(tmpstr) - 1;
 
     tmpstr[0] = 0;
-    while (offset < tvb_length(tvb) && strlen(tmpstr) < 200) {
+    while (offset < tvb_length(tvb)) {
         category = tvb_get_guint8(tvb, offset);
         offset += 1;
         payload_len = tvb_get_ntohs(tvb, offset);
         offset += 2;
         offset += payload_len - 3;
-        sprintf(tmp2, "CAT%03d (%-3d bytes),", category, payload_len);
-        strcat(tmpstr, tmp2);
+
+        // SECURITY FIX (VULN-003): Use snprintf instead of sprintf
+        int written = snprintf(tmp2, sizeof(tmp2), "CAT%03d (%-3d bytes),", category, payload_len);
+
+        // SECURITY FIX (VULN-003): Check buffer space before concatenating
+        if (written > 0 && tmpstr_len + written < tmpstr_max) {
+            strncat(tmpstr, tmp2, tmpstr_max - tmpstr_len);
+            tmpstr_len += written;
+        } else {
+            // Buffer full - truncate with ellipsis
+            if (tmpstr_len + 3 < tmpstr_max) {
+                strncat(tmpstr, "...", tmpstr_max - tmpstr_len);
+                tmpstr_len += 3;
+            }
+            break;
+        }
     }
 
+    // SECURITY FIX (VULN-003): Use snprintf for final message
     if (offset != tvb_length(tvb)) {
-        sprintf(tmp2, "Total= %d bytes - Wrong length !!!! ", offset);
+        int written = snprintf(tmp2, sizeof(tmp2), "Total= %d bytes - Wrong length !!!! ", offset);
+        if (written > 0 && tmpstr_len + written < tmpstr_max) {
+            strncat(tmpstr, tmp2, tmpstr_max - tmpstr_len);
+        }
     } else {
-        sprintf(tmp2, "Total = %d bytes", offset);
+        int written = snprintf(tmp2, sizeof(tmp2), "Total = %d bytes", offset);
+        if (written > 0 && tmpstr_len + written < tmpstr_max) {
+            strncat(tmpstr, tmp2, tmpstr_max - tmpstr_len);
+        }
     }
-    strcat(tmpstr, tmp2);
 
     if (check_col(pinfo->cinfo, COL_PROTOCOL))
         col_set_str(pinfo->cinfo, COL_PROTOCOL, "ASTERIX");

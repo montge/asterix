@@ -69,16 +69,16 @@ InputParser::parsePacket(const unsigned char *m_pBuffer, unsigned int m_nBufferS
             m_nPos++;
 
             // parse Asterix data
-            if (dataLen <= 3 || dataLen > m_nDataLength) {
-                Tracer::Error("Wrong Asterix data length (%d)", dataLen);
+            // SECURITY FIX (VULN-004): Validate ASTERIX data length strictly
+            if (dataLen <= 3) {
+                Tracer::Error("Invalid ASTERIX data length (%d) - too small", dataLen);
+                break;  // Stop processing, don't continue with corrupted data
+            }
 
-                if (dataLen <= 3) {
-                    // otherwise finish
-                    return pAsterixData;
-                }
-
-                // there is not enough data, but parse what is there
-                dataLen = (unsigned short) m_nDataLength;
+            if (dataLen > m_nDataLength) {
+                Tracer::Error("Invalid ASTERIX data length (%d) exceeds available data (%d)",
+                             dataLen, m_nDataLength);
+                break;  // Stop processing instead of attempting to recover
             }
 
             m_nDataLength -= 3;
@@ -101,13 +101,16 @@ InputParser::parsePacket(const unsigned char *m_pBuffer, unsigned int m_nBufferS
             LOGDEBUG(1, "[%s]\n", hexString.c_str());
 #endif
             DataBlock *db = new DataBlock(m_pDefinition->getCategory(nCategory), dataLen, m_pData, nTimestamp);
+
+            // SECURITY FIX (VULN-004): Verify DataBlock created successfully before advancing pointers
+            if (!db || !db->m_bFormatOK) {
+                delete db;
+                break;  // Stop on first error
+            }
+
             m_pData += dataLen;
             m_nPos += dataLen;
             pAsterixData->m_lDataBlocks.push_back(db);
-
-            if (db->m_bFormatOK == false) {
-                break;
-            }
             m_nDataLength -= dataLen;
         }
     }
@@ -139,16 +142,16 @@ InputParser::parse_next_data_block(const unsigned char *m_pData, unsigned int &m
     m_nPos++;
 
     // parse Asterix data
-    if (dataLen <= 3 || dataLen > m_nDataLength) {
-        Tracer::Error("Wrong Asterix data length (%d)", dataLen);
+    // SECURITY FIX (VULN-004): Validate ASTERIX data length strictly
+    if (dataLen <= 3) {
+        Tracer::Error("Invalid ASTERIX data length (%d) - too small", dataLen);
+        return NULL;  // Stop processing, don't continue with corrupted data
+    }
 
-        if (dataLen <= 3) {
-            // otherwise finish
-            return NULL;
-        }
-
-        // there is not enough data, but parse what is there
-        dataLen = (unsigned short) m_nDataLength;
+    if (dataLen > m_nDataLength) {
+        Tracer::Error("Invalid ASTERIX data length (%d) exceeds available data (%d)",
+                     dataLen, m_nDataLength);
+        return NULL;  // Stop processing instead of attempting to recover
     }
 
     m_nDataLength -= 3;
