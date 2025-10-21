@@ -130,12 +130,18 @@ DataRecord::DataRecord(Category *cat, int nID, unsigned long len, const unsigned
     }
 
     if (!m_bFormatOK) {
-        // Print whole record in case of error
+        // PERFORMANCE: Print whole record in case of error with efficient string building
         std::string strNewResult = format("Data Record bytes: [ ");
+        // Reserve space: base message + (2 hex chars + 1 space) per byte + closing bracket
+        strNewResult.reserve(strNewResult.size() + len * 3 + 2);
+
+        // Use snprintf directly instead of format() for each byte
+        char hexbuf[4];  // "XX " + null terminator
         for (unsigned int i = 0; i < len; i++) {
-            strNewResult += format("%02X ", *(data + i));
+            snprintf(hexbuf, sizeof(hexbuf), "%02X ", data[i]);
+            strNewResult.append(hexbuf, 3);  // Append exactly 3 chars: "XX "
         }
-        strNewResult += format("]");
+        strNewResult += ']';
         Tracer::Error(strNewResult.c_str());
     } else {
         unsigned int i;
