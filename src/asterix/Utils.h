@@ -30,8 +30,6 @@
 #include <stdint.h>
 #include <string>
 
-std::string format_arg_list(const char *fmt, va_list args);
-
 std::string format(const char *fmt, ...);
 
 uint32_t crc32(const void *pBuffer, size_t nLength, uint32_t nPreviousCrc32 = 0);
