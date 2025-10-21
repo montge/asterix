@@ -23,6 +23,7 @@
 
 #include "DataItemFormatRepetitive.h"
 #include "Tracer.h"
+#include <climits>  // For LONG_MAX
 #include "asterixformat.hxx"
 
 DataItemFormatRepetitive::DataItemFormatRepetitive(int id)
@@ -52,7 +53,27 @@ long DataItemFormatRepetitive::getLength(const unsigned char *pData) {
         return 0;
     }
     unsigned char nRepetition = *pData;
-    return (1 + nRepetition * pF->getLength(pData + 1));
+    long fixedLength = pF->getLength(pData + 1);
+
+    // SECURITY FIX (VULN-001): Check for integer overflow
+    if (nRepetition > 0 && fixedLength > (LONG_MAX - 1) / nRepetition) {
+        Tracer::Error("Integer overflow in repetitive item length calculation: nRepetition=%d, fixedLength=%ld",
+                      nRepetition, fixedLength);
+        return 0;
+    }
+
+    long totalLength = 1 + (long)nRepetition * fixedLength;
+
+    // SECURITY FIX (VULN-001): Additional sanity check - maximum reasonable ASTERIX item size
+    // ASTERIX data blocks are limited to 64KB, individual items should be much smaller
+    const long MAX_ASTERIX_ITEM_SIZE = 65536;
+    if (totalLength > MAX_ASTERIX_ITEM_SIZE) {
+        Tracer::Error("Repetitive item exceeds maximum allowed size: %ld bytes (max: %ld)",
+                      totalLength, MAX_ASTERIX_ITEM_SIZE);
+        return 0;
+    }
+
+    return totalLength;
 }
 
 bool DataItemFormatRepetitive::getText(std::string &strResult, std::string &strHeader, const unsigned int formatType,

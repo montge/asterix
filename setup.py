@@ -80,8 +80,11 @@ asterix_module = Extension('_asterix',
                                     ],
 
                            include_dirs=['./asterix/python', './src/asterix', './src/engine'],
-                           extra_compile_args=['-DPYTHON_WRAPPER', '-std=c++17'],
-                           extra_link_args=['-lexpat'])
+                           # SECURITY: Hardening flags for buffer overflow and stack protection
+                           extra_compile_args=['-DPYTHON_WRAPPER', '-std=c++17',
+                                             '-fstack-protector-strong', '-D_FORTIFY_SOURCE=2'],
+                           # SECURITY: Read-only relocations for hardening
+                           extra_link_args=['-lexpat', '-Wl,-z,relro,-z,now'])
 
 f = open('README.rst')
 try:

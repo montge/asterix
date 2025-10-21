@@ -358,14 +358,34 @@ int proc_hdlc_frame(int len)
  * [HLEN_H] [HLEN_L] [CAT] [ALEN_H] [ALEN_L] [payload] { [CAT] [ALEN_H] [ALEN_L] [payload]} ... [CHKSUM_H] [CHKSUM_L]
  */
 
+    // SECURITY FIX (VULN-002): Validate frame length
+    if (len < 4 || len > MAX_FRM) {
+        return 0;
+    }
+
     int len_to_check = len - 4; // len - [HLEN_H] [HLEN_L] [CHKSUM_H] [CHKSUM_L]
     int offset = 2;
 
     while (len_to_check > 0) {
+        // SECURITY FIX (VULN-002): Ensure we can read category and length fields
+        if (offset + 3 > len) {
+            return 0;  // Insufficient data for header
+        }
+
         int cat = (int) Frame[offset]; // [CAT]
         int packet_len = (int) Frame[offset + 1]; // [ALEN_H]
         packet_len <<= 8;
         packet_len |= (int) Frame[offset + 2]; // [ALEN_L]
+
+        // SECURITY FIX (VULN-002): Validate packet_len
+        if (packet_len < 3 || packet_len > len_to_check) {
+            return 0;  // Invalid packet length
+        }
+
+        // SECURITY FIX (VULN-002): Ensure packet doesn't exceed frame boundaries
+        if (offset + packet_len > len) {
+            return 0;  // Packet exceeds frame boundary
+        }
 
         switch (cat) {
             case 1:
