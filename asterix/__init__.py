@@ -90,42 +90,6 @@ def init(filename):
     return _asterix.init(filename)
 
 
-def describeXML(category, item=None, field=None, value=None):
-    """ Return the description of specific Category, Item, Field
-    and Value in Asterix specification as a lxml ElementTree
-    Args:
-        category: Asterix category (e.g. 62)
-        item: Asterix Item ID (e.g. 'I010')
-        field: Asterix field name (e.g. 'SAC')
-        value: Asterix field value meaning (e.g. 1)
-
-    """
-    if value:
-        return _asterix.describeXML(category, item, field, value)
-    elif field:
-        return _asterix.describeXML(category, item, field)
-    elif item:
-        return _asterix.describeXML(category, item)
-    return _asterix.describeXML(category)
-
-def describe(category, item=None, field=None, value=None):
-    """ Return the description of specific Category, Item, Field and Value in Asterix specification
-    Args:
-        category: Asterix category (e.g. 62)
-        item: Asterix Item ID (e.g. 'I010')
-        field: Asterix field name (e.g. 'SAC')
-        value: Asterix field value meaning (e.g. 1)
-
-    """
-    if value:
-        return _asterix.describe(category, item, field, value)
-    elif field:
-        return _asterix.describe(category, item, field)
-    elif item:
-        return _asterix.describe(category, item)
-    return _asterix.describe(category)
-
-
 def parse(data, **kwargs):
     """ Parse raw asterix data
     Args:
