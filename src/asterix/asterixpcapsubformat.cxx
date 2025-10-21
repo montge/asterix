@@ -117,7 +117,22 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
     if (Descriptor.m_bInvertByteOrder) {
         nPacketBufferSize = convert_long(nPacketBufferSize);
     }
-    // PERFORMANCE: Reuse persistent buffer instead of allocating per packet
+
+    /**
+     * PERFORMANCE OPTIMIZATION: Buffer reuse pattern
+     *
+     * Instead of allocating/deallocating a buffer for every PCAP packet:
+     * - GetNewBuffer() maintains a persistent buffer in the Descriptor object
+     * - Buffer is resized only when current packet exceeds previous maximum size
+     * - Eliminates malloc/free overhead for high-frequency packet streams (1000+ Hz)
+     *
+     * WHY this matters for ASTERIX PCAP files:
+     * - Typical surveillance data streams contain thousands of packets
+     * - Packet sizes are relatively uniform (most radar reports are similar size)
+     * - Reusing buffer reduces memory allocator pressure and cache misses
+     *
+     * Memory lifecycle: Buffer persists in Descriptor until format object destroyed.
+     */
     unsigned char *pPacketBuffer = (unsigned char *)Descriptor.GetNewBuffer(nPacketBufferSize);
     if (!device.Read((void *) pPacketBuffer, nPacketBufferSize)) {
         LOGERROR(1, "Couldn't read PCAP packet.\n");

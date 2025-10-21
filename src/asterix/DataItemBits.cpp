@@ -427,6 +427,27 @@ char *DataItemBits::getASCII(unsigned char *pData, int bytes, int frombit, int t
 }
 
 
+/**
+ * @brief Formats ASTERIX data item bits into various output formats (text, JSON, XML)
+ *
+ * PERFORMANCE OPTIMIZATION:
+ * Uses std::ostringstream instead of repeated string concatenation to avoid O(n²) behavior.
+ *
+ * WHY ostringstream is faster:
+ * - String concatenation (operator+=) reallocates memory on each append (~70 times per call)
+ * - ostringstream uses internal buffer that grows exponentially, minimizing reallocations
+ * - Final ss.str() performs single append to strResult
+ *
+ * Impact: Reduces string reallocations from ~70 to ~4-5 for typical ASTERIX data items,
+ * particularly beneficial for verbose output modes (JSON extensive, XML human-readable).
+ *
+ * @param strResult Output string to append formatted result
+ * @param strHeader Header prefix for hierarchical field naming
+ * @param formatType Output format (ETxt, EOut, EJSON, EJSONH, EJSONE, EXML, EXMLH)
+ * @param pData Raw binary data buffer
+ * @param nLength Data buffer length in bytes
+ * @return true if formatted successfully, false if filtered out
+ */
 bool DataItemBits::getText(std::string &strResult, std::string &strHeader, const unsigned int formatType,
                            unsigned char *pData, long nLength) {
     if (gFiltering && !m_bFiltered)

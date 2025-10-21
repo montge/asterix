@@ -23,6 +23,24 @@
 
 #include "Utils.h"
 
+/**
+ * @brief Printf-style string formatter with stack-based optimization
+ *
+ * PERFORMANCE OPTIMIZATION:
+ * Uses a two-tier allocation strategy to minimize heap allocations:
+ * 1. Stack buffer (512 bytes): Handles ~90% of format strings without heap allocation
+ * 2. Heap fallback: Only used when formatted result exceeds stack buffer size
+ *
+ * This approach eliminates malloc/free overhead for typical ASTERIX field formatting
+ * (coordinates, timestamps, identifiers) which rarely exceed 256 characters.
+ *
+ * @param fmt Printf-style format string
+ * @param ... Variable arguments matching format specifiers
+ * @return Formatted string (empty on error)
+ *
+ * @note Falls back to exact heap allocation when result exceeds 512 bytes
+ * @note Thread-safe (uses local va_list)
+ */
 std::string format(const char *fmt, ...) {
     // PERFORMANCE: Use stack buffer first to avoid heap allocation in common case
     // Most format strings are < 256 bytes, so this eliminates ~90% of allocations
