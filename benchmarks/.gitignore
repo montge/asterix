@@ -1,0 +1,19 @@
+# Build artifacts
+build/
+bin/
+*.o
+*.a
+*.so
+
+# Benchmark results
+results/*
+!results/.gitkeep
+
+# Generated test data
+data/*.raw
+data/*.pcap
+data/synthetic_*
+
+# Temporary files
+*.log
+*.tmp
