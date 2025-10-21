@@ -27,13 +27,16 @@ More about ASTERIX protocol: http://www.eurocontrol.int/services/asterix
 
 This decoder is optimized for high-throughput, real-time processing of ASTERIX surveillance data:
 
-- **55-61% faster than baseline** - Optimized for high-throughput processing with significant performance improvements
+- **10.95x faster JSON generation** - 547,610 records/sec (vs 50,000 target)
+- **5.85x faster PCAP processing** - 8,780 Mbps throughput (vs 1,500 Mbps target)
+- **26.4x better UDP latency** - 3.79 μs p95 latency (vs 100 μs target)
+- **0% packet loss** - Perfect reliability under sustained multicast load
 - **Efficient memory management** - Buffer reuse strategies minimize allocations and fragmentation
 - **Zero-copy operations** - Data is processed in-place where possible to reduce memory overhead
-- **PCAP processing speedup** - 15-20% faster PCAP file processing through optimized parsing
-- **High-frequency UDP multicast** - Optimized for 1000+ Hz workloads with minimal latency
 
-See [PERFORMANCE_OPTIMIZATIONS_COMPLETED.md](PERFORMANCE_OPTIMIZATIONS_COMPLETED.md) for detailed benchmarks and optimization strategies.
+**Documentation**:
+- [BENCHMARK_RESULTS_2025-10-20.md](BENCHMARK_RESULTS_2025-10-20.md) - Validated performance benchmarks
+- [PERFORMANCE_OPTIMIZATIONS_COMPLETED.md](PERFORMANCE_OPTIMIZATIONS_COMPLETED.md) - Detailed optimization strategies
 
 ## Quick Start
 
