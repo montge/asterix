@@ -117,10 +117,11 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
     if (Descriptor.m_bInvertByteOrder) {
         nPacketBufferSize = convert_long(nPacketBufferSize);
     }
-    unsigned char *pPacketBuffer = new unsigned char[nPacketBufferSize]; // input data buffer
+    // PERFORMANCE: Reuse persistent buffer instead of allocating per packet
+    unsigned char *pPacketBuffer = (unsigned char *)Descriptor.GetNewBuffer(nPacketBufferSize);
     if (!device.Read((void *) pPacketBuffer, nPacketBufferSize)) {
         LOGERROR(1, "Couldn't read PCAP packet.\n");
-        delete[] pPacketBuffer;
+        // No delete needed - buffer is managed by Descriptor
         return false;
     }
 
@@ -150,7 +151,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
         bIPInvertByteOrder = !Descriptor.m_bInvertByteOrder;
     } else if (protoType != 0x800) {
         LOGERROR(1, "Unknown protocol type (%x)\n", protoType);
-        delete[] pPacketBuffer;
+        // No delete needed - buffer is managed by Descriptor
         return false;
     }
 
@@ -178,7 +179,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
     if (protocol != 17) { // TODO only UDP supported for now
         pPacketPtr += IPtotalLength - 10;
         LOGERROR(1, "Unsupported protocol type (%x)", protocol);
-        delete[] pPacketBuffer;
+        // No delete needed - buffer is managed by Descriptor
         return false;
     }
 
@@ -203,7 +204,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
 
         if (IPtotalLength != m_nDataLength) {
             LOGERROR(1, "Wrong UDP data length");
-            delete[] pPacketBuffer;
+            // No delete needed - buffer is managed by Descriptor
             return false;
         }
         pPacketPtr += 2; // checksum
@@ -257,7 +258,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
         Descriptor.m_pAsterixData = Descriptor.m_InputParser.parsePacket(pPacketPtr, m_nDataLength, nTimestamp);
     }
 
-    delete[] pPacketBuffer;
+    // No delete needed - buffer is managed by Descriptor and reused for next packet
     return true; //TODO
 }
 
