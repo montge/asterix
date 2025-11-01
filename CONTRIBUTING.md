@@ -7,6 +7,7 @@ Thank you for your interest in contributing to the ASTERIX Decoder project! This
 - [Code of Conduct](#code-of-conduct)
 - [How to Contribute](#how-to-contribute)
 - [Development Setup](#development-setup)
+- [Git Hooks](#git-hooks)
 - [Code Style Guidelines](#code-style-guidelines)
 - [Testing Requirements](#testing-requirements)
 - [Documentation Requirements](#documentation-requirements)
@@ -172,6 +173,21 @@ pytest asterix/test/ tests/python/ -v
 cd build
 ctest --output-on-failure
 ```
+
+#### 6. Set Up Git Hooks (Recommended)
+
+The repository includes automated git hooks to catch issues before they're committed or pushed:
+
+```bash
+# Make hooks executable (usually automatic)
+chmod +x .git/hooks/pre-commit .git/hooks/pre-push
+
+# Optional: Install pre-commit framework for additional checks
+pip install pre-commit
+pre-commit install
+```
+
+See the [Git Hooks](#git-hooks) section below for detailed information.
 
 ## Code Style Guidelines
 
@@ -655,6 +671,211 @@ Closes #123
 **Review Timeline:**
 - Initial response: Within 1 week
 - Follow-up reviews: Within 3-5 days
+
+## Git Hooks
+
+The repository includes automated git hooks that catch issues before code is committed or pushed. These hooks are implemented as shell scripts in `.git/hooks/` and can be optionally enhanced with the pre-commit framework.
+
+### Hook Types
+
+#### Pre-Commit Hook (`.git/hooks/pre-commit`)
+
+Runs automatically before each `git commit`. Designed to be fast (<5 seconds) to not disrupt workflow. Checks include:
+
+**Code Formatting:**
+- Python: [black](https://github.com/psf/black) formatter check
+- C/C++: [clang-format](https://clang.llvm.org/docs/ClangFormat/) formatter check
+
+**Linting:**
+- Python: [flake8](https://flake8.pycqa.org/) linting
+- C/C++: [cpplint](https://github.com/google/styleguide/tree/gh-pages/cpplint) linting (warnings only)
+
+**Security Checks:**
+- Detects hardcoded passwords, API keys, tokens, and private keys
+- Identifies common security anti-patterns
+- Prevents accidental secret commits
+
+**File Checks:**
+- No files larger than 1 MB
+- No trailing whitespace
+- No merge conflict markers
+- No debug code (console.log, debugger, print_debug, etc.)
+
+**Installation:**
+
+```bash
+# Hooks are automatically set up, but ensure they're executable:
+chmod +x .git/hooks/pre-commit .git/hooks/pre-push
+```
+
+**Usage:**
+
+```bash
+# Run normally - hook executes automatically
+git commit -m "fix: update parser logic"
+
+# Bypass checks if absolutely necessary (not recommended)
+git commit --no-verify -m "WIP: experimental changes"
+```
+
+#### Pre-Push Hook (`.git/hooks/pre-push`)
+
+Runs automatically before `git push`. More comprehensive than pre-commit, can take up to 60 seconds. Ensures code quality before pushing to the repository.
+
+**Build Verification:**
+- Full C++ production build: `make clean && make`
+- Full C++ debug build: `make debug`
+- Ensures code compiles without errors
+
+**Unit Tests:**
+- C++ Google Test suite
+- Python pytest suite
+- All unit tests must pass
+
+**Integration Tests:**
+- Run `install/test/test.sh` (11 integration tests)
+- Validates end-to-end functionality
+
+**Static Analysis:**
+- [cppcheck](http://cppcheck.sourceforge.net/) for C/C++ (informational)
+- [mypy](http://mypy-lang.org/) for Python type checking (if type hints exist)
+- Reports issues without blocking push
+
+**Optional Checks:**
+- Memory leak detection with [valgrind](https://valgrind.org/) (requires valgrind installed)
+- Coverage verification (warns if below 80%)
+
+**Usage:**
+
+```bash
+# Run normally - hook executes automatically
+git push origin feature/my-feature
+
+# Bypass checks if absolutely necessary (not recommended)
+git push --no-verify origin feature/my-feature
+```
+
+### Optional: Pre-Commit Framework
+
+In addition to the shell-based hooks, the repository includes configuration for the [pre-commit.com](https://pre-commit.com/) framework, which provides additional automated checks.
+
+**Installation:**
+
+```bash
+# Install pre-commit
+pip install pre-commit
+
+# Set up framework hooks
+pre-commit install
+
+# Install all hook dependencies
+pre-commit install --install-hooks
+```
+
+**Manual Run:**
+
+```bash
+# Run all checks on all files
+pre-commit run --all-files
+
+# Run specific hook
+pre-commit run black --all-files
+
+# Update hook versions
+pre-commit autoupdate
+```
+
+**Configuration:**
+
+See `.pre-commit-config.yaml` for the list of enabled hooks and their versions. Hooks include:
+- Python formatting (black)
+- Python import sorting (isort)
+- Python linting (flake8)
+- Python type checking (mypy)
+- File checks (whitespace, conflicts, large files, etc.)
+- C/C++ formatting (clang-format)
+- Bash linting (shellcheck)
+- YAML/Markdown linting
+
+### Hook Requirements
+
+**For Pre-Commit Hook to work fully, install:**
+
+```bash
+# Ubuntu/Debian
+sudo apt-get install clang-format clang-tools
+
+# macOS
+brew install clang-format
+
+# Python tools
+pip install black flake8 cpplint
+```
+
+**For Pre-Push Hook to work fully, install:**
+
+```bash
+# Ubuntu/Debian
+sudo apt-get install valgrind cppcheck
+
+# macOS
+brew install valgrind cppcheck
+
+# C++ testing (usually already installed)
+# Google Test, CMake
+
+# Python tools
+pip install pytest pytest-cov coverage mypy
+```
+
+### Troubleshooting
+
+**Hook not executing:**
+
+```bash
+# Check hooks are executable
+ls -la .git/hooks/pre-commit .git/hooks/pre-push
+
+# Make executable if needed
+chmod +x .git/hooks/pre-*
+```
+
+**Formatting issues:**
+
+```bash
+# Auto-format Python code
+black asterix/ tests/ --line-length 100
+
+# Auto-format C++ code
+find . -name '*.cpp' -o -name '*.h' | xargs clang-format -i
+```
+
+**Test failures:**
+
+```bash
+# Run failing test locally
+cd src
+make clean && make test
+
+# Or for Python
+pytest asterix/test/ -v
+```
+
+**Skipping hooks temporarily:**
+
+```bash
+# Skip pre-commit hook only
+git commit --no-verify -m "message"
+
+# Skip pre-push hook only
+git push --no-verify origin branch
+
+# Skip both hooks (not recommended)
+git commit --no-verify -m "message"
+git push --no-verify origin branch
+```
+
+**Note:** Skipping hooks is strongly discouraged. They exist to maintain code quality and prevent issues from reaching the repository.
 
 ## Commit Message Guidelines
 
