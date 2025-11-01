@@ -1,0 +1,1 @@
+/usr/bin/c++  -fconcepts --coverage -fstack-protector-strong  --coverage -Wl,-z,relro,-z,now --coverage CMakeFiles/test_datarecord.dir/test_datarecord.cpp.o -o ../../bin/test_datarecord  -Wl,-rpath,/path/to/asterix/lib ../../lib/libgtest_main.so.1.12.1 ../../lib/libasterix.a /usr/lib/x86_64-linux-gnu/libexpat.so ../../lib/libgtest.so.1.12.1 

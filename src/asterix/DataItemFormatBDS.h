@@ -25,6 +25,7 @@
 #define DataItemFormatBDS_H_
 
 #include "DataItemFormatFixed.h"
+#include "cxx23_features.h"
 
 class DataItemFormatBDS : public DataItemFormat {
 public:
@@ -35,7 +36,13 @@ public:
     virtual
     ~DataItemFormatBDS();
 
+    // C++23 Quick Win: Deduced this allows better devirtualization
+#if HAS_DEDUCED_THIS
+    DataItemFormatBDS *clone(this const auto& self) const { return new DataItemFormatBDS(self); }
+#else
     DataItemFormatBDS *clone() const { return new DataItemFormatBDS(*this); } // Return clone of object
+#endif
+
     long getLength(const unsigned char *pData);
 
     bool getText(std::string &strResult, std::string &strHeader, const unsigned int formatType, unsigned char *pData,

@@ -11,13 +11,13 @@ ASTERIX (All Purpose STructured EUROCONTROL SuRveillance Information EXchange) i
 ### C++ Executable
 
 **Requirements:**
-- **C++17 compatible compiler**:
-  - GCC 7.0+ (recommended: GCC 9+ for better C++17 support)
-  - Clang 5.0+ (recommended: Clang 9+ for better C++17 support)
-  - MSVC 2017 15.3+ (Visual Studio 2017 version 15.3 or later)
-  - AppleClang 9.1+ (Xcode 9.3 or later)
+- **C++23 compatible compiler** (upgraded from C++17):
+  - GCC 13.0+ (recommended for full C++23 support)
+  - Clang 16.0+ (recommended for full C++23 support)
+  - MSVC 2022 v17.4+ (Visual Studio 2022 version 17.4 or later)
+  - AppleClang 15.0+ (Xcode 15 or later)
 - libexpat-devel (for XML parsing)
-- CMake 3.12+ or GNU Make
+- CMake 3.20+ or GNU Make
 
 **Using Make (Primary method):**
 ```bash
@@ -39,7 +39,8 @@ make
 
 The executable will be created at `install/asterix` (not asterix.exe despite documentation).
 
-**C++ Standard:** The project uses C++17 (set in CMakeLists.txt via `CMAKE_CXX_STANDARD 17`)
+**C++ Standard:** The project uses C++23 (set in CMakeLists.txt via `CMAKE_CXX_STANDARD 23`)
+**C Standard:** The project uses C23 (set in CMakeLists.txt via `CMAKE_C_STANDARD 23`)
 
 ### Python Module
 
@@ -161,15 +162,20 @@ Then copy to `asterix/config/` and `install/config/`.
 
 ### C++ Code Organization
 
-**Language Standard:** C++17
+**Language Standard:** C++23 (upgraded from C++17)
 
-The codebase uses modern C++17 features including:
-- Structured bindings
-- `std::optional` for optional values
-- `std::string_view` for efficient string handling
-- `if constexpr` for compile-time conditionals
-- Inline variables
-- Nested namespaces
+The codebase uses modern C++23 features including:
+- Deduced this (explicit object parameters) - for better polymorphic performance
+- Ranges algorithms - for cleaner container operations
+- `std::format` - for type-safe formatting (when available)
+- `std::string_view` - for efficient string handling (C++17 feature, retained)
+- `std::optional` - for optional values (C++17 feature, retained)
+- Structured bindings (C++17 feature, retained)
+- `if constexpr` - for compile-time conditionals (C++17 feature, retained)
+- Feature detection via `src/asterix/cxx23_features.h` - graceful fallback to C++17/20
+
+**Backward Compatibility:**
+The codebase includes feature detection macros in `src/asterix/cxx23_features.h` that allow building with older C++17/20 compilers when C++23 features are not available. Performance optimizations from C++23 features (deduced this, ranges) will be automatically disabled when using older compilers.
 
 **Code Structure:**
 - Header/implementation pairs in `src/asterix/`

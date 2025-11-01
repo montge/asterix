@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/test_dataitemformatcompound.dir/test_dataitemformatcompound.cpp.o -o test_dataitemformatcompound 

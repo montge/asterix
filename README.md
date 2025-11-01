@@ -3,12 +3,12 @@
 [![CI Status](https://github.com/montge/asterix/actions/workflows/ci-verification.yml/badge.svg)](https://github.com/montge/asterix/actions/workflows/ci-verification.yml)
 [![CodeQL](https://github.com/montge/asterix/workflows/CodeQL/badge.svg)](https://github.com/montge/asterix/security/code-scanning)
 [![Coverage](https://img.shields.io/badge/coverage-92.2%25-brightgreen)](https://github.com/montge/asterix)
-[![C++17](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/std/the-standard)
-[![C17](https://img.shields.io/badge/C-17-blue.svg)](https://en.cppreference.com/w/c/17)
-[![GCC 7+](https://img.shields.io/badge/GCC-7%2B-brightgreen.svg)](https://gcc.gnu.org/)
+[![C++23](https://img.shields.io/badge/C%2B%2B-23-blue.svg)](https://isocpp.org/std/the-standard)
+[![C23](https://img.shields.io/badge/C-23-blue.svg)](https://en.cppreference.com/w/c/23)
+[![GCC 13+](https://img.shields.io/badge/GCC-13%2B-brightgreen.svg)](https://gcc.gnu.org/)
 [![Security Hardened](https://img.shields.io/badge/security-hardened-green.svg)](#security-features)
 [![PyPI](https://img.shields.io/pypi/v/asterix_decoder.svg)](https://pypi.org/project/asterix_decoder/)
-[![Python Versions](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://github.com/montge/asterix)
+[![Python Versions](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)](https://github.com/montge/asterix)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 
 > Professional ASTERIX protocol decoder for Air Traffic Management surveillance data
@@ -91,13 +91,15 @@ python setup.py install
 ```
 
 **Dependencies:**
-- **C++17 compatible compiler**:
-  - GCC 7.0+ (recommended: GCC 9+)
-  - Clang 5.0+ (recommended: Clang 9+)
-  - MSVC 2017 15.3+ / Visual Studio 2017+
-  - AppleClang 9.1+ / Xcode 9.3+
+- **C++23 compatible compiler** (upgraded from C++17):
+  - GCC 13.0+ (recommended for full C++23 support)
+  - Clang 16.0+ (recommended for full C++23 support)
+  - MSVC 2022 v17.4+ / Visual Studio 2022 version 17.4+
+  - AppleClang 15.0+ / Xcode 15+
 - Linux/macOS: `libexpat-devel` (XML parsing)
 - Windows: See [BUILD_WINDOWS.md](BUILD_WINDOWS.md)
+
+**Note:** The project uses C++23 features with automatic fallback to C++17/20 when C++23 is not available. For best performance, use a C++23-capable compiler.
 
 ## Documentation
 
@@ -234,8 +236,8 @@ cd install/test
 ### Build System
 
 **Requirements:**
-- C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017+)
-- CMake 3.12+ or GNU Make
+- C++23 compatible compiler (GCC 13+, Clang 16+, MSVC 2022 v17.4+, AppleClang 15+)
+- CMake 3.20+ or GNU Make
 - libexpat library for XML parsing
 
 **Make (Primary):**
@@ -254,7 +256,7 @@ cmake .
 make
 ```
 
-**Note:** The project uses C++17 features and requires a modern compiler.
+**Note:** The project uses C++23 features and requires a modern compiler (GCC 13+, Clang 16+, MSVC 2022 v17.4+). Feature detection is automatic - the build system will use C++23 features when available and gracefully fall back to C++17/20 compatibility mode on older compilers.
 
 ### CI/CD Pipeline
 

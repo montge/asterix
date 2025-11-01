@@ -72,9 +72,9 @@ OBJ_DIR_SHORT = release
 OBJ_DIR = $(TOP)/obj/$(CUR_DIR)/$(OBJ_DIR_SHORT)
 endif
 
-# C17 and C++17 standard versions
+# C++23 standard for C++ (C17 for C files - C23 not widely supported yet)
 CSTD   := -std=c17
-CXXSTD := -std=c++17
+CXXSTD := -std=c++23
 
 INCLUDEDIRS   = -I$(TOP)/src/engine \
                 -I$(TOP)/src/asterix \
