@@ -118,7 +118,7 @@ Download pre-built packages from [GitHub Releases](https://github.com/montge/ast
 | **RHEL/Rocky 9** | `.rpm` | C++23 (GCC 13+) | `sudo rpm -i asterix-*.rpm` |
 | **Fedora 40** | `.rpm` | C++23 (GCC 14) | `sudo rpm -i asterix-*.rpm` |
 | **Linux ARM64** | `.deb`/`.tar.gz` | C++23 (GCC 13+) | Raspberry Pi, AWS Graviton, NVIDIA Jetson |
-| **Windows 10/11** | `.zip`/`.exe` (NSIS) | C++23 (MSVC 2022) | See [CROSS_PLATFORM_BUILD_GUIDE.md](CROSS_PLATFORM_BUILD_GUIDE.md) |
+| **Windows 10/11** | `.zip`/`.msi`/`.exe` | C++23 (MSVC 2022) | MSI (WiX), EXE (NSIS), ZIP (portable) |
 | **macOS 13+ (Intel)** | `.tar.gz`/`.pkg` | C++23 (AppleClang 15+) | See [CROSS_PLATFORM_BUILD_GUIDE.md](CROSS_PLATFORM_BUILD_GUIDE.md) |
 | **macOS 14+ (M1/M2)** | `.tar.gz`/`.pkg`/`.dmg` | C++23 (AppleClang 15+) | See [CROSS_PLATFORM_BUILD_GUIDE.md](CROSS_PLATFORM_BUILD_GUIDE.md) |
 
