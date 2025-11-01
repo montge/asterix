@@ -1,5 +1,0 @@
-if(EXISTS "/path/to/asterix/tests/cpp/test_integration_error_handling[1]_tests.cmake")
-  include("/path/to/asterix/tests/cpp/test_integration_error_handling[1]_tests.cmake")
-else()
-  add_test(test_integration_error_handling_NOT_BUILT test_integration_error_handling_NOT_BUILT)
-endif()
