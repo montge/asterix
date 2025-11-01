@@ -68,7 +68,7 @@ jobs:
         ls -lh ../*.deb
 
     - name: Upload DEB packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: deb-packages-${{ matrix.name }}
         path: ../*.deb
@@ -141,7 +141,7 @@ jobs:
         ls -lh ~/rpmbuild/RPMS/*/*.rpm
 
     - name: Upload RPM packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: rpm-packages-${{ matrix.name }}
         path: ~/rpmbuild/RPMS/*/*.rpm
@@ -183,7 +183,7 @@ jobs:
         ls -lh build/*.tar.gz build/*.zip
 
     - name: Upload source packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: source-packages
         path: |
