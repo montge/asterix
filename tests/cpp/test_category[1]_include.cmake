@@ -1,5 +1,0 @@
-if(EXISTS "/home/e/Development/asterix/tests/cpp/test_category[1]_tests.cmake")
-  include("/home/e/Development/asterix/tests/cpp/test_category[1]_tests.cmake")
-else()
-  add_test(test_category_NOT_BUILT test_category_NOT_BUILT)
-endif()
