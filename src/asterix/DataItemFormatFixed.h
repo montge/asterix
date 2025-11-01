@@ -26,6 +26,7 @@
 
 #include "DataItemFormat.h"
 #include "DataItemBits.h"
+#include "cxx23_features.h"
 
 class DataItemFormatFixed : public DataItemFormat {
 public:
@@ -38,7 +39,13 @@ public:
 
     int m_nLength;
 
+    // C++23 Quick Win: Deduced this allows better devirtualization
+#if HAS_DEDUCED_THIS
+    DataItemFormatFixed *clone(this const auto& self) const { return new DataItemFormatFixed(self); }
+#else
     DataItemFormatFixed *clone() const { return new DataItemFormatFixed(*this); } // Return clone of object
+#endif
+
     long getLength();
 
     bool isLastPart(const unsigned char *pData);

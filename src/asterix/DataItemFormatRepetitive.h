@@ -25,6 +25,7 @@
 #define DATAITEMFORMATREPETITIVE_H_
 
 #include "DataItemFormatFixed.h"
+#include "cxx23_features.h"
 
 class DataItemFormatRepetitive : public DataItemFormat {
 public:
@@ -35,7 +36,13 @@ public:
     virtual
     ~DataItemFormatRepetitive();
 
+    // C++23 Quick Win: Deduced this allows better devirtualization
+#if HAS_DEDUCED_THIS
+    DataItemFormatRepetitive *clone(this const auto& self) const { return new DataItemFormatRepetitive(self); }
+#else
     DataItemFormatRepetitive *clone() const { return new DataItemFormatRepetitive(*this); } // Return clone of object
+#endif
+
     long getLength(const unsigned char *pData);
 
     bool getText(std::string &strResult, std::string &strHeader, const unsigned int formatType, unsigned char *pData,

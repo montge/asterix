@@ -1,0 +1,14 @@
+# Target labels
+ googletest-populate
+# Source files and their labels
+/path/to/asterix/tests/cpp/build/_deps/googletest-subbuild/CMakeFiles/googletest-populate
+/path/to/asterix/tests/cpp/build/_deps/googletest-subbuild/CMakeFiles/googletest-populate.rule
+/path/to/asterix/tests/cpp/build/_deps/googletest-subbuild/CMakeFiles/googletest-populate-complete.rule
+/path/to/asterix/tests/cpp/build/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-build.rule
+/path/to/asterix/tests/cpp/build/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-configure.rule
+/path/to/asterix/tests/cpp/build/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-download.rule
+/path/to/asterix/tests/cpp/build/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-install.rule
+/path/to/asterix/tests/cpp/build/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-mkdir.rule
+/path/to/asterix/tests/cpp/build/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-patch.rule
+/path/to/asterix/tests/cpp/build/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-test.rule
+/path/to/asterix/tests/cpp/build/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-update.rule

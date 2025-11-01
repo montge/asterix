@@ -1,0 +1,3 @@
+/path/to/asterix/_deps/googletest-subbuild/CMakeFiles/googletest-populate.dir
+/path/to/asterix/_deps/googletest-subbuild/CMakeFiles/edit_cache.dir
+/path/to/asterix/_deps/googletest-subbuild/CMakeFiles/rebuild_cache.dir

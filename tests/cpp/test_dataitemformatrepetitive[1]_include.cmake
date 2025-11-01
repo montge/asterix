@@ -1,0 +1,5 @@
+if(EXISTS "/path/to/asterix/tests/cpp/test_dataitemformatrepetitive[1]_tests.cmake")
+  include("/path/to/asterix/tests/cpp/test_dataitemformatrepetitive[1]_tests.cmake")
+else()
+  add_test(test_dataitemformatrepetitive_NOT_BUILT test_dataitemformatrepetitive_NOT_BUILT)
+endif()

@@ -1,0 +1,5 @@
+if(EXISTS "/path/to/asterix/tests/cpp/build/test_inputparser[1]_tests.cmake")
+  include("/path/to/asterix/tests/cpp/build/test_inputparser[1]_tests.cmake")
+else()
+  add_test(test_inputparser_NOT_BUILT test_inputparser_NOT_BUILT)
+endif()

@@ -38,3 +38,7 @@ valgrind.result
 
 # Generated documentation
 docs/cpp/html/
+
+# Virtual environment
+venv/
+.venv/
