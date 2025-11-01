@@ -4,7 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-ASTERIX (All Purpose STructured EUROCONTROL SuRveillance Information EXchange) is a decoder/parser for EUROCONTROL ASTERIX protocol - an ATM (Air Traffic Management) Surveillance Data Binary Messaging Format. The project provides both a C++ standalone executable and a Python module for parsing ASTERIX data from various sources (files, stdin, network multicast streams).
+ASTERIX (All Purpose STructured EUROCONTROL SuRveillance Information EXchange) is a decoder/parser for EUROCONTROL ASTERIX protocol - an ATM (Air Traffic Management) Surveillance Data Binary Messaging Format. The project provides three language bindings:
+1. **C++ standalone executable** - High-performance command-line tool (C++23/C23)
+2. **Python module** - Simple, intuitive API for Python developers (3.10-3.14)
+3. **Rust crate** - Type-safe, memory-safe bindings with zero-copy performance (1.70+)
+
+All three bindings share the same C++ core for parsing ASTERIX data from various sources (files, stdin, network multicast streams).
 
 ## Build System & Commands
 
@@ -59,6 +64,71 @@ python -m unittest
 cd install/test && ./test.sh   # Integration tests
 ```
 
+### Rust Bindings
+
+**Requirements:**
+- Rust 1.70+ (2021 edition)
+- C++17 compatible compiler (same as C++ executable)
+- libexpat-devel (for XML parsing)
+- Cargo build system
+
+**Using Cargo:**
+```bash
+# Build from asterix-rs/ directory
+cd asterix-rs
+cargo build              # Debug build
+cargo build --release    # Production build
+cargo test               # Run tests
+cargo test --all-features # Run all tests
+cargo bench              # Run benchmarks
+
+# Install from crates.io
+cargo add asterix-decoder
+```
+
+**Directory Structure:**
+```
+asterix-rs/
+├── Cargo.toml           # Rust package manifest
+├── build.rs             # Build script (compiles C++ via CMake)
+├── README.md            # Rust-specific README
+├── src/
+│   ├── lib.rs          # Public API
+│   ├── ffi.rs          # CXX bridge (unsafe FFI)
+│   ├── parser.rs       # Safe Rust API
+│   ├── data_types.rs   # AsterixRecord, DataItem types
+│   ├── error.rs        # AsterixError enum
+│   └── config.rs       # Configuration management
+├── tests/
+│   └── integration_tests.rs  # Integration tests
+├── examples/
+│   ├── parse_raw.rs    # Parse raw bytes
+│   ├── parse_file.rs   # Parse from file
+│   ├── parse_pcap.rs   # Parse PCAP with incremental parsing
+│   ├── incremental_parsing.rs
+│   ├── json_export.rs
+│   ├── describe_category.rs
+│   └── stream_processing.rs
+└── benches/
+    └── benchmarks.rs   # Performance benchmarks
+```
+
+**FFI Architecture:**
+- Uses CXX crate for safe C++/Rust interop
+- Build script (build.rs) invokes CMake to compile C++ core
+- Type-safe FFI bridge eliminates manual unsafe code
+- Memory ownership: Data copied to Rust side (owned Vec<AsterixRecord>)
+
+**Testing:**
+```bash
+cd asterix-rs
+cargo test              # Unit + integration tests
+cargo test --doc        # Documentation tests
+cargo bench             # Performance benchmarks
+cargo clippy            # Linter
+cargo fmt --check       # Format check
+```
+
 ### Running Tests
 
 ```bash
@@ -68,6 +138,11 @@ cd install/test
 
 # Python tests
 python -m unittest
+
+# Rust tests
+cd asterix-rs
+cargo test --all-features
+cargo bench
 
 # Memory leak tests (requires valgrind)
 cd install/test
@@ -92,9 +167,10 @@ The codebase has three distinct layers that work together:
    - Format submodules for encapsulation protocols (PCAP, HDLC, FINAL, GPS)
    - Output formatters (text, JSON, XML)
 
-3. **Application Layer** (`src/main/`) - CLI and Python bindings
+3. **Application Layer** (`src/main/`) - CLI and language bindings
    - Command-line interface (`asterix.cpp`)
    - Python C extension wrapper (`src/python/`)
+   - Rust bindings via CXX FFI (`asterix-rs/`)
 
 ### Key Components
 
@@ -140,6 +216,23 @@ The Python module (`asterix/`) wraps the C++ parser via a C extension (`_asterix
 - `parse_with_offset(data, offset, blocks_count)` - Incremental parsing
 - `describe(category, item, field, value)` - Get descriptions
 - `init(filename)` - Load custom category definition
+
+### Rust Module Design
+
+The Rust module (`asterix-rs/`) wraps the C++ parser via the CXX crate:
+
+- FFI bridge built using CXX crate for type-safe C++/Rust interop
+- Build script (build.rs) compiles C++ core via CMake
+- Rust wrapper in `src/lib.rs` provides safe, idiomatic API
+- Auto-initializes XML configurations via `init_default()`
+- Returns parsed data as owned Rust types (Vec<AsterixRecord>)
+
+**Key Rust APIs:**
+- `parse(data, options)` - Parse raw bytes with options
+- `parse_with_offset(data, offset, count, options)` - Incremental parsing
+- `describe(category, item, field, value)` - Get descriptions
+- `init_default()` - Initialize with default categories
+- `Parser::new().add_category(path).build()` - Custom categories
 
 ## Common Development Tasks
 
@@ -205,10 +298,12 @@ Input format flags: `-P` (PCAP), `-R` (ORADIS PCAP), `-O` (ORADIS), `-F` (FINAL)
 ## Repository Structure Notes
 
 - `asterix/` - Python module source
+- `asterix-rs/` - Rust crate (bindings via CXX)
 - `src/` - C++ source code (engine, asterix, main, python bindings)
 - `install/` - Build output directory and test suite
 - `asterix-specs-converter/` - Tools for converting JSON specs to XML
 - Configuration files are duplicated in `asterix/config/` (Python) and `install/config/` (C++)
+- Rust uses C++ config files directly via FFI
 
 ## Upstream Repository
 
