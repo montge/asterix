@@ -128,13 +128,29 @@ jobs:
         Write-Host "`n=== Tests completed ===" -ForegroundColor Green
       continue-on-error: true
 
-    - name: Create MSI installer (Windows 2022 Release only)
+    - name: Create Windows installers (Windows 2022 Release only)
       if: matrix.os == 'windows-2022' && matrix.config == 'Release'
       run: |
-        # Note: WiX Toolset or NSIS would be needed for MSI creation
-        # For now, create a ZIP package using CPack
         cd build
+
+        # Create ZIP archive (always works)
         cpack -G ZIP -C Release
+
+        # Install NSIS for installer creation
+        choco install nsis -y --no-progress 2>$null || Write-Host "NSIS install skipped"
+
+        # Create NSIS installer if available
+        $nsisPath = "C:\Program Files (x86)\NSIS\makensis.exe"
+        if (Test-Path $nsisPath) {
+          Write-Host "Creating NSIS installer..."
+          cpack -G NSIS -C Release
+        } else {
+          Write-Host "NSIS not available - only ZIP created"
+        }
+
+        # List packages
+        Get-ChildItem -Filter "asterix*" | Format-Table Name, Length
+      shell: pwsh
       continue-on-error: true
 
     - name: Upload Windows artifacts
@@ -147,6 +163,8 @@ jobs:
           install/lib/*.lib
           install/include/
           asterix/config/
+          build/*.zip
+          build/*.exe
           build/*.zip
         retention-days: 14
 
@@ -243,17 +261,50 @@ jobs:
         echo -e "\n=== Checking library exports ==="
         nm -gU ${{ github.workspace }}/install/lib/libasterix.dylib | head -20 || true
 
-    - name: Create DMG package (macOS 14 Release only)
+    - name: Create macOS installers (macOS 14 Release only)
       if: matrix.os == 'macos-14' && matrix.config == 'Release'
       run: |
         cd build
-        # Create TGZ and ZIP packages using CPack
+
+        # Create TGZ and ZIP packages
         cpack -G TGZ
         cpack -G ZIP
 
-        # TODO: For production, use create-dmg or dmgbuild for DMG creation
-        # Example: create-dmg --volname "ASTERIX" --window-size 600 400 \
-        #          asterix.dmg install/
+        # Install create-dmg for DMG creation
+        brew install create-dmg || echo "create-dmg install skipped"
+
+        # Create DMG if create-dmg is available
+        if command -v create-dmg &> /dev/null; then
+          echo "Creating DMG installer..."
+          cd ../install
+          create-dmg \
+            --volname "ASTERIX v2.8.10" \
+            --volicon "../asterix/config/asterix.icns" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "asterix" 175 120 \
+            --hide-extension "asterix" \
+            --app-drop-link 425 120 \
+            "../build/asterix-2.8.10-macos-arm64.dmg" \
+            . || echo "DMG creation skipped (icon/resources missing)"
+        else
+          echo "create-dmg not available - only TGZ/ZIP created"
+        fi
+
+        # Create PKG installer using macOS productbuild
+        cd ../build
+        if [ -d "../install" ]; then
+          echo "Creating PKG installer..."
+          pkgbuild --root ../install \
+                   --identifier com.crocontrol.asterix \
+                   --version 2.8.10 \
+                   --install-location /usr/local \
+                   asterix-2.8.10-macos-arm64.pkg || echo "PKG creation failed"
+        fi
+
+        # List packages
+        ls -lh *.tar.gz *.zip *.dmg *.pkg 2>/dev/null || echo "Some packages not created"
       continue-on-error: true
 
     - name: Upload macOS artifacts
@@ -267,6 +318,9 @@ jobs:
           install/include/
           asterix/config/
           build/*.tar.gz
+          build/*.zip
+          build/*.dmg
+          build/*.pkg
           build/*.zip
         retention-days: 14
 
@@ -416,7 +470,8 @@ jobs:
         retention-days: 14
 
   # =============================================================================
-  # LINUX ARM64 BUILD (GCC 13+, C++23) - Raspberry Pi, AWS Graviton, etc.
+  # LINUX ARM64 BUILD (GCC 13+, C++23)
+  # Raspberry Pi, AWS Graviton, NVIDIA Jetson, DGX (ARM variants), embedded systems
   # =============================================================================
   build-linux-arm64:
     name: Linux ARM64 ${{ matrix.distro }} - ${{ matrix.config }}
