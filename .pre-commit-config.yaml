@@ -90,14 +90,32 @@ repos:
       - id: markdownlint
         args: ['--fix']
 
+  # Rust: Code formatting with rustfmt
+  - repo: https://github.com/doublify/pre-commit-rust
+    rev: 'v1.0'
+    hooks:
+      - id: fmt
+        name: Rust format check
+        args: ['--manifest-path', 'asterix-rs/Cargo.toml', '--']
+      - id: clippy
+        name: Rust clippy lints
+        args: ['--manifest-path', 'asterix-rs/Cargo.toml', '--all-features', '--', '-D', 'warnings']
+
   # General: Trailing whitespace and other file checks
   - repo: local
     hooks:
       - id: no-debug-code
         name: No debug code
-        entry: bash -c 'grep -r "console\.log\|debugger\|print_debug\|cout.*DEBUG" --include="*.py" --include="*.cpp" --include="*.h" --exclude=".pre-commit-config.yaml" . && exit 1 || exit 0'
+        entry: bash -c 'grep -r "console\.log\|debugger\|print_debug\|cout.*DEBUG\|dbg!\|println!" --include="*.py" --include="*.cpp" --include="*.h" --include="*.rs" --exclude=".pre-commit-config.yaml" --exclude-dir="target" . && exit 1 || exit 0'
         language: system
-        types: [python, c++]
+        types: [python, c++, rust]
+        pass_filenames: false
+
+      - id: cargo-check
+        name: Cargo check
+        entry: bash -c 'cd asterix-rs && cargo check --all-features'
+        language: system
+        files: '^asterix-rs/.*\.rs$'
         pass_filenames: false
 
 # Global settings

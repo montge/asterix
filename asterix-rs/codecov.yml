@@ -1,0 +1,68 @@
+# Codecov Configuration for asterix-rs
+# https://docs.codecov.com/docs/codecov-yaml
+
+# Coverage targets matching project standards
+coverage:
+  status:
+    project:
+      default:
+        target: 90%           # Overall target
+        threshold: 1%         # Allow 1% drop
+        base: auto
+        flags:
+          - rust
+        if_ci_failed: error
+
+    patch:
+      default:
+        target: 80%           # New code minimum
+        threshold: 5%
+        base: auto
+        flags:
+          - rust
+
+# Flag configuration for different coverage tools
+flags:
+  rust:
+    paths:
+      - asterix-rs/src/
+      - asterix-rs/tests/
+    carryforward: true
+
+  tarpaulin:
+    paths:
+      - asterix-rs/src/
+      - asterix-rs/tests/
+    carryforward: true
+
+  llvm-cov:
+    paths:
+      - asterix-rs/src/
+      - asterix-rs/tests/
+    carryforward: true
+
+# Ignore patterns
+ignore:
+  - "asterix-rs/examples/**"
+  - "asterix-rs/benches/**"
+  - "asterix-rs/build.rs"
+  - "asterix-rs/tests/**"  # Test code itself
+  - "**/target/**"
+
+# Comment on PRs
+comment:
+  layout: "reach,diff,flags,tree,footer"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+
+# GitHub Checks integration
+github_checks:
+  annotations: true
+
+# Codecov AI
+codecov:
+  require_ci_to_pass: yes
+  notify:
+    wait_for_ci: yes
