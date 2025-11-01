@@ -1,3 +1,15 @@
+asterix (2.8.10-1) unstable; urgency=medium
+
+  * New upstream release 2.8.10 (synced with CroatiaControlLtd/asterix)
+  * Added Category 15 (INCS Target Reports) v1.2 support
+  * Fixed CAT004 cartesian values and improved type portability
+  * Security hardening: pre-commit hooks, compiler flags verification
+  * Added comprehensive planning docs: C++23 upgrade, Rust bindings, ASTERIX matrix
+  * Maintain 92.2% test coverage (560 tests, 100% passing)
+  * All security patches preserved (41 CVEs fixed)
+
+ -- ASTERIX Maintainers <noreply@github.com>  Fri, 01 Nov 2024 18:00:00 +0000
+
 asterix (2.8.9-1) unstable; urgency=medium
 
   * New upstream release 2.8.9
