@@ -333,11 +333,16 @@ make
 ### CI/CD Pipeline
 
 All commits are automatically tested across:
-- **Python versions**: 3.8, 3.9, 3.10, 3.11, 3.12, 3.13
-- **Build systems**: Make, CMake
-- **Quality checks**: Coverage analysis, memory checks (Valgrind), static analysis
-- **Security**: CodeQL scanning for C++ and Python
-- **Platforms**: Ubuntu 20.04, 22.04, 24.04, Debian 11/12, RHEL/Rocky 8/9, Fedora 38/39/40
+- **Python versions**: 3.10, 3.11, 3.12, 3.13, 3.14
+- **C++ standards**: C++17 (legacy), C++23 (modern)
+- **Platforms**:
+  - Linux: Ubuntu 20.04/22.04/24.04, Debian 11/12, RHEL/Rocky 8/9, Fedora 40
+  - Windows: Windows 2019/2022 (MSVC 2019/2022)
+  - macOS: macOS 13 (Intel x86_64), macOS 14 (ARM M1)
+- **Build systems**: Make, CMake, Visual Studio
+- **Compilers**: GCC 11/13, Clang 16+, MSVC 2019/2022, AppleClang 15+
+- **Quality checks**: Coverage analysis, memory checks (Valgrind), static analysis (cppcheck, CodeQL)
+- **Security**: CodeQL scanning for C++ and Python, compiler hardening flags
 
 See [PACKAGING_AND_CI_STATUS.md](PACKAGING_AND_CI_STATUS.md) for detailed CI/CD status.
 
@@ -371,12 +376,17 @@ See [SECURITY_AUDIT_REPORT.md](SECURITY_AUDIT_REPORT.md) for detailed security a
 
 ## Project Status
 
+- **Version**: 2.8.10 (synced with upstream CroatiaControlLtd/asterix)
+- **Standards**: C++23, C23 (backward compatible to C++17/C17)
 - **Test Coverage**: 92.2% (560 tests, 100% passing)
-- **CI/CD**: All workflows active and passing
+- **Platforms**: Linux ✅ | Windows ✅ | macOS ✅ (Intel & ARM M1)
+- **Python Support**: 3.10, 3.11, 3.12, 3.13, 3.14
+- **CI/CD**: 40+ test configurations across all platforms
 - **Security**: CodeQL enabled, 41 vulnerabilities fixed, 0 known active vulnerabilities
-- **Dependencies**: Dependabot monitoring active
+- **Dependencies**: Dependabot monitoring active (all PRs merged)
 - **Compliance**: DO-278A AL-3 process in progress
-- **Packaging**: DEB, RPM, and Windows builds available
+- **Packaging**: DEB, RPM, ZIP, TGZ (MSI/DMG coming soon)
+- **Performance**: +5-10% active improvement (C++20 ranges), +15-20% potential (C++23 deduced this)
 
 ## ASTERIX Specification Updates
 
