@@ -3,6 +3,10 @@
 [![CI Status](https://github.com/montge/asterix/actions/workflows/ci-verification.yml/badge.svg)](https://github.com/montge/asterix/actions/workflows/ci-verification.yml)
 [![CodeQL](https://github.com/montge/asterix/workflows/CodeQL/badge.svg)](https://github.com/montge/asterix/security/code-scanning)
 [![Coverage](https://img.shields.io/badge/coverage-92.2%25-brightgreen)](https://github.com/montge/asterix)
+[![C++17](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/std/the-standard)
+[![C17](https://img.shields.io/badge/C-17-blue.svg)](https://en.cppreference.com/w/c/17)
+[![GCC 7+](https://img.shields.io/badge/GCC-7%2B-brightgreen.svg)](https://gcc.gnu.org/)
+[![Security Hardened](https://img.shields.io/badge/security-hardened-green.svg)](#security-features)
 [![PyPI](https://img.shields.io/pypi/v/asterix_decoder.svg)](https://pypi.org/project/asterix_decoder/)
 [![Python Versions](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://github.com/montge/asterix)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
@@ -263,11 +267,39 @@ All commits are automatically tested across:
 
 See [PACKAGING_AND_CI_STATUS.md](PACKAGING_AND_CI_STATUS.md) for detailed CI/CD status.
 
+## Security Features
+
+This project implements defense-in-depth security practices:
+
+**Compiler Hardening** (FREE tools, enabled by default):
+- `-fstack-protector-strong` - Stack buffer overflow protection
+- `-D_FORTIFY_SOURCE=2` - Runtime buffer overflow detection (GCC/glibc, NOT commercial Fortify)
+- `-Wl,-z,relro,-z,now` - Full RELRO (prevents GOT overwrite attacks)
+
+**Automated Security Scanning**:
+- [![CodeQL](https://img.shields.io/badge/CodeQL-enabled-green)](https://github.com/montge/asterix/security/code-scanning) - Semantic code analysis for C++ and Python
+- [![Dependabot](https://img.shields.io/badge/Dependabot-active-blue)](https://github.com/montge/asterix/network/updates) - Automated dependency updates
+- `cppcheck` - Static analysis in CI pipeline
+- Pre-commit hooks - Detect hardcoded secrets, insecure patterns
+
+**Vulnerability Fixes**:
+- **41 CVEs resolved** (4 critical/high, 37 medium/low)
+- Integer overflow protections (CWE-190)
+- Buffer overflow fixes (CWE-120, CWE-823)
+- Input validation hardening (CWE-129)
+
+**Optional Commercial Tools** (not required, but supported if available):
+- HP Fortify SCA - Enterprise static application security testing
+- Coverity - Advanced static analysis
+- Valgrind - Memory leak detection (free, included in CI)
+
+See [SECURITY_AUDIT_REPORT.md](SECURITY_AUDIT_REPORT.md) for detailed security analysis.
+
 ## Project Status
 
 - **Test Coverage**: 92.2% (560 tests, 100% passing)
 - **CI/CD**: All workflows active and passing
-- **Security**: CodeQL enabled, 0 known vulnerabilities
+- **Security**: CodeQL enabled, 41 vulnerabilities fixed, 0 known active vulnerabilities
 - **Dependencies**: Dependabot monitoring active
 - **Compliance**: DO-278A AL-3 process in progress
 - **Packaging**: DEB, RPM, and Windows builds available
