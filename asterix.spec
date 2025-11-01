@@ -1,5 +1,5 @@
 Name:           asterix
-Version:        2.8.9
+Version:        2.8.10
 Release:        1%{?dist}
 Summary:        ASTERIX protocol decoder library and tools
 
