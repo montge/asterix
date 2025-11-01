@@ -1,0 +1,114 @@
+# cargo-deny configuration for ASTERIX Rust bindings
+# Documentation: https://embarkstudios.github.io/cargo-deny/
+
+# =============================================================================
+# ADVISORIES - Check for security vulnerabilities
+# =============================================================================
+[advisories]
+# Check the RustSec Advisory Database for crates with security vulnerabilities
+db-path = "~/.cargo/advisory-db"
+db-urls = ["https://github.com/rustsec/advisory-db"]
+
+# The lint level for security vulnerabilities
+vulnerability = "deny"
+
+# The lint level for unmaintained crates
+unmaintained = "warn"
+
+# The lint level for crates with security notices
+notice = "warn"
+
+# The lint level for yanked crates
+yanked = "deny"
+
+# Ignore specific advisories (only if unavoidable)
+# Example: ignore = ["RUSTSEC-2020-0001"]
+ignore = []
+
+# =============================================================================
+# LICENSES - Ensure GPL-3.0-or-later compatibility
+# =============================================================================
+[licenses]
+# The lint level for crates with licenses that are not allowed
+unlicensed = "deny"
+
+# List of explicitly allowed licenses
+# ASTERIX is GPL-3.0-or-later, so we allow GPL-compatible licenses
+allow = [
+    "GPL-3.0",
+    "GPL-3.0-or-later",
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "Unicode-DFS-2016",
+    "CC0-1.0",
+    "0BSD",
+]
+
+# List of explicitly disallowed licenses
+deny = [
+    # No proprietary licenses
+    # Add any licenses incompatible with GPL-3.0
+]
+
+# Lint level for licenses that do not satisfy allow/deny criteria
+copyleft = "allow"
+
+# Allow or deny multiple licenses - generally should be "warn"
+allow-osi-fsf-free = "both"
+
+# Lint level for crates with a clarifying exception
+default = "deny"
+
+# The confidence threshold for detecting a license from license text
+confidence-threshold = 0.8
+
+# =============================================================================
+# BANS - Prevent duplicate/banned dependencies
+# =============================================================================
+[bans]
+# Lint level for when multiple versions of the same crate are detected
+multiple-versions = "warn"
+
+# Lint level for when a crate version requirement is `*`
+wildcards = "allow"
+
+# The graph highlighting used when creating dotgraphs for crates
+# with multiple versions
+highlight = "all"
+
+# The lint level for crates explicitly banned
+deny = [
+    # Add any crates that should never be used
+    # Example: { name = "openssl", version = "*" }
+]
+
+# Certain crates/versions that will be skipped when checking
+skip = []
+
+# Similarly named crates that should be skipped when checking for multiple versions
+skip-tree = []
+
+# =============================================================================
+# SOURCES - Ensure all dependencies come from trusted sources
+# =============================================================================
+[sources]
+# Lint level for crates from unknown registries
+unknown-registry = "warn"
+
+# Lint level for crates from a git repository
+unknown-git = "warn"
+
+# List of allowed registries
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+
+# List of allowed git repositories
+allow-git = []
+
+[sources.allow-org]
+# Allow dependencies from specific GitHub organizations
+github = []

@@ -1,5 +1,9 @@
 # Packaging and CI Status
 
+## Overview
+
+This document tracks packaging and CI/CD status for all three language bindings: C++, Python, and Rust.
+
 ## ✅ Packaging Complete
 
 ### Debian/Ubuntu Packages (.deb)
@@ -58,6 +62,35 @@
 **Files**:
 - `BUILD_WINDOWS.md` - Comprehensive build guide
 
+### Rust Crate Packaging
+**Status**: Ready for crates.io publication
+
+**Supported Platforms**:
+- Linux x86_64, ARM64
+- Windows (MSVC 2019+, MinGW)
+- macOS Intel & ARM (M1/M2)
+
+**Package**:
+- `asterix-decoder` - Rust crate with C++ FFI bindings
+
+**Files**:
+- `asterix-rs/Cargo.toml` - Package manifest
+- `asterix-rs/build.rs` - Build script (compiles C++ core)
+- `asterix-rs/README.md` - Crate documentation
+- `asterix-rs/PUBLISHING_CHECKLIST.md` - Publishing guide
+
+**Installation**:
+```bash
+cargo add asterix-decoder
+```
+
+**Build from source**:
+```bash
+cd asterix-rs
+cargo build --release
+cargo test --all-features
+```
+
 ## ✅ CI/CD Workflows
 
 ### Package Building (`build-packages.yml`)
@@ -83,7 +116,11 @@
 **Jobs**:
 - Build C++ (Make)
 - Build C++ (CMake)
-- Test Python (3.8, 3.9, 3.10, 3.11, 3.12)
+- Test Python (3.10, 3.11, 3.12, 3.13, 3.14)
+- Build Rust (Cargo)
+- Test Rust (cargo test --all-features)
+- Rust Clippy (linter)
+- Rust Benchmarks
 - C++ Coverage Analysis
 - Memory Check (Valgrind)
 - Static Analysis (cppcheck, clang-tidy)
@@ -106,10 +143,11 @@
 **Monitors**:
 - GitHub Actions (weekly, Mondays)
 - Python dependencies (weekly, Tuesdays)
+- Rust/Cargo dependencies (weekly, Wednesdays)
 
 **Features**:
 - Automatic PR creation
-- Labeled PRs (dependencies, github-actions, python)
+- Labeled PRs (dependencies, github-actions, python, rust)
 - Up to 10 open PRs per ecosystem
 
 ## 🎯 Next Steps to Create Release
@@ -136,20 +174,30 @@ The `build-packages.yml` workflow will automatically:
 Users can download from: https://github.com/montge/asterix/releases
 
 **Available formats**:
-- `asterix_2.8.9-1_amd64.deb` (Debian/Ubuntu)
-- `asterix-libs-2.8.9-1.x86_64.rpm` (RHEL/Fedora)
-- `asterix-2.8.9-Source.tar.gz` (Source)
-- `asterix-2.8.9-Linux.tar.gz` (Binary)
+- `asterix_2.8.9-1_amd64.deb` (Debian/Ubuntu - C++ & Python)
+- `asterix-libs-2.8.9-1.x86_64.rpm` (RHEL/Fedora - C++ & Python)
+- `asterix-2.8.9-Source.tar.gz` (Source - All languages)
+- `asterix-2.8.9-Linux.tar.gz` (Binary - C++ & Python)
+- `asterix-decoder-0.1.0.crate` (Rust crate - crates.io)
+
+**Language-specific packages**:
+- **Python**: `pip install asterix_decoder` (PyPI)
+- **Rust**: `cargo add asterix-decoder` (crates.io)
+- **C++**: Use DEB/RPM packages above
 
 ## 📊 Current Status Summary
 
 ✅ **Coverage**: 92.2% (exceeded 90% goal!)
-✅ **Tests**: 560 tests, 100% passing
-✅ **Packaging**: Debian, RPM, Windows
-✅ **CI/CD**: All workflows active and updated
-✅ **Security**: CodeQL scanning enabled
-✅ **Dependencies**: Dependabot monitoring active
-✅ **Documentation**: Complete for all platforms
+✅ **Tests**: 560 tests, 100% passing (C++ & Python)
+✅ **Packaging**:
+   - C++: Debian, RPM, Windows (ZIP/MSI/EXE)
+   - Python: PyPI (3.10-3.14)
+   - Rust: crates.io (ready to publish)
+✅ **CI/CD**: All workflows active for C++, Python, Rust
+✅ **Security**: CodeQL scanning enabled (C++ & Python)
+✅ **Dependencies**: Dependabot monitoring active (GitHub Actions, Python, Rust)
+✅ **Documentation**: Complete for all platforms and all three languages
+✅ **Cross-platform**: Linux (x86_64, ARM64), Windows, macOS (Intel & M1)
 
 ## ❓ CodeQL Note
 

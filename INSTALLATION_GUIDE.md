@@ -1,15 +1,15 @@
 # Development Tools Installation Guide
-## ASTERIX Decoder - WSL/Ubuntu Setup
+## ASTERIX Decoder - Multi-Platform Setup
 
-**Date:** 2025-10-18
-**Platform:** WSL2 Ubuntu on Windows
-**Purpose:** Install tools for DO-278A testing and coverage analysis
+**Date:** 2025-11-01
+**Platforms:** Linux (x86_64, ARM64), Windows, macOS (Intel & ARM M1)
+**Purpose:** Install tools for C++, Python, and Rust development, testing, and coverage analysis
 
 ---
 
 ## System-Level Tools (Require sudo)
 
-### 1. Install C++17 Compatible Compiler
+### 1. Install C++23 Compatible Compiler
 
 **Ubuntu/Debian:**
 ```bash
@@ -17,25 +17,30 @@ sudo apt-get update
 sudo apt-get install -y build-essential
 ```
 
-**Verify C++17 Support:**
+**Verify C++23 Support:**
 ```bash
 g++ --version
-# Minimum: GCC 7.0 (Ubuntu 18.04+)
-# Recommended: GCC 9.0+ (Ubuntu 20.04+)
+# Minimum: GCC 7.0 for C++17 (fallback mode)
+# Recommended: GCC 13.0+ for full C++23 support
 ```
 
 **Compiler Version Requirements:**
-- **GCC**: 7.0+ (recommended: 9.0+)
-- **Clang**: 5.0+ (recommended: 9.0+)
-- **MSVC**: 2017 15.3+ (Visual Studio 2017+)
-- **AppleClang**: 9.1+ (Xcode 9.3+)
+- **C++23 (Full Support - Recommended):**
+  - GCC 13.0+
+  - Clang 16.0+
+  - MSVC 2022 v17.4+ (Visual Studio 2022 version 17.4+)
+  - AppleClang 15.0+ (Xcode 15+)
+- **C++17 (Fallback Mode):**
+  - GCC 7.0+
+  - Clang 5.0+
+  - MSVC 2017 15.3+
+  - AppleClang 9.1+
 
-**If you have an older compiler on Ubuntu 18.04:**
+**Upgrade to GCC 13 for C++23 (Ubuntu 22.04+):**
 ```bash
-# Install GCC 9 for better C++17 support
-sudo apt-get install -y gcc-9 g++-9
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90
-sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 90
+sudo apt-get install -y gcc-13 g++-13
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 130
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 130
 ```
 
 ### 2. Install C++ Coverage Tools
@@ -80,14 +85,38 @@ sudo apt-get install -y cmake git libexpat-dev
 
 **What it does:**
 - Ensures CMake, Git, and libexpat are available
-- CMake 3.12+ is required for building
+- CMake 3.20+ is required for building C++23 projects
 - libexpat is required for XML parsing
 
 **Verification:**
 ```bash
 cmake --version
-# Expected: cmake version 3.12 or higher
+# Expected: cmake version 3.20 or higher
 ```
+
+### 5. Install Rust (for Rust bindings)
+
+**Linux/macOS:**
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+**Windows:**
+Download and run rustup-init.exe from https://rustup.rs/
+
+**Verification:**
+```bash
+rustc --version
+# Expected: rustc 1.70.0 or higher
+
+cargo --version
+# Expected: cargo 1.70.0 or higher
+```
+
+**What it does:**
+- Installs Rust compiler, Cargo package manager, and standard library
+- Required for building and using Rust bindings
+- Minimum version: 1.70+ (Rust 2021 edition)
 
 ---
 
@@ -148,6 +177,49 @@ python setup.py install
 pytest asterix/test/ tests/python/ -v --cov=asterix
 
 # Should see: 60 tests passing, 88% coverage
+```
+
+---
+
+## Rust Build and Testing Setup
+
+### 1. Build Rust Bindings
+
+```bash
+cd asterix-rs
+cargo build --release
+```
+
+### 2. Run Rust Tests
+
+```bash
+cargo test --all-features
+# Should see: All tests passing
+```
+
+### 3. Run Rust Benchmarks
+
+```bash
+cargo bench
+# Generates benchmark reports in target/criterion/
+```
+
+### 4. Install Rust Crate Locally
+
+```bash
+# From asterix-rs/ directory
+cargo install --path .
+```
+
+### 5. Add to Your Rust Project
+
+```bash
+# Add to Cargo.toml dependencies
+cargo add asterix-decoder
+
+# Or manually:
+[dependencies]
+asterix-decoder = "0.1.0"
 ```
 
 ---
@@ -388,6 +460,8 @@ lcov --capture --directory . -o coverage.info
 
 | Tool | Purpose | Installation | Required For |
 |------|---------|--------------|--------------|
+| **GCC 13+** | C++23 compiler | `sudo apt-get install gcc-13 g++-13` | C++ builds (C++23) |
+| **Rust 1.70+** | Rust compiler & Cargo | `curl https://sh.rustup.rs \| sh` | Rust bindings |
 | **lcov** | C++ coverage HTML reports | `sudo apt-get install lcov` | Coverage visualization |
 | **valgrind** | Memory leak detection | `sudo apt-get install valgrind` | Memory testing |
 | **gcov** | C++ coverage data | Included with GCC | Coverage measurement |
@@ -396,8 +470,10 @@ lcov --capture --directory . -o coverage.info
 | **black** | Python formatter | `pip install black` | Code formatting |
 | **pylint** | Python linter | `pip install pylint` | Code quality |
 | **flake8** | Python style checker | `pip install flake8` | Code style |
-| **cmake** | Build system | `sudo apt-get install cmake` | Building |
+| **cmake** | Build system | `sudo apt-get install cmake` | Building (all) |
 | **Google Test** | C++ testing | Auto-downloaded by CMake | C++ tests |
+| **cargo-clippy** | Rust linter | Included with Rust | Rust code quality |
+| **cargo-bench** | Rust benchmarking | Included with Cargo | Rust performance |
 
 ---
 

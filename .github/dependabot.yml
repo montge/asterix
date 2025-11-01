@@ -34,6 +34,31 @@ updates:
     allow:
       - dependency-type: "all"
 
+  # Rust dependencies (Cargo)
+  - package-ecosystem: "cargo"
+    directory: "/asterix-rs"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+    labels:
+      - "dependencies"
+      - "rust"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    open-pull-requests-limit: 10
+    # Security updates for Rust crates
+    allow:
+      - dependency-type: "all"
+    # Group related updates together
+    groups:
+      cxx-bridge:
+        patterns:
+          - "cxx*"
+      serde:
+        patterns:
+          - "serde*"
+
   # CMake/C++ dependencies (if using vcpkg or conan in future)
   # Currently C++ dependencies (expat) are system-managed
   # This section can be enabled if you add a vcpkg.json or conanfile.txt

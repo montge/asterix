@@ -1,0 +1,66 @@
+# Tarpaulin Coverage Configuration for asterix-rs
+# Targets: 80% per module, 90% overall (matching C++/Python standards)
+
+[default]
+# Output formats
+out = ["Html", "Xml", "Json", "Lcov"]
+output-dir = "coverage"
+
+# Coverage options
+all-features = true
+workspace = true
+follow-exec = true
+count = true
+release = false
+
+# Timeout for tests (5 minutes)
+timeout = "300s"
+
+# Exclude patterns
+exclude-files = [
+    "*/tests/*",
+    "*/benches/*",
+    "*/examples/*",
+    "*/build.rs",
+    "*/.cargo/*",
+]
+
+# Run options
+run-types = ["Tests", "Doctests"]
+
+# Coverage thresholds (fail if below these values)
+# Note: tarpaulin doesn't enforce these directly, but we'll check in CI
+fail-under = 80.0
+
+# Engine options
+engine = "llvm"
+
+# Verbosity
+verbose = true
+
+# Post-test hook
+post-test-delay = "0s"
+
+# Line coverage (default)
+line = true
+
+# Branch coverage (if supported)
+branch = false
+
+# Forward signals
+forward-signals = true
+
+# Avoid dead code
+avoid-cfg-tarpaulin = false
+
+# Report individual function coverage
+per-test = false
+
+# Include all code in workspace
+all-targets = false
+
+# Force clean build
+force-clean = false
+
+# Enable unstable features
+unstable-features = []
