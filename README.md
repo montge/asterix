@@ -32,8 +32,9 @@ More about ASTERIX protocol: http://www.eurocontrol.int/services/asterix
 ### Cross-Platform Support 🌍
 - **Windows builds**: MSVC 2019/2022, C++17/C++23 support
 - **macOS builds**: Intel (x86_64) and ARM M1 (arm64), AppleClang 15+
-- **Enhanced Linux**: Ubuntu 22.04/24.04, GCC 11/13, Debian 12
-- **40+ CI test configurations**: Comprehensive platform testing
+- **Linux x86_64**: Ubuntu 22.04/24.04, GCC 11/13, Debian 12
+- **Linux ARM64**: Ubuntu 22.04/24.04, GCC 11/13 (Raspberry Pi, AWS Graviton, embedded systems)
+- **50+ CI test configurations**: Comprehensive platform and architecture testing
 - **Documentation**: Complete build guides for all platforms (148 KB)
 
 ### Python 3.10-3.14 Support 🐍
@@ -116,6 +117,7 @@ Download pre-built packages from [GitHub Releases](https://github.com/montge/ast
 | **Debian 11/12** | `.deb` | C++23 (GCC 13+) | `sudo dpkg -i asterix_*.deb` |
 | **RHEL/Rocky 9** | `.rpm` | C++23 (GCC 13+) | `sudo rpm -i asterix-*.rpm` |
 | **Fedora 40** | `.rpm` | C++23 (GCC 14) | `sudo rpm -i asterix-*.rpm` |
+| **Linux ARM64** | `.deb`/`.tar.gz` | C++23 (GCC 13+) | For Raspberry Pi, AWS Graviton, etc. |
 | **Windows 10/11** | `.zip` | C++23 (MSVC 2022) | See [CROSS_PLATFORM_BUILD_GUIDE.md](CROSS_PLATFORM_BUILD_GUIDE.md) |
 | **macOS 13+ (Intel)** | `.tar.gz` | C++23 (AppleClang 15+) | See [CROSS_PLATFORM_BUILD_GUIDE.md](CROSS_PLATFORM_BUILD_GUIDE.md) |
 | **macOS 14+ (M1/M2)** | `.tar.gz` | C++23 (AppleClang 15+) | See [CROSS_PLATFORM_BUILD_GUIDE.md](CROSS_PLATFORM_BUILD_GUIDE.md) |
@@ -336,7 +338,8 @@ All commits are automatically tested across:
 - **Python versions**: 3.10, 3.11, 3.12, 3.13, 3.14
 - **C++ standards**: C++17 (legacy), C++23 (modern)
 - **Platforms**:
-  - Linux: Ubuntu 20.04/22.04/24.04, Debian 11/12, RHEL/Rocky 8/9, Fedora 40
+  - Linux x86_64: Ubuntu 20.04/22.04/24.04, Debian 11/12, RHEL/Rocky 8/9, Fedora 40
+  - Linux ARM64: Ubuntu 22.04/24.04 (Raspberry Pi, AWS Graviton)
   - Windows: Windows 2019/2022 (MSVC 2019/2022)
   - macOS: macOS 13 (Intel x86_64), macOS 14 (ARM M1)
 - **Build systems**: Make, CMake, Visual Studio
@@ -379,9 +382,9 @@ See [SECURITY_AUDIT_REPORT.md](SECURITY_AUDIT_REPORT.md) for detailed security a
 - **Version**: 2.8.10 (synced with upstream CroatiaControlLtd/asterix)
 - **Standards**: C++23, C23 (backward compatible to C++17/C17)
 - **Test Coverage**: 92.2% (560 tests, 100% passing)
-- **Platforms**: Linux ✅ | Windows ✅ | macOS ✅ (Intel & ARM M1)
+- **Platforms**: Linux x86_64 ✅ | Linux ARM64 ✅ | Windows ✅ | macOS ✅ (Intel & ARM M1)
 - **Python Support**: 3.10, 3.11, 3.12, 3.13, 3.14
-- **CI/CD**: 40+ test configurations across all platforms
+- **CI/CD**: 50+ test configurations across all platforms and architectures
 - **Security**: CodeQL enabled, 41 vulnerabilities fixed, 0 known active vulnerabilities
 - **Dependencies**: Dependabot monitoring active (all PRs merged)
 - **Compliance**: DO-278A AL-3 process in progress
