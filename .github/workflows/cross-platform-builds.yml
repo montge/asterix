@@ -134,21 +134,39 @@ jobs:
         cd build
 
         # Create ZIP archive (always works)
+        Write-Host "Creating ZIP package..."
         cpack -G ZIP -C Release
 
-        # Install NSIS for installer creation
-        choco install nsis -y --no-progress 2>$null || Write-Host "NSIS install skipped"
+        # Install WiX Toolset for MSI creation (enterprise standard)
+        Write-Host "`nInstalling WiX Toolset for MSI..."
+        choco install wixtoolset -y --no-progress 2>$null || Write-Host "WiX install skipped"
 
-        # Create NSIS installer if available
-        $nsisPath = "C:\Program Files (x86)\NSIS\makensis.exe"
-        if (Test-Path $nsisPath) {
-          Write-Host "Creating NSIS installer..."
-          cpack -G NSIS -C Release
+        # Create MSI installer using WiX
+        $wixPath = "$env:WIX\bin\candle.exe"
+        if (Test-Path $wixPath) {
+          Write-Host "Creating MSI installer with WiX..."
+          cpack -G WIX -C Release
+          Write-Host "✅ MSI created successfully"
         } else {
-          Write-Host "NSIS not available - only ZIP created"
+          Write-Host "⚠️  WiX not available - MSI creation skipped"
         }
 
-        # List packages
+        # Install NSIS for alternative .exe installer
+        Write-Host "`nInstalling NSIS for EXE installer..."
+        choco install nsis -y --no-progress 2>$null || Write-Host "NSIS install skipped"
+
+        # Create NSIS .exe installer
+        $nsisPath = "C:\Program Files (x86)\NSIS\makensis.exe"
+        if (Test-Path $nsisPath) {
+          Write-Host "Creating NSIS .exe installer..."
+          cpack -G NSIS -C Release
+          Write-Host "✅ NSIS installer created successfully"
+        } else {
+          Write-Host "⚠️  NSIS not available - EXE creation skipped"
+        }
+
+        # List all created packages
+        Write-Host "`n=== Created Packages ==="
         Get-ChildItem -Filter "asterix*" | Format-Table Name, Length
       shell: pwsh
       continue-on-error: true
@@ -165,6 +183,7 @@ jobs:
           asterix/config/
           build/*.zip
           build/*.exe
+          build/*.msi
           build/*.zip
         retention-days: 14
 
