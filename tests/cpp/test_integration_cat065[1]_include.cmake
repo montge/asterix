@@ -1,0 +1,5 @@
+if(EXISTS "/home/e/Development/asterix/tests/cpp/test_integration_cat065[1]_tests.cmake")
+  include("/home/e/Development/asterix/tests/cpp/test_integration_cat065[1]_tests.cmake")
+else()
+  add_test(test_integration_cat065_NOT_BUILT test_integration_cat065_NOT_BUILT)
+endif()

@@ -27,12 +27,11 @@ CLASSIFIERS = [
     'Programming Language :: C++',
     'Programming Language :: Python :: 3',
     'Programming Language :: Python :: 3 :: Only',
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
     'Topic :: Scientific/Engineering',
     'Topic :: Software Development :: Libraries :: Python Modules',
 ]
@@ -120,7 +119,7 @@ setup(name='asterix_decoder',
       platforms=['any'],
       url="https://github.com/montge/asterix",
       classifiers=CLASSIFIERS,
-      python_requires='>=3.8',  # Python 2.x EOL (2020), 3.7 EOL (2023)
+      python_requires='>=3.10',  # Python 3.9 EOL (2025-10)
       install_requires=[
           # lxml is optional but recommended for XML output functionality
       ],

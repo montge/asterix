@@ -1,0 +1,87 @@
+        -:    0:Source:/home/e/Development/asterix/src/asterix/UAPItem.h
+        -:    0:Graph:UAPItem.cpp.gcno
+        -:    0:Data:UAPItem.cpp.gcda
+        -:    0:Runs:6
+        -:    1:/*
+        -:    2: *  Copyright (c) 2013 Croatia Control Ltd. (www.crocontrol.hr)
+        -:    3: *
+        -:    4: *  This file is part of Asterix.
+        -:    5: *
+        -:    6: *  Asterix is free software: you can redistribute it and/or modify
+        -:    7: *  it under the terms of the GNU General Public License as published by
+        -:    8: *  the Free Software Foundation, either version 3 of the License, or
+        -:    9: *  (at your option) any later version.
+        -:   10: *
+        -:   11: *  Asterix is distributed in the hope that it will be useful,
+        -:   12: *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+        -:   13: *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        -:   14: *  GNU General Public License for more details.
+        -:   15: *
+        -:   16: *  You should have received a copy of the GNU General Public License
+        -:   17: *  along with Asterix.  If not, see <http://www.gnu.org/licenses/>.
+        -:   18: *
+        -:   19: *
+        -:   20: * AUTHORS: Damir Salantic, Croatia Control Ltd.
+        -:   21: *
+        -:   22: */
+        -:   23:
+        -:   24:#ifndef UAPITEM_H_
+        -:   25:#define UAPITEM_H_
+        -:   26:
+        -:   27:#include "DataItemFormat.h"
+        -:   28:#include "Tracer.h"
+        -:   29:
+        -:   30:
+        -:   31:class UAPItem : public DataItemFormat {
+        -:   32:public:
+        -:   33:    UAPItem();
+        -:   34:
+        -:   35:    UAPItem(const UAPItem &obj);
+        -:   36:
+        -:   37:    virtual
+        -:   38:    ~UAPItem();
+        -:   39:
+        -:   40:    int m_nBit; // <!ATTLIST UAPItem bit CDATA #REQUIRED>
+        -:   41:    int m_nFRN; // <!ATTLIST UAPItem frn CDATA #REQUIRED>
+        -:   42:    bool m_bFX; // <!ATTLIST UAPItem fx CDATA "0">
+        -:   43:    int m_nLen; // <!ATTLIST UAPItem len CDATA "-">
+        -:   44:    std::string m_strItemID; // <!ELEMENT UAPItem (#PCDATA)>
+        -:   45:
+        8:   46:    UAPItem *clone() const { return new UAPItem(*this); } // Return clone of object
+    #####:   47:    long getLength(const unsigned char *) {
+    #####:   48:        Tracer::Error("Function should not be called!");
+    #####:   49:        return 0;
+        -:   50:    }
+        -:   51:
+    #####:   52:    bool getText(std::string &, std::string &, const unsigned int, unsigned char *, long) {
+    #####:   53:        Tracer::Error("Function should not be called!");
+    #####:   54:        return false;
+        -:   55:    } // appends description to strDescription
+    #####:   56:    std::string printDescriptors(std::string) {
+    #####:   57:        Tracer::Error("Function should not be called!");
+    #####:   58:        return "";
+        -:   59:    }; // print items format descriptors
+    #####:   60:    bool filterOutItem(const char *) {
+    #####:   61:        Tracer::Error("Function should not be called!");
+    #####:   62:        return false;
+        -:   63:    }; // mark item for filtering
+    #####:   64:    bool isFiltered(const char *) {
+    #####:   65:        Tracer::Error("Function should not be called!");
+    #####:   66:        return false;
+        -:   67:    }; // mark item for filtering
+    #####:   68:    const char *getDescription(const char *field, const char *value) {
+    #####:   69:        Tracer::Error("Function should not be called!");
+    #####:   70:        return NULL;
+        -:   71:    }; // return description ef element
+        -:   72:
+        -:   73:#if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
+        -:   74:    fulliautomatix_definitions* getWiresharkDefinitions();
+        -:   75:    fulliautomatix_data* getData(unsigned char* pData, long len, int byteoffset);
+        -:   76:#endif
+        -:   77:#if defined(PYTHON_WRAPPER)
+        -:   78:    PyObject* getObject(unsigned char* pData, long nLength, int description) { return NULL; };
+        -:   79:    void insertToDict(PyObject* p, unsigned char* pData, long nLength, int description) {};
+        -:   80:#endif
+        -:   81:};
+        -:   82:
+        -:   83:#endif /* UAPITEM_H_ */

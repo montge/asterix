@@ -1,0 +1,5 @@
+if(EXISTS "/home/e/Development/asterix/tests/cpp/test_datarecord[1]_tests.cmake")
+  include("/home/e/Development/asterix/tests/cpp/test_datarecord[1]_tests.cmake")
+else()
+  add_test(test_datarecord_NOT_BUILT test_datarecord_NOT_BUILT)
+endif()

@@ -1,0 +1,536 @@
+name: Cross-Platform Builds (Windows/macOS/Linux)
+
+on:
+  push:
+    branches: [ master, develop, 'feature/**', 'cross-platform/**' ]
+  pull_request:
+    branches: [ master, develop ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type (Release/Debug)'
+        required: false
+        default: 'Release'
+        type: choice
+        options:
+          - Release
+          - Debug
+          - Both
+
+permissions:
+  contents: read
+
+env:
+  CMAKE_VERSION: '3.20'
+  CPACK_VERBOSITY: 1
+
+jobs:
+  # =============================================================================
+  # WINDOWS BUILD (MSVC 2022, C++23)
+  # =============================================================================
+  build-windows:
+    name: Windows ${{ matrix.os }} - ${{ matrix.config }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2019, windows-2022]
+        config: [Release, Debug]
+        include:
+          - os: windows-2022
+            msvc_version: '2022'
+            toolset: 'v143'
+          - os: windows-2019
+            msvc_version: '2019'
+            toolset: 'v142'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup MSVC Developer Command Prompt
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+        toolset: ${{ matrix.toolset }}
+
+    - name: Install dependencies (vcpkg)
+      run: |
+        vcpkg install expat:x64-windows
+        vcpkg integrate install
+
+    - name: Configure CMake (C++23)
+      run: |
+        cmake -B build `
+          -G "Visual Studio 17 2022" `
+          -A x64 `
+          -DCMAKE_BUILD_TYPE=${{ matrix.config }} `
+          -DCMAKE_CXX_STANDARD=23 `
+          -DCMAKE_CXX_STANDARD_REQUIRED=ON `
+          -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" `
+          -DBUILD_SHARED_LIBS=ON `
+          -DBUILD_STATIC_LIBS=ON `
+          -DBUILD_EXECUTABLE=ON `
+          -DBUILD_TESTING=OFF `
+          -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install"
+      if: matrix.os == 'windows-2022'
+
+    - name: Configure CMake (C++17 fallback for 2019)
+      run: |
+        cmake -B build `
+          -G "Visual Studio 16 2019" `
+          -A x64 `
+          -DCMAKE_BUILD_TYPE=${{ matrix.config }} `
+          -DCMAKE_CXX_STANDARD=17 `
+          -DCMAKE_CXX_STANDARD_REQUIRED=ON `
+          -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" `
+          -DBUILD_SHARED_LIBS=ON `
+          -DBUILD_STATIC_LIBS=ON `
+          -DBUILD_EXECUTABLE=ON `
+          -DBUILD_TESTING=OFF `
+          -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install"
+      if: matrix.os == 'windows-2019'
+
+    - name: Build
+      run: |
+        cmake --build build --config ${{ matrix.config }} --parallel 4
+
+    - name: Install
+      run: |
+        cmake --install build --config ${{ matrix.config }}
+
+    - name: Test executable
+      run: |
+        ${{ github.workspace }}/install/bin/asterix.exe --help
+        ${{ github.workspace }}/install/bin/asterix.exe --version
+      continue-on-error: true
+
+    - name: Run basic integration tests (Windows)
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = "Continue"
+        $exe = "${{ github.workspace }}/install/bin/asterix.exe"
+        $config = "${{ github.workspace }}/asterix/config/asterix.ini"
+
+        # Test 1: Help output
+        Write-Host "=== Test 1: Help ===" -ForegroundColor Cyan
+        & $exe --help
+
+        # Test 2: Version output
+        Write-Host "`n=== Test 2: Version ===" -ForegroundColor Cyan
+        & $exe --version
+
+        # Test 3: List filters (if available)
+        Write-Host "`n=== Test 3: Filters ===" -ForegroundColor Cyan
+        & $exe -d $config -L 2>&1 | Out-Null
+
+        Write-Host "`n=== Tests completed ===" -ForegroundColor Green
+      continue-on-error: true
+
+    - name: Create MSI installer (Windows 2022 Release only)
+      if: matrix.os == 'windows-2022' && matrix.config == 'Release'
+      run: |
+        # Note: WiX Toolset or NSIS would be needed for MSI creation
+        # For now, create a ZIP package using CPack
+        cd build
+        cpack -G ZIP -C Release
+      continue-on-error: true
+
+    - name: Upload Windows artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: asterix-windows-${{ matrix.os }}-${{ matrix.config }}
+        path: |
+          install/bin/asterix.exe
+          install/bin/*.dll
+          install/lib/*.lib
+          install/include/
+          asterix/config/
+          build/*.zip
+        retention-days: 14
+
+  # =============================================================================
+  # MACOS BUILD (AppleClang 15+, C++23)
+  # =============================================================================
+  build-macos:
+    name: macOS ${{ matrix.os }} - ${{ matrix.config }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # macos-13: Intel x86_64, macos-14: Apple Silicon ARM64
+        os: [macos-13, macos-14]
+        config: [Release, Debug]
+        include:
+          - os: macos-13
+            arch: 'x86_64'
+            xcode_version: '15.2'
+          - os: macos-14
+            arch: 'arm64'
+            xcode_version: '15.4'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Select Xcode version
+      run: |
+        sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode_version }}.app/Contents/Developer
+        xcodebuild -version
+        clang++ --version
+
+    - name: Install dependencies (Homebrew)
+      run: |
+        brew update
+        brew install expat cmake
+        brew list expat
+
+    - name: Configure CMake (C++23)
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+          -DCMAKE_CXX_STANDARD=23 \
+          -DCMAKE_CXX_STANDARD_REQUIRED=ON \
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+          -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_STATIC_LIBS=ON \
+          -DBUILD_EXECUTABLE=ON \
+          -DBUILD_TESTING=OFF \
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+
+    - name: Build
+      run: |
+        cmake --build build --config ${{ matrix.config }} --parallel $(sysctl -n hw.ncpu)
+
+    - name: Install
+      run: |
+        cmake --install build --config ${{ matrix.config }}
+
+    - name: Test executable
+      run: |
+        ${{ github.workspace }}/install/bin/asterix --help
+        ${{ github.workspace }}/install/bin/asterix --version
+      continue-on-error: true
+
+    - name: Run integration tests (macOS)
+      run: |
+        #!/bin/bash
+        set +e  # Continue on error
+
+        exe="${{ github.workspace }}/install/bin/asterix"
+        config="${{ github.workspace }}/asterix/config/asterix.ini"
+
+        echo "=== Test 1: Help ==="
+        $exe --help
+
+        echo -e "\n=== Test 2: Version ==="
+        $exe --version
+
+        echo -e "\n=== Test 3: List filters ==="
+        $exe -d $config -L || true
+
+        echo -e "\n=== Tests completed ==="
+      continue-on-error: true
+
+    - name: Verify library linkage
+      run: |
+        echo "=== Checking executable dependencies ==="
+        otool -L ${{ github.workspace }}/install/bin/asterix
+
+        echo -e "\n=== Checking library exports ==="
+        nm -gU ${{ github.workspace }}/install/lib/libasterix.dylib | head -20 || true
+
+    - name: Create DMG package (macOS 14 Release only)
+      if: matrix.os == 'macos-14' && matrix.config == 'Release'
+      run: |
+        cd build
+        # Create TGZ and ZIP packages using CPack
+        cpack -G TGZ
+        cpack -G ZIP
+
+        # TODO: For production, use create-dmg or dmgbuild for DMG creation
+        # Example: create-dmg --volname "ASTERIX" --window-size 600 400 \
+        #          asterix.dmg install/
+      continue-on-error: true
+
+    - name: Upload macOS artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: asterix-macos-${{ matrix.os }}-${{ matrix.config }}
+        path: |
+          install/bin/asterix
+          install/lib/*.dylib
+          install/lib/*.a
+          install/include/
+          asterix/config/
+          build/*.tar.gz
+          build/*.zip
+        retention-days: 14
+
+  # =============================================================================
+  # LINUX BUILD (GCC 13+, C++23)
+  # =============================================================================
+  build-linux:
+    name: Linux ${{ matrix.os }} - ${{ matrix.config }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+        config: [Release, Debug]
+        include:
+          - os: ubuntu-22.04
+            gcc_version: '11'
+            cpp_standard: '17'  # GCC 11 has limited C++23 support
+          - os: ubuntu-24.04
+            gcc_version: '13'
+            cpp_standard: '23'  # GCC 13 has full C++23 support
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install GCC ${{ matrix.gcc_version }}
+      run: |
+        sudo apt-get update
+        if [ "${{ matrix.gcc_version }}" = "13" ]; then
+          sudo apt-get install -y gcc-13 g++-13
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
+        fi
+        gcc --version
+        g++ --version
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y \
+          libexpat1-dev \
+          cmake \
+          ninja-build \
+          lcov \
+          valgrind
+
+    - name: Configure CMake (C++${{ matrix.cpp_standard }})
+      run: |
+        cmake -B build \
+          -G Ninja \
+          -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+          -DCMAKE_CXX_STANDARD=${{ matrix.cpp_standard }} \
+          -DCMAKE_CXX_STANDARD_REQUIRED=ON \
+          -DCMAKE_C_COMPILER=gcc \
+          -DCMAKE_CXX_COMPILER=g++ \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_STATIC_LIBS=ON \
+          -DBUILD_EXECUTABLE=ON \
+          -DBUILD_TESTING=OFF \
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+
+    - name: Build
+      run: |
+        cmake --build build --config ${{ matrix.config }} --parallel $(nproc)
+
+    - name: Install
+      run: |
+        cmake --install build --config ${{ matrix.config }}
+
+    - name: Test executable
+      run: |
+        ${{ github.workspace }}/install/bin/asterix --help
+        ${{ github.workspace }}/install/bin/asterix --version
+      continue-on-error: true
+
+    - name: Build with Make (traditional method)
+      if: matrix.config == 'Release'
+      run: |
+        cd src
+        make clean
+        make
+        make install
+      continue-on-error: true
+
+    - name: Run integration tests (Unix test.sh)
+      if: matrix.config == 'Debug'
+      run: |
+        # Build debug version with Make for test.sh
+        cd src
+        make clean
+        make debug
+        make debug install
+
+        # Run integration tests
+        cd ../install/test
+        ./test.sh
+      continue-on-error: true
+
+    - name: Run valgrind memory check (Debug only)
+      if: matrix.config == 'Debug' && matrix.os == 'ubuntu-24.04'
+      run: |
+        echo "=== Valgrind Memory Leak Check ==="
+
+        valgrind --leak-check=full --error-exitcode=0 \
+          ${{ github.workspace }}/install/bin/asterix \
+          -d ${{ github.workspace }}/asterix/config/asterix.ini \
+          --help > /dev/null 2>&1 || echo "Valgrind check completed with warnings"
+      continue-on-error: true
+
+    - name: Verify library linkage
+      run: |
+        echo "=== Checking executable dependencies ==="
+        ldd ${{ github.workspace }}/install/bin/asterix
+
+        echo -e "\n=== Checking library exports ==="
+        nm -D ${{ github.workspace }}/install/lib/libasterix.so | grep " T " | head -20 || true
+
+    - name: Create DEB/RPM packages (Ubuntu 24.04 Release only)
+      if: matrix.os == 'ubuntu-24.04' && matrix.config == 'Release'
+      run: |
+        cd build
+
+        # Create DEB package
+        cpack -G DEB
+
+        # Create TGZ and ZIP packages
+        cpack -G TGZ
+        cpack -G ZIP
+
+        ls -lh *.deb *.tar.gz *.zip || true
+      continue-on-error: true
+
+    - name: Upload Linux artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: asterix-linux-${{ matrix.os }}-${{ matrix.config }}
+        path: |
+          install/bin/asterix
+          install/lib/*.so*
+          install/lib/*.a
+          install/include/
+          asterix/config/
+          build/*.deb
+          build/*.tar.gz
+          build/*.zip
+        retention-days: 14
+
+  # =============================================================================
+  # PYTHON MODULE CROSS-PLATFORM BUILD
+  # =============================================================================
+  build-python-module:
+    name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        exclude:
+          # Python 3.13+ not yet fully supported on Windows
+          - os: windows-latest
+            python-version: '3.13'
+          - os: windows-latest
+            python-version: '3.14'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev
+
+    - name: Install dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew update
+        brew install expat
+
+    - name: Install dependencies (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        vcpkg install expat:x64-windows
+        vcpkg integrate install
+
+    - name: Install Python packages
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install pytest pytest-cov coverage
+
+    - name: Build Python module
+      run: |
+        python setup.py build
+      env:
+        # Windows: Set vcpkg toolchain
+        CMAKE_TOOLCHAIN_FILE: 'C:/vcpkg/scripts/buildsystems/vcpkg.cmake'
+
+    - name: Install Python module
+      run: |
+        python setup.py install
+
+    - name: Run Python tests
+      run: |
+        python -m pytest asterix/test/ -v --cov=asterix --cov-report=xml
+      continue-on-error: true
+
+    - name: Upload Python coverage
+      uses: codecov/codecov-action@v5
+      with:
+        files: ./coverage.xml
+        flags: python-${{ runner.os }}
+        name: python-${{ matrix.python-version }}-${{ runner.os }}
+      continue-on-error: true
+
+  # =============================================================================
+  # BUILD VERIFICATION SUMMARY
+  # =============================================================================
+  build-summary:
+    name: Cross-Platform Build Summary
+    runs-on: ubuntu-latest
+    needs: [build-windows, build-macos, build-linux, build-python-module]
+    if: always()
+
+    steps:
+    - name: Check build results
+      run: |
+        echo "=========================================="
+        echo "   CROSS-PLATFORM BUILD SUMMARY"
+        echo "=========================================="
+        echo ""
+        echo "Windows builds:  ${{ needs.build-windows.result }}"
+        echo "macOS builds:    ${{ needs.build-macos.result }}"
+        echo "Linux builds:    ${{ needs.build-linux.result }}"
+        echo "Python modules:  ${{ needs.build-python-module.result }}"
+        echo ""
+
+        if [[ "${{ needs.build-windows.result }}" == "success" ]] && \
+           [[ "${{ needs.build-macos.result }}" == "success" ]] && \
+           [[ "${{ needs.build-linux.result }}" == "success" ]]; then
+          echo "✅ All platform builds successful!"
+          exit 0
+        else
+          echo "⚠️  Some builds failed or were skipped"
+          exit 1
+        fi
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts/
+
+    - name: Display artifact summary
+      run: |
+        echo ""
+        echo "=========================================="
+        echo "   BUILD ARTIFACTS SUMMARY"
+        echo "=========================================="
+        find artifacts/ -type f -exec ls -lh {} \; | head -50

@@ -20,7 +20,7 @@
 # AUTHOR:  Damir Salantic, Croatia Control Ltd.
 # ENHANCED: 2025-10-17 for DO-278A AL-3 compliance and multi-platform packaging
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.20)
 
 # Project version - update for releases
 project(asterix
@@ -35,11 +35,54 @@ option(BUILD_EXECUTABLE "Build command-line executable" ON)
 option(BUILD_TESTING "Build tests" OFF)
 option(ENABLE_COVERAGE "Enable code coverage" OFF)
 
-# C++17 and C17 standards
-set(CMAKE_CXX_STANDARD 17)
+# C++23 and C23 standards
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_C_STANDARD 17)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+
+# Compiler Version Checking for C++23
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "13.0")
+        message(WARNING
+            "GCC 13.0+ is recommended for full C++23 support. "
+            "You are using GCC ${CMAKE_CXX_COMPILER_VERSION}. "
+            "Some C++23 features may not work correctly.")
+    endif()
+    # Enable specific C++23 flags if needed
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fconcepts")
+
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "16.0")
+        message(WARNING
+            "Clang 16.0+ is recommended for full C++23 support. "
+            "You are using Clang ${CMAKE_CXX_COMPILER_VERSION}.")
+    endif()
+    # Clang needs libc++ for full C++23 support on non-Apple platforms
+    if(NOT APPLE)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi")
+    endif()
+
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "15.0")
+        message(WARNING
+            "AppleClang 15.0+ is recommended for full C++23 support. "
+            "You are using AppleClang ${CMAKE_CXX_COMPILER_VERSION}.")
+    endif()
+
+elseif(MSVC)
+    if(MSVC_VERSION LESS 1934)  # VS 2022 v17.4
+        message(WARNING
+            "MSVC 2022 v17.4+ (version 1934) is recommended for C++23 support. "
+            "You are using MSVC ${MSVC_VERSION}.")
+    endif()
+    # Use /std:c++latest for latest C++ standard
+    string(REGEX REPLACE "/std:c\\+\\+[^ ]*" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
+endif()
 
 # Output directories
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -284,7 +327,9 @@ message(STATUS "  Build static library: ${BUILD_STATIC_LIBS}")
 message(STATUS "  Build executable: ${BUILD_EXECUTABLE}")
 message(STATUS "  Build testing: ${BUILD_TESTING}")
 message(STATUS "  Enable coverage: ${ENABLE_COVERAGE}")
-message(STATUS "  C++ Standard: ${CMAKE_CXX_STANDARD}")
+message(STATUS "  C++ Standard: C++${CMAKE_CXX_STANDARD}")
+message(STATUS "  C Standard: C${CMAKE_C_STANDARD}")
+message(STATUS "  Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "  Install prefix: ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "  Package generators: ${CPACK_GENERATOR}")
 message(STATUS "")

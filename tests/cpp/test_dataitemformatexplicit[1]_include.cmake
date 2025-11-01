@@ -1,0 +1,5 @@
+if(EXISTS "/home/e/Development/asterix/tests/cpp/test_dataitemformatexplicit[1]_tests.cmake")
+  include("/home/e/Development/asterix/tests/cpp/test_dataitemformatexplicit[1]_tests.cmake")
+else()
+  add_test(test_dataitemformatexplicit_NOT_BUILT test_dataitemformatexplicit_NOT_BUILT)
+endif()

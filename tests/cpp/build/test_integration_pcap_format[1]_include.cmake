@@ -1,0 +1,5 @@
+if(EXISTS "/home/e/Development/asterix/tests/cpp/build/test_integration_pcap_format[1]_tests.cmake")
+  include("/home/e/Development/asterix/tests/cpp/build/test_integration_pcap_format[1]_tests.cmake")
+else()
+  add_test(test_integration_pcap_format_NOT_BUILT test_integration_pcap_format_NOT_BUILT)
+endif()

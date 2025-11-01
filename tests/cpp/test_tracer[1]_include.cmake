@@ -1,0 +1,5 @@
+if(EXISTS "/home/e/Development/asterix/tests/cpp/test_tracer[1]_tests.cmake")
+  include("/home/e/Development/asterix/tests/cpp/test_tracer[1]_tests.cmake")
+else()
+  add_test(test_tracer_NOT_BUILT test_tracer_NOT_BUILT)
+endif()

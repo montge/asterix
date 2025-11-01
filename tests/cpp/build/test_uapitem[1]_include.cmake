@@ -1,0 +1,5 @@
+if(EXISTS "/home/e/Development/asterix/tests/cpp/build/test_uapitem[1]_tests.cmake")
+  include("/home/e/Development/asterix/tests/cpp/build/test_uapitem[1]_tests.cmake")
+else()
+  add_test(test_uapitem_NOT_BUILT test_uapitem_NOT_BUILT)
+endif()

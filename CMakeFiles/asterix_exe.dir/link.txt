@@ -1,0 +1,1 @@
+/usr/bin/c++  -fconcepts --coverage -fstack-protector-strong  --coverage -Wl,-z,relro,-z,now CMakeFiles/asterix_exe.dir/src/main/asterix.cpp.o -o bin/asterix  -Wl,-rpath,/home/e/Development/asterix/lib: lib/libasterix.so.2.8.9 /usr/lib/x86_64-linux-gnu/libexpat.so 

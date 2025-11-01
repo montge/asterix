@@ -26,6 +26,7 @@
 
 #include "DataItemFormat.h"
 #include "DataItemFormatVariable.h"
+#include "cxx23_features.h"
 
 class DataItemFormatCompound : public DataItemFormat {
 public:
@@ -36,7 +37,13 @@ public:
     virtual
     ~DataItemFormatCompound();
 
+    // C++23 Quick Win: Deduced this allows better devirtualization
+#if HAS_DEDUCED_THIS
+    DataItemFormatCompound *clone(this const auto& self) const { return new DataItemFormatCompound(self); }
+#else
     DataItemFormatCompound *clone() const { return new DataItemFormatCompound(*this); } // Return clone of object
+#endif
+
     long getLength(const unsigned char *pData);
 
     bool getText(std::string &strResult, std::string &strHeader, const unsigned int formatType, unsigned char *pData,

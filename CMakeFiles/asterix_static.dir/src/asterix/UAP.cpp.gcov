@@ -1,0 +1,106 @@
+        -:    0:Source:/home/e/Development/asterix/src/asterix/UAP.cpp
+        -:    0:Graph:UAP.cpp.gcno
+        -:    0:Data:UAP.cpp.gcda
+        -:    0:Runs:3
+        -:    1:/*
+        -:    2: *  Copyright (c) 2013 Croatia Control Ltd. (www.crocontrol.hr)
+        -:    3: *
+        -:    4: *  This file is part of Asterix.
+        -:    5: *
+        -:    6: *  Asterix is free software: you can redistribute it and/or modify
+        -:    7: *  it under the terms of the GNU General Public License as published by
+        -:    8: *  the Free Software Foundation, either version 3 of the License, or
+        -:    9: *  (at your option) any later version.
+        -:   10: *
+        -:   11: *  Asterix is distributed in the hope that it will be useful,
+        -:   12: *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+        -:   13: *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        -:   14: *  GNU General Public License for more details.
+        -:   15: *
+        -:   16: *  You should have received a copy of the GNU General Public License
+        -:   17: *  along with Asterix.  If not, see <http://www.gnu.org/licenses/>.
+        -:   18: *
+        -:   19: *
+        -:   20: * AUTHORS: Damir Salantic, Croatia Control Ltd.
+        -:   21: *
+        -:   22: */
+        -:   23:
+        -:   24:#include "UAP.h"
+        -:   25:
+       62:   26:UAP::UAP()
+       62:   27:        : m_nUseIfBitSet(0), m_nUseIfByteNr(0), m_nIsSetTo(0) {
+       62:   28:}
+        -:   29:
+      124:   30:UAP::~UAP() {
+        -:   31:    // destroy UAP items
+       62:   32:    std::list<UAPItem *>::iterator it = m_lUAPItems.begin();
+      252:   33:    while (it != m_lUAPItems.end()) {
+      190:   34:        delete (UAPItem *) (*it);
+      190:   35:        it = m_lUAPItems.erase(it);
+        -:   36:    }
+      124:   37:}
+------------------
+_ZN3UAPD0Ev:
+       62:   30:UAP::~UAP() {
+        -:   31:    // destroy UAP items
+        -:   32:    std::list<UAPItem *>::iterator it = m_lUAPItems.begin();
+        -:   33:    while (it != m_lUAPItems.end()) {
+        -:   34:        delete (UAPItem *) (*it);
+        -:   35:        it = m_lUAPItems.erase(it);
+        -:   36:    }
+       62:   37:}
+------------------
+_ZN3UAPD2Ev:
+       62:   30:UAP::~UAP() {
+        -:   31:    // destroy UAP items
+       62:   32:    std::list<UAPItem *>::iterator it = m_lUAPItems.begin();
+      252:   33:    while (it != m_lUAPItems.end()) {
+      190:   34:        delete (UAPItem *) (*it);
+      190:   35:        it = m_lUAPItems.erase(it);
+        -:   36:    }
+       62:   37:}
+------------------
+        -:   38:
+      190:   39:UAPItem *UAP::newUAPItem() {
+      190:   40:    UAPItem *uap = new UAPItem();
+      190:   41:    m_lUAPItems.push_back(uap);
+      190:   42:    return uap;
+        -:   43:}
+        -:   44:
+        -:   45:#if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
+        -:   46:fulliautomatix_definitions* UAP::getWiresharkDefinitions()
+        -:   47:{
+        -:   48:  fulliautomatix_definitions* startDef = NULL;
+        -:   49:  fulliautomatix_definitions* def = NULL;
+        -:   50:
+        -:   51:  // get definitions for UAPs
+        -:   52:  std::list<UAPItem*>::iterator uapit;
+        -:   53:  for ( uapit=m_lUAPItems.begin() ; uapit != m_lUAPItems.end(); uapit++ )
+        -:   54:  {
+        -:   55:    UAPItem* ui = (UAPItem*)(*uapit);
+        -:   56:    if (def)
+        -:   57:    {
+        -:   58:      def->next = ui->getWiresharkDefinitions();
+        -:   59:    }
+        -:   60:    else
+        -:   61:    {
+        -:   62:      startDef = def = ui->getWiresharkDefinitions();
+        -:   63:    }
+        -:   64:    while(def->next)
+        -:   65:      def = def->next;
+        -:   66:  }
+        -:   67:
+        -:   68:  return startDef;
+        -:   69:}
+        -:   70:#endif
+        -:   71:
+      110:   72:std::string UAP::getDataItemIDByUAPfrn(int uapfrn) {
+      110:   73:    std::list<UAPItem *>::iterator uapit;
+      682:   74:    for (uapit = m_lUAPItems.begin(); uapit != m_lUAPItems.end(); uapit++) {
+      670:   75:        UAPItem *ui = (UAPItem *) (*uapit);
+      670:   76:        if (ui != NULL && ui->m_nFRN == uapfrn) {
+       98:   77:            return ui->m_strItemID;
+        -:   78:        }
+        -:   79:    }
+       24:   80:    return "";
+        -:   81:}
