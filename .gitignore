@@ -10,6 +10,19 @@
 /.venv/
 /venv/
 
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+CPackConfig.cmake
+CPackSourceConfig.cmake
+CTestTestfile.cmake
+_deps/
+*.cmake
+!CMakeLists.txt
+!cmake/
+
 # Coverage reports
 .coverage
 htmlcov/
@@ -19,14 +32,28 @@ coverage.xml
 .pytest_cache/
 coverage.info
 coverage_html/
+coverage*.info
+*.gcov
+*.gcda
+*.gcno
 
 # Build artifacts
 *.o
 *.a
 *.so
+*.exe
+*.dll
+*.dylib
 *.egg-info/
 dist/
 *.egg
+install/asterix
+install-test/
+
+# Rust build artifacts
+asterix-rs/target/
+asterix-rs/Cargo.lock
+*.rlib
 
 # Test outputs
 valgrind.result
@@ -42,3 +69,34 @@ docs/cpp/html/
 # Virtual environment
 venv/
 .venv/
+
+# Interim work products and agent reports
+*_REPORT.md
+*_SUMMARY.md
+*_CHECKLIST.md
+*_ANALYSIS*.md
+*_FINDINGS.md
+*AGENT*.md
+*PHASE*.md
+*QUICK_REFERENCE.md
+*IMPLEMENTATION*.md
+*OPPORTUNITIES.md
+*AUDIT*.md
+*PROGRESS*.md
+
+# Exceptions - keep important documentation
+!ASTERIX_CATEGORY_SUPPORT_MATRIX.md
+!README.md
+!CLAUDE.md
+!CONTRIBUTING.md
+!INSTALLATION_GUIDE.md
+!SECURITY.md
+!LANGUAGE_BINDINGS_COMPARISON.md
+!CPP23_C23_UPGRADE_PLAN.md
+!RUST_BINDINGS_IMPLEMENTATION_PLAN.md
+!CROSS_PLATFORM_BUILD_GUIDE.md
+!SECURITY_TOOLS_GUIDE.md
+!PACKAGING_AND_CI_STATUS.md
+!BUILD_WINDOWS.md
+!DO-278*.md
+!asterix-rs/**/*.md
