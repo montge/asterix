@@ -2,8 +2,8 @@
 ## ASTERIX Decoder - DO-278A Compliance
 
 **Document ID:** SAS-ASTERIX-001
-**Revision:** 2.0
-**Date:** 2025-10-19
+**Revision:** 2.1
+**Date:** 2025-11-01
 **Assurance Level:** AL-3 (Major)
 
 ---
@@ -36,10 +36,11 @@ The ASTERIX Decoder is a software component for decoding and parsing EUROCONTROL
 
 ### 2.1 Software Identification
 - **Name:** ASTERIX Decoder
-- **Version:** 2.8.9
+- **Version:** 2.8.10 (C++), 0.7.10 (Python), 0.1.0 (Rust)
 - **Repository:** https://github.com/montge/asterix (fork of CroatiaControlLtd/asterix)
-- **Languages:** C++ (core), Python (bindings), C (interface)
-- **Build System:** Make, CMake, Python setuptools
+- **Languages:** C++23 (core), Python 3.10+ (bindings), Rust 1.70+ (bindings), C (interface)
+- **Build System:** CMake 3.20+, Python setuptools, Cargo
+- **Version Management:** Centralized via `VERSION` file (see VERSIONING.md)
 
 ### 2.2 Functionality
 - Parse ASTERIX binary protocol data (Categories 001-252)
@@ -86,6 +87,11 @@ The ASTERIX Decoder is a software component for decoding and parsing EUROCONTROL
 - Problem Reports
 - Software Configuration Management Records
 - Archive/Retrieval records
+- Software Bill of Materials (SBOM) - CycloneDX format
+  - Location: `sbom/asterix-{VERSION}-cyclonedx.json`
+  - Generated automatically via GitHub Actions on version changes
+  - Includes dependencies for C++, Python, and Rust components
+  - Tagged with version tags (v{VERSION}) pointing to commit where SBOM was generated
 
 ### 3.5 Quality Assurance Data
 - Software Quality Assurance Records
@@ -344,3 +350,4 @@ This retrofit compliance effort for existing open-source software has completed 
 |---------|------|--------|---------|
 | 1.0 | 2025-10-17 | Initial | Initial SAS creation |
 | 2.0 | 2025-10-19 | Update | Added Section 5 - Current Status and Achievements. Updated compliance status to reflect 92.2% coverage achievement, 560 tests, and DO-278A AL-3 readiness |
+| 2.1 | 2025-11-01 | Update | Updated version to 2.8.10 (C++), 0.7.10 (Python), 0.1.0 (Rust). Added SBOM generation to Configuration Management Data. Updated build system and language versions. Added centralized version management reference. |

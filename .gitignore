@@ -103,6 +103,10 @@ valgrind.result
 # Generated documentation
 docs/cpp/html/
 
+# SBOM files (tracked in repository, but ignore duplicates/temp files)
+sbom/*.tmp
+sbom/*.bak
+
 # Virtual environment
 venv/
 .venv/
