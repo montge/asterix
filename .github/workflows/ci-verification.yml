@@ -52,6 +52,9 @@ jobs:
     - name: Run C++ tests
       run: |
         cd install/test
+        # Set LD_LIBRARY_PATH for shared library loading
+        export LD_LIBRARY_PATH=${{ github.workspace }}/install/lib:${LD_LIBRARY_PATH:-}
+
         # Verify test script is executable
         chmod +x ./test.sh || true
         # Check if required files exist
@@ -128,7 +131,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libexpat1-dev
         python -m pip install --upgrade pip
-        pip install setuptools wheel coverage pytest pytest-cov
+        pip install setuptools wheel coverage pytest pytest-cov memory-profiler
 
     - name: Build Python module
       run: |
@@ -271,6 +274,9 @@ jobs:
       id: run_tests
       run: |
         cd install/test
+        # Set LD_LIBRARY_PATH for shared library loading
+        export LD_LIBRARY_PATH=${{ github.workspace }}/install/lib:${LD_LIBRARY_PATH:-}
+
         set +e  # Don't exit immediately on error
         ./test.sh
         TEST_EXIT_CODE=$?
@@ -333,6 +339,9 @@ jobs:
     - name: Run valgrind tests
       run: |
         cd install/test
+        # Set LD_LIBRARY_PATH for shared library loading
+        export LD_LIBRARY_PATH=${{ github.workspace }}/install/lib:${LD_LIBRARY_PATH:-}
+
         # Run existing valgrind tests from test.sh
         valgrind --leak-check=full --error-exitcode=1 \
           ../bin/asterix -P -d ../config/asterix.ini \
