@@ -79,7 +79,7 @@ jobs:
         
         # Generate SBOM for C++ project using syft
         # Scan entire repository for dependencies
-        ${SYFT_CMD} packages dir:. \
+        ${SYFT_CMD} scan dir:. \
           -o cyclonedx-json \
           --exclude "*/build*/**" \
           --exclude "*/target/**" \
@@ -135,14 +135,17 @@ jobs:
         if [ -f "requirements.txt" ] || [ -f "setup.py" ]; then
           # Use syft from environment or fallback to direct call
           SYFT_CMD="${SYFT_PATH:-/usr/local/bin/syft}"
-          
+
           # Try to generate Python SBOM
-          if ${SYFT_CMD} packages python:. \
+          TEMP_LOG=$(mktemp)
+          if ${SYFT_CMD} scan dir:. \
+            --select-catalogers python \
             -o cyclonedx-json \
             --exclude "*/build*/**" \
             --exclude "*/.git/**" \
             --exclude "*/venv/**" \
-            --exclude "*/.venv/**" > "${SBOM_FILE}" 2>&1; then
+            --exclude "*/.venv/**" \
+            --exclude "*/target/**" > "${SBOM_FILE}" 2> "${TEMP_LOG}"; then
             
             # Verify SBOM file was created and is valid JSON
             if [ -f "${SBOM_FILE}" ] && [ -s "${SBOM_FILE}" ]; then
@@ -165,14 +168,19 @@ jobs:
                   mv "${SBOM_FILE}.tmp" "${SBOM_FILE}"
                   echo "Generated Python SBOM: ${SBOM_FILE} (Python version ${PYTHON_VERSION})"
                 fi
+                rm -f "${TEMP_LOG}"
               else
                 echo "::warning::Python SBOM file is not valid JSON, skipping metadata update"
+                rm -f "${TEMP_LOG}"
               fi
             else
               echo "::warning::Python SBOM file was not created or is empty"
+              rm -f "${TEMP_LOG}"
             fi
           else
             echo "::warning::Failed to generate Python SBOM with syft, continuing..."
+            cat "${TEMP_LOG}" 1>&2
+            rm -f "${TEMP_LOG}"
           fi
         else
           echo "No Python requirements found, skipping Python SBOM"
@@ -191,11 +199,13 @@ jobs:
         if [ -f "asterix-rs/Cargo.toml" ]; then
           # Use syft from environment or fallback to direct call
           SYFT_CMD="${SYFT_PATH:-/usr/local/bin/syft}"
-          
+
           # Try to generate Rust SBOM from the cargo directory
-          if cd asterix-rs && ${SYFT_CMD} packages cargo:. \
+          TEMP_LOG=$(mktemp)
+          if cd asterix-rs && ${SYFT_CMD} scan dir:. \
+            --select-catalogers cargo \
             -o cyclonedx-json \
-            --exclude "*/target/**" > "../${SBOM_FILE}" 2>&1; then
+            --exclude "*/target/**" > "../${SBOM_FILE}" 2> "${TEMP_LOG}"; then
             
             cd ..
             
@@ -220,15 +230,20 @@ jobs:
                   mv "${SBOM_FILE}.tmp" "${SBOM_FILE}"
                   echo "Generated Rust SBOM: ${SBOM_FILE} (Rust version ${RUST_VERSION})"
                 fi
+                rm -f "${TEMP_LOG}"
               else
                 echo "::warning::Rust SBOM file is not valid JSON, skipping metadata update"
+                rm -f "${TEMP_LOG}"
               fi
             else
               echo "::warning::Rust SBOM file was not created or is empty"
+              rm -f "${TEMP_LOG}"
             fi
           else
             cd ..
             echo "::warning::Failed to generate Rust SBOM with syft, continuing..."
+            cat "${TEMP_LOG}" 1>&2
+            rm -f "${TEMP_LOG}"
           fi
         else
           echo "No Rust Cargo.toml found, skipping Rust SBOM"
@@ -245,8 +260,9 @@ jobs:
         printf 'This directory contains CycloneDX format SBOM files for the ASTERIX project.\n\n' >> sbom/README.md
         printf '## Files\n\n' >> sbom/README.md
         printf '- **asterix-sbom.json** - Main SBOM for C++ core library (version tracked via git tags)\n' >> sbom/README.md
-        printf '- **asterix-python-sbom.json** - SBOM for Python bindings (if applicable)\n' >> sbom/README.md
-        printf '- **asterix-rust-sbom.json** - SBOM for Rust crate (if applicable)\n\n' >> sbom/README.md
+        echo '- **asterix-python-sbom.json** - SBOM for Python bindings (if applicable)' >> sbom/README.md
+        echo '- **asterix-rust-sbom.json** - SBOM for Rust crate (if applicable)' >> sbom/README.md
+        echo '' >> sbom/README.md
         printf '## Version Information\n\n' >> sbom/README.md
         printf '- **Current Version**: %s\n' "${VERSION}" >> sbom/README.md
         printf '- **Git Tag**: v%s\n' "${VERSION}" >> sbom/README.md
