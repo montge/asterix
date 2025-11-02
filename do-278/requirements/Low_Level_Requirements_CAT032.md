@@ -1,34 +1,34 @@
-# Low-Level Requirements - ASTERIX Category 32
+# Low-Level Requirements - ASTERIX Category 032
 ## ASTERIX Decoder - DO-278A AL-3
 
-**Document ID:** LLR-CAT32-001
+**Document ID:** LLR-CAT032-001
 **Revision:** 1.0
 **Date:** 2025-11-02
-**Parent HLR:** REQ-HLR-CAT-32
+**Parent HLR:** REQ-HLR-CAT-032
 **Assurance Level:** AL-3 (Major)
 
 ---
 
 ## 1. Introduction
 
-This document defines Low-Level Requirements (LLR) for parsing ASTERIX Category 32 (Messages Provided by Users to ARTAS) v6.2.
+This document defines Low-Level Requirements (LLR) for parsing ASTERIX Category 032 (Messages Provided by Users to ARTAS) v6.2.
 
-**Parent Requirement:** REQ-HLR-CAT-32 - Parse ASTERIX Category 32
+**Parent Requirement:** REQ-HLR-CAT-032 - Parse ASTERIX Category 032
 
-Each data item in CAT32 has corresponding LLRs defining parsing behavior.
+Each data item in CAT032 has corresponding LLRs defining parsing behavior.
 
 ---
 
-## 2. CAT32 Data Item Requirements
+## 2. CAT032 Data Item Requirements
 
-### REQ-LLR-32-010: Parse Server Identification Tag (I32/010)
+### REQ-LLR-032-010: Parse Server Identification Tag (I032/010)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/010 (Server Identification Tag) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/010 (Server Identification Tag) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Identification of the Server of track information.
@@ -40,9 +40,9 @@ Identification of the Server of track information.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-010-001: Parse valid Server Identification Tag
-- TC-32-010-002: Verify format compliance
-- TC-32-010-003: Test boundary values
+- TC-032-010-001: Parse valid Server Identification Tag
+- TC-032-010-002: Verify format compliance
+- TC-032-010-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -54,14 +54,14 @@ Identification of the Server of track information.
 
 ---
 
-### REQ-LLR-32-015: Parse User Number (I32/015)
+### REQ-LLR-032-015: Parse User Number (I032/015)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/015 (User Number) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/015 (User Number) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Identification of the User of track information
@@ -73,9 +73,9 @@ Identification of the User of track information
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-015-001: Parse valid User Number
-- TC-32-015-002: Verify format compliance
-- TC-32-015-003: Test boundary values
+- TC-032-015-001: Parse valid User Number
+- TC-032-015-002: Verify format compliance
+- TC-032-015-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -87,14 +87,14 @@ Identification of the User of track information
 
 ---
 
-### REQ-LLR-32-018: Parse Data Source Identification Tag (I32/018)
+### REQ-LLR-032-018: Parse Data Source Identification Tag (I032/018)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/018 (Data Source Identification Tag) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/018 (Data Source Identification Tag) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Identification of the data source (system) from which the information contained in the message was originated.
@@ -106,9 +106,9 @@ Identification of the data source (system) from which the information contained 
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-018-001: Parse valid Data Source Identification Tag
-- TC-32-018-002: Verify format compliance
-- TC-32-018-003: Test boundary values
+- TC-032-018-001: Parse valid Data Source Identification Tag
+- TC-032-018-002: Verify format compliance
+- TC-032-018-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -120,14 +120,14 @@ Identification of the data source (system) from which the information contained 
 
 ---
 
-### REQ-LLR-32-020: Parse Time Of Message (I32/020)
+### REQ-LLR-032-020: Parse Time Of Message (I032/020)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/020 (Time Of Message) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/020 (Time Of Message) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Absolute time stamping of the message in the form of elapsed time since last midnight.
@@ -139,9 +139,9 @@ Absolute time stamping of the message in the form of elapsed time since last mid
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-020-001: Parse valid Time Of Message
-- TC-32-020-002: Verify format compliance
-- TC-32-020-003: Test boundary values
+- TC-032-020-001: Parse valid Time Of Message
+- TC-032-020-002: Verify format compliance
+- TC-032-020-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -153,14 +153,14 @@ Absolute time stamping of the message in the form of elapsed time since last mid
 
 ---
 
-### REQ-LLR-32-035: Parse Type Of Message (I32/035)
+### REQ-LLR-032-035: Parse Type Of Message (I032/035)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/035 (Type Of Message) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/035 (Type Of Message) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 This data item allows for a more convenient handling of the message at the receiver side by further defining the type of transaction.
@@ -172,9 +172,9 @@ This data item allows for a more convenient handling of the message at the recei
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-035-001: Parse valid Type Of Message
-- TC-32-035-002: Verify format compliance
-- TC-32-035-003: Test boundary values
+- TC-032-035-001: Parse valid Type Of Message
+- TC-032-035-002: Verify format compliance
+- TC-032-035-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -186,14 +186,14 @@ This data item allows for a more convenient handling of the message at the recei
 
 ---
 
-### REQ-LLR-32-040: Parse Track Number (I32/040)
+### REQ-LLR-032-040: Parse Track Number (I032/040)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/040 (Track Number) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/040 (Track Number) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Identification of an ARTAS track (track number)
@@ -205,9 +205,9 @@ Identification of an ARTAS track (track number)
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-040-001: Parse valid Track Number
-- TC-32-040-002: Verify format compliance
-- TC-32-040-003: Test boundary values
+- TC-032-040-001: Parse valid Track Number
+- TC-032-040-002: Verify format compliance
+- TC-032-040-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -219,14 +219,14 @@ Identification of an ARTAS track (track number)
 
 ---
 
-### REQ-LLR-32-050: Parse Artas Track Number (I32/050)
+### REQ-LLR-032-050: Parse Artas Track Number (I032/050)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/050 (Artas Track Number) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/050 (Artas Track Number) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Identification of an ARTAS track
@@ -238,9 +238,9 @@ Identification of an ARTAS track
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-050-001: Parse valid Artas Track Number
-- TC-32-050-002: Verify format compliance
-- TC-32-050-003: Test boundary values
+- TC-032-050-001: Parse valid Artas Track Number
+- TC-032-050-002: Verify format compliance
+- TC-032-050-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -252,14 +252,14 @@ Identification of an ARTAS track
 
 ---
 
-### REQ-LLR-32-060: Parse Track Mode 3/A (I32/060)
+### REQ-LLR-032-060: Parse Track Mode 3/A (I032/060)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/060 (Track Mode 3/A) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/060 (Track Mode 3/A) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Mode 3/A identity associated to the track
@@ -270,9 +270,9 @@ Mode 3/A identity associated to the track
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-060-001: Parse valid Track Mode 3/A
-- TC-32-060-002: Verify format compliance
-- TC-32-060-003: Test boundary values
+- TC-032-060-001: Parse valid Track Mode 3/A
+- TC-032-060-002: Verify format compliance
+- TC-032-060-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -284,14 +284,14 @@ Mode 3/A identity associated to the track
 
 ---
 
-### REQ-LLR-32-400: Parse Callsign (I32/400)
+### REQ-LLR-032-400: Parse Callsign (I032/400)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/400 (Callsign) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/400 (Callsign) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Callsign (in 7 characters) of an aircraft (provided in the Minipln).
@@ -302,9 +302,9 @@ Callsign (in 7 characters) of an aircraft (provided in the Minipln).
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-400-001: Parse valid Callsign
-- TC-32-400-002: Verify format compliance
-- TC-32-400-003: Test boundary values
+- TC-032-400-001: Parse valid Callsign
+- TC-032-400-002: Verify format compliance
+- TC-032-400-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -316,14 +316,14 @@ Callsign (in 7 characters) of an aircraft (provided in the Minipln).
 
 ---
 
-### REQ-LLR-32-410: Parse PLN Number (I32/410)
+### REQ-LLR-032-410: Parse PLN Number (I032/410)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/410 (PLN Number) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/410 (PLN Number) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 The PLN NUMBER is an integer value representing a unique reference to a Flight-plan record within a particular FPPS (Information provided in the minipln).
@@ -334,9 +334,9 @@ The PLN NUMBER is an integer value representing a unique reference to a Flight-p
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-410-001: Parse valid PLN Number
-- TC-32-410-002: Verify format compliance
-- TC-32-410-003: Test boundary values
+- TC-032-410-001: Parse valid PLN Number
+- TC-032-410-002: Verify format compliance
+- TC-032-410-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -348,14 +348,14 @@ The PLN NUMBER is an integer value representing a unique reference to a Flight-p
 
 ---
 
-### REQ-LLR-32-420: Parse Flight Category (I32/420)
+### REQ-LLR-032-420: Parse Flight Category (I032/420)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/420 (Flight Category) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/420 (Flight Category) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Flight Category (information provided in the Minipln).
@@ -366,9 +366,9 @@ Flight Category (information provided in the Minipln).
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-420-001: Parse valid Flight Category
-- TC-32-420-002: Verify format compliance
-- TC-32-420-003: Test boundary values
+- TC-032-420-001: Parse valid Flight Category
+- TC-032-420-002: Verify format compliance
+- TC-032-420-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -380,14 +380,14 @@ Flight Category (information provided in the Minipln).
 
 ---
 
-### REQ-LLR-32-430: Parse Type Of Aircraft (I32/430)
+### REQ-LLR-032-430: Parse Type Of Aircraft (I032/430)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/430 (Type Of Aircraft) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/430 (Type Of Aircraft) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Type of Aircraft indicated in a Minipln.
@@ -399,9 +399,9 @@ Type of Aircraft indicated in a Minipln.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-430-001: Parse valid Type Of Aircraft
-- TC-32-430-002: Verify format compliance
-- TC-32-430-003: Test boundary values
+- TC-032-430-001: Parse valid Type Of Aircraft
+- TC-032-430-002: Verify format compliance
+- TC-032-430-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -413,14 +413,14 @@ Type of Aircraft indicated in a Minipln.
 
 ---
 
-### REQ-LLR-32-435: Parse Category of Turbulence (I32/435)
+### REQ-LLR-032-435: Parse Category of Turbulence (I032/435)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/435 (Category of Turbulence) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/435 (Category of Turbulence) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Category of turbulence of an aircraft (information provided in the Minipln).
@@ -431,9 +431,9 @@ Category of turbulence of an aircraft (information provided in the Minipln).
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-435-001: Parse valid Category of Turbulence
-- TC-32-435-002: Verify format compliance
-- TC-32-435-003: Test boundary values
+- TC-032-435-001: Parse valid Category of Turbulence
+- TC-032-435-002: Verify format compliance
+- TC-032-435-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -445,14 +445,14 @@ Category of turbulence of an aircraft (information provided in the Minipln).
 
 ---
 
-### REQ-LLR-32-440: Parse Departure Airport (I32/440)
+### REQ-LLR-032-440: Parse Departure Airport (I032/440)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/440 (Departure Airport) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/440 (Departure Airport) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Departure Airport indicated in a Minipln
@@ -464,9 +464,9 @@ Departure Airport indicated in a Minipln
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-440-001: Parse valid Departure Airport
-- TC-32-440-002: Verify format compliance
-- TC-32-440-003: Test boundary values
+- TC-032-440-001: Parse valid Departure Airport
+- TC-032-440-002: Verify format compliance
+- TC-032-440-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -478,14 +478,14 @@ Departure Airport indicated in a Minipln
 
 ---
 
-### REQ-LLR-32-450: Parse Destination Airport (I32/450)
+### REQ-LLR-032-450: Parse Destination Airport (I032/450)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/450 (Destination Airport) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/450 (Destination Airport) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Destination Airport indicated in a Minipln
@@ -497,9 +497,9 @@ Destination Airport indicated in a Minipln
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-450-001: Parse valid Destination Airport
-- TC-32-450-002: Verify format compliance
-- TC-32-450-003: Test boundary values
+- TC-032-450-001: Parse valid Destination Airport
+- TC-032-450-002: Verify format compliance
+- TC-032-450-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -511,14 +511,14 @@ Destination Airport indicated in a Minipln
 
 ---
 
-### REQ-LLR-32-460: Parse Allocated SSR codes (I32/460)
+### REQ-LLR-032-460: Parse Allocated SSR codes (I032/460)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/460 (Allocated SSR codes) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/460 (Allocated SSR codes) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 List of successive SSR codes allocated to a flight (Information provided in the minipln).
@@ -529,9 +529,9 @@ List of successive SSR codes allocated to a flight (Information provided in the 
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-460-001: Parse valid Allocated SSR codes
-- TC-32-460-002: Verify format compliance
-- TC-32-460-003: Test boundary values
+- TC-032-460-001: Parse valid Allocated SSR codes
+- TC-032-460-002: Verify format compliance
+- TC-032-460-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -543,14 +543,14 @@ List of successive SSR codes allocated to a flight (Information provided in the 
 
 ---
 
-### REQ-LLR-32-480: Parse Current Cleared Flight Level (I32/480)
+### REQ-LLR-032-480: Parse Current Cleared Flight Level (I032/480)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/480 (Current Cleared Flight Level) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/480 (Current Cleared Flight Level) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Current Cleared Flight Level of an aircraft, provided by a FPPS.
@@ -561,9 +561,9 @@ Current Cleared Flight Level of an aircraft, provided by a FPPS.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-480-001: Parse valid Current Cleared Flight Level
-- TC-32-480-002: Verify format compliance
-- TC-32-480-003: Test boundary values
+- TC-032-480-001: Parse valid Current Cleared Flight Level
+- TC-032-480-002: Verify format compliance
+- TC-032-480-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -575,14 +575,14 @@ Current Cleared Flight Level of an aircraft, provided by a FPPS.
 
 ---
 
-### REQ-LLR-32-490: Parse Current Control Position (I32/490)
+### REQ-LLR-032-490: Parse Current Control Position (I032/490)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/490 (Current Control Position) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/490 (Current Control Position) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Identification of the Current Control Position in charge of an aircraft, as provided by a FPPS
@@ -594,9 +594,9 @@ Identification of the Current Control Position in charge of an aircraft, as prov
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-490-001: Parse valid Current Control Position
-- TC-32-490-002: Verify format compliance
-- TC-32-490-003: Test boundary values
+- TC-032-490-001: Parse valid Current Control Position
+- TC-032-490-002: Verify format compliance
+- TC-032-490-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -608,14 +608,14 @@ Identification of the Current Control Position in charge of an aircraft, as prov
 
 ---
 
-### REQ-LLR-32-500: Parse SUPPLEMENTARY FLIGHT DATA (I32/500)
+### REQ-LLR-032-500: Parse SUPPLEMENTARY FLIGHT DATA (I032/500)
 
-**Parent:** REQ-HLR-CAT-32
+**Parent:** REQ-HLR-CAT-032
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I32/500 (SUPPLEMENTARY FLIGHT DATA) as specified in the EUROCONTROL ASTERIX CAT32 v6.2 specification.
+The parser shall extract Data Item I032/500 (SUPPLEMENTARY FLIGHT DATA) as specified in the EUROCONTROL ASTERIX CAT032 v6.2 specification.
 
 **Data Item Definition:**
 Flight related data provided by ground based systems.
@@ -626,9 +626,9 @@ Flight related data provided by ground based systems.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-500-001: Parse valid SUPPLEMENTARY FLIGHT DATA
-- TC-32-500-002: Verify format compliance
-- TC-32-500-003: Test boundary values
+- TC-032-500-001: Parse valid SUPPLEMENTARY FLIGHT DATA
+- TC-032-500-002: Verify format compliance
+- TC-032-500-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -642,37 +642,37 @@ Flight related data provided by ground based systems.
 
 ## 3. Error Handling Requirements
 
-### REQ-LLR-32-ERR-001: Invalid Data Item Length
+### REQ-LLR-032-ERR-001: Invalid Data Item Length
 
 **Parent:** REQ-HLR-ERR-001
 **Category:** Error Handling
 **Priority:** High
 
 **Description:**
-The parser shall detect and report errors when a CAT32 data item has invalid length or format.
+The parser shall detect and report errors when a CAT032 data item has invalid length or format.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-ERR-001: Truncated data items
-- TC-32-ERR-002: Invalid repetition counts
-- TC-32-ERR-003: Malformed compound items
+- TC-032-ERR-001: Truncated data items
+- TC-032-ERR-002: Invalid repetition counts
+- TC-032-ERR-003: Malformed compound items
 
 **Safety Impact:** High
 
 ---
 
-### REQ-LLR-32-ERR-002: Unknown Data Item
+### REQ-LLR-032-ERR-002: Unknown Data Item
 
 **Parent:** REQ-HLR-ERR-001
 **Category:** Error Handling
 **Priority:** Medium
 
 **Description:**
-The parser shall gracefully handle CAT32 data items not defined in the configuration.
+The parser shall gracefully handle CAT032 data items not defined in the configuration.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-32-ERR-004: Unknown data item in FSPEC
+- TC-032-ERR-004: Unknown data item in FSPEC
 
 **Safety Impact:** Medium
 
@@ -682,27 +682,27 @@ The parser shall gracefully handle CAT32 data items not defined in the configura
 
 | Requirement ID | Data Item | Description | Priority | Safety |
 |----------------|-----------|-------------|----------|--------|
-| REQ-LLR-32-010 | I32/010 | Server Identification Tag | Medium | Low |
-| REQ-LLR-32-015 | I32/015 | User Number | Medium | Low |
-| REQ-LLR-32-018 | I32/018 | Data Source Identification Tag | Medium | Low |
-| REQ-LLR-32-020 | I32/020 | Time Of Message | Medium | Low |
-| REQ-LLR-32-035 | I32/035 | Type Of Message | Medium | Low |
-| REQ-LLR-32-040 | I32/040 | Track Number | Medium | Low |
-| REQ-LLR-32-050 | I32/050 | Artas Track Number | Medium | Low |
-| REQ-LLR-32-060 | I32/060 | Track Mode 3/A | Medium | Low |
-| REQ-LLR-32-400 | I32/400 | Callsign | Medium | Low |
-| REQ-LLR-32-410 | I32/410 | PLN Number | Medium | Low |
-| REQ-LLR-32-420 | I32/420 | Flight Category | Medium | Low |
-| REQ-LLR-32-430 | I32/430 | Type Of Aircraft | Medium | Low |
-| REQ-LLR-32-435 | I32/435 | Category of Turbulence | Medium | Low |
-| REQ-LLR-32-440 | I32/440 | Departure Airport | Medium | Low |
-| REQ-LLR-32-450 | I32/450 | Destination Airport | Medium | Low |
-| REQ-LLR-32-460 | I32/460 | Allocated SSR codes | Medium | Low |
-| REQ-LLR-32-480 | I32/480 | Current Cleared Flight Level | Medium | Low |
-| REQ-LLR-32-490 | I32/490 | Current Control Position | Medium | Low |
-| REQ-LLR-32-500 | I32/500 | SUPPLEMENTARY FLIGHT DATA | Medium | Low |
-| REQ-LLR-32-ERR-001 | - | Invalid Data Item Length | High | High |
-| REQ-LLR-32-ERR-002 | - | Unknown Data Item | Medium | Medium |
+| REQ-LLR-032-010 | I032/010 | Server Identification Tag | Medium | Low |
+| REQ-LLR-032-015 | I032/015 | User Number | Medium | Low |
+| REQ-LLR-032-018 | I032/018 | Data Source Identification Tag | Medium | Low |
+| REQ-LLR-032-020 | I032/020 | Time Of Message | Medium | Low |
+| REQ-LLR-032-035 | I032/035 | Type Of Message | Medium | Low |
+| REQ-LLR-032-040 | I032/040 | Track Number | Medium | Low |
+| REQ-LLR-032-050 | I032/050 | Artas Track Number | Medium | Low |
+| REQ-LLR-032-060 | I032/060 | Track Mode 3/A | Medium | Low |
+| REQ-LLR-032-400 | I032/400 | Callsign | Medium | Low |
+| REQ-LLR-032-410 | I032/410 | PLN Number | Medium | Low |
+| REQ-LLR-032-420 | I032/420 | Flight Category | Medium | Low |
+| REQ-LLR-032-430 | I032/430 | Type Of Aircraft | Medium | Low |
+| REQ-LLR-032-435 | I032/435 | Category of Turbulence | Medium | Low |
+| REQ-LLR-032-440 | I032/440 | Departure Airport | Medium | Low |
+| REQ-LLR-032-450 | I032/450 | Destination Airport | Medium | Low |
+| REQ-LLR-032-460 | I032/460 | Allocated SSR codes | Medium | Low |
+| REQ-LLR-032-480 | I032/480 | Current Cleared Flight Level | Medium | Low |
+| REQ-LLR-032-490 | I032/490 | Current Control Position | Medium | Low |
+| REQ-LLR-032-500 | I032/500 | SUPPLEMENTARY FLIGHT DATA | Medium | Low |
+| REQ-LLR-032-ERR-001 | - | Invalid Data Item Length | High | High |
+| REQ-LLR-032-ERR-002 | - | Unknown Data Item | Medium | Medium |
 
 **Total Requirements:** 21
 
@@ -711,10 +711,10 @@ The parser shall gracefully handle CAT32 data items not defined in the configura
 ## 5. Traceability
 
 Each LLR traces to:
-- **Parent HLR:** REQ-HLR-CAT-32
+- **Parent HLR:** REQ-HLR-CAT-032
 - **Design:** Software Design Description (SDD)
 - **Code:** Source files and configuration XML
-- **Tests:** Specific test cases (TC-32-xxx-xxx)
+- **Tests:** Specific test cases (TC-032-xxx-xxx)
 
 See Requirements Traceability Matrix (RTM) for complete mapping.
 
@@ -734,7 +734,7 @@ See Requirements Traceability Matrix (RTM) for complete mapping.
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | 2025-11-02 | Auto-generated | Initial LLR for CAT32 data items |
+| 1.0 | 2025-11-02 | Auto-generated | Initial LLR for CAT032 data items |
 
 ---
 

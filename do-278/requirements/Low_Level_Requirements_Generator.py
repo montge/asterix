@@ -142,7 +142,7 @@ def get_priority(item_rule, safety_impact):
 
 def generate_llr_document(cat_data, output_path):
     """Generate Low-Level Requirements document"""
-    cat_num = cat_data['category']
+    cat_num = cat_data['category'].zfill(3)  # Normalize to 3 digits: "1" -> "001"
     cat_name = cat_data['name']
     cat_ver = cat_data['version']
     items = cat_data['data_items']
