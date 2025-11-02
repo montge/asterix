@@ -21,7 +21,7 @@ path = "src/lib.rs"
 cxx = "1.0"
 
 # Error handling
-thiserror = "1.0"
+thiserror = "2.0"
 anyhow = "1.0"
 
 # Serialization (optional)
