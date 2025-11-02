@@ -4,6 +4,15 @@ This directory contains DO-278A (CNS/ATM Systems Software Integrity Assurance) c
 
 ## Assurance Level: AL-3 (Major)
 
+## Current Project Status (2025-11-01)
+
+- **Version**: 2.8.10
+- **Language Bindings**: C++23, Python 3.10-3.14, Rust 1.70+
+- **Test Coverage**: 92.2% overall (C++: 45.5%, Python: 97%, Rust: target 90%)
+- **Platforms**: Linux (x86_64, ARM64), Windows, macOS (Intel, ARM M1)
+- **Upstream**: Synced with CroatiaControlLtd/asterix v2.8.10
+- **Security**: 41 CVEs fixed, CodeQL enabled for all languages
+
 ## Directory Structure
 
 ```
@@ -39,21 +48,28 @@ do-278/
 ### 1. Build the Project
 
 **Prerequisites:**
-- C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017 15.3+)
-- CMake 3.12+ or GNU Make
+- C++23 compatible compiler (GCC 13+, Clang 16+, MSVC 2022 v17.4+, AppleClang 15+)
+- CMake 3.20+ or GNU Make
+- Python 3.10+ (for Python bindings)
+- Rust 1.70+ (for Rust bindings)
 - libexpat library
 
 ```bash
-# C++ executable
+# C++ executable (C++23)
 cd src
 make
 make install
 make test
 
-# Python module
+# Python module (3.10-3.14)
 python setup.py build
 python setup.py install
 python -m unittest
+
+# Rust bindings (1.70+)
+cd asterix-rs
+cargo build --release
+cargo test --all-features
 ```
 
 ### 2. Run Verification
@@ -73,10 +89,16 @@ cd install/test
 ### 3. Coverage Analysis
 
 ```bash
-# Python coverage
+# Python coverage (target: 90%+, current: 97%)
 python -m pytest --cov=asterix --cov-report=html asterix/test/
 
-# C++ coverage (TODO: needs instrumentation)
+# C++ coverage (target: 80%+, current: 45.5%)
+cd src && make clean && COVERAGE=1 make test
+lcov --capture --directory . --output-file coverage.info
+
+# Rust coverage (target: 90%+)
+cd asterix-rs
+cargo tarpaulin --all-features --out Html --fail-under 80
 # See do-278/verification/ for reports
 ```
 
