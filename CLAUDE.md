@@ -44,7 +44,12 @@ make
 
 The executable will be created at `install/asterix` (not asterix.exe despite documentation).
 
-**C++ Standard:** The project uses C++23 (set in CMakeLists.txt via `CMAKE_CXX_STANDARD 23`)
+**C++ Standard (Platform-Specific):**
+- **C++ Executable & CMake builds:** C++23 (set in CMakeLists.txt via `CMAKE_CXX_STANDARD 23`)
+  - Automatic fallback to C++17/20 on older compilers (see `src/asterix/cxx23_features.h`)
+- **Python module builds:**
+  - **Linux:** C++23 (matches CMake for full feature parity)
+  - **macOS/Windows:** C++17 (better compiler compatibility, set in setup.py)
 **C Standard:** The project uses C23 (set in CMakeLists.txt via `CMAKE_C_STANDARD 23`)
 
 ### Python Module
