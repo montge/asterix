@@ -3,7 +3,7 @@
 
 **Document ID:** LLR-CAT048-001
 **Revision:** 1.0
-**Date:** 2025-10-17
+**Date:** 2025-11-02
 **Parent HLR:** REQ-HLR-CAT-048
 **Assurance Level:** AL-3 (Major)
 
@@ -11,7 +11,7 @@
 
 ## 1. Introduction
 
-This document defines Low-Level Requirements (LLR) for parsing ASTERIX Category 048 (Transmission of Monoradar Target Reports) v1.21.
+This document defines Low-Level Requirements (LLR) for parsing ASTERIX Category 048 (Monoradar Target Reports) v1.30.
 
 **Parent Requirement:** REQ-HLR-CAT-048 - Parse ASTERIX Category 048
 
@@ -25,31 +25,38 @@ Each data item in CAT048 has corresponding LLRs defining parsing behavior.
 
 **Parent:** REQ-HLR-CAT-048
 **Category:** Functional
-**Priority:** Critical
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I048/010 (Data Source Identifier) as a 2-byte fixed-length field containing:
-- SAC (System Area Code): Byte 1, bits 16-9, unsigned integer (0-255)
-- SIC (System Identification Code): Byte 2, bits 8-1, unsigned integer (0-255)
+The parser shall extract Data Item I048/010 (Data Source Identifier) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Identification of the radar station from which the data is received.
+        
 
 **Implementation Notes:**
-- Format: Fixed, 2 bytes
-- No scaling required (raw values)
-- Identifies the radar station from which data are received
+- Format: Fixed (2 bytes)
+- Rule: optional
+- Note: 
+            Note:
+                - The up-to-date list of SACs is published on the
+                  EUROCONTROL Web Site (http://www.eurocontrol.int/asterix).
+        
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-048-010-001: Parse valid SAC/SIC values
-- TC-048-010-002: Parse boundary values (0x00, 0xFF)
-- TC-048-010-003: Verify correct byte order
+- TC-048-010-001: Parse valid Data Source Identifier
+- TC-048-010-002: Verify format compliance
+- TC-048-010-003: Test boundary values
 
 **Code Reference:**
-- src/asterix/DataItemFormatFixed.cpp
-- asterix/config/asterix_cat048_1_21.xml (lines 24-39)
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
 
-**Design Reference:** SDD Section 3.4.2 (Fixed Format Parsing)
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** High (incorrect SAC/SIC misidentifies data source)
+**Safety Impact:** Medium
 
 ---
 
@@ -57,285 +64,687 @@ The parser shall extract Data Item I048/010 (Data Source Identifier) as a 2-byte
 
 **Parent:** REQ-HLR-CAT-048
 **Category:** Functional
-**Priority:** Critical
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I048/020 (Target Report Descriptor) as a variable-length field (1-2 bytes) containing target type and characteristics:
+The parser shall extract Data Item I048/020 (Target Report Descriptor) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
 
-**First Byte (always present):**
-- TYP (bits 8-6): Target type (3 bits)
-  - 0: No detection
-  - 1: Single PSR detection
-  - 2: Single SSR detection
-  - 3: PSR+SSR detection
-  - 4: Single Mode S All-Call
-  - 5: Single Mode S Roll-Call
-  - 6: PSR+Mode S All-Call
-  - 7: PSR+Mode S Roll-Call
-- SIM (bit 5): Simulated/Actual (0=Actual, 1=Simulated)
-- RDP (bit 4): RDP Chain (0=Chain 1, 1=Chain 2)
-- SPI (bit 3): Special Position Identification (0=Absence, 1=SPI)
-- RAB (bit 2): Report from Aircraft Transponder (0=Aircraft, 1=Fixed transponder)
-- FX (bit 1): Extension flag (0=End, 1=Extension)
+**Data Item Definition:**
 
-**Second Byte (if FX=1):**
-- TST (bit 8): Test target (0=Real, 1=Test)
-- Spare bits (set to 0)
-- FX (bit 1): Further extension
+            Type and properties of the target report.
+        
 
 **Implementation Notes:**
-- Format: Variable length (1 or 2 bytes depending on FX bit)
-- Parse first byte, check FX bit
-- If FX=1, parse second byte
-- Continue until FX=0
+- Format: Variable
+- Rule: optional
+- Note: 
+            Notes:
+
+                1. For Mode S aircraft, the SPI information is also contained in I048/230.
+                2. To bits 3/2 (FOE/FRI): IFF interrogators supporting a three level
+                   classification of the processing of the Mode 4 interrogation result
+                   shall encode the detailed response information in data item M4E of
+                   the Reserved Expansion Field of category 048. In this case the value
+                   for FOE/FRI in I048/020 shall be set to 00.
+                   However, even those interrogators shall use I048/020 to encode the information No reply.
+                3. To bit 6 (XPP): This bit shall always be set when the X-pulse has
+                   been extracted, independent from the Mode it was extracted with.
+                4. To bit 7 (ERR): This bit set to 1 indicates that the range of the
+                   target is beyond the maximum range in data item I048/040.In this
+                   case - and this case only - the ERR Data Item in the Reserved
+                   Expansion Field shall provide the range value of the Measured
+                   Position in Polar Coordinates.
+        
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-048-020-001: Parse 1-byte descriptor (FX=0)
-- TC-048-020-002: Parse 2-byte descriptor (FX=1)
-- TC-048-020-003: Verify all TYP codes (0-7)
-- TC-048-020-004: Verify SIM, RDP, SPI, RAB bits
-- TC-048-020-005: Verify TST bit in extension
+- TC-048-020-001: Parse valid Target Report Descriptor
+- TC-048-020-002: Verify format compliance
+- TC-048-020-003: Test boundary values
 
 **Code Reference:**
-- src/asterix/DataItemFormatVariable.cpp
-- asterix/config/asterix_cat048_1_21.xml (lines 41-141)
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
 
-**Design Reference:** SDD Section 3.4.3 (Variable Format Parsing)
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** High (target type affects tracking)
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-048-040: Parse Measured Position in Polar Coordinates (I048/040)
-
-**Parent:** REQ-HLR-CAT-048
-**Category:** Functional
-**Priority:** Critical
-
-**Description:**
-The parser shall extract Data Item I048/040 (Measured Position in Polar Coordinates) as a 4-byte fixed-length field containing:
-- RHO (bytes 1-2): Range in polar coordinates (unsigned 16-bit)
-  - Resolution: 1/256 NM (approximately 7.8 meters)
-  - Range: 0 to 256 NM
-- THETA (bytes 3-4): Azimuth in polar coordinates (unsigned 16-bit)
-  - Resolution: 360°/2^16 (approximately 0.0055°)
-  - Range: 0° to 360°
-
-**Scaling:**
-- RHO (NM) = Raw Value × (1/256)
-- THETA (degrees) = Raw Value × (360/65536)
-
-**Implementation Notes:**
-- Format: Fixed, 4 bytes
-- Big-endian byte order
-- Position measured by the radar
-
-**Verification Method:** Unit Test
-**Test Cases:**
-- TC-048-040-001: Parse known position values
-- TC-048-040-002: Verify scaling calculations
-- TC-048-040-003: Verify boundary values (0, max)
-- TC-048-040-004: Compare with reference implementation
-
-**Code Reference:**
-- src/asterix/DataItemFormatFixed.cpp
-- src/asterix/DataItemBits.cpp (scaling logic)
-- asterix/config/asterix_cat048_1_21.xml
-
-**Design Reference:** SDD Section 3.4.2 (Fixed Format with Scaling)
-
-**Safety Impact:** High (position data critical for track accuracy)
-
----
-
-### REQ-LLR-048-070: Parse Mode-3/A Code (I048/070)
-
-**Parent:** REQ-HLR-CAT-048
-**Category:** Functional
-**Priority:** Critical
-
-**Description:**
-The parser shall extract Data Item I048/070 (Mode-3/A Code in Octal Representation) as a 2-byte fixed-length field containing:
-- V (bit 16): Validated (0=Code validated, 1=Code not validated)
-- G (bit 15): Garbled (0=Default, 1=Garbled code)
-- L (bit 14): Local track (0=Default, 1=Local track)
-- Spare (bit 13): Set to 0
-- Mode-3/A Code (bits 12-1): 12-bit octal code (4 octal digits)
-
-**Mode-3/A Code Representation:**
-- 4 octal digits: D4 D3 D2 D1
-- Each digit: 0-7 (3 bits)
-- Bits 12-10: D4, Bits 9-7: D3, Bits 6-4: D2, Bits 3-1: D1
-
-**Implementation Notes:**
-- Format: Fixed, 2 bytes
-- Extract octal representation
-- Check V, G, L flags
-
-**Verification Method:** Unit Test
-**Test Cases:**
-- TC-048-070-001: Parse valid Mode-3/A codes
-- TC-048-070-002: Verify V, G, L flags
-- TC-048-070-003: Validate octal representation
-- TC-048-070-004: Test special codes (7700, 7600, 7500)
-
-**Code Reference:**
-- src/asterix/DataItemFormatFixed.cpp
-- asterix/config/asterix_cat048_1_21.xml
-
-**Design Reference:** SDD Section 3.4.2
-
-**Safety Impact:** High (Mode-3/A code identifies aircraft)
-
----
-
-### REQ-LLR-048-140: Parse Time Of Day (I048/140)
-
-**Parent:** REQ-HLR-CAT-048
-**Category:** Functional
-**Priority:** Critical
-
-**Description:**
-The parser shall extract Data Item I048/140 (Time Of Day) as a 3-byte fixed-length field containing:
-- Time of day in seconds since midnight (unsigned 24-bit)
-- Resolution: 1/128 seconds
-- Range: 0 to 86400 seconds (24 hours)
-
-**Scaling:**
-- Time (seconds) = Raw Value × (1/128)
-
-**Implementation Notes:**
-- Format: Fixed, 3 bytes
-- Absolute time stamp (UTC)
-- Used for correlation and replay
-
-**Verification Method:** Unit Test
-**Test Cases:**
-- TC-048-140-001: Parse known time values
-- TC-048-140-002: Verify scaling to seconds
-- TC-048-140-003: Verify midnight (0) and day boundary
-- TC-048-140-004: Verify fractional seconds accuracy
-
-**Code Reference:**
-- src/asterix/DataItemFormatFixed.cpp
-- asterix/config/asterix_cat048_1_21.xml
-
-**Design Reference:** SDD Section 3.4.2
-
-**Safety Impact:** Medium (timing affects correlation)
-
----
-
-### REQ-LLR-048-240: Parse Aircraft Identification (I048/240)
+### REQ-LLR-048-030: Parse Warning/Error Conditions and Target Classification (I048/030)
 
 **Parent:** REQ-HLR-CAT-048
 **Category:** Functional
 **Priority:** High
 
 **Description:**
-The parser shall extract Data Item I048/240 (Aircraft Identification) as a 6-byte fixed-length field containing:
-- Aircraft identification (callsign) in 6-bit coded characters
-- 8 characters × 6 bits = 48 bits = 6 bytes
-- Character set: A-Z, 0-9, space
+The parser shall extract Data Item I048/030 (Warning/Error Conditions and Target Classification) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
 
-**6-bit Character Encoding:**
-- 1-26: A-Z
-- 48-57: 0-9
-- 32: Space
+**Data Item Definition:**
+
+            Warning/error conditions detected by a radar station for the target report
+            involved. Target Classification information for the target involved.
+        
 
 **Implementation Notes:**
-- Format: Fixed, 6 bytes
-- Decode each 6-bit value to ASCII character
-- Trim trailing spaces
+- Format: Variable
+- Rule: optional
+- Note: 
+            Notes:
+
+                1. It has to be stressed that a series of one or more codes can
+                   be reported per target report.
+                2. Data conveyed in this item are of secondary importance, and
+                   can generally also be derived from the processing of mandatory items.
+                3. Definitions can be found in SUR.ET1.ST03.1000-STD-01-01 Radar
+                   Sensor Performance Analysis.
+                4. Values 25 to 30 have been defined to comply with the updated
+                   European Mode S Specification (EMS) and to provide the possibility
+                   to report the following information:
+
+                       - Code 25: the maximum number of permitted re-interrogations to
+                         acquire the surveillance information has been reached;
+                       - Code 26: the maximum number of permitted re-interrogations to
+                         extract BDS Registers has been reached;
+                       - Code 27: inconsistency detected between the contents of the
+                         message and the BDS register overlayed;
+                       - Code 28: a BDS swap has been detected and the respective information
+                         has been discarded;
+                       - Code 29: the track has been updated while being in the zenithal
+                         gap (also referred to as Cone of Silence);
+                       - Code 30: the radar had lost track of an aircraft and subsequently
+                         re-acquired it.
+        
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-048-240-001: Parse valid callsigns
-- TC-048-240-002: Verify character decoding
-- TC-048-240-003: Handle spaces and special characters
-- TC-048-240-004: Verify 8-character limit
+- TC-048-030-001: Parse valid Warning/Error Conditions and Target Classification
+- TC-048-030-002: Verify format compliance
+- TC-048-030-003: Test boundary values
 
 **Code Reference:**
-- src/asterix/DataItemFormatFixed.cpp
-- src/asterix/DataItemBits.cpp (character decoding)
-- asterix/config/asterix_cat048_1_21.xml
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
 
-**Design Reference:** SDD Section 3.4.2
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Medium (callsign for identification)
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-048-090: Parse Flight Level (I048/090)
+### REQ-LLR-048-040: Parse Measured Position in Polar Co-ordinates (I048/040)
 
 **Parent:** REQ-HLR-CAT-048
 **Category:** Functional
 **Priority:** High
 
 **Description:**
-The parser shall extract Data Item I048/090 (Flight Level in Binary Representation) as a 2-byte fixed-length field containing:
-- V (bit 16): Validated (0=Code validated, 1=Code not validated)
-- G (bit 15): Garbled (0=Default, 1=Garbled)
-- Flight Level (bits 14-1): Signed 14-bit value in binary two's complement
-- Resolution: 1/4 FL (25 feet)
-- Range: -12 FL to +1270 FL
+The parser shall extract Data Item I048/040 (Measured Position in Polar Co-ordinates) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
 
-**Scaling:**
-- Flight Level (FL) = Raw Value × 0.25
+**Data Item Definition:**
+
+            Measured position of an aircraft in local polar co-ordinates.
+        
 
 **Implementation Notes:**
-- Format: Fixed, 2 bytes
-- Signed value (two's complement)
-- V and G flags indicate validity
+- Format: Fixed (4 bytes)
+- Rule: optional
+- Note: 
+            Notes:
+
+                1. In case of no detection, the extrapolated position expressed in slant
+                   polar co-ordinates may be sent, except for a track cancellation message.
+                   No detection is signalled by the TYP field set to zero in I048/020
+                   Target Report Descriptor.
+                2. This item represents the measured target position of the plot, even
+                   if associated with a track, for the present antenna scan. It is
+                   expressed in polar co-ordinates in the local reference system,
+                   centred on the radar station.
+                3. In case of combined detection by a PSR and an SSR, then the SSR
+                   position is sent.
+                4. For targets having a range beyond the maximum range the data item
+                   Extended Range Report has been added to the Reserved Expansion
+                   Field of category 048. The presence of this data item is indicated
+                   by the ERR bit set to one in data item I048/020, first extension.
+                   The ERR data item shall only be sent if the value of RHO is equal
+                   to or greater than 256NM.
+                   Please note that if this data item is used, the Encoding Rule to
+                   data item I048/040 still applies, meaning that the extra item in
+                   the Reserved Expansion Field shall be transmitted in addition to
+                   data item I048/040.
+                   If the Extended Range Report item in the Reserved Expansion Field
+                   is used, it is recommended to set the value of RHO in data item
+                   I048/040 to its maximum, meaning bits 32/17 all set to 1.
+        
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-048-090-001: Parse positive flight levels
-- TC-048-090-002: Parse negative flight levels (if supported)
-- TC-048-090-003: Verify V, G flags
-- TC-048-090-004: Verify scaling to FL
+- TC-048-040-001: Parse valid Measured Position in Polar Co-ordinates
+- TC-048-040-002: Verify format compliance
+- TC-048-040-003: Test boundary values
 
 **Code Reference:**
-- src/asterix/DataItemFormatFixed.cpp
-- asterix/config/asterix_cat048_1_21.xml
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
 
-**Design Reference:** SDD Section 3.4.2
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** High (altitude critical for separation)
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-048-220: Parse Aircraft Address (I048/220)
+### REQ-LLR-048-042: Parse Calculated Position in Cartesian Co-ordinates (I048/042)
 
 **Parent:** REQ-HLR-CAT-048
 **Category:** Functional
 **Priority:** High
 
 **Description:**
-The parser shall extract Data Item I048/220 (Aircraft Address) as a 3-byte fixed-length field containing:
-- 24-bit Mode S address (ICAO 24-bit address)
-- Unsigned integer
-- Range: 0x000000 to 0xFFFFFF
+The parser shall extract Data Item I048/042 (Calculated Position in Cartesian Co-ordinates) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Calculated position of an aircraft in Cartesian co-ordinates.
+        
 
 **Implementation Notes:**
-- Format: Fixed, 3 bytes
-- Unique aircraft identifier in Mode S
-- Used for correlation and tracking
+- Format: Fixed (4 bytes)
+- Rule: optional
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-048-220-001: Parse valid Mode S addresses
-- TC-048-220-002: Verify 24-bit range
-- TC-048-220-003: Test known addresses
+- TC-048-042-001: Parse valid Calculated Position in Cartesian Co-ordinates
+- TC-048-042-002: Verify format compliance
+- TC-048-042-003: Test boundary values
 
 **Code Reference:**
-- src/asterix/DataItemFormatFixed.cpp
-- asterix/config/asterix_cat048_1_21.xml
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
 
-**Design Reference:** SDD Section 3.4.2
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** High (unique identifier for aircraft)
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-050: Parse Mode-2 Code in Octal Representation (I048/050)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/050 (Mode-2 Code in Octal Representation) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Reply to Mode-2 interrogation.
+        
+
+**Implementation Notes:**
+- Format: Fixed (2 bytes)
+- Rule: optional
+- Note: 
+            Note:
+                - Bit 15 has no meaning in the case of a smoothed Mode-2 and is set
+                  to 0 for a calculated track.
+        
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-050-001: Parse valid Mode-2 Code in Octal Representation
+- TC-048-050-002: Verify format compliance
+- TC-048-050-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-055: Parse Mode-1 Code in Octal Representation (I048/055)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/055 (Mode-1 Code in Octal Representation) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Reply to Mode-1 interrogation.
+        
+
+**Implementation Notes:**
+- Format: Fixed (1 bytes)
+- Rule: optional
+- Note: 
+            Notes:
+
+                1. Bit 7 has no meaning in the case of a smoothed Mode-1 and is set
+                   to 0 for a calculated track.
+                2. The values of the bits for V, G, L, A4, A2, A1, B2 and B1 shall be
+                   identical to the values of the corresponding bits in subfield #5
+                   of data item MD5 - Mode 5 Reports and in subfield #5 of data
+                   item MD5 - Mode 5 Reports, New Format in the Reserved Expansion Field.
+        
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-055-001: Parse valid Mode-1 Code in Octal Representation
+- TC-048-055-002: Verify format compliance
+- TC-048-055-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-060: Parse Mode-2 Code Confidence Indicator (I048/060)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/060 (Mode-2 Code Confidence Indicator) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Confidence level for each bit of a Mode-2 reply as provided by a monopulse SSR station.
+        
+
+**Implementation Notes:**
+- Format: Fixed (2 bytes)
+- Rule: optional
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-060-001: Parse valid Mode-2 Code Confidence Indicator
+- TC-048-060-002: Verify format compliance
+- TC-048-060-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-065: Parse Mode-1 Code Confidence Indicator (I048/065)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/065 (Mode-1 Code Confidence Indicator) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Confidence level for each bit of a Mode-1 reply as provided by a monopulse SSR station.
+        
+
+**Implementation Notes:**
+- Format: Fixed (1 bytes)
+- Rule: optional
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-065-001: Parse valid Mode-1 Code Confidence Indicator
+- TC-048-065-002: Verify format compliance
+- TC-048-065-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-070: Parse Mode-3/A Code in Octal Representation (I048/070)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/070 (Mode-3/A Code in Octal Representation) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Mode-3/A code converted into octal representation.
+        
+
+**Implementation Notes:**
+- Format: Fixed (2 bytes)
+- Rule: optional
+- Note: 
+            Notes:
+
+                1. Bit 15 has no meaning in the case of a smoothed Mode-3/A code and
+                   is set to 0 for a calculated track. For Mode S, it is set to one
+                   when an error correction has been attempted.
+                2. For Mode S, bit 16 is normally set to zero, but can exceptionally
+                   be set to one to indicate a non-validated Mode-3/A code (e.g. alert
+                   condition detected, but new Mode-3/A code not successfully extracted).
+        
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-070-001: Parse valid Mode-3/A Code in Octal Representation
+- TC-048-070-002: Verify format compliance
+- TC-048-070-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-080: Parse Mode-3/A Code Confidence Indicator (I048/080)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/080 (Mode-3/A Code Confidence Indicator) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Confidence level for each bit of a Mode-3/A reply as provided by a monopulse SSR station.
+        
+
+**Implementation Notes:**
+- Format: Fixed (2 bytes)
+- Rule: optional
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-080-001: Parse valid Mode-3/A Code Confidence Indicator
+- TC-048-080-002: Verify format compliance
+- TC-048-080-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-090: Parse Flight Level in Binary Representation (I048/090)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/090 (Flight Level in Binary Representation) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Flight Level converted into binary representation.
+        
+
+**Implementation Notes:**
+- Format: Fixed (2 bytes)
+- Rule: optional
+- Note: 
+            Notes:
+
+                1. When Mode C code / Mode S altitude code is present but not decodable,
+                   the Undecodable Mode C code / Mode S altitude code Warning/Error
+                   should be sent in I048/030.
+                2. When local tracking is applied and the received Mode C code / Mode S
+                   altitude code corresponds to an abnormal value (the variation with
+                   the previous plot is estimated too important by the tracker),
+                   the Mode C code / Mode S altitude code abnormal value compared
+                   to the track Warning/Error should be sent in I048/030.
+                3. The value shall be within the range described by ICAO Annex 10
+                4. For Mode S, bit 15 (G) is set to one when an error correction has
+                   been attempted.
+        
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-090-001: Parse valid Flight Level in Binary Representation
+- TC-048-090-002: Verify format compliance
+- TC-048-090-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-100: Parse Mode-C Code and Code Confidence Indicator (I048/100)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/100 (Mode-C Code and Code Confidence Indicator) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Mode-C height in Gray notation as received from the transponder together
+            with the confidence level for each reply bit as provided by a MSSR/Mode S station.
+        
+
+**Implementation Notes:**
+- Format: Fixed (4 bytes)
+- Rule: optional
+- Note: 
+            Notes:
+
+                1. For Mode S, D1 is also designated as Q, and is used to denote either
+                   25ft or 100ft reporting.
+                2. For Mode S, bit-31 (G) is set when an error correction has been attempted.
+        
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-100-001: Parse valid Mode-C Code and Code Confidence Indicator
+- TC-048-100-002: Verify format compliance
+- TC-048-100-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-110: Parse Height Measured by a 3D Radar (I048/110)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/110 (Height Measured by a 3D Radar) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Height of a target as measured by a 3D radar. The height shall use mean
+            sea level as the zero reference level.
+        
+
+**Implementation Notes:**
+- Format: Fixed (2 bytes)
+- Rule: optional
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-110-001: Parse valid Height Measured by a 3D Radar
+- TC-048-110-002: Verify format compliance
+- TC-048-110-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-120: Parse Radial Doppler Speed (I048/120)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/120 (Radial Doppler Speed) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Information on the Doppler Speed of the target report.
+        
+
+**Implementation Notes:**
+- Format: Compound
+- Rule: optional
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-120-001: Parse valid Radial Doppler Speed
+- TC-048-120-002: Verify format compliance
+- TC-048-120-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-130: Parse Radar Plot Characteristics (I048/130)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/130 (Radar Plot Characteristics) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Additional information on the quality of the target report.
+        
+
+**Implementation Notes:**
+- Format: Compound
+- Rule: optional
+- Note: 
+            Notes:
+
+                1. The total range covered is therefore from 0 to 11.21 deg.
+                2. Negative values are coded in two's complement form.
+                3. The total range covered is therefore from 0 to 11.21 deg.
+                4. Negative values are coded in two's complement form.
+                5. Negative values are coded in two's complement form.
+                6. The covered range difference is +/- 0.5 NM.
+                7. Sending the maximum value means that the difference in range
+                   is equal or greater than the maximum value.
+                8. Negative values are coded in two's complement form.
+                9. The covered azimuth difference is +/-360/2 7 = +/- 2.8125 deg.
+                10. Sending the maximum value means that the difference in range
+                    is equal or greater than the maximum value.
+        
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-130-001: Parse valid Radar Plot Characteristics
+- TC-048-130-002: Verify format compliance
+- TC-048-130-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-140: Parse Time of Day (I048/140)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/140 (Time of Day) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Absolute time stamping expressed as Co-ordinated Universal Time (UTC).
+        
+
+**Implementation Notes:**
+- Format: Fixed (3 bytes)
+- Rule: optional
+- Note: 
+            Notes:
+
+                1. The time of day value is reset to 0 each day at midnight.
+                2. Every radar station using ASTERIX should be equipped with at least
+                   one synchronised time source
+        
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-140-001: Parse valid Time of Day
+- TC-048-140-002: Verify format compliance
+- TC-048-140-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
 
 ---
 
@@ -346,173 +755,445 @@ The parser shall extract Data Item I048/220 (Aircraft Address) as a 3-byte fixed
 **Priority:** High
 
 **Description:**
-The parser shall extract Data Item I048/161 (Track Number) as a 2-byte fixed-length field containing:
-- Spare (bits 16-13): Set to 0
-- Track Number (bits 12-1): 12-bit unsigned integer
-- Range: 0 to 4095
+The parser shall extract Data Item I048/161 (Track Number) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            An integer value representing a unique reference to a track record within
+            a particular track file.
+        
 
 **Implementation Notes:**
-- Format: Fixed, 2 bytes
-- Identifies the track within the system
-- Unique within data source
+- Format: Fixed (2 bytes)
+- Rule: optional
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-048-161-001: Parse valid track numbers
-- TC-048-161-002: Verify 12-bit range (0-4095)
-- TC-048-161-003: Verify spare bits ignored
+- TC-048-161-001: Parse valid Track Number
+- TC-048-161-002: Verify format compliance
+- TC-048-161-003: Test boundary values
 
 **Code Reference:**
-- src/asterix/DataItemFormatFixed.cpp
-- asterix/config/asterix_cat048_1_21.xml
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
 
-**Design Reference:** SDD Section 3.4.2
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Medium (track identification)
+**Safety Impact:** Medium
 
 ---
 
-## 3. Complex Data Items
-
-### REQ-LLR-048-120: Parse Radial Doppler Speed (I048/120)
-
-**Parent:** REQ-HLR-CAT-048
-**Category:** Functional
-**Priority:** Medium
-
-**Description:**
-The parser shall extract Data Item I048/120 (Radial Doppler Speed) as a repetitive data item where:
-- First byte: REP (repetition factor), indicates number of speed values (1-255)
-- Followed by REP × 2-byte speed values
-
-**Each speed value (2 bytes):**
-- CAL (bit 16): Calculated (0=Doppler speed, 1=Calculated speed)
-- Spare (bits 15-11): Set to 0
-- Speed (bits 10-1): Signed 10-bit value in two's complement
-- Resolution: 1 m/s (approx 2 knots)
-- Range: -512 to +511 m/s
-
-**Implementation Notes:**
-- Format: Repetitive with 2-byte fixed elements
-- Process REP iterations
-- Handle signed values
-
-**Verification Method:** Unit Test
-**Test Cases:**
-- TC-048-120-001: Parse single speed value (REP=1)
-- TC-048-120-002: Parse multiple speed values (REP>1)
-- TC-048-120-003: Verify signed value handling
-- TC-048-120-004: Verify CAL flag
-
-**Code Reference:**
-- src/asterix/DataItemFormatRepetitive.cpp
-- asterix/config/asterix_cat048_1_21.xml
-
-**Design Reference:** SDD Section 3.4.4 (Repetitive Format)
-
-**Safety Impact:** Medium (velocity data for tracking)
-
----
-
-### REQ-LLR-048-250: Parse Mode S Comm B Data (I048/250)
-
-**Parent:** REQ-HLR-CAT-048
-**Category:** Functional
-**Priority:** Medium
-
-**Description:**
-The parser shall extract Data Item I048/250 (BDS data) as a repetitive data item where:
-- First byte: REP (repetition factor), indicates number of MB data segments
-- Each segment: 8 bytes (64 bits) of Mode S Comm-B data (BDS)
-
-**BDS Data:**
-- Contains various aircraft-derived data
-- Format depends on BDS register code
-- May include: airspeed, heading, vertical rate, roll angle, track angle, ground speed, etc.
-
-**Implementation Notes:**
-- Format: Repetitive with 8-byte fixed elements
-- BDS decoding defined in separate BDS configuration
-- Requires BDS register identification
-
-**Verification Method:** Unit Test
-**Test Cases:**
-- TC-048-250-001: Parse single BDS segment
-- TC-048-250-002: Parse multiple BDS segments
-- TC-048-250-003: Verify 8-byte segment length
-
-**Code Reference:**
-- src/asterix/DataItemFormatRepetitive.cpp
-- src/asterix/DataItemFormatBDS.cpp (BDS decoding)
-- asterix/config/asterix_bds.xml (BDS definitions)
-
-**Design Reference:** SDD Section 3.4.4, 3.4.6 (BDS Format)
-
-**Safety Impact:** Medium (downlinked aircraft data)
-
----
-
-### REQ-LLR-048-260: Parse ACAS Resolution Advisory (I048/260)
+### REQ-LLR-048-170: Parse Track Status (I048/170)
 
 **Parent:** REQ-HLR-CAT-048
 **Category:** Functional
 **Priority:** High
 
 **Description:**
-The parser shall extract Data Item I048/260 (ACAS Resolution Advisory Report) as a 7-byte fixed-length field containing ACAS (Airborne Collision Avoidance System) resolution advisory information.
+The parser shall extract Data Item I048/170 (Track Status) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Status of monoradar track (PSR and/or SSR updated).
+        
 
 **Implementation Notes:**
-- Format: Fixed, 7 bytes (56 bits)
-- Contains RA active flags, RA type, threat identity, etc.
-- Critical for collision avoidance
+- Format: Variable
+- Rule: optional
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-048-260-001: Parse ACAS RA data
-- TC-048-260-002: Verify field extraction
+- TC-048-170-001: Parse valid Track Status
+- TC-048-170-002: Verify format compliance
+- TC-048-170-003: Test boundary values
 
 **Code Reference:**
-- src/asterix/DataItemFormatFixed.cpp
-- asterix/config/asterix_cat048_1_21.xml
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
 
-**Design Reference:** SDD Section 3.4.2
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** High (ACAS data critical for collision avoidance)
+**Safety Impact:** Medium
 
 ---
 
-## 4. Special Data Items
+### REQ-LLR-048-200: Parse Calculated Track Velocity in Polar Co-ordinates (I048/200)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/200 (Calculated Track Velocity in Polar Co-ordinates) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Calculated track velocity expressed in polar co-ordinates.
+        
+
+**Implementation Notes:**
+- Format: Fixed (4 bytes)
+- Rule: optional
+- Note: 
+            Notes:
+
+                - The calculated heading is related to the geographical North at the
+                  aircraft position.
+        
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-200-001: Parse valid Calculated Track Velocity in Polar Co-ordinates
+- TC-048-200-002: Verify format compliance
+- TC-048-200-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-210: Parse Track Quality (I048/210)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/210 (Track Quality) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Track quality in the form of a vector of standard deviations.
+        
+
+**Implementation Notes:**
+- Format: Fixed (4 bytes)
+- Rule: optional
+- Note: 
+            Notes:
+
+                1. The standard deviation is per definition a positive value, hence
+                   the range covered is : 0<= Sigma(X)<2 NM
+                2. The standard deviation is per definition a positive value, hence
+                   the range covered is : 0<= Sigma(Y)<2 NM
+                3. The standard deviation is per definition a positive value, hence
+                   the range covered is: 0<=Sigma (V)<56.25 Kt
+                4. The standard deviation is per definition a positive value; hence
+                   the range covered is: 0 <= sigma (H) < 22.5 degrees.
+        
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-210-001: Parse valid Track Quality
+- TC-048-210-002: Verify format compliance
+- TC-048-210-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-220: Parse Aircraft Address (I048/220)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/220 (Aircraft Address) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Aircraft address (24-bits Mode S address) assigned uniquely to each aircraft.
+        
+
+**Implementation Notes:**
+- Format: Fixed (3 bytes)
+- Rule: optional
+- Note: 
+            Note:
+                - The Encoding Rule for Data Item I048/220 has been relaxed in Edition
+                  1.30 for the End of Track Message. In order to prevent interoperability
+                  problems it is recommended that systems sending I048/220 in an End
+                  of Track Message continue to do so.
+        
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-220-001: Parse valid Aircraft Address
+- TC-048-220-002: Verify format compliance
+- TC-048-220-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-230: Parse Communications/ACAS Capability and Flight Status (I048/230)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/230 (Communications/ACAS Capability and Flight Status) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Communications capability of the transponder, capability of the on-board
+            ACAS equipment and flight status.
+        
+
+**Implementation Notes:**
+- Format: Fixed (2 bytes)
+- Rule: optional
+- Note: 
+            Note:
+                - This  item  shall  be  present  in  every  ASTERIX  record  conveying
+                  data  related  to  a  Mode  S  target,  except  for  an  End  of  Track
+                  Message (i.e. I048/170, First Extension, Bit 8 is set to 1) in which
+                  this  Data  Item  is  optional.  If  the  datalink  capability  has  not  been
+                  extracted yet, bits 16/14 shall be set to zero.
+        
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-230-001: Parse valid Communications/ACAS Capability and Flight Status
+- TC-048-230-002: Verify format compliance
+- TC-048-230-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-240: Parse Aircraft Identification (I048/240)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/240 (Aircraft Identification) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Aircraft identification (in 8 characters) obtained from an aircraft
+            equipped with a Mode S transponder.
+        
+
+**Implementation Notes:**
+- Format: Fixed (6 bytes)
+- Rule: optional
+- Note: 
+            Notes:
+
+                1. This data item contains the flight identification as available in
+                   the respective Mode S transponder registers.
+                2. The  Encoding  Rule  for  Data  Item  I048/240  has  been  relaxed  in  Edition
+                   1.30 for the End of Track Message. In order to prevent interoperability
+                   problems it is recommended that systems sending I048/240 in an End of
+                   Track Message continue to do so.
+        
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-240-001: Parse valid Aircraft Identification
+- TC-048-240-002: Verify format compliance
+- TC-048-240-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-250: Parse BDS Register Data (I048/250)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/250 (BDS Register Data) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            BDS Register Data as extracted from the aircraft transponder.
+        
+
+**Implementation Notes:**
+- Format: Repetitive
+- Rule: optional
+- Note: 
+            Notes:
+
+                1. For the transmission of BDS Register 2,0, Data Item I048/240 is used.
+                2. For the transmission of BDS Register 3,0, Data Item I048/260 is used. In
+                   case of ACAS Xu (as defined in [3]), the Resolution Advisory consists of two
+                   parts (BDS Register 3,0 and BDS Register 3,1). BDS Register 3,1 will be
+                   transmitted using Data Item I048/250. For the detailed definition of BDS
+                   Register 3,0 and 3,1please refer to [2] Tables B-3-48a and B-3-49.
+                3. In case of data extracted via Comm-B broadcast, all bits of fields BDS1 and
+                   BDS2 are set to 0; in case of data extracted via GICB requests, the fields
+                   BDS1 and BDS2 correspond to the GICB register number.
+                4. The Encoding Rule for Data Item I048/250 has been relaxed in Edition 1.30
+                   for the End of Track Message. In order to prevent interoperability problems
+                   it is recommended that systems sending I048/250 in an End of Track
+                   Message continue to do so.
+        
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-250-001: Parse valid BDS Register Data
+- TC-048-250-002: Verify format compliance
+- TC-048-250-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-260: Parse ACAS Resolution Advisory Report (I048/260)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/260 (ACAS Resolution Advisory Report) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Currently active Resolution Advisory (RA), if any, generated by the ACAS
+            associated with the transponder transmitting the report and threat identity data.
+        
+
+**Implementation Notes:**
+- Format: Fixed (7 bytes)
+- Rule: optional
+- Note: 
+            Notes:
+
+                1. Refer to ICAO Draft SARPs for ACAS for detailed explanations.
+                2. In case of ACAS Xu, the Resolution Advisory consists of two parts (BDS30
+                   and BDS31). BDS31 will be transmitted using item 250.
+        
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-260-001: Parse valid ACAS Resolution Advisory Report
+- TC-048-260-002: Verify format compliance
+- TC-048-260-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
+
+### REQ-LLR-048-RE: Parse Reserved Expansion Field (I048/RE)
+
+**Parent:** REQ-HLR-CAT-048
+**Category:** Functional
+**Priority:** High
+
+**Description:**
+The parser shall extract Data Item I048/RE (Reserved Expansion Field) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Expansion
+        
+
+**Implementation Notes:**
+- Format: Explicit
+- Rule: optional
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-048-RE-001: Parse valid Reserved Expansion Field
+- TC-048-RE-002: Verify format compliance
+- TC-048-RE-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Medium
+
+---
 
 ### REQ-LLR-048-SP: Parse Special Purpose Field (I048/SP)
 
 **Parent:** REQ-HLR-CAT-048
 **Category:** Functional
-**Priority:** Low
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I048/SP (Special Purpose Field) as an explicit-length data item where:
-- First byte: LEN (length in bytes)
-- Followed by LEN bytes of user-defined data
+The parser shall extract Data Item I048/SP (Special Purpose Field) as specified in the EUROCONTROL ASTERIX CAT048 v1.30 specification.
+
+**Data Item Definition:**
+
+            Special Purpose Field
+        
 
 **Implementation Notes:**
-- Format: Explicit (variable length with length indicator)
-- Content not standardized
-- Implementation-specific
+- Format: Explicit
+- Rule: optional
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-048-SP-001: Parse SP field with various lengths
+- TC-048-SP-001: Parse valid Special Purpose Field
+- TC-048-SP-002: Verify format compliance
+- TC-048-SP-003: Test boundary values
 
 **Code Reference:**
-- src/asterix/DataItemFormatExplicit.cpp
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat048_*.xml
 
-**Design Reference:** SDD Section 3.4.5 (Explicit Format)
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low (non-standard data)
+**Safety Impact:** Medium
 
 ---
 
-## 5. Error Handling Requirements
+## 3. Error Handling Requirements
 
 ### REQ-LLR-048-ERR-001: Invalid Data Item Length
 
@@ -521,21 +1202,15 @@ The parser shall extract Data Item I048/SP (Special Purpose Field) as an explici
 **Priority:** High
 
 **Description:**
-The parser shall detect and report errors when a CAT048 data item has invalid length:
-- Fixed items: Length not matching specification
-- Variable items: FX bit sequence errors
-- Repetitive items: REP value causes overflow
-- Explicit items: LEN value exceeds available data
+The parser shall detect and report errors when a CAT048 data item has invalid length or format.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-048-ERR-001: Truncated data item
-- TC-048-ERR-002: Invalid repetition count
+- TC-048-ERR-001: Truncated data items
+- TC-048-ERR-002: Invalid repetition counts
+- TC-048-ERR-003: Malformed compound items
 
-**Code Reference:**
-- src/asterix/DataRecord.cpp (error detection)
-
-**Safety Impact:** High (prevents incorrect parsing)
+**Safety Impact:** High
 
 ---
 
@@ -546,41 +1221,56 @@ The parser shall detect and report errors when a CAT048 data item has invalid le
 **Priority:** Medium
 
 **Description:**
-The parser shall gracefully handle CAT048 data items not defined in the configuration, skipping the item and continuing with the next.
+The parser shall gracefully handle CAT048 data items not defined in the configuration.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-048-ERR-003: Unknown data item in FSPEC
+- TC-048-ERR-004: Unknown data item in FSPEC
 
-**Safety Impact:** Medium (robustness)
+**Safety Impact:** Medium
 
 ---
 
-## 6. Requirements Summary Table
+## 4. Requirements Summary Table
 
 | Requirement ID | Data Item | Description | Priority | Safety |
 |----------------|-----------|-------------|----------|--------|
-| REQ-LLR-048-010 | I048/010 | Data Source Identifier | Critical | High |
-| REQ-LLR-048-020 | I048/020 | Target Report Descriptor | Critical | High |
-| REQ-LLR-048-040 | I048/040 | Measured Position (Polar) | Critical | High |
-| REQ-LLR-048-070 | I048/070 | Mode-3/A Code | Critical | High |
-| REQ-LLR-048-090 | I048/090 | Flight Level | High | High |
-| REQ-LLR-048-140 | I048/140 | Time Of Day | Critical | Medium |
+| REQ-LLR-048-010 | I048/010 | Data Source Identifier | High | Medium |
+| REQ-LLR-048-020 | I048/020 | Target Report Descriptor | High | Medium |
+| REQ-LLR-048-030 | I048/030 | Warning/Error Conditions and Target Clas | High | Medium |
+| REQ-LLR-048-040 | I048/040 | Measured Position in Polar Co-ordinates | High | Medium |
+| REQ-LLR-048-042 | I048/042 | Calculated Position in Cartesian Co-ordi | High | Medium |
+| REQ-LLR-048-050 | I048/050 | Mode-2 Code in Octal Representation | High | Medium |
+| REQ-LLR-048-055 | I048/055 | Mode-1 Code in Octal Representation | High | Medium |
+| REQ-LLR-048-060 | I048/060 | Mode-2 Code Confidence Indicator | High | Medium |
+| REQ-LLR-048-065 | I048/065 | Mode-1 Code Confidence Indicator | High | Medium |
+| REQ-LLR-048-070 | I048/070 | Mode-3/A Code in Octal Representation | High | Medium |
+| REQ-LLR-048-080 | I048/080 | Mode-3/A Code Confidence Indicator | High | Medium |
+| REQ-LLR-048-090 | I048/090 | Flight Level in Binary Representation | High | Medium |
+| REQ-LLR-048-100 | I048/100 | Mode-C Code and Code Confidence Indicato | High | Medium |
+| REQ-LLR-048-110 | I048/110 | Height Measured by a 3D Radar | High | Medium |
+| REQ-LLR-048-120 | I048/120 | Radial Doppler Speed | High | Medium |
+| REQ-LLR-048-130 | I048/130 | Radar Plot Characteristics | High | Medium |
+| REQ-LLR-048-140 | I048/140 | Time of Day | High | Medium |
 | REQ-LLR-048-161 | I048/161 | Track Number | High | Medium |
-| REQ-LLR-048-220 | I048/220 | Aircraft Address | High | High |
+| REQ-LLR-048-170 | I048/170 | Track Status | High | Medium |
+| REQ-LLR-048-200 | I048/200 | Calculated Track Velocity in Polar Co-or | High | Medium |
+| REQ-LLR-048-210 | I048/210 | Track Quality | High | Medium |
+| REQ-LLR-048-220 | I048/220 | Aircraft Address | High | Medium |
+| REQ-LLR-048-230 | I048/230 | Communications/ACAS Capability and Fligh | High | Medium |
 | REQ-LLR-048-240 | I048/240 | Aircraft Identification | High | Medium |
-| REQ-LLR-048-120 | I048/120 | Radial Doppler Speed | Medium | Medium |
-| REQ-LLR-048-250 | I048/250 | Mode S Comm B Data | Medium | Medium |
-| REQ-LLR-048-260 | I048/260 | ACAS Resolution Advisory | High | High |
-| REQ-LLR-048-SP | I048/SP | Special Purpose Field | Low | Low |
+| REQ-LLR-048-250 | I048/250 | BDS Register Data | High | Medium |
+| REQ-LLR-048-260 | I048/260 | ACAS Resolution Advisory Report | High | Medium |
+| REQ-LLR-048-RE | I048/RE | Reserved Expansion Field | High | Medium |
+| REQ-LLR-048-SP | I048/SP | Special Purpose Field | High | Medium |
 | REQ-LLR-048-ERR-001 | - | Invalid Data Item Length | High | High |
 | REQ-LLR-048-ERR-002 | - | Unknown Data Item | Medium | Medium |
 
-**Note:** Full LLR documentation should include all 27 CAT048 data items. This document shows representative examples. Remaining data items (030, 042, 050, 055, 060, 065, 080, 100, 110, 130, 170, 200, 210, 230) follow similar structure.
+**Total Requirements:** 30
 
 ---
 
-## 7. Traceability
+## 5. Traceability
 
 Each LLR traces to:
 - **Parent HLR:** REQ-HLR-CAT-048
@@ -596,7 +1286,7 @@ See Requirements Traceability Matrix (RTM) for complete mapping.
 
 | Role | Name | Date | Signature |
 |------|------|------|-----------|
-| Requirements Engineer | TBD | 2025-10-17 | |
+| Requirements Engineer | TBD | 2025-11-02 | |
 | Developer | TBD | | |
 | QA Manager | TBD | | |
 
@@ -606,14 +1296,14 @@ See Requirements Traceability Matrix (RTM) for complete mapping.
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | 2025-10-17 | Initial | Initial LLR for CAT048 key data items |
+| 1.0 | 2025-11-02 | Auto-generated | Initial LLR for CAT048 data items |
 
 ---
 
 ## Next Actions
 
-1. Complete LLR for remaining 12 CAT048 data items
-2. Create test cases for each LLR
-3. Link LLR to existing code
+1. Review and validate generated requirements
+2. Create detailed test cases for each LLR
+3. Link LLR to existing code implementation
 4. Update Requirements Traceability Matrix
-5. Begin implementation of missing tests
+5. Implement missing unit tests

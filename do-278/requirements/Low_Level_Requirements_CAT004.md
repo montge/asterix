@@ -1,34 +1,34 @@
-# Low-Level Requirements - ASTERIX Category 4
+# Low-Level Requirements - ASTERIX Category 004
 ## ASTERIX Decoder - DO-278A AL-3
 
-**Document ID:** LLR-CAT4-001
+**Document ID:** LLR-CAT004-001
 **Revision:** 1.0
 **Date:** 2025-11-02
-**Parent HLR:** REQ-HLR-CAT-4
+**Parent HLR:** REQ-HLR-CAT-004
 **Assurance Level:** AL-3 (Major)
 
 ---
 
 ## 1. Introduction
 
-This document defines Low-Level Requirements (LLR) for parsing ASTERIX Category 4 (Safety Net Messages) v1.12.
+This document defines Low-Level Requirements (LLR) for parsing ASTERIX Category 004 (Safety Net Messages) v1.12.
 
-**Parent Requirement:** REQ-HLR-CAT-4 - Parse ASTERIX Category 4
+**Parent Requirement:** REQ-HLR-CAT-004 - Parse ASTERIX Category 004
 
-Each data item in CAT4 has corresponding LLRs defining parsing behavior.
+Each data item in CAT004 has corresponding LLRs defining parsing behavior.
 
 ---
 
-## 2. CAT4 Data Item Requirements
+## 2. CAT004 Data Item Requirements
 
-### REQ-LLR-4-000: Parse Message Type (I4/000)
+### REQ-LLR-004-000: Parse Message Type (I004/000)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
 **Priority:** Critical
 
 **Description:**
-The parser shall extract Data Item I4/000 (Message Type) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/000 (Message Type) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 This Data Item allows for a more convenient handling of the messages at the receiver side by further defining the type of transaction.
@@ -40,9 +40,9 @@ This Data Item allows for a more convenient handling of the messages at the rece
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-000-001: Parse valid Message Type
-- TC-4-000-002: Verify format compliance
-- TC-4-000-003: Test boundary values
+- TC-004-000-001: Parse valid Message Type
+- TC-004-000-002: Verify format compliance
+- TC-004-000-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -54,14 +54,14 @@ This Data Item allows for a more convenient handling of the messages at the rece
 
 ---
 
-### REQ-LLR-4-010: Parse Data Source Identifier (I4/010)
+### REQ-LLR-004-010: Parse Data Source Identifier (I004/010)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
 **Priority:** Critical
 
 **Description:**
-The parser shall extract Data Item I4/010 (Data Source Identifier) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/010 (Data Source Identifier) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Identification of the Safety Nets server sending the message.
@@ -73,9 +73,9 @@ Identification of the Safety Nets server sending the message.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-010-001: Parse valid Data Source Identifier
-- TC-4-010-002: Verify format compliance
-- TC-4-010-003: Test boundary values
+- TC-004-010-001: Parse valid Data Source Identifier
+- TC-004-010-002: Verify format compliance
+- TC-004-010-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -87,14 +87,14 @@ Identification of the Safety Nets server sending the message.
 
 ---
 
-### REQ-LLR-4-015: Parse SDPS Identifier (I4/015)
+### REQ-LLR-004-015: Parse SDPS Identifier (I004/015)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/015 (SDPS Identifier) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/015 (SDPS Identifier) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Identification of the SDPS providing data to the safety nets server.
@@ -106,9 +106,9 @@ Identification of the SDPS providing data to the safety nets server.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-015-001: Parse valid SDPS Identifier
-- TC-4-015-002: Verify format compliance
-- TC-4-015-003: Test boundary values
+- TC-004-015-001: Parse valid SDPS Identifier
+- TC-004-015-002: Verify format compliance
+- TC-004-015-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -116,18 +116,18 @@ Identification of the SDPS providing data to the safety nets server.
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-020: Parse Time of Message (I4/020)
+### REQ-LLR-004-020: Parse Time of Message (I004/020)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
 **Priority:** Critical
 
 **Description:**
-The parser shall extract Data Item I4/020 (Time of Message) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/020 (Time of Message) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Absolute time stamping of the message in the form of elapsed time since last midnight
@@ -139,9 +139,9 @@ Absolute time stamping of the message in the form of elapsed time since last mid
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-020-001: Parse valid Time of Message
-- TC-4-020-002: Verify format compliance
-- TC-4-020-003: Test boundary values
+- TC-004-020-001: Parse valid Time of Message
+- TC-004-020-002: Verify format compliance
+- TC-004-020-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -153,14 +153,14 @@ Absolute time stamping of the message in the form of elapsed time since last mid
 
 ---
 
-### REQ-LLR-4-030: Parse Track Number 1 (I4/030)
+### REQ-LLR-004-030: Parse Track Number 1 (I004/030)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/030 (Track Number 1) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/030 (Track Number 1) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Identification of a track number related to conflict
@@ -178,9 +178,9 @@ Identification of a track number related to conflict
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-030-001: Parse valid Track Number 1
-- TC-4-030-002: Verify format compliance
-- TC-4-030-003: Test boundary values
+- TC-004-030-001: Parse valid Track Number 1
+- TC-004-030-002: Verify format compliance
+- TC-004-030-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -188,18 +188,18 @@ Identification of a track number related to conflict
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-035: Parse Track Number 2 (I4/035)
+### REQ-LLR-004-035: Parse Track Number 2 (I004/035)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/035 (Track Number 2) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/035 (Track Number 2) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Together with I004/030, this item defines the track pair in conflict.
@@ -218,9 +218,9 @@ Together with I004/030, this item defines the track pair in conflict.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-035-001: Parse valid Track Number 2
-- TC-4-035-002: Verify format compliance
-- TC-4-035-003: Test boundary values
+- TC-004-035-001: Parse valid Track Number 2
+- TC-004-035-002: Verify format compliance
+- TC-004-035-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -228,18 +228,18 @@ Together with I004/030, this item defines the track pair in conflict.
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-040: Parse Alert Identifier (I4/040)
+### REQ-LLR-004-040: Parse Alert Identifier (I004/040)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/040 (Alert Identifier) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/040 (Alert Identifier) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Identification of an alert (Alert number)
@@ -251,9 +251,9 @@ Identification of an alert (Alert number)
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-040-001: Parse valid Alert Identifier
-- TC-4-040-002: Verify format compliance
-- TC-4-040-003: Test boundary values
+- TC-004-040-001: Parse valid Alert Identifier
+- TC-004-040-002: Verify format compliance
+- TC-004-040-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -261,18 +261,18 @@ Identification of an alert (Alert number)
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-045: Parse Alert Status (I4/045)
+### REQ-LLR-004-045: Parse Alert Status (I004/045)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/045 (Alert Status) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/045 (Alert Status) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Information concerning status of the alert
@@ -284,9 +284,9 @@ Information concerning status of the alert
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-045-001: Parse valid Alert Status
-- TC-4-045-002: Verify format compliance
-- TC-4-045-003: Test boundary values
+- TC-004-045-001: Parse valid Alert Status
+- TC-004-045-002: Verify format compliance
+- TC-004-045-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -294,18 +294,18 @@ Information concerning status of the alert
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-060: Parse Safety Net Function and System Status (I4/060)
+### REQ-LLR-004-060: Parse Safety Net Function and System Status (I004/060)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/060 (Safety Net Function and System Status) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/060 (Safety Net Function and System Status) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Status of the Safety Nets functions handled by the system
@@ -322,9 +322,9 @@ Status of the Safety Nets functions handled by the system
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-060-001: Parse valid Safety Net Function and System Status
-- TC-4-060-002: Verify format compliance
-- TC-4-060-003: Test boundary values
+- TC-004-060-001: Parse valid Safety Net Function and System Status
+- TC-004-060-002: Verify format compliance
+- TC-004-060-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -332,18 +332,18 @@ Status of the Safety Nets functions handled by the system
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-070: Parse Conflict Timing and Separation (I4/070)
+### REQ-LLR-004-070: Parse Conflict Timing and Separation (I004/070)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/070 (Conflict Timing and Separation) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/070 (Conflict Timing and Separation) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Information on Timing and Aircraft Separation
@@ -354,9 +354,9 @@ Information on Timing and Aircraft Separation
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-070-001: Parse valid Conflict Timing and Separation
-- TC-4-070-002: Verify format compliance
-- TC-4-070-003: Test boundary values
+- TC-004-070-001: Parse valid Conflict Timing and Separation
+- TC-004-070-002: Verify format compliance
+- TC-004-070-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -364,18 +364,18 @@ Information on Timing and Aircraft Separation
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-074: Parse Longitudinal Deviation (I4/074)
+### REQ-LLR-004-074: Parse Longitudinal Deviation (I004/074)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/074 (Longitudinal Deviation) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/074 (Longitudinal Deviation) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Longitudinal deviation for Route Adherence Monitoring, in two’s complement form.
@@ -387,9 +387,9 @@ Longitudinal deviation for Route Adherence Monitoring, in two’s complement for
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-074-001: Parse valid Longitudinal Deviation
-- TC-4-074-002: Verify format compliance
-- TC-4-074-003: Test boundary values
+- TC-004-074-001: Parse valid Longitudinal Deviation
+- TC-004-074-002: Verify format compliance
+- TC-004-074-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -397,18 +397,18 @@ Longitudinal deviation for Route Adherence Monitoring, in two’s complement for
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-075: Parse Transversal Distance Deviation (I4/075)
+### REQ-LLR-004-075: Parse Transversal Distance Deviation (I004/075)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/075 (Transversal Distance Deviation) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/075 (Transversal Distance Deviation) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Transversal distance deviation for Route Adherence Monitoring, in two’s complement form.
@@ -420,9 +420,9 @@ Transversal distance deviation for Route Adherence Monitoring, in two’s comple
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-075-001: Parse valid Transversal Distance Deviation
-- TC-4-075-002: Verify format compliance
-- TC-4-075-003: Test boundary values
+- TC-004-075-001: Parse valid Transversal Distance Deviation
+- TC-004-075-002: Verify format compliance
+- TC-004-075-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -430,18 +430,18 @@ Transversal distance deviation for Route Adherence Monitoring, in two’s comple
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-076: Parse Vertical Deviation (I4/076)
+### REQ-LLR-004-076: Parse Vertical Deviation (I004/076)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/076 (Vertical Deviation) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/076 (Vertical Deviation) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Vertical Deviation from planned altitude, in two’s complement form.
@@ -453,9 +453,9 @@ Vertical Deviation from planned altitude, in two’s complement form.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-076-001: Parse valid Vertical Deviation
-- TC-4-076-002: Verify format compliance
-- TC-4-076-003: Test boundary values
+- TC-004-076-001: Parse valid Vertical Deviation
+- TC-004-076-002: Verify format compliance
+- TC-004-076-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -463,18 +463,18 @@ Vertical Deviation from planned altitude, in two’s complement form.
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-100: Parse Area Definition (I4/100)
+### REQ-LLR-004-100: Parse Area Definition (I004/100)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/100 (Area Definition) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/100 (Area Definition) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Definition of Areas involved in a Safety Net Alert
@@ -485,9 +485,9 @@ Definition of Areas involved in a Safety Net Alert
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-100-001: Parse valid Area Definition
-- TC-4-100-002: Verify format compliance
-- TC-4-100-003: Test boundary values
+- TC-004-100-001: Parse valid Area Definition
+- TC-004-100-002: Verify format compliance
+- TC-004-100-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -495,18 +495,18 @@ Definition of Areas involved in a Safety Net Alert
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-110: Parse SFDPS Sector Control Identification (I4/110)
+### REQ-LLR-004-110: Parse SFDPS Sector Control Identification (I004/110)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/110 (SFDPS Sector Control Identification) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/110 (SFDPS Sector Control Identification) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Identification of a list of FDPS Sector Control Positions in charge of the involved targets, as provided by the FDPS.
@@ -518,9 +518,9 @@ Identification of a list of FDPS Sector Control Positions in charge of the invol
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-110-001: Parse valid SFDPS Sector Control Identification
-- TC-4-110-002: Verify format compliance
-- TC-4-110-003: Test boundary values
+- TC-004-110-001: Parse valid SFDPS Sector Control Identification
+- TC-004-110-002: Verify format compliance
+- TC-004-110-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -528,18 +528,18 @@ Identification of a list of FDPS Sector Control Positions in charge of the invol
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-120: Parse Conflict Characteristics (I4/120)
+### REQ-LLR-004-120: Parse Conflict Characteristics (I004/120)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/120 (Conflict Characteristics) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/120 (Conflict Characteristics) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Description of the Conflict Properties 
@@ -550,9 +550,9 @@ Description of the Conflict Properties
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-120-001: Parse valid Conflict Characteristics
-- TC-4-120-002: Verify format compliance
-- TC-4-120-003: Test boundary values
+- TC-004-120-001: Parse valid Conflict Characteristics
+- TC-004-120-002: Verify format compliance
+- TC-004-120-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -560,18 +560,18 @@ Description of the Conflict Properties
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-170: Parse Aircraft Identification and Characteristics 1 (I4/170)
+### REQ-LLR-004-170: Parse Aircraft Identification and Characteristics 1 (I004/170)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/170 (Aircraft Identification and Characteristics 1) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/170 (Aircraft Identification and Characteristics 1) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Identification and Characteristics of Aircraft 1 Involved in the Conflict.
@@ -582,9 +582,9 @@ Identification and Characteristics of Aircraft 1 Involved in the Conflict.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-170-001: Parse valid Aircraft Identification and Characteristics 1
-- TC-4-170-002: Verify format compliance
-- TC-4-170-003: Test boundary values
+- TC-004-170-001: Parse valid Aircraft Identification and Characteristics 1
+- TC-004-170-002: Verify format compliance
+- TC-004-170-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -592,18 +592,18 @@ Identification and Characteristics of Aircraft 1 Involved in the Conflict.
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-171: Parse Aircraft Identification and Characteristics 2 (I4/171)
+### REQ-LLR-004-171: Parse Aircraft Identification and Characteristics 2 (I004/171)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/171 (Aircraft Identification and Characteristics 2) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/171 (Aircraft Identification and Characteristics 2) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Identification and Characteristics of Aircraft 2 Involved in the Conflict.
@@ -614,9 +614,9 @@ Identification and Characteristics of Aircraft 2 Involved in the Conflict.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-171-001: Parse valid Aircraft Identification and Characteristics 2
-- TC-4-171-002: Verify format compliance
-- TC-4-171-003: Test boundary values
+- TC-004-171-001: Parse valid Aircraft Identification and Characteristics 2
+- TC-004-171-002: Verify format compliance
+- TC-004-171-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -624,18 +624,18 @@ Identification and Characteristics of Aircraft 2 Involved in the Conflict.
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-SP: Parse SP Field (I4/SP)
+### REQ-LLR-004-SP: Parse SP Field (I004/SP)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/SP (SP Field) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/SP (SP Field) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Sp Field
@@ -646,9 +646,9 @@ Sp Field
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-SP-001: Parse valid SP Field
-- TC-4-SP-002: Verify format compliance
-- TC-4-SP-003: Test boundary values
+- TC-004-SP-001: Parse valid SP Field
+- TC-004-SP-002: Verify format compliance
+- TC-004-SP-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -656,18 +656,18 @@ Sp Field
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
-### REQ-LLR-4-RE: Parse Reserved Expansion Data Field (I4/RE)
+### REQ-LLR-004-RE: Parse Reserved Expansion Data Field (I004/RE)
 
-**Parent:** REQ-HLR-CAT-4
+**Parent:** REQ-HLR-CAT-004
 **Category:** Functional
-**Priority:** Medium
+**Priority:** High
 
 **Description:**
-The parser shall extract Data Item I4/RE (Reserved Expansion Data Field) as specified in the EUROCONTROL ASTERIX CAT4 v1.12 specification.
+The parser shall extract Data Item I004/RE (Reserved Expansion Data Field) as specified in the EUROCONTROL ASTERIX CAT004 v1.12 specification.
 
 **Data Item Definition:**
 Field used to introduce intermediate changes for elementary surveillance
@@ -678,9 +678,9 @@ Field used to introduce intermediate changes for elementary surveillance
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-RE-001: Parse valid Reserved Expansion Data Field
-- TC-4-RE-002: Verify format compliance
-- TC-4-RE-003: Test boundary values
+- TC-004-RE-001: Parse valid Reserved Expansion Data Field
+- TC-004-RE-002: Verify format compliance
+- TC-004-RE-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -688,43 +688,43 @@ Field used to introduce intermediate changes for elementary surveillance
 
 **Design Reference:** SDD Section 3.4 (Data Item Parsing)
 
-**Safety Impact:** Low
+**Safety Impact:** Medium
 
 ---
 
 ## 3. Error Handling Requirements
 
-### REQ-LLR-4-ERR-001: Invalid Data Item Length
+### REQ-LLR-004-ERR-001: Invalid Data Item Length
 
 **Parent:** REQ-HLR-ERR-001
 **Category:** Error Handling
 **Priority:** High
 
 **Description:**
-The parser shall detect and report errors when a CAT4 data item has invalid length or format.
+The parser shall detect and report errors when a CAT004 data item has invalid length or format.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-ERR-001: Truncated data items
-- TC-4-ERR-002: Invalid repetition counts
-- TC-4-ERR-003: Malformed compound items
+- TC-004-ERR-001: Truncated data items
+- TC-004-ERR-002: Invalid repetition counts
+- TC-004-ERR-003: Malformed compound items
 
 **Safety Impact:** High
 
 ---
 
-### REQ-LLR-4-ERR-002: Unknown Data Item
+### REQ-LLR-004-ERR-002: Unknown Data Item
 
 **Parent:** REQ-HLR-ERR-001
 **Category:** Error Handling
 **Priority:** Medium
 
 **Description:**
-The parser shall gracefully handle CAT4 data items not defined in the configuration.
+The parser shall gracefully handle CAT004 data items not defined in the configuration.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-4-ERR-004: Unknown data item in FSPEC
+- TC-004-ERR-004: Unknown data item in FSPEC
 
 **Safety Impact:** Medium
 
@@ -734,28 +734,28 @@ The parser shall gracefully handle CAT4 data items not defined in the configurat
 
 | Requirement ID | Data Item | Description | Priority | Safety |
 |----------------|-----------|-------------|----------|--------|
-| REQ-LLR-4-000 | I4/000 | Message Type | Critical | High |
-| REQ-LLR-4-010 | I4/010 | Data Source Identifier | Critical | High |
-| REQ-LLR-4-015 | I4/015 | SDPS Identifier | Medium | Low |
-| REQ-LLR-4-020 | I4/020 | Time of Message | Critical | High |
-| REQ-LLR-4-030 | I4/030 | Track Number 1 | Medium | Low |
-| REQ-LLR-4-035 | I4/035 | Track Number 2 | Medium | Low |
-| REQ-LLR-4-040 | I4/040 | Alert Identifier | Medium | Low |
-| REQ-LLR-4-045 | I4/045 | Alert Status | Medium | Low |
-| REQ-LLR-4-060 | I4/060 | Safety Net Function and System Status | Medium | Low |
-| REQ-LLR-4-070 | I4/070 | Conflict Timing and Separation | Medium | Low |
-| REQ-LLR-4-074 | I4/074 | Longitudinal Deviation | Medium | Low |
-| REQ-LLR-4-075 | I4/075 | Transversal Distance Deviation | Medium | Low |
-| REQ-LLR-4-076 | I4/076 | Vertical Deviation | Medium | Low |
-| REQ-LLR-4-100 | I4/100 | Area Definition | Medium | Low |
-| REQ-LLR-4-110 | I4/110 | SFDPS Sector Control Identification | Medium | Low |
-| REQ-LLR-4-120 | I4/120 | Conflict Characteristics | Medium | Low |
-| REQ-LLR-4-170 | I4/170 | Aircraft Identification and Characterist | Medium | Low |
-| REQ-LLR-4-171 | I4/171 | Aircraft Identification and Characterist | Medium | Low |
-| REQ-LLR-4-SP | I4/SP | SP Field | Medium | Low |
-| REQ-LLR-4-RE | I4/RE | Reserved Expansion Data Field | Medium | Low |
-| REQ-LLR-4-ERR-001 | - | Invalid Data Item Length | High | High |
-| REQ-LLR-4-ERR-002 | - | Unknown Data Item | Medium | Medium |
+| REQ-LLR-004-000 | I004/000 | Message Type | Critical | High |
+| REQ-LLR-004-010 | I004/010 | Data Source Identifier | Critical | High |
+| REQ-LLR-004-015 | I004/015 | SDPS Identifier | High | Medium |
+| REQ-LLR-004-020 | I004/020 | Time of Message | Critical | High |
+| REQ-LLR-004-030 | I004/030 | Track Number 1 | High | Medium |
+| REQ-LLR-004-035 | I004/035 | Track Number 2 | High | Medium |
+| REQ-LLR-004-040 | I004/040 | Alert Identifier | High | Medium |
+| REQ-LLR-004-045 | I004/045 | Alert Status | High | Medium |
+| REQ-LLR-004-060 | I004/060 | Safety Net Function and System Status | High | Medium |
+| REQ-LLR-004-070 | I004/070 | Conflict Timing and Separation | High | Medium |
+| REQ-LLR-004-074 | I004/074 | Longitudinal Deviation | High | Medium |
+| REQ-LLR-004-075 | I004/075 | Transversal Distance Deviation | High | Medium |
+| REQ-LLR-004-076 | I004/076 | Vertical Deviation | High | Medium |
+| REQ-LLR-004-100 | I004/100 | Area Definition | High | Medium |
+| REQ-LLR-004-110 | I004/110 | SFDPS Sector Control Identification | High | Medium |
+| REQ-LLR-004-120 | I004/120 | Conflict Characteristics | High | Medium |
+| REQ-LLR-004-170 | I004/170 | Aircraft Identification and Characterist | High | Medium |
+| REQ-LLR-004-171 | I004/171 | Aircraft Identification and Characterist | High | Medium |
+| REQ-LLR-004-SP | I004/SP | SP Field | High | Medium |
+| REQ-LLR-004-RE | I004/RE | Reserved Expansion Data Field | High | Medium |
+| REQ-LLR-004-ERR-001 | - | Invalid Data Item Length | High | High |
+| REQ-LLR-004-ERR-002 | - | Unknown Data Item | Medium | Medium |
 
 **Total Requirements:** 22
 
@@ -764,10 +764,10 @@ The parser shall gracefully handle CAT4 data items not defined in the configurat
 ## 5. Traceability
 
 Each LLR traces to:
-- **Parent HLR:** REQ-HLR-CAT-4
+- **Parent HLR:** REQ-HLR-CAT-004
 - **Design:** Software Design Description (SDD)
 - **Code:** Source files and configuration XML
-- **Tests:** Specific test cases (TC-4-xxx-xxx)
+- **Tests:** Specific test cases (TC-004-xxx-xxx)
 
 See Requirements Traceability Matrix (RTM) for complete mapping.
 
@@ -787,7 +787,7 @@ See Requirements Traceability Matrix (RTM) for complete mapping.
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | 2025-11-02 | Auto-generated | Initial LLR for CAT4 data items |
+| 1.0 | 2025-11-02 | Auto-generated | Initial LLR for CAT004 data items |
 
 ---
 

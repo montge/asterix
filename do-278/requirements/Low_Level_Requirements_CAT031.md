@@ -1,34 +1,34 @@
-# Low-Level Requirements - ASTERIX Category 31
+# Low-Level Requirements - ASTERIX Category 031
 ## ASTERIX Decoder - DO-278A AL-3
 
-**Document ID:** LLR-CAT31-001
+**Document ID:** LLR-CAT031-001
 **Revision:** 1.0
 **Date:** 2025-11-02
-**Parent HLR:** REQ-HLR-CAT-31
+**Parent HLR:** REQ-HLR-CAT-031
 **Assurance Level:** AL-3 (Major)
 
 ---
 
 ## 1. Introduction
 
-This document defines Low-Level Requirements (LLR) for parsing ASTERIX Category 31 (Sensor Information Messages) v6.2.
+This document defines Low-Level Requirements (LLR) for parsing ASTERIX Category 031 (Sensor Information Messages) v6.2.
 
-**Parent Requirement:** REQ-HLR-CAT-31 - Parse ASTERIX Category 31
+**Parent Requirement:** REQ-HLR-CAT-031 - Parse ASTERIX Category 031
 
-Each data item in CAT31 has corresponding LLRs defining parsing behavior.
+Each data item in CAT031 has corresponding LLRs defining parsing behavior.
 
 ---
 
-## 2. CAT31 Data Item Requirements
+## 2. CAT031 Data Item Requirements
 
-### REQ-LLR-31-010: Parse Server Identification Tag (I31/010)
+### REQ-LLR-031-010: Parse Server Identification Tag (I031/010)
 
-**Parent:** REQ-HLR-CAT-31
+**Parent:** REQ-HLR-CAT-031
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I31/010 (Server Identification Tag) as specified in the EUROCONTROL ASTERIX CAT31 v6.2 specification.
+The parser shall extract Data Item I031/010 (Server Identification Tag) as specified in the EUROCONTROL ASTERIX CAT031 v6.2 specification.
 
 **Data Item Definition:**
 Identification of the Server of Sensor information.
@@ -39,9 +39,9 @@ Identification of the Server of Sensor information.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-31-010-001: Parse valid Server Identification Tag
-- TC-31-010-002: Verify format compliance
-- TC-31-010-003: Test boundary values
+- TC-031-010-001: Parse valid Server Identification Tag
+- TC-031-010-002: Verify format compliance
+- TC-031-010-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -53,14 +53,14 @@ Identification of the Server of Sensor information.
 
 ---
 
-### REQ-LLR-31-015: Parse User Number (I31/015)
+### REQ-LLR-031-015: Parse User Number (I031/015)
 
-**Parent:** REQ-HLR-CAT-31
+**Parent:** REQ-HLR-CAT-031
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I31/015 (User Number) as specified in the EUROCONTROL ASTERIX CAT31 v6.2 specification.
+The parser shall extract Data Item I031/015 (User Number) as specified in the EUROCONTROL ASTERIX CAT031 v6.2 specification.
 
 **Data Item Definition:**
 Identification of the User of Sensor information
@@ -72,9 +72,9 @@ Identification of the User of Sensor information
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-31-015-001: Parse valid User Number
-- TC-31-015-002: Verify format compliance
-- TC-31-015-003: Test boundary values
+- TC-031-015-001: Parse valid User Number
+- TC-031-015-002: Verify format compliance
+- TC-031-015-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -86,14 +86,14 @@ Identification of the User of Sensor information
 
 ---
 
-### REQ-LLR-31-020: Parse Time Of Message (I31/020)
+### REQ-LLR-031-020: Parse Time Of Message (I031/020)
 
-**Parent:** REQ-HLR-CAT-31
+**Parent:** REQ-HLR-CAT-031
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I31/020 (Time Of Message) as specified in the EUROCONTROL ASTERIX CAT31 v6.2 specification.
+The parser shall extract Data Item I031/020 (Time Of Message) as specified in the EUROCONTROL ASTERIX CAT031 v6.2 specification.
 
 **Data Item Definition:**
 Absolute time stamping of the message in the form of elapsed time since last midnight.
@@ -105,9 +105,9 @@ Absolute time stamping of the message in the form of elapsed time since last mid
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-31-020-001: Parse valid Time Of Message
-- TC-31-020-002: Verify format compliance
-- TC-31-020-003: Test boundary values
+- TC-031-020-001: Parse valid Time Of Message
+- TC-031-020-002: Verify format compliance
+- TC-031-020-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -119,14 +119,14 @@ Absolute time stamping of the message in the form of elapsed time since last mid
 
 ---
 
-### REQ-LLR-31-030: Parse Sensor Identification Tag (I31/030)
+### REQ-LLR-031-030: Parse Sensor Identification Tag (I031/030)
 
-**Parent:** REQ-HLR-CAT-31
+**Parent:** REQ-HLR-CAT-031
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I31/030 (Sensor Identification Tag) as specified in the EUROCONTROL ASTERIX CAT31 v6.2 specification.
+The parser shall extract Data Item I031/030 (Sensor Identification Tag) as specified in the EUROCONTROL ASTERIX CAT031 v6.2 specification.
 
 **Data Item Definition:**
 Identification of the Sensor to which the provided information are related.
@@ -137,9 +137,9 @@ Identification of the Sensor to which the provided information are related.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-31-030-001: Parse valid Sensor Identification Tag
-- TC-31-030-002: Verify format compliance
-- TC-31-030-003: Test boundary values
+- TC-031-030-001: Parse valid Sensor Identification Tag
+- TC-031-030-002: Verify format compliance
+- TC-031-030-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -151,14 +151,14 @@ Identification of the Sensor to which the provided information are related.
 
 ---
 
-### REQ-LLR-31-040: Parse Sensor Status (I31/040)
+### REQ-LLR-031-040: Parse Sensor Status (I031/040)
 
-**Parent:** REQ-HLR-CAT-31
+**Parent:** REQ-HLR-CAT-031
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I31/040 (Sensor Status) as specified in the EUROCONTROL ASTERIX CAT31 v6.2 specification.
+The parser shall extract Data Item I031/040 (Sensor Status) as specified in the EUROCONTROL ASTERIX CAT031 v6.2 specification.
 
 **Data Item Definition:**
 Functioning status of the Sensor as monitored by ARTAS.
@@ -169,9 +169,9 @@ Functioning status of the Sensor as monitored by ARTAS.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-31-040-001: Parse valid Sensor Status
-- TC-31-040-002: Verify format compliance
-- TC-31-040-003: Test boundary values
+- TC-031-040-001: Parse valid Sensor Status
+- TC-031-040-002: Verify format compliance
+- TC-031-040-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -183,14 +183,14 @@ Functioning status of the Sensor as monitored by ARTAS.
 
 ---
 
-### REQ-LLR-31-050: Parse Time Stamping Bias (I31/050)
+### REQ-LLR-031-050: Parse Time Stamping Bias (I031/050)
 
-**Parent:** REQ-HLR-CAT-31
+**Parent:** REQ-HLR-CAT-031
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I31/050 (Time Stamping Bias) as specified in the EUROCONTROL ASTERIX CAT31 v6.2 specification.
+The parser shall extract Data Item I031/050 (Time Stamping Bias) as specified in the EUROCONTROL ASTERIX CAT031 v6.2 specification.
 
 **Data Item Definition:**
 Plot Time stamping bias
@@ -201,9 +201,9 @@ Plot Time stamping bias
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-31-050-001: Parse valid Time Stamping Bias
-- TC-31-050-002: Verify format compliance
-- TC-31-050-003: Test boundary values
+- TC-031-050-001: Parse valid Time Stamping Bias
+- TC-031-050-002: Verify format compliance
+- TC-031-050-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -215,14 +215,14 @@ Plot Time stamping bias
 
 ---
 
-### REQ-LLR-31-060: Parse SSR Range Gain and Bias (I31/060)
+### REQ-LLR-031-060: Parse SSR Range Gain and Bias (I031/060)
 
-**Parent:** REQ-HLR-CAT-31
+**Parent:** REQ-HLR-CAT-031
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I31/060 (SSR Range Gain and Bias) as specified in the EUROCONTROL ASTERIX CAT31 v6.2 specification.
+The parser shall extract Data Item I031/060 (SSR Range Gain and Bias) as specified in the EUROCONTROL ASTERIX CAT031 v6.2 specification.
 
 **Data Item Definition:**
 SSR range gain and bias
@@ -233,9 +233,9 @@ SSR range gain and bias
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-31-060-001: Parse valid SSR Range Gain and Bias
-- TC-31-060-002: Verify format compliance
-- TC-31-060-003: Test boundary values
+- TC-031-060-001: Parse valid SSR Range Gain and Bias
+- TC-031-060-002: Verify format compliance
+- TC-031-060-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -247,14 +247,14 @@ SSR range gain and bias
 
 ---
 
-### REQ-LLR-31-070: Parse SSR Azimuth Bias (I31/070)
+### REQ-LLR-031-070: Parse SSR Azimuth Bias (I031/070)
 
-**Parent:** REQ-HLR-CAT-31
+**Parent:** REQ-HLR-CAT-031
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I31/070 (SSR Azimuth Bias) as specified in the EUROCONTROL ASTERIX CAT31 v6.2 specification.
+The parser shall extract Data Item I031/070 (SSR Azimuth Bias) as specified in the EUROCONTROL ASTERIX CAT031 v6.2 specification.
 
 **Data Item Definition:**
 SSR azimuth bias
@@ -265,9 +265,9 @@ SSR azimuth bias
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-31-070-001: Parse valid SSR Azimuth Bias
-- TC-31-070-002: Verify format compliance
-- TC-31-070-003: Test boundary values
+- TC-031-070-001: Parse valid SSR Azimuth Bias
+- TC-031-070-002: Verify format compliance
+- TC-031-070-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -279,14 +279,14 @@ SSR azimuth bias
 
 ---
 
-### REQ-LLR-31-080: Parse PR Range Gain and Bias (I31/080)
+### REQ-LLR-031-080: Parse PR Range Gain and Bias (I031/080)
 
-**Parent:** REQ-HLR-CAT-31
+**Parent:** REQ-HLR-CAT-031
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I31/080 (PR Range Gain and Bias) as specified in the EUROCONTROL ASTERIX CAT31 v6.2 specification.
+The parser shall extract Data Item I031/080 (PR Range Gain and Bias) as specified in the EUROCONTROL ASTERIX CAT031 v6.2 specification.
 
 **Data Item Definition:**
 PR range gain and bias
@@ -297,9 +297,9 @@ PR range gain and bias
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-31-080-001: Parse valid PR Range Gain and Bias
-- TC-31-080-002: Verify format compliance
-- TC-31-080-003: Test boundary values
+- TC-031-080-001: Parse valid PR Range Gain and Bias
+- TC-031-080-002: Verify format compliance
+- TC-031-080-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -311,14 +311,14 @@ PR range gain and bias
 
 ---
 
-### REQ-LLR-31-090: Parse PR Azimuth Bias (I31/090)
+### REQ-LLR-031-090: Parse PR Azimuth Bias (I031/090)
 
-**Parent:** REQ-HLR-CAT-31
+**Parent:** REQ-HLR-CAT-031
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I31/090 (PR Azimuth Bias) as specified in the EUROCONTROL ASTERIX CAT31 v6.2 specification.
+The parser shall extract Data Item I031/090 (PR Azimuth Bias) as specified in the EUROCONTROL ASTERIX CAT031 v6.2 specification.
 
 **Data Item Definition:**
 PR azimuth bias
@@ -329,9 +329,9 @@ PR azimuth bias
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-31-090-001: Parse valid PR Azimuth Bias
-- TC-31-090-002: Verify format compliance
-- TC-31-090-003: Test boundary values
+- TC-031-090-001: Parse valid PR Azimuth Bias
+- TC-031-090-002: Verify format compliance
+- TC-031-090-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -345,37 +345,37 @@ PR azimuth bias
 
 ## 3. Error Handling Requirements
 
-### REQ-LLR-31-ERR-001: Invalid Data Item Length
+### REQ-LLR-031-ERR-001: Invalid Data Item Length
 
 **Parent:** REQ-HLR-ERR-001
 **Category:** Error Handling
 **Priority:** High
 
 **Description:**
-The parser shall detect and report errors when a CAT31 data item has invalid length or format.
+The parser shall detect and report errors when a CAT031 data item has invalid length or format.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-31-ERR-001: Truncated data items
-- TC-31-ERR-002: Invalid repetition counts
-- TC-31-ERR-003: Malformed compound items
+- TC-031-ERR-001: Truncated data items
+- TC-031-ERR-002: Invalid repetition counts
+- TC-031-ERR-003: Malformed compound items
 
 **Safety Impact:** High
 
 ---
 
-### REQ-LLR-31-ERR-002: Unknown Data Item
+### REQ-LLR-031-ERR-002: Unknown Data Item
 
 **Parent:** REQ-HLR-ERR-001
 **Category:** Error Handling
 **Priority:** Medium
 
 **Description:**
-The parser shall gracefully handle CAT31 data items not defined in the configuration.
+The parser shall gracefully handle CAT031 data items not defined in the configuration.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-31-ERR-004: Unknown data item in FSPEC
+- TC-031-ERR-004: Unknown data item in FSPEC
 
 **Safety Impact:** Medium
 
@@ -385,18 +385,18 @@ The parser shall gracefully handle CAT31 data items not defined in the configura
 
 | Requirement ID | Data Item | Description | Priority | Safety |
 |----------------|-----------|-------------|----------|--------|
-| REQ-LLR-31-010 | I31/010 | Server Identification Tag | Medium | Low |
-| REQ-LLR-31-015 | I31/015 | User Number | Medium | Low |
-| REQ-LLR-31-020 | I31/020 | Time Of Message | Medium | Low |
-| REQ-LLR-31-030 | I31/030 | Sensor Identification Tag | Medium | Low |
-| REQ-LLR-31-040 | I31/040 | Sensor Status | Medium | Low |
-| REQ-LLR-31-050 | I31/050 | Time Stamping Bias | Medium | Low |
-| REQ-LLR-31-060 | I31/060 | SSR Range Gain and Bias | Medium | Low |
-| REQ-LLR-31-070 | I31/070 | SSR Azimuth Bias | Medium | Low |
-| REQ-LLR-31-080 | I31/080 | PR Range Gain and Bias | Medium | Low |
-| REQ-LLR-31-090 | I31/090 | PR Azimuth Bias | Medium | Low |
-| REQ-LLR-31-ERR-001 | - | Invalid Data Item Length | High | High |
-| REQ-LLR-31-ERR-002 | - | Unknown Data Item | Medium | Medium |
+| REQ-LLR-031-010 | I031/010 | Server Identification Tag | Medium | Low |
+| REQ-LLR-031-015 | I031/015 | User Number | Medium | Low |
+| REQ-LLR-031-020 | I031/020 | Time Of Message | Medium | Low |
+| REQ-LLR-031-030 | I031/030 | Sensor Identification Tag | Medium | Low |
+| REQ-LLR-031-040 | I031/040 | Sensor Status | Medium | Low |
+| REQ-LLR-031-050 | I031/050 | Time Stamping Bias | Medium | Low |
+| REQ-LLR-031-060 | I031/060 | SSR Range Gain and Bias | Medium | Low |
+| REQ-LLR-031-070 | I031/070 | SSR Azimuth Bias | Medium | Low |
+| REQ-LLR-031-080 | I031/080 | PR Range Gain and Bias | Medium | Low |
+| REQ-LLR-031-090 | I031/090 | PR Azimuth Bias | Medium | Low |
+| REQ-LLR-031-ERR-001 | - | Invalid Data Item Length | High | High |
+| REQ-LLR-031-ERR-002 | - | Unknown Data Item | Medium | Medium |
 
 **Total Requirements:** 12
 
@@ -405,10 +405,10 @@ The parser shall gracefully handle CAT31 data items not defined in the configura
 ## 5. Traceability
 
 Each LLR traces to:
-- **Parent HLR:** REQ-HLR-CAT-31
+- **Parent HLR:** REQ-HLR-CAT-031
 - **Design:** Software Design Description (SDD)
 - **Code:** Source files and configuration XML
-- **Tests:** Specific test cases (TC-31-xxx-xxx)
+- **Tests:** Specific test cases (TC-031-xxx-xxx)
 
 See Requirements Traceability Matrix (RTM) for complete mapping.
 
@@ -428,7 +428,7 @@ See Requirements Traceability Matrix (RTM) for complete mapping.
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | 2025-11-02 | Auto-generated | Initial LLR for CAT31 data items |
+| 1.0 | 2025-11-02 | Auto-generated | Initial LLR for CAT031 data items |
 
 ---
 

@@ -1,34 +1,34 @@
-# Low-Level Requirements - ASTERIX Category 15
+# Low-Level Requirements - ASTERIX Category 015
 ## ASTERIX Decoder - DO-278A AL-3
 
-**Document ID:** LLR-CAT15-001
+**Document ID:** LLR-CAT015-001
 **Revision:** 1.0
 **Date:** 2025-11-02
-**Parent HLR:** REQ-HLR-CAT-15
+**Parent HLR:** REQ-HLR-CAT-015
 **Assurance Level:** AL-3 (Major)
 
 ---
 
 ## 1. Introduction
 
-This document defines Low-Level Requirements (LLR) for parsing ASTERIX Category 15 (INCS Target Reports) v1.2.
+This document defines Low-Level Requirements (LLR) for parsing ASTERIX Category 015 (INCS Target Reports) v1.2.
 
-**Parent Requirement:** REQ-HLR-CAT-15 - Parse ASTERIX Category 15
+**Parent Requirement:** REQ-HLR-CAT-015 - Parse ASTERIX Category 015
 
-Each data item in CAT15 has corresponding LLRs defining parsing behavior.
+Each data item in CAT015 has corresponding LLRs defining parsing behavior.
 
 ---
 
-## 2. CAT15 Data Item Requirements
+## 2. CAT015 Data Item Requirements
 
-### REQ-LLR-15-000: Parse Message Type (I15/000)
+### REQ-LLR-015-000: Parse Message Type (I015/000)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Critical
 
 **Description:**
-The parser shall extract Data Item I15/000 (Message Type) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/000 (Message Type) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 This data item conveys the report type and whether the output is periodically updated or asynchronous depending upon external events.
@@ -40,9 +40,9 @@ This data item conveys the report type and whether the output is periodically up
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-000-001: Parse valid Message Type
-- TC-15-000-002: Verify format compliance
-- TC-15-000-003: Test boundary values
+- TC-015-000-001: Parse valid Message Type
+- TC-015-000-002: Verify format compliance
+- TC-015-000-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -54,14 +54,14 @@ This data item conveys the report type and whether the output is periodically up
 
 ---
 
-### REQ-LLR-15-010: Parse Data Source Identifier (I15/010)
+### REQ-LLR-015-010: Parse Data Source Identifier (I015/010)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Critical
 
 **Description:**
-The parser shall extract Data Item I15/010 (Data Source Identifier) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/010 (Data Source Identifier) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Identification of the sensor from which the data is received.
@@ -73,9 +73,9 @@ Identification of the sensor from which the data is received.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-010-001: Parse valid Data Source Identifier
-- TC-15-010-002: Verify format compliance
-- TC-15-010-003: Test boundary values
+- TC-015-010-001: Parse valid Data Source Identifier
+- TC-015-010-002: Verify format compliance
+- TC-015-010-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -87,14 +87,14 @@ Identification of the sensor from which the data is received.
 
 ---
 
-### REQ-LLR-15-015: Parse Service Identification (I15/015)
+### REQ-LLR-015-015: Parse Service Identification (I015/015)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/015 (Service Identification) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/015 (Service Identification) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Identification of the service provided to one or more users.
@@ -106,9 +106,9 @@ Identification of the service provided to one or more users.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-015-001: Parse valid Service Identification
-- TC-15-015-002: Verify format compliance
-- TC-15-015-003: Test boundary values
+- TC-015-015-001: Parse valid Service Identification
+- TC-015-015-002: Verify format compliance
+- TC-015-015-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -120,14 +120,14 @@ Identification of the service provided to one or more users.
 
 ---
 
-### REQ-LLR-15-020: Parse Target Report Descriptor (I15/020)
+### REQ-LLR-015-020: Parse Target Report Descriptor (I015/020)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Critical
 
 **Description:**
-The parser shall extract Data Item I15/020 (Target Report Descriptor) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/020 (Target Report Descriptor) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Type and characteristics of the data as transmitted by a system.
@@ -139,9 +139,9 @@ Type and characteristics of the data as transmitted by a system.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-020-001: Parse valid Target Report Descriptor
-- TC-15-020-002: Verify format compliance
-- TC-15-020-003: Test boundary values
+- TC-015-020-001: Parse valid Target Report Descriptor
+- TC-015-020-002: Verify format compliance
+- TC-015-020-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -153,14 +153,14 @@ Type and characteristics of the data as transmitted by a system.
 
 ---
 
-### REQ-LLR-15-030: Parse Warning/Error Conditions (I15/030)
+### REQ-LLR-015-030: Parse Warning/Error Conditions (I015/030)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/030 (Warning/Error Conditions) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/030 (Warning/Error Conditions) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Warning/error conditions detected by a system for the target report involved.
@@ -172,9 +172,9 @@ Warning/error conditions detected by a system for the target report involved.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-030-001: Parse valid Warning/Error Conditions
-- TC-15-030-002: Verify format compliance
-- TC-15-030-003: Test boundary values
+- TC-015-030-001: Parse valid Warning/Error Conditions
+- TC-015-030-002: Verify format compliance
+- TC-015-030-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -186,14 +186,14 @@ Warning/error conditions detected by a system for the target report involved.
 
 ---
 
-### REQ-LLR-15-050: Parse Update Period (I15/050)
+### REQ-LLR-015-050: Parse Update Period (I015/050)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/050 (Update Period) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/050 (Update Period) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Period until next expected output of a target report for this target.
@@ -205,9 +205,9 @@ Period until next expected output of a target report for this target.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-050-001: Parse valid Update Period
-- TC-15-050-002: Verify format compliance
-- TC-15-050-003: Test boundary values
+- TC-015-050-001: Parse valid Update Period
+- TC-015-050-002: Verify format compliance
+- TC-015-050-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -219,14 +219,14 @@ Period until next expected output of a target report for this target.
 
 ---
 
-### REQ-LLR-15-145: Parse Time of Applicability (I15/145)
+### REQ-LLR-015-145: Parse Time of Applicability (I015/145)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Critical
 
 **Description:**
-The parser shall extract Data Item I15/145 (Time of Applicability) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/145 (Time of Applicability) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Absolute time stamping for applicability of the measured information expressed as UTC.
@@ -238,9 +238,9 @@ Absolute time stamping for applicability of the measured information expressed a
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-145-001: Parse valid Time of Applicability
-- TC-15-145-002: Verify format compliance
-- TC-15-145-003: Test boundary values
+- TC-015-145-001: Parse valid Time of Applicability
+- TC-015-145-002: Verify format compliance
+- TC-015-145-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -252,14 +252,14 @@ Absolute time stamping for applicability of the measured information expressed a
 
 ---
 
-### REQ-LLR-15-161: Parse Track/Plot Number (I15/161)
+### REQ-LLR-015-161: Parse Track/Plot Number (I015/161)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Critical
 
 **Description:**
-The parser shall extract Data Item I15/161 (Track/Plot Number) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/161 (Track/Plot Number) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 An integer value representing a unique reference to a track/plot record.
@@ -271,9 +271,9 @@ An integer value representing a unique reference to a track/plot record.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-161-001: Parse valid Track/Plot Number
-- TC-15-161-002: Verify format compliance
-- TC-15-161-003: Test boundary values
+- TC-015-161-001: Parse valid Track/Plot Number
+- TC-015-161-002: Verify format compliance
+- TC-015-161-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -285,14 +285,14 @@ An integer value representing a unique reference to a track/plot record.
 
 ---
 
-### REQ-LLR-15-170: Parse Track/Plot Status (I15/170)
+### REQ-LLR-015-170: Parse Track/Plot Status (I015/170)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Critical
 
 **Description:**
-The parser shall extract Data Item I15/170 (Track/Plot Status) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/170 (Track/Plot Status) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Status of Track/Plot.
@@ -304,9 +304,9 @@ Status of Track/Plot.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-170-001: Parse valid Track/Plot Status
-- TC-15-170-002: Verify format compliance
-- TC-15-170-003: Test boundary values
+- TC-015-170-001: Parse valid Track/Plot Status
+- TC-015-170-002: Verify format compliance
+- TC-015-170-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -318,14 +318,14 @@ Status of Track/Plot.
 
 ---
 
-### REQ-LLR-15-270: Parse Target Size and Orientation (I15/270)
+### REQ-LLR-015-270: Parse Target Size and Orientation (I015/270)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/270 (Target Size and Orientation) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/270 (Target Size and Orientation) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Data item containing the size and orientation information of the target.
@@ -336,9 +336,9 @@ Data item containing the size and orientation information of the target.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-270-001: Parse valid Target Size and Orientation
-- TC-15-270-002: Verify format compliance
-- TC-15-270-003: Test boundary values
+- TC-015-270-001: Parse valid Target Size and Orientation
+- TC-015-270-002: Verify format compliance
+- TC-015-270-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -350,14 +350,14 @@ Data item containing the size and orientation information of the target.
 
 ---
 
-### REQ-LLR-15-300: Parse Object Classification (I15/300)
+### REQ-LLR-015-300: Parse Object Classification (I015/300)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/300 (Object Classification) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/300 (Object Classification) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Classification result of the object detection.
@@ -369,9 +369,9 @@ Classification result of the object detection.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-300-001: Parse valid Object Classification
-- TC-15-300-002: Verify format compliance
-- TC-15-300-003: Test boundary values
+- TC-015-300-001: Parse valid Object Classification
+- TC-015-300-002: Verify format compliance
+- TC-015-300-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -383,14 +383,14 @@ Classification result of the object detection.
 
 ---
 
-### REQ-LLR-15-400: Parse Measurement Identifier (I15/400)
+### REQ-LLR-015-400: Parse Measurement Identifier (I015/400)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/400 (Measurement Identifier) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/400 (Measurement Identifier) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 An identifier pointing to a measurement that was created from a specific contributing Tx/Rx Pair where the Pair Identifier refers to the index which details both the transmitter characteristics (DVB-T, DAB, FM, dedicated etc.) and the receiver characteristics. These are defined in ASTERIX Category 016 – Data Item I016/300).
@@ -402,9 +402,9 @@ An identifier pointing to a measurement that was created from a specific contrib
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-400-001: Parse valid Measurement Identifier
-- TC-15-400-002: Verify format compliance
-- TC-15-400-003: Test boundary values
+- TC-015-400-001: Parse valid Measurement Identifier
+- TC-015-400-002: Verify format compliance
+- TC-015-400-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -416,14 +416,14 @@ An identifier pointing to a measurement that was created from a specific contrib
 
 ---
 
-### REQ-LLR-15-480: Parse Associations (I15/480)
+### REQ-LLR-015-480: Parse Associations (I015/480)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/480 (Associations) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/480 (Associations) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Information on which Measurement Identifiers contributed to the Sensor Centric Plot / Sensor Centric Track.
@@ -434,9 +434,9 @@ Information on which Measurement Identifiers contributed to the Sensor Centric P
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-480-001: Parse valid Associations
-- TC-15-480-002: Verify format compliance
-- TC-15-480-003: Test boundary values
+- TC-015-480-001: Parse valid Associations
+- TC-015-480-002: Verify format compliance
+- TC-015-480-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -448,14 +448,14 @@ Information on which Measurement Identifiers contributed to the Sensor Centric P
 
 ---
 
-### REQ-LLR-15-600: Parse Horizontal Position Information (I15/600)
+### REQ-LLR-015-600: Parse Horizontal Position Information (I015/600)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/600 (Horizontal Position Information) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/600 (Horizontal Position Information) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Data item containing the horizontal position information of the target.
@@ -466,9 +466,9 @@ Data item containing the horizontal position information of the target.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-600-001: Parse valid Horizontal Position Information
-- TC-15-600-002: Verify format compliance
-- TC-15-600-003: Test boundary values
+- TC-015-600-001: Parse valid Horizontal Position Information
+- TC-015-600-002: Verify format compliance
+- TC-015-600-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -480,14 +480,14 @@ Data item containing the horizontal position information of the target.
 
 ---
 
-### REQ-LLR-15-601: Parse Geometric Height Information (I15/601)
+### REQ-LLR-015-601: Parse Geometric Height Information (I015/601)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/601 (Geometric Height Information) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/601 (Geometric Height Information) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Data item containing the geometric height information of the target in WGS 84 height above ellipsoid.
@@ -498,9 +498,9 @@ Data item containing the geometric height information of the target in WGS 84 he
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-601-001: Parse valid Geometric Height Information
-- TC-15-601-002: Verify format compliance
-- TC-15-601-003: Test boundary values
+- TC-015-601-001: Parse valid Geometric Height Information
+- TC-015-601-002: Verify format compliance
+- TC-015-601-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -512,14 +512,14 @@ Data item containing the geometric height information of the target in WGS 84 he
 
 ---
 
-### REQ-LLR-15-602: Parse Horizontal Velocity Information (I15/602)
+### REQ-LLR-015-602: Parse Horizontal Velocity Information (I015/602)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/602 (Horizontal Velocity Information) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/602 (Horizontal Velocity Information) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Magnitude of the Horizontal Velocity Vector.
@@ -530,9 +530,9 @@ Magnitude of the Horizontal Velocity Vector.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-602-001: Parse valid Horizontal Velocity Information
-- TC-15-602-002: Verify format compliance
-- TC-15-602-003: Test boundary values
+- TC-015-602-001: Parse valid Horizontal Velocity Information
+- TC-015-602-002: Verify format compliance
+- TC-015-602-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -544,14 +544,14 @@ Magnitude of the Horizontal Velocity Vector.
 
 ---
 
-### REQ-LLR-15-603: Parse Horizontal Acceleration Information (I15/603)
+### REQ-LLR-015-603: Parse Horizontal Acceleration Information (I015/603)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/603 (Horizontal Acceleration Information) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/603 (Horizontal Acceleration Information) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Magnitude of the Horizontal Acceleration Vector.
@@ -562,9 +562,9 @@ Magnitude of the Horizontal Acceleration Vector.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-603-001: Parse valid Horizontal Acceleration Information
-- TC-15-603-002: Verify format compliance
-- TC-15-603-003: Test boundary values
+- TC-015-603-001: Parse valid Horizontal Acceleration Information
+- TC-015-603-002: Verify format compliance
+- TC-015-603-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -576,14 +576,14 @@ Magnitude of the Horizontal Acceleration Vector.
 
 ---
 
-### REQ-LLR-15-604: Parse Vertical Velocity Information (I15/604)
+### REQ-LLR-015-604: Parse Vertical Velocity Information (I015/604)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/604 (Vertical Velocity Information) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/604 (Vertical Velocity Information) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Vertical velocity as given by the rate of change of the Geometric Height.
@@ -594,9 +594,9 @@ Vertical velocity as given by the rate of change of the Geometric Height.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-604-001: Parse valid Vertical Velocity Information
-- TC-15-604-002: Verify format compliance
-- TC-15-604-003: Test boundary values
+- TC-015-604-001: Parse valid Vertical Velocity Information
+- TC-015-604-002: Verify format compliance
+- TC-015-604-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -608,14 +608,14 @@ Vertical velocity as given by the rate of change of the Geometric Height.
 
 ---
 
-### REQ-LLR-15-605: Parse Vertical Acceleration Information (I15/605)
+### REQ-LLR-015-605: Parse Vertical Acceleration Information (I015/605)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/605 (Vertical Acceleration Information) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/605 (Vertical Acceleration Information) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Rate of change of vertical speed.
@@ -626,9 +626,9 @@ Rate of change of vertical speed.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-605-001: Parse valid Vertical Acceleration Information
-- TC-15-605-002: Verify format compliance
-- TC-15-605-003: Test boundary values
+- TC-015-605-001: Parse valid Vertical Acceleration Information
+- TC-015-605-002: Verify format compliance
+- TC-015-605-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -640,14 +640,14 @@ Rate of change of vertical speed.
 
 ---
 
-### REQ-LLR-15-625: Parse Range Information (I15/625)
+### REQ-LLR-015-625: Parse Range Information (I015/625)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/625 (Range Information) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/625 (Range Information) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 The targets range information is given relative to the sensor reference point(s).
@@ -658,9 +658,9 @@ The targets range information is given relative to the sensor reference point(s)
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-625-001: Parse valid Range Information
-- TC-15-625-002: Verify format compliance
-- TC-15-625-003: Test boundary values
+- TC-015-625-001: Parse valid Range Information
+- TC-015-625-002: Verify format compliance
+- TC-015-625-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -672,14 +672,14 @@ The targets range information is given relative to the sensor reference point(s)
 
 ---
 
-### REQ-LLR-15-626: Parse Doppler Information (I15/626)
+### REQ-LLR-015-626: Parse Doppler Information (I015/626)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/626 (Doppler Information) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/626 (Doppler Information) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Doppler measurement of the Target.
@@ -690,9 +690,9 @@ Doppler measurement of the Target.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-626-001: Parse valid Doppler Information
-- TC-15-626-002: Verify format compliance
-- TC-15-626-003: Test boundary values
+- TC-015-626-001: Parse valid Doppler Information
+- TC-015-626-002: Verify format compliance
+- TC-015-626-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -704,14 +704,14 @@ Doppler measurement of the Target.
 
 ---
 
-### REQ-LLR-15-627: Parse Azimuth Information (I15/627)
+### REQ-LLR-015-627: Parse Azimuth Information (I015/627)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/627 (Azimuth Information) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/627 (Azimuth Information) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Azimuth information that is provided relative to the sensor or component reference point.
@@ -722,9 +722,9 @@ Azimuth information that is provided relative to the sensor or component referen
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-627-001: Parse valid Azimuth Information
-- TC-15-627-002: Verify format compliance
-- TC-15-627-003: Test boundary values
+- TC-015-627-001: Parse valid Azimuth Information
+- TC-015-627-002: Verify format compliance
+- TC-015-627-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -736,14 +736,14 @@ Azimuth information that is provided relative to the sensor or component referen
 
 ---
 
-### REQ-LLR-15-628: Parse Elevation Information (I15/628)
+### REQ-LLR-015-628: Parse Elevation Information (I015/628)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/628 (Elevation Information) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/628 (Elevation Information) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Information related to the elevation angle provided by the sensor. (Predominantly used by electro-optic sensors).
@@ -754,9 +754,9 @@ Information related to the elevation angle provided by the sensor. (Predominantl
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-628-001: Parse valid Elevation Information
-- TC-15-628-002: Verify format compliance
-- TC-15-628-003: Test boundary values
+- TC-015-628-001: Parse valid Elevation Information
+- TC-015-628-002: Verify format compliance
+- TC-015-628-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -768,14 +768,14 @@ Information related to the elevation angle provided by the sensor. (Predominantl
 
 ---
 
-### REQ-LLR-15-630: Parse Path Quality (I15/630)
+### REQ-LLR-015-630: Parse Path Quality (I015/630)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/630 (Path Quality) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/630 (Path Quality) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Measure characterising the signal quality associated with a specific target echo signal.
@@ -786,9 +786,9 @@ Measure characterising the signal quality associated with a specific target echo
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-630-001: Parse valid Path Quality
-- TC-15-630-002: Verify format compliance
-- TC-15-630-003: Test boundary values
+- TC-015-630-001: Parse valid Path Quality
+- TC-015-630-002: Verify format compliance
+- TC-015-630-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -800,14 +800,14 @@ Measure characterising the signal quality associated with a specific target echo
 
 ---
 
-### REQ-LLR-15-631: Parse Contour (Azimuth, Elevation Angle, Range Extent) (I15/631)
+### REQ-LLR-015-631: Parse Contour (Azimuth, Elevation Angle, Range Extent) (I015/631)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/631 (Contour (Azimuth, Elevation Angle, Range Extent)) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/631 (Contour (Azimuth, Elevation Angle, Range Extent)) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 Azimuth, elevation angles and range extent of all elementary presences constituting a plot.
@@ -819,9 +819,9 @@ Azimuth, elevation angles and range extent of all elementary presences constitut
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-631-001: Parse valid Contour (Azimuth, Elevation Angle, Range Extent)
-- TC-15-631-002: Verify format compliance
-- TC-15-631-003: Test boundary values
+- TC-015-631-001: Parse valid Contour (Azimuth, Elevation Angle, Range Extent)
+- TC-015-631-002: Verify format compliance
+- TC-015-631-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -833,14 +833,14 @@ Azimuth, elevation angles and range extent of all elementary presences constitut
 
 ---
 
-### REQ-LLR-15-SP: Parse Special Purpose Field (I15/SP)
+### REQ-LLR-015-SP: Parse Special Purpose Field (I015/SP)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/SP (Special Purpose Field) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/SP (Special Purpose Field) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 SP
@@ -851,9 +851,9 @@ SP
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-SP-001: Parse valid Special Purpose Field
-- TC-15-SP-002: Verify format compliance
-- TC-15-SP-003: Test boundary values
+- TC-015-SP-001: Parse valid Special Purpose Field
+- TC-015-SP-002: Verify format compliance
+- TC-015-SP-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -865,14 +865,14 @@ SP
 
 ---
 
-### REQ-LLR-15-RE: Parse Reserved Field (I15/RE)
+### REQ-LLR-015-RE: Parse Reserved Field (I015/RE)
 
-**Parent:** REQ-HLR-CAT-15
+**Parent:** REQ-HLR-CAT-015
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I15/RE (Reserved Field) as specified in the EUROCONTROL ASTERIX CAT15 v1.2 specification.
+The parser shall extract Data Item I015/RE (Reserved Field) as specified in the EUROCONTROL ASTERIX CAT015 v1.2 specification.
 
 **Data Item Definition:**
 RE
@@ -883,9 +883,9 @@ RE
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-RE-001: Parse valid Reserved Field
-- TC-15-RE-002: Verify format compliance
-- TC-15-RE-003: Test boundary values
+- TC-015-RE-001: Parse valid Reserved Field
+- TC-015-RE-002: Verify format compliance
+- TC-015-RE-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -899,37 +899,37 @@ RE
 
 ## 3. Error Handling Requirements
 
-### REQ-LLR-15-ERR-001: Invalid Data Item Length
+### REQ-LLR-015-ERR-001: Invalid Data Item Length
 
 **Parent:** REQ-HLR-ERR-001
 **Category:** Error Handling
 **Priority:** High
 
 **Description:**
-The parser shall detect and report errors when a CAT15 data item has invalid length or format.
+The parser shall detect and report errors when a CAT015 data item has invalid length or format.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-ERR-001: Truncated data items
-- TC-15-ERR-002: Invalid repetition counts
-- TC-15-ERR-003: Malformed compound items
+- TC-015-ERR-001: Truncated data items
+- TC-015-ERR-002: Invalid repetition counts
+- TC-015-ERR-003: Malformed compound items
 
 **Safety Impact:** High
 
 ---
 
-### REQ-LLR-15-ERR-002: Unknown Data Item
+### REQ-LLR-015-ERR-002: Unknown Data Item
 
 **Parent:** REQ-HLR-ERR-001
 **Category:** Error Handling
 **Priority:** Medium
 
 **Description:**
-The parser shall gracefully handle CAT15 data items not defined in the configuration.
+The parser shall gracefully handle CAT015 data items not defined in the configuration.
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-15-ERR-004: Unknown data item in FSPEC
+- TC-015-ERR-004: Unknown data item in FSPEC
 
 **Safety Impact:** Medium
 
@@ -939,35 +939,35 @@ The parser shall gracefully handle CAT15 data items not defined in the configura
 
 | Requirement ID | Data Item | Description | Priority | Safety |
 |----------------|-----------|-------------|----------|--------|
-| REQ-LLR-15-000 | I15/000 | Message Type | Critical | High |
-| REQ-LLR-15-010 | I15/010 | Data Source Identifier | Critical | High |
-| REQ-LLR-15-015 | I15/015 | Service Identification | Medium | Low |
-| REQ-LLR-15-020 | I15/020 | Target Report Descriptor | Critical | High |
-| REQ-LLR-15-030 | I15/030 | Warning/Error Conditions | Medium | Low |
-| REQ-LLR-15-050 | I15/050 | Update Period | Medium | Low |
-| REQ-LLR-15-145 | I15/145 | Time of Applicability | Critical | High |
-| REQ-LLR-15-161 | I15/161 | Track/Plot Number | Critical | High |
-| REQ-LLR-15-170 | I15/170 | Track/Plot Status | Critical | High |
-| REQ-LLR-15-270 | I15/270 | Target Size and Orientation | Medium | Low |
-| REQ-LLR-15-300 | I15/300 | Object Classification | Medium | Low |
-| REQ-LLR-15-400 | I15/400 | Measurement Identifier | Medium | Low |
-| REQ-LLR-15-480 | I15/480 | Associations | Medium | Low |
-| REQ-LLR-15-600 | I15/600 | Horizontal Position Information | Medium | Low |
-| REQ-LLR-15-601 | I15/601 | Geometric Height Information | Medium | Low |
-| REQ-LLR-15-602 | I15/602 | Horizontal Velocity Information | Medium | Low |
-| REQ-LLR-15-603 | I15/603 | Horizontal Acceleration Information | Medium | Low |
-| REQ-LLR-15-604 | I15/604 | Vertical Velocity Information | Medium | Low |
-| REQ-LLR-15-605 | I15/605 | Vertical Acceleration Information | Medium | Low |
-| REQ-LLR-15-625 | I15/625 | Range Information | Medium | Low |
-| REQ-LLR-15-626 | I15/626 | Doppler Information | Medium | Low |
-| REQ-LLR-15-627 | I15/627 | Azimuth Information | Medium | Low |
-| REQ-LLR-15-628 | I15/628 | Elevation Information | Medium | Low |
-| REQ-LLR-15-630 | I15/630 | Path Quality | Medium | Low |
-| REQ-LLR-15-631 | I15/631 | Contour (Azimuth, Elevation Angle, Range | Medium | Low |
-| REQ-LLR-15-SP | I15/SP | Special Purpose Field | Medium | Low |
-| REQ-LLR-15-RE | I15/RE | Reserved Field | Medium | Low |
-| REQ-LLR-15-ERR-001 | - | Invalid Data Item Length | High | High |
-| REQ-LLR-15-ERR-002 | - | Unknown Data Item | Medium | Medium |
+| REQ-LLR-015-000 | I015/000 | Message Type | Critical | High |
+| REQ-LLR-015-010 | I015/010 | Data Source Identifier | Critical | High |
+| REQ-LLR-015-015 | I015/015 | Service Identification | Medium | Low |
+| REQ-LLR-015-020 | I015/020 | Target Report Descriptor | Critical | High |
+| REQ-LLR-015-030 | I015/030 | Warning/Error Conditions | Medium | Low |
+| REQ-LLR-015-050 | I015/050 | Update Period | Medium | Low |
+| REQ-LLR-015-145 | I015/145 | Time of Applicability | Critical | High |
+| REQ-LLR-015-161 | I015/161 | Track/Plot Number | Critical | High |
+| REQ-LLR-015-170 | I015/170 | Track/Plot Status | Critical | High |
+| REQ-LLR-015-270 | I015/270 | Target Size and Orientation | Medium | Low |
+| REQ-LLR-015-300 | I015/300 | Object Classification | Medium | Low |
+| REQ-LLR-015-400 | I015/400 | Measurement Identifier | Medium | Low |
+| REQ-LLR-015-480 | I015/480 | Associations | Medium | Low |
+| REQ-LLR-015-600 | I015/600 | Horizontal Position Information | Medium | Low |
+| REQ-LLR-015-601 | I015/601 | Geometric Height Information | Medium | Low |
+| REQ-LLR-015-602 | I015/602 | Horizontal Velocity Information | Medium | Low |
+| REQ-LLR-015-603 | I015/603 | Horizontal Acceleration Information | Medium | Low |
+| REQ-LLR-015-604 | I015/604 | Vertical Velocity Information | Medium | Low |
+| REQ-LLR-015-605 | I015/605 | Vertical Acceleration Information | Medium | Low |
+| REQ-LLR-015-625 | I015/625 | Range Information | Medium | Low |
+| REQ-LLR-015-626 | I015/626 | Doppler Information | Medium | Low |
+| REQ-LLR-015-627 | I015/627 | Azimuth Information | Medium | Low |
+| REQ-LLR-015-628 | I015/628 | Elevation Information | Medium | Low |
+| REQ-LLR-015-630 | I015/630 | Path Quality | Medium | Low |
+| REQ-LLR-015-631 | I015/631 | Contour (Azimuth, Elevation Angle, Range | Medium | Low |
+| REQ-LLR-015-SP | I015/SP | Special Purpose Field | Medium | Low |
+| REQ-LLR-015-RE | I015/RE | Reserved Field | Medium | Low |
+| REQ-LLR-015-ERR-001 | - | Invalid Data Item Length | High | High |
+| REQ-LLR-015-ERR-002 | - | Unknown Data Item | Medium | Medium |
 
 **Total Requirements:** 29
 
@@ -976,10 +976,10 @@ The parser shall gracefully handle CAT15 data items not defined in the configura
 ## 5. Traceability
 
 Each LLR traces to:
-- **Parent HLR:** REQ-HLR-CAT-15
+- **Parent HLR:** REQ-HLR-CAT-015
 - **Design:** Software Design Description (SDD)
 - **Code:** Source files and configuration XML
-- **Tests:** Specific test cases (TC-15-xxx-xxx)
+- **Tests:** Specific test cases (TC-015-xxx-xxx)
 
 See Requirements Traceability Matrix (RTM) for complete mapping.
 
@@ -999,7 +999,7 @@ See Requirements Traceability Matrix (RTM) for complete mapping.
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | 2025-11-02 | Auto-generated | Initial LLR for CAT15 data items |
+| 1.0 | 2025-11-02 | Auto-generated | Initial LLR for CAT015 data items |
 
 ---
 

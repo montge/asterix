@@ -11,7 +11,7 @@
 
 ## 1. Introduction
 
-This document defines Low-Level Requirements (LLR) for parsing ASTERIX Category 247 (Version Number Exchange) v1.2.
+This document defines Low-Level Requirements (LLR) for parsing ASTERIX Category 247 (Version Number Exchange) v1.3.
 
 **Parent Requirement:** REQ-HLR-CAT-247 - Parse ASTERIX Category 247
 
@@ -28,14 +28,21 @@ Each data item in CAT247 has corresponding LLRs defining parsing behavior.
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I247/010 (Data Source Identifier) as specified in the EUROCONTROL ASTERIX CAT247 v1.2 specification.
+The parser shall extract Data Item I247/010 (Data Source Identifier) as specified in the EUROCONTROL ASTERIX CAT247 v1.3 specification.
 
 **Data Item Definition:**
-Identification of the radar station from which the data are received.
+
+            Identification of the radar station from which the data are received.
+        
 
 **Implementation Notes:**
 - Format: Fixed (2 bytes)
 - Rule: optional
+- Note: 
+            Note:
+                The defined SACs are on the EUROCONTROL ASTERIX website
+                (www.eurocontrol.int/asterix)
+        
 
 **Verification Method:** Unit Test
 **Test Cases:**
@@ -60,14 +67,19 @@ Identification of the radar station from which the data are received.
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I247/015 (Service Identification) as specified in the EUROCONTROL ASTERIX CAT247 v1.2 specification.
+The parser shall extract Data Item I247/015 (Service Identification) as specified in the EUROCONTROL ASTERIX CAT247 v1.3 specification.
 
 **Data Item Definition:**
-Identification of the service provided to one or more users
+
+            Identification of the service provided to one or more users.
+        
 
 **Implementation Notes:**
 - Format: Fixed (1 bytes)
 - Rule: optional
+- Note: 
+            The service identification is allocated by the system.
+        
 
 **Verification Method:** Unit Test
 **Test Cases:**
@@ -85,25 +97,30 @@ Identification of the service provided to one or more users
 
 ---
 
-### REQ-LLR-247-140: Parse Time Of Day (I247/140)
+### REQ-LLR-247-140: Parse Time of Day (I247/140)
 
 **Parent:** REQ-HLR-CAT-247
 **Category:** Functional
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I247/140 (Time Of Day) as specified in the EUROCONTROL ASTERIX CAT247 v1.2 specification.
+The parser shall extract Data Item I247/140 (Time of Day) as specified in the EUROCONTROL ASTERIX CAT247 v1.3 specification.
 
 **Data Item Definition:**
-Absolute time stamping of the information in the form of elapsed time since last midnight, expressed as UTC.
+
+            Absolute time stamping expressed as UTC.
+        
 
 **Implementation Notes:**
 - Format: Fixed (3 bytes)
 - Rule: optional
+- Note: 
+            The time of day value is reset to zero each day at midnight.
+        
 
 **Verification Method:** Unit Test
 **Test Cases:**
-- TC-247-140-001: Parse valid Time Of Day
+- TC-247-140-001: Parse valid Time of Day
 - TC-247-140-002: Verify format compliance
 - TC-247-140-003: Test boundary values
 
@@ -124,20 +141,100 @@ Absolute time stamping of the information in the form of elapsed time since last
 **Priority:** Medium
 
 **Description:**
-The parser shall extract Data Item I247/550 (Category Version Number Report) as specified in the EUROCONTROL ASTERIX CAT247 v1.2 specification.
+The parser shall extract Data Item I247/550 (Category Version Number Report) as specified in the EUROCONTROL ASTERIX CAT247 v1.3 specification.
 
 **Data Item Definition:**
-Version number of Categories used
+
+            Version number of Categories used.
+        
 
 **Implementation Notes:**
 - Format: Repetitive
 - Rule: optional
+- Note: 
+            Notes:
+
+                1. The Version Number corresponds to the Edition of the ASTERIX
+                   Category specification
+                2. The version number(s) corresponding to the Edition of the ASTERIX
+                   Category Reserved Expansion Field(s) can be specified in the REF.
+                3. The version number(s) corresponding to the Edition of the ASTERIX
+                   Category Special Purpose Field(s) may be specified in the SPF.
+        
 
 **Verification Method:** Unit Test
 **Test Cases:**
 - TC-247-550-001: Parse valid Category Version Number Report
 - TC-247-550-002: Verify format compliance
 - TC-247-550-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat247_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Low
+
+---
+
+### REQ-LLR-247-RE: Parse Reserved Expansion Field (I247/RE)
+
+**Parent:** REQ-HLR-CAT-247
+**Category:** Functional
+**Priority:** Medium
+
+**Description:**
+The parser shall extract Data Item I247/RE (Reserved Expansion Field) as specified in the EUROCONTROL ASTERIX CAT247 v1.3 specification.
+
+**Data Item Definition:**
+
+            Expansion
+        
+
+**Implementation Notes:**
+- Format: Explicit
+- Rule: optional
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-247-RE-001: Parse valid Reserved Expansion Field
+- TC-247-RE-002: Verify format compliance
+- TC-247-RE-003: Test boundary values
+
+**Code Reference:**
+- src/asterix/DataItemFormat*.cpp (based on format type)
+- asterix/config/asterix_cat247_*.xml
+
+**Design Reference:** SDD Section 3.4 (Data Item Parsing)
+
+**Safety Impact:** Low
+
+---
+
+### REQ-LLR-247-SP: Parse Special Purpose Field (I247/SP)
+
+**Parent:** REQ-HLR-CAT-247
+**Category:** Functional
+**Priority:** Medium
+
+**Description:**
+The parser shall extract Data Item I247/SP (Special Purpose Field) as specified in the EUROCONTROL ASTERIX CAT247 v1.3 specification.
+
+**Data Item Definition:**
+
+            Special Purpose Field
+        
+
+**Implementation Notes:**
+- Format: Explicit
+- Rule: optional
+
+**Verification Method:** Unit Test
+**Test Cases:**
+- TC-247-SP-001: Parse valid Special Purpose Field
+- TC-247-SP-002: Verify format compliance
+- TC-247-SP-003: Test boundary values
 
 **Code Reference:**
 - src/asterix/DataItemFormat*.cpp (based on format type)
@@ -193,12 +290,14 @@ The parser shall gracefully handle CAT247 data items not defined in the configur
 |----------------|-----------|-------------|----------|--------|
 | REQ-LLR-247-010 | I247/010 | Data Source Identifier | Medium | Low |
 | REQ-LLR-247-015 | I247/015 | Service Identification | Medium | Low |
-| REQ-LLR-247-140 | I247/140 | Time Of Day | Medium | Low |
+| REQ-LLR-247-140 | I247/140 | Time of Day | Medium | Low |
 | REQ-LLR-247-550 | I247/550 | Category Version Number Report | Medium | Low |
+| REQ-LLR-247-RE | I247/RE | Reserved Expansion Field | Medium | Low |
+| REQ-LLR-247-SP | I247/SP | Special Purpose Field | Medium | Low |
 | REQ-LLR-247-ERR-001 | - | Invalid Data Item Length | High | High |
 | REQ-LLR-247-ERR-002 | - | Unknown Data Item | Medium | Medium |
 
-**Total Requirements:** 6
+**Total Requirements:** 8
 
 ---
 
