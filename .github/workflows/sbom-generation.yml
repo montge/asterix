@@ -125,47 +125,55 @@ jobs:
     - name: Generate SBOM for Python dependencies
       id: sbom-python
       if: always()
+      continue-on-error: true
       run: |
         VERSION="${{ steps.read-version.outputs.version }}"
         SBOM_FILE="sbom/asterix-python-sbom.json"
+        mkdir -p sbom
         
         # Generate SBOM for Python dependencies if requirements files exist
         if [ -f "requirements.txt" ] || [ -f "setup.py" ]; then
           # Use syft from environment or fallback to direct call
           SYFT_CMD="${SYFT_PATH:-/usr/local/bin/syft}"
           
-          ${SYFT_CMD} packages python:. \
+          # Try to generate Python SBOM
+          if ${SYFT_CMD} packages python:. \
             -o cyclonedx-json \
             --exclude "*/build*/**" \
-            --exclude "*/.git/**" > "${SBOM_FILE}" || {
-            echo "::warning::Failed to generate Python SBOM, continuing..."
-            exit 0
-          }
-          
-          # Verify SBOM file was created
-          if [ ! -f "${SBOM_FILE}" ]; then
-            echo "Error: Python SBOM file was not created: ${SBOM_FILE}" >&2
-            exit 1
+            --exclude "*/.git/**" \
+            --exclude "*/venv/**" \
+            --exclude "*/.venv/**" > "${SBOM_FILE}" 2>&1; then
+            
+            # Verify SBOM file was created and is valid JSON
+            if [ -f "${SBOM_FILE}" ] && [ -s "${SBOM_FILE}" ]; then
+              # Validate it's valid JSON
+              if jq empty "${SBOM_FILE}" 2>/dev/null; then
+                if command -v jq &> /dev/null; then
+                  PYTHON_VERSION=$(grep -E '^PYTHON_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]' || echo "${VERSION}")
+                  jq --arg version "${PYTHON_VERSION}" \
+                     --arg commit "${GITHUB_SHA}" \
+                     --arg main_version "${VERSION}" \
+                     '.metadata.component.version = $version |
+                      .metadata.component.name = "asterix-python" |
+                      .metadata.properties += [
+                        {"name": "commit", "value": $commit},
+                        {"name": "generated", "value": "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'"},
+                        {"name": "main_version", "value": $main_version},
+                        {"name": "git_tag", "value": "v\($main_version)"}
+                      ]' \
+                    "${SBOM_FILE}" > "${SBOM_FILE}.tmp" && \
+                  mv "${SBOM_FILE}.tmp" "${SBOM_FILE}"
+                  echo "Generated Python SBOM: ${SBOM_FILE} (Python version ${PYTHON_VERSION})"
+                fi
+              else
+                echo "::warning::Python SBOM file is not valid JSON, skipping metadata update"
+              fi
+            else
+              echo "::warning::Python SBOM file was not created or is empty"
+            fi
+          else
+            echo "::warning::Failed to generate Python SBOM with syft, continuing..."
           fi
-          
-          if command -v jq &> /dev/null; then
-            PYTHON_VERSION=$(grep -E '^PYTHON_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
-            jq --arg version "${PYTHON_VERSION}" \
-               --arg commit "${GITHUB_SHA}" \
-               --arg main_version "${VERSION}" \
-               '.metadata.component.version = $version |
-                .metadata.component.name = "asterix-python" |
-                .metadata.properties += [
-                  {"name": "commit", "value": $commit},
-                  {"name": "generated", "value": "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'"},
-                  {"name": "main_version", "value": $main_version},
-                  {"name": "git_tag", "value": "v\($main_version)"}
-                ]' \
-              "${SBOM_FILE}" > "${SBOM_FILE}.tmp" && \
-            mv "${SBOM_FILE}.tmp" "${SBOM_FILE}"
-          fi
-          
-          echo "Generated Python SBOM: ${SBOM_FILE} (Python version ${PYTHON_VERSION})"
         else
           echo "No Python requirements found, skipping Python SBOM"
         fi
@@ -173,48 +181,55 @@ jobs:
     - name: Generate SBOM for Rust dependencies
       id: sbom-rust
       if: always()
+      continue-on-error: true
       run: |
         VERSION="${{ steps.read-version.outputs.version }}"
         SBOM_FILE="sbom/asterix-rust-sbom.json"
+        mkdir -p sbom
         
         # Generate SBOM for Rust crate if Cargo.toml exists
         if [ -f "asterix-rs/Cargo.toml" ]; then
           # Use syft from environment or fallback to direct call
           SYFT_CMD="${SYFT_PATH:-/usr/local/bin/syft}"
           
-          cd asterix-rs
-          ${SYFT_CMD} packages cargo:. \
-            -o cyclonedx-json > "../${SBOM_FILE}" || {
-            echo "::warning::Failed to generate Rust SBOM, continuing..."
+          # Try to generate Rust SBOM from the cargo directory
+          if cd asterix-rs && ${SYFT_CMD} packages cargo:. \
+            -o cyclonedx-json \
+            --exclude "*/target/**" > "../${SBOM_FILE}" 2>&1; then
+            
             cd ..
-            exit 0
-          }
-          cd ..
-          
-          # Verify SBOM file was created
-          if [ ! -f "${SBOM_FILE}" ]; then
-            echo "Error: Rust SBOM file was not created: ${SBOM_FILE}" >&2
-            exit 1
+            
+            # Verify SBOM file was created and is valid JSON
+            if [ -f "${SBOM_FILE}" ] && [ -s "${SBOM_FILE}" ]; then
+              # Validate it's valid JSON
+              if jq empty "${SBOM_FILE}" 2>/dev/null; then
+                if command -v jq &> /dev/null; then
+                  RUST_VERSION=$(grep -E '^RUST_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]' || echo "${VERSION}")
+                  jq --arg version "${RUST_VERSION}" \
+                     --arg commit "${GITHUB_SHA}" \
+                     --arg main_version "${VERSION}" \
+                     '.metadata.component.version = $version |
+                      .metadata.component.name = "asterix-rust" |
+                      .metadata.properties += [
+                        {"name": "commit", "value": $commit},
+                        {"name": "generated", "value": "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'"},
+                        {"name": "main_version", "value": $main_version},
+                        {"name": "git_tag", "value": "v\($main_version)"}
+                      ]' \
+                    "${SBOM_FILE}" > "${SBOM_FILE}.tmp" && \
+                  mv "${SBOM_FILE}.tmp" "${SBOM_FILE}"
+                  echo "Generated Rust SBOM: ${SBOM_FILE} (Rust version ${RUST_VERSION})"
+                fi
+              else
+                echo "::warning::Rust SBOM file is not valid JSON, skipping metadata update"
+              fi
+            else
+              echo "::warning::Rust SBOM file was not created or is empty"
+            fi
+          else
+            cd ..
+            echo "::warning::Failed to generate Rust SBOM with syft, continuing..."
           fi
-          
-          if command -v jq &> /dev/null; then
-            RUST_VERSION=$(grep -E '^RUST_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
-            jq --arg version "${RUST_VERSION}" \
-               --arg commit "${GITHUB_SHA}" \
-               --arg main_version "${VERSION}" \
-               '.metadata.component.version = $version |
-                .metadata.component.name = "asterix-rust" |
-                .metadata.properties += [
-                  {"name": "commit", "value": $commit},
-                  {"name": "generated", "value": "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'"},
-                  {"name": "main_version", "value": $main_version},
-                  {"name": "git_tag", "value": "v\($main_version)"}
-                ]' \
-              "${SBOM_FILE}" > "${SBOM_FILE}.tmp" && \
-            mv "${SBOM_FILE}.tmp" "${SBOM_FILE}"
-          fi
-          
-          echo "Generated Rust SBOM: ${SBOM_FILE} (Rust version ${RUST_VERSION})"
         else
           echo "No Rust Cargo.toml found, skipping Rust SBOM"
         fi
