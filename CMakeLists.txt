@@ -135,6 +135,23 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+# macOS RPATH configuration
+# Enable use of @rpath in install names
+if(APPLE)
+    set(CMAKE_MACOSX_RPATH ON)
+    # Set RPATH to look for libraries relative to the executable
+    # @loader_path/../lib means "look in lib directory relative to the executable"
+    set(CMAKE_INSTALL_RPATH "@loader_path/../lib")
+    # Also add install prefix lib directory for development builds
+    list(APPEND CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    # Don't skip the full RPATH for the build tree (for testing)
+    set(CMAKE_SKIP_BUILD_RPATH FALSE)
+    # When building, use the install RPATH already (for testing before install)
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+    # The RPATH to be used when installing
+    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+endif()
+
 # Include directories
 include_directories(
     ${CMAKE_SOURCE_DIR}/src/asterix
@@ -248,6 +265,12 @@ if(BUILD_SHARED_LIBS)
         SOVERSION ${PROJECT_VERSION_MAJOR}
         PUBLIC_HEADER "${ASTERIX_LIB_HEADERS}"
     )
+    # On macOS, set the install name to use @rpath
+    if(APPLE)
+        set_target_properties(asterix_shared PROPERTIES
+            INSTALL_NAME_DIR "@rpath"
+        )
+    endif()
     target_link_libraries(asterix_shared ${EXPAT_LIBRARIES})
 
     # Install shared library
@@ -301,6 +324,12 @@ if(BUILD_EXECUTABLE)
     # Link with shared library if available, otherwise static
     if(BUILD_SHARED_LIBS)
         target_link_libraries(asterix_exe asterix_shared)
+        # On macOS, ensure executable has RPATH to find shared library
+        if(APPLE)
+            set_target_properties(asterix_exe PROPERTIES
+                INSTALL_RPATH "@loader_path/../lib"
+            )
+        endif()
     elseif(BUILD_STATIC_LIBS)
         target_link_libraries(asterix_exe asterix_static)
     else()
