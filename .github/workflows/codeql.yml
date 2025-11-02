@@ -46,13 +46,16 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libexpat1-dev
+        sudo apt-get install -y libexpat1-dev cmake
 
     - name: Build C++ project
       run: |
-        cd src
-        make clean
-        make
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_STATIC_LIBS=ON \
+          -DBUILD_EXECUTABLE=ON
+        cmake --build build --parallel $(nproc)
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4

@@ -396,26 +396,21 @@ jobs:
         ${{ github.workspace }}/install/bin/asterix --version
       continue-on-error: true
 
-    - name: Build with Make (traditional method)
-      if: matrix.config == 'Release'
-      run: |
-        cd src
-        make clean
-        make
-        make install
-      continue-on-error: true
-
     - name: Run integration tests (Unix test.sh)
       if: matrix.config == 'Debug'
       run: |
-        # Build debug version with Make for test.sh
-        cd src
-        make clean
-        make debug
-        make debug install
+        # Build debug version with CMake for test.sh
+        cmake -B build-test \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_STATIC_LIBS=ON \
+          -DBUILD_EXECUTABLE=ON \
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build-test --parallel $(nproc)
+        cmake --install build-test
 
         # Run integration tests
-        cd ../install/test
+        cd install/test
         ./test.sh
       continue-on-error: true
 
@@ -516,8 +511,7 @@ jobs:
               g++-${{ matrix.gcc_version }} \
               cmake \
               ninja-build \
-              libexpat1-dev \
-              make && \
+              libexpat1-dev && \
 
             gcc-${{ matrix.gcc_version }} --version && \
             g++-${{ matrix.gcc_version }} --version && \
