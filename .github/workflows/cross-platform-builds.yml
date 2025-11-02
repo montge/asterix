@@ -35,15 +35,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2019, windows-2022]
+        os: [windows-2022, windows-2025]
         config: [Release, Debug]
         include:
           - os: windows-2022
             msvc_version: '2022'
             toolset: 'v143'
-          - os: windows-2019
-            msvc_version: '2019'
-            toolset: 'v142'
+          - os: windows-2025
+            msvc_version: '2025'
+            toolset: 'v144'
 
     steps:
     - name: Checkout repository
@@ -76,13 +76,13 @@ jobs:
           -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install"
       if: matrix.os == 'windows-2022'
 
-    - name: Configure CMake (C++17 fallback for 2019)
+    - name: Configure CMake (C++23 for 2025)
       run: |
         cmake -B build `
-          -G "Visual Studio 16 2019" `
+          -G "Visual Studio 17 2022" `
           -A x64 `
           -DCMAKE_BUILD_TYPE=${{ matrix.config }} `
-          -DCMAKE_CXX_STANDARD=17 `
+          -DCMAKE_CXX_STANDARD=23 `
           -DCMAKE_CXX_STANDARD_REQUIRED=ON `
           -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" `
           -DBUILD_SHARED_LIBS=ON `
@@ -90,7 +90,7 @@ jobs:
           -DBUILD_EXECUTABLE=ON `
           -DBUILD_TESTING=OFF `
           -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install"
-      if: matrix.os == 'windows-2019'
+      if: matrix.os == 'windows-2025'
 
     - name: Build
       run: |
@@ -197,16 +197,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # macos-13: Intel x86_64, macos-14: Apple Silicon ARM64
-        os: [macos-13, macos-14]
+        # macos-14: Apple Silicon ARM64, macos-15: Apple Silicon ARM64
+        os: [macos-14, macos-15]
         config: [Release, Debug]
         include:
-          - os: macos-13
-            arch: 'x86_64'
-            xcode_version: '15.2'
           - os: macos-14
             arch: 'arm64'
             xcode_version: '15.4'
+          - os: macos-15
+            arch: 'arm64'
+            xcode_version: '16.1'
 
     steps:
     - name: Checkout repository
@@ -280,8 +280,8 @@ jobs:
         echo -e "\n=== Checking library exports ==="
         nm -gU ${{ github.workspace }}/install/lib/libasterix.dylib | head -20 || true
 
-    - name: Create macOS installers (macOS 14 Release only)
-      if: matrix.os == 'macos-14' && matrix.config == 'Release'
+    - name: Create macOS installers (macOS 15 Release only)
+      if: matrix.os == 'macos-15' && matrix.config == 'Release'
       run: |
         cd build
 
