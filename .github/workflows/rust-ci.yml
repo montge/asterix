@@ -36,7 +36,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Install Rust toolchain
       uses: dtolnay/rust-toolchain@master
@@ -120,7 +120,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Install Rust stable
       uses: dtolnay/rust-toolchain@stable
@@ -179,7 +179,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Install Rust stable
       uses: dtolnay/rust-toolchain@stable
@@ -261,7 +261,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Install Rust stable with llvm-tools
       uses: dtolnay/rust-toolchain@stable
@@ -345,7 +345,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Install Rust stable
       uses: dtolnay/rust-toolchain@stable
@@ -378,7 +378,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Install Rust stable
       uses: dtolnay/rust-toolchain@stable
@@ -426,7 +426,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Install Rust stable
       uses: dtolnay/rust-toolchain@stable
@@ -469,7 +469,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Install Rust stable
       uses: dtolnay/rust-toolchain@stable
@@ -513,7 +513,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Install Rust stable
       uses: dtolnay/rust-toolchain@stable
@@ -543,7 +543,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Install Rust 1.70
       uses: dtolnay/rust-toolchain@1.70
@@ -568,7 +568,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Install Rust stable
       uses: dtolnay/rust-toolchain@stable
