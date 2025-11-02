@@ -78,7 +78,7 @@ cmake -B build ^
   -G "Visual Studio 17 2022" ^
   -A x64 ^
   -DCMAKE_BUILD_TYPE=Release ^
-  -DCMAKE_CXX_STANDARD=23 ^
+  -DCMAKE_CXX_STANDARD=20 ^
   -DCMAKE_CXX_STANDARD_REQUIRED=ON ^
   -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" ^
   -DBUILD_SHARED_LIBS=ON ^

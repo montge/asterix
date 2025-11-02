@@ -16,11 +16,11 @@ All three bindings share the same C++ core for parsing ASTERIX data from various
 ### C++ Executable
 
 **Requirements:**
-- **C++23 compatible compiler** (upgraded from C++17):
-  - GCC 13.0+ (recommended for full C++23 support)
-  - Clang 16.0+ (recommended for full C++23 support)
-  - MSVC 2022 v17.4+ (Visual Studio 2022 version 17.4 or later)
-  - AppleClang 15.0+ (Xcode 15 or later)
+- **C++ compiler** (platform-specific):
+  - GCC 13.0+ (recommended for full C++23 support on Linux)
+  - Clang 16.0+ (recommended for full C++23 support on Linux)
+  - MSVC 2019 v16.0+ or later (Visual Studio 2019/2022, uses C++20 - MSVC doesn't fully support C++23 yet)
+  - AppleClang 15.0+ (Xcode 15 or later, uses C++23)
 - libexpat-devel (for XML parsing)
 - CMake 3.20+ or GNU Make
 
@@ -45,12 +45,15 @@ make
 The executable will be created at `install/asterix` (not asterix.exe despite documentation).
 
 **C++ Standard (Platform-Specific):**
-- **C++ Executable & CMake builds:** C++23 (set in CMakeLists.txt via `CMAKE_CXX_STANDARD 23`)
+- **C++ Executable & CMake builds:** 
+  - **Linux/macOS:** C++23 (set in CMakeLists.txt via `CMAKE_CXX_STANDARD 23`)
+  - **Windows/MSVC:** C++20 (set in CMakeLists.txt via `CMAKE_CXX_STANDARD 20` - MSVC doesn't fully support C++23 yet)
   - Automatic fallback to C++17/20 on older compilers (see `src/asterix/cxx23_features.h`)
 - **Python module builds:**
   - **Linux:** C++23 (matches CMake for full feature parity)
-  - **macOS/Windows:** C++17 (better compiler compatibility, set in setup.py)
-**C Standard:** The project uses C23 (set in CMakeLists.txt via `CMAKE_C_STANDARD 23`)
+  - **Windows:** C++20 (matches CMake for MSVC compatibility)
+  - **macOS:** C++17 (better compiler compatibility, set in setup.py)
+**C Standard:** The project uses C23 on Linux/macOS (set in CMakeLists.txt via `CMAKE_C_STANDARD 23`) and C17 on Windows/MSVC (MSVC doesn't fully support C23 yet)
 
 ### Python Module
 

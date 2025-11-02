@@ -28,11 +28,11 @@ More about ASTERIX protocol: http://www.eurocontrol.int/services/asterix
 - **Upgraded to C23 standard** (from C17) for C code
 - **Active performance improvements**: 5-10% throughput gain from ranges algorithms
 - **Future optimizations ready**: 15-20% additional improvement when compilers fully support deduced this
-- **Compiler requirements**: GCC 13+, Clang 16+, MSVC 2022 v17.4+, AppleClang 15+
+- **Compiler requirements**: GCC 13+, Clang 16+ (C++23), MSVC 2019 v16.0+ (C++20), AppleClang 15+ (C++23)
 - **Automatic feature detection**: Graceful fallback to C++17/20 for older compilers
 
 ### Cross-Platform Support 🌍
-- **Windows builds**: Server 2022 (MSVC 2022 v143), C++17 (Python) / C++23 (C++ executable)
+- **Windows builds**: Server 2022 (MSVC 2022 v143), C++20 (C++ executable, Python uses C++20)
 - **macOS builds**: macOS 14/15 Apple Silicon (AppleClang 15+), C++17 (Python) / C++23 (C++ executable)
 - **Linux x86_64**: Ubuntu 22.04/24.04, GCC 11/13, C++17/C++23, Debian 12
 - **Linux ARM64**: Ubuntu 22.04/24.04, GCC 11/13 (Raspberry Pi, AWS Graviton, NVIDIA Jetson, embedded systems)
@@ -149,7 +149,7 @@ Download pre-built packages from [GitHub Releases](https://github.com/montge/ast
 | **RHEL/Rocky 9** | `.rpm` | C++23 (GCC 13+) | 3.10-3.14 | 1.70+ | `sudo rpm -i asterix-*.rpm` |
 | **Fedora 40** | `.rpm` | C++23 (GCC 14) | 3.10-3.14 | 1.70+ | `sudo rpm -i asterix-*.rpm` |
 | **Linux ARM64** | `.deb`/`.tar.gz` | C++23 (GCC 13+) | 3.10-3.14 | 1.70+ | Raspberry Pi, AWS Graviton, NVIDIA Jetson |
-| **Windows 10/11** | `.zip`/`.msi`/`.exe` | C++23 (MSVC 2022) | 3.10-3.14 | 1.70+ | MSI (WiX), EXE (NSIS), ZIP (portable) |
+| **Windows 10/11** | `.zip`/`.msi`/`.exe` | C++20 (MSVC 2022) | 3.10-3.14 | 1.70+ | MSI (WiX), EXE (NSIS), ZIP (portable) |
 | **macOS 13+ (Intel)** | `.tar.gz`/`.pkg` | C++23 (AppleClang 15+) | 3.10-3.14 | 1.70+ | See [CROSS_PLATFORM_BUILD_GUIDE.md](CROSS_PLATFORM_BUILD_GUIDE.md) |
 | **macOS 14+ (M1/M2)** | `.tar.gz`/`.pkg`/`.dmg` | C++23 (AppleClang 15+) | 3.10-3.14 | 1.70+ | See [CROSS_PLATFORM_BUILD_GUIDE.md](CROSS_PLATFORM_BUILD_GUIDE.md) |
 
@@ -436,7 +436,7 @@ cargo bench
 - **C++ Standard** (platform-specific):
   - **Linux**: C++23 (GCC 13+, Clang 16+) - full feature set
   - **macOS**: C++17/C++23 (AppleClang 15+) - Python uses C++17 for compatibility
-  - **Windows**: C++17/C++23 (MSVC 2022 v17.4+) - Python uses C++17 for compatibility
+  - **Windows**: C++20 (MSVC 2022 v16.0+) - MSVC doesn't fully support C++23 yet, so C++20 is used
 - CMake 3.20+ or GNU Make
 - libexpat library for XML parsing
 
@@ -456,7 +456,7 @@ cmake .
 make
 ```
 
-**Note:** The C++ executable and CMake builds use C++23 (with automatic fallback to C++17/20 on older compilers). **Python module builds** use **C++17 on macOS/Windows** and **C++23 on Linux** for optimal compiler compatibility while maintaining feature parity where possible.
+**Note:** The C++ executable and CMake builds use C++23 on Linux/macOS (with automatic fallback to C++17/20 on older compilers), and C++20 on Windows/MSVC (MSVC doesn't fully support C++23 yet). **Python module builds** use **C++17 on macOS**, **C++20 on Windows**, and **C++23 on Linux** for optimal compiler compatibility while maintaining feature parity where possible.
 
 ### CI/CD Pipeline
 
