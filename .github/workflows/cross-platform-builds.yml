@@ -68,7 +68,7 @@ jobs:
         & "$VCPKG_ROOT/vcpkg.exe" install expat:x64-windows
         & "$VCPKG_ROOT/vcpkg.exe" integrate install
 
-    - name: Configure CMake (C++23)
+    - name: Configure CMake (C++20 for MSVC)
       shell: pwsh
       run: |
         $VCPKG_ROOT = "${{ github.workspace }}/vcpkg"
@@ -76,7 +76,7 @@ jobs:
           -G "Visual Studio 17 2022" `
           -A x64 `
           -DCMAKE_BUILD_TYPE=${{ matrix.config }} `
-          -DCMAKE_CXX_STANDARD=23 `
+          -DCMAKE_CXX_STANDARD=20 `
           -DCMAKE_CXX_STANDARD_REQUIRED=ON `
           -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
           -DVCPKG_TARGET_TRIPLET=x64-windows `

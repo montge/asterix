@@ -159,12 +159,14 @@ asterix_module = Extension('_asterix',
                            library_dirs=expat_library_dirs if sys.platform == 'win32' else [],
                            libraries=expat_libraries,
                            # SECURITY: Hardening flags for buffer overflow and stack protection
-                           # Platform-specific C++ standard: C++17 for macOS/Windows (better compiler support),
-                           # C++23 for Linux (matches CMakeLists.txt for feature parity)
+                           # Platform-specific C++ standard: 
+                           # - macOS: C++17 (better compatibility)
+                           # - Windows: C++20 (MSVC supports C++20, not C++23)
+                           # - Linux: C++23 (matches CMakeLists.txt for feature parity)
                            extra_compile_args=['-DPYTHON_WRAPPER',
-                                             '-std=c++17' if sys.platform in ('darwin', 'win32') else '-std=c++23',
+                                             '-std=c++17' if sys.platform == 'darwin' else '-std=c++23',
                                              '-fstack-protector-strong', '-D_FORTIFY_SOURCE=2'] if sys.platform != 'win32'
-                                          else ['/DPYTHON_WRAPPER', '/std:c++17', '/W3', '/wd9002'],
+                                          else ['/DPYTHON_WRAPPER', '/std:c++20', '/W3', '/wd9002'],
                            # SECURITY: Read-only relocations for hardening (Linux only - macOS doesn't support -z flags)
                            extra_link_args=['-lexpat'] if sys.platform == 'darwin'
                                           else (['expat.lib'] if sys.platform == 'win32'

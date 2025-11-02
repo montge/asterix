@@ -67,53 +67,67 @@ option(BUILD_EXECUTABLE "Build command-line executable" ON)
 option(BUILD_TESTING "Build tests" OFF)
 option(ENABLE_COVERAGE "Enable code coverage" OFF)
 
-# C++23 and C23 standards
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_C_STANDARD 23)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS OFF)
-
-# Compiler Version Checking for C++23
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "13.0")
+# C++ standard: C++23 for GCC/Clang, C++20 for MSVC (MSVC doesn't fully support C++23 yet)
+if(MSVC)
+    # MSVC: Use C++20 (latest fully supported standard)
+    set(CMAKE_CXX_STANDARD 20)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+    # Use /std:c++20 for MSVC
+    string(REGEX REPLACE "/std:c\\+\\+[^ ]*" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20")
+    
+    # C standard: MSVC typically uses C11/C17
+    set(CMAKE_C_STANDARD 17)
+    set(CMAKE_C_STANDARD_REQUIRED ON)
+    set(CMAKE_C_EXTENSIONS OFF)
+    
+    if(MSVC_VERSION LESS 1920)  # VS 2019 v16.0
         message(WARNING
-            "GCC 13.0+ is recommended for full C++23 support. "
-            "You are using GCC ${CMAKE_CXX_COMPILER_VERSION}. "
-            "Some C++23 features may not work correctly.")
-    endif()
-    # Enable specific C++23 flags if needed
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fconcepts")
-
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "16.0")
-        message(WARNING
-            "Clang 16.0+ is recommended for full C++23 support. "
-            "You are using Clang ${CMAKE_CXX_COMPILER_VERSION}.")
-    endif()
-    # Clang needs libc++ for full C++23 support on non-Apple platforms
-    if(NOT APPLE)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi")
-    endif()
-
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "15.0")
-        message(WARNING
-            "AppleClang 15.0+ is recommended for full C++23 support. "
-            "You are using AppleClang ${CMAKE_CXX_COMPILER_VERSION}.")
-    endif()
-
-elseif(MSVC)
-    if(MSVC_VERSION LESS 1934)  # VS 2022 v17.4
-        message(WARNING
-            "MSVC 2022 v17.4+ (version 1934) is recommended for C++23 support. "
+            "MSVC 2019 v16.0+ (version 1920) is recommended for C++20 support. "
             "You are using MSVC ${MSVC_VERSION}.")
     endif()
-    # Use /std:c++latest for latest C++ standard
-    string(REGEX REPLACE "/std:c\\+\\+[^ ]*" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
+else()
+    # GCC/Clang: Use C++23
+    set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+    set(CMAKE_C_STANDARD 23)
+    set(CMAKE_C_STANDARD_REQUIRED ON)
+    set(CMAKE_C_EXTENSIONS OFF)
+endif()
+
+# Compiler Version Checking for C++23 (non-MSVC)
+if(NOT MSVC)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "13.0")
+            message(WARNING
+                "GCC 13.0+ is recommended for full C++23 support. "
+                "You are using GCC ${CMAKE_CXX_COMPILER_VERSION}. "
+                "Some C++23 features may not work correctly.")
+        endif()
+        # Enable specific C++23 flags if needed
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fconcepts")
+
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "16.0")
+            message(WARNING
+                "Clang 16.0+ is recommended for full C++23 support. "
+                "You are using Clang ${CMAKE_CXX_COMPILER_VERSION}.")
+        endif()
+        # Clang needs libc++ for full C++23 support on non-Apple platforms
+        if(NOT APPLE)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi")
+        endif()
+
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+        if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "15.0")
+            message(WARNING
+                "AppleClang 15.0+ is recommended for full C++23 support. "
+                "You are using AppleClang ${CMAKE_CXX_COMPILER_VERSION}.")
+        endif()
+    endif()
 endif()
 
 # Output directories
