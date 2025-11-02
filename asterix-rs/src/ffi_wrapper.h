@@ -13,10 +13,12 @@
 #include <string>
 #include <vector>
 
-// Forward declarations of C++ ASTERIX types
-class AsterixData;
+// Include complete type definitions needed for std::unique_ptr
+#include "../src/asterix/AsterixData.h"
+#include "../src/asterix/InputParser.h"
+
+// Forward declarations of other C++ ASTERIX types
 class DataBlock;
-class InputParser;
 class AsterixDefinition;
 
 namespace asterix {

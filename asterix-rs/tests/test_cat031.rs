@@ -14,7 +14,7 @@
 //! - TC-RS-CAT031-003: Test error handling
 //! - TC-RS-CAT031-004: Test API usage
 
-use asterix::{parse, ParseOptions, AsterixError};
+use asterix::{parse, AsterixError, ParseOptions};
 use std::fs;
 use std::path::PathBuf;
 
@@ -33,13 +33,13 @@ fn test_parse_cat031_packet() {
     //!
     //! Requirement: REQ-HLR-001, REQ-LLR-031-010
     //! Verification: TC-RS-CAT031-001
-    
+
     // Create minimal valid CAT031 packet
     // Structure: [Category: 31] [Length MSB: 0x00] [Length LSB: 0x03]
     let cat031_packet = vec![
-        31,  // Category 31
-        0x00,       // Length MSB
-        0x03,       // Length LSB = 3 bytes (header only)
+        31,   // Category 31
+        0x00, // Length MSB
+        0x03, // Length LSB = 3 bytes (header only)
     ];
 
     let options = ParseOptions {
@@ -72,16 +72,16 @@ fn test_parse_cat031_with_data_items() {
     //!
     //! Requirement: REQ-LLR-031-010
     //! Verification: TC-RS-CAT031-002
-    
+
     // Create CAT031 packet with I031/010 (Data Source Identifier)
     // Structure: [Category: 31] [Length MSB: 0x00] [Length LSB: 0x08] [FSPEC: 0x80] [I031/010: 2 bytes]
     let cat031_packet = vec![
-        31,  // Category 31
-        0x00,       // Length MSB
-        0x08,       // Length LSB = 8 bytes total
-        0x80,       // FSPEC: I031/010 present (bit 7 set)
-        0x01,       // I031/010: SAC = 0x01
-        0x23,       // I031/010: SIC = 0x23
+        31,   // Category 31
+        0x00, // Length MSB
+        0x08, // Length LSB = 8 bytes total
+        0x80, // FSPEC: I031/010 present (bit 7 set)
+        0x01, // I031/010: SAC = 0x01
+        0x23, // I031/010: SIC = 0x23
     ];
 
     let options = ParseOptions {
@@ -97,7 +97,10 @@ fn test_parse_cat031_with_data_items() {
             if !records.is_empty() {
                 assert_eq!(records[0].category, 31, "Should identify as CAT031");
                 assert!(records[0].length > 0, "Record length should be positive");
-                println!("✓ Parsed CAT031 with data items: {} record(s)", records.len());
+                println!(
+                    "✓ Parsed CAT031 with data items: {} record(s)",
+                    records.len()
+                );
             }
         }
         Err(e) => {
@@ -113,7 +116,7 @@ fn test_cat031_error_handling() {
     //!
     //! Requirement: REQ-HLR-001 (Error handling)
     //! Verification: TC-RS-CAT031-003
-    
+
     // Test with empty data
     let empty_data = b"";
     let result = parse(empty_data, ParseOptions::default());
@@ -122,11 +125,11 @@ fn test_cat031_error_handling() {
 
     // Test with invalid category (wrong category byte)
     let invalid_packet = vec![
-        0xFF,  // Invalid category
-        0x00,  // Length MSB
-        0x03,  // Length LSB
+        0xFF, // Invalid category
+        0x00, // Length MSB
+        0x03, // Length LSB
     ];
-    
+
     let result = parse(&invalid_packet, ParseOptions::default());
     // Should handle gracefully (return error or empty list)
     match result {
@@ -150,12 +153,12 @@ fn test_cat031_api_usage() {
     //!
     //! Requirement: REQ-HLR-001
     //! Verification: TC-RS-CAT031-004
-    
+
     // Create minimal valid packet
     let cat031_packet = vec![
-        31,  // Category 31
-        0x00,       // Length MSB
-        0x03,       // Length LSB = 3 bytes
+        31,   // Category 31
+        0x00, // Length MSB
+        0x03, // Length LSB = 3 bytes
     ];
 
     // Test with verbose mode
@@ -177,14 +180,28 @@ fn test_cat031_api_usage() {
     // Both should handle gracefully
     match (result_verbose, result_quiet) {
         (Ok(records_v), Ok(records_q)) => {
-            assert_eq!(records_v.len(), records_q.len(), "Both modes should return same number of records");
-            println!("✓ CAT031 API usage: verbose={}, quiet={} records", records_v.len(), records_q.len());
+            assert_eq!(
+                records_v.len(),
+                records_q.len(),
+                "Both modes should return same number of records"
+            );
+            println!(
+                "✓ CAT031 API usage: verbose={}, quiet={} records",
+                records_v.len(),
+                records_q.len()
+            );
         }
         (Ok(records_v), Err(_)) => {
-            println!("⚠ CAT031 verbose succeeded ({} records) but quiet failed", records_v.len());
+            println!(
+                "⚠ CAT031 verbose succeeded ({} records) but quiet failed",
+                records_v.len()
+            );
         }
         (Err(_), Ok(records_q)) => {
-            println!("⚠ CAT031 quiet succeeded ({} records) but verbose failed", records_q.len());
+            println!(
+                "⚠ CAT031 quiet succeeded ({} records) but verbose failed",
+                records_q.len()
+            );
         }
         (Err(e1), Err(e2)) => {
             // Both failed, which may be acceptable for minimal packets
@@ -205,7 +222,10 @@ fn test_cat031_api_usage() {
             for record in &records {
                 assert_eq!(record.category, 31, "Filtered records should be CAT031");
             }
-            println!("✓ Category filter working: {} CAT031 records", records.len());
+            println!(
+                "✓ Category filter working: {} CAT031 records",
+                records.len()
+            );
         }
         Err(e) => {
             println!("⚠ Category filter test: {:?}", e);

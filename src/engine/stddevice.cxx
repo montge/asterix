@@ -23,10 +23,21 @@
 // Standard includes
 #include <stdio.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <sys/select.h> // fd_set
+#ifdef _WIN32
+  #include <winsock2.h>
+  #include <time.h>
+  #include <io.h>
+  #include <process.h>
+  #define close _close
+  #define read _read
+  #define write _write
+  #define getpid _getpid
+#else
+  #include <sys/types.h>
+  #include <sys/time.h>
+  #include <unistd.h>
+  #include <sys/select.h> // fd_set
+#endif
 
 // Local includes
 #include "asterix.h"

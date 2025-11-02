@@ -76,9 +76,19 @@ static struct PyModuleDef moduledef = {
   NULL            /* m_free */
 };
 
-#define PYMODINITFUNC       PyObject *PyInit__asterix(void)
 #define PYMODULE_CREATE()   PyModule_Create(&moduledef)
 #define MODINITERROR        return NULL
+
+extern "C" {
+#ifdef _WIN32
+    __declspec(dllexport)
+#else
+    __attribute__((visibility("default")))
+#endif
+    PyObject *PyInit__asterix(void);
+}
+
+PyObject *PyInit__asterix(void) {
 
 #else
 
@@ -88,7 +98,9 @@ static struct PyModuleDef moduledef = {
 
 #endif
 
+#if PY_MAJOR_VERSION < 3
 PYMODINITFUNC {
+#endif
     PyObject *module = PYMODULE_CREATE();
 
     if (module == NULL) {

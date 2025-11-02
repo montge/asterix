@@ -5,8 +5,8 @@
 //!
 //! Run with: cargo bench
 
-use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
 use asterix_decoder::{parse, parse_with_offset, ParseOptions};
+use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
 use std::fs;
 use std::path::PathBuf;
 
@@ -28,8 +28,7 @@ fn bench_parse_cat048_raw(c: &mut Criterion) {
 
     group.bench_function("default_options", |b| {
         b.iter(|| {
-            let records = parse(black_box(&data), ParseOptions::default())
-                .expect("Parse failed");
+            let records = parse(black_box(&data), ParseOptions::default()).expect("Parse failed");
             black_box(records)
         })
     });
@@ -41,8 +40,7 @@ fn bench_parse_cat048_raw(c: &mut Criterion) {
             max_records: None,
         };
         b.iter(|| {
-            let records = parse(black_box(&data), options.clone())
-                .expect("Parse failed");
+            let records = parse(black_box(&data), options.clone()).expect("Parse failed");
             black_box(records)
         })
     });
@@ -60,8 +58,7 @@ fn bench_parse_pcap_format(c: &mut Criterion) {
 
     group.bench_function("cat_062_065", |b| {
         b.iter(|| {
-            let records = parse(black_box(&data), ParseOptions::default())
-                .expect("Parse failed");
+            let records = parse(black_box(&data), ParseOptions::default()).expect("Parse failed");
             black_box(records)
         })
     });
@@ -80,8 +77,7 @@ fn bench_parse_large_pcap(c: &mut Criterion) {
 
     group.bench_function("cat_034_048", |b| {
         b.iter(|| {
-            let records = parse(black_box(&data), ParseOptions::default())
-                .expect("Parse failed");
+            let records = parse(black_box(&data), ParseOptions::default()).expect("Parse failed");
             black_box(records)
         })
     });
@@ -100,8 +96,7 @@ fn bench_parse_multicast_pcap(c: &mut Criterion) {
 
     group.bench_function("asterix_pcap", |b| {
         b.iter(|| {
-            let records = parse(black_box(&data), ParseOptions::default())
-                .expect("Parse failed");
+            let records = parse(black_box(&data), ParseOptions::default()).expect("Parse failed");
             black_box(records)
         })
     });
@@ -170,8 +165,7 @@ fn bench_parse_with_filter(c: &mut Criterion) {
             max_records: None,
         };
         b.iter(|| {
-            let records = parse(black_box(&data), options.clone())
-                .expect("Parse failed");
+            let records = parse(black_box(&data), options.clone()).expect("Parse failed");
             black_box(records)
         })
     });
@@ -183,8 +177,7 @@ fn bench_parse_with_filter(c: &mut Criterion) {
             max_records: None,
         };
         b.iter(|| {
-            let records = parse(black_box(&data), options.clone())
-                .expect("Parse failed");
+            let records = parse(black_box(&data), options.clone()).expect("Parse failed");
             black_box(records)
         })
     });
@@ -211,8 +204,7 @@ fn bench_parse_with_limit(c: &mut Criterion) {
                     max_records: Some(max),
                 };
                 b.iter(|| {
-                    let records = parse(black_box(&data), options.clone())
-                        .expect("Parse failed");
+                    let records = parse(black_box(&data), options.clone()).expect("Parse failed");
                     black_box(records)
                 })
             },
@@ -233,8 +225,8 @@ fn bench_memory_allocation(c: &mut Criterion) {
     group.bench_function("repeated_parse_10x", |b| {
         b.iter(|| {
             for _ in 0..10 {
-                let records = parse(black_box(&data), ParseOptions::default())
-                    .expect("Parse failed");
+                let records =
+                    parse(black_box(&data), ParseOptions::default()).expect("Parse failed");
                 black_box(records);
             }
         })
@@ -259,8 +251,8 @@ fn bench_data_size_scaling(c: &mut Criterion) {
     group.throughput(Throughput::Bytes(small_data.len() as u64));
     group.bench_function("small_48B", |b| {
         b.iter(|| {
-            let records = parse(black_box(&small_data), ParseOptions::default())
-                .expect("Parse failed");
+            let records =
+                parse(black_box(&small_data), ParseOptions::default()).expect("Parse failed");
             black_box(records)
         })
     });
@@ -268,8 +260,8 @@ fn bench_data_size_scaling(c: &mut Criterion) {
     group.throughput(Throughput::Bytes(medium_data.len() as u64));
     group.bench_function("medium_255B", |b| {
         b.iter(|| {
-            let records = parse(black_box(&medium_data), ParseOptions::default())
-                .expect("Parse failed");
+            let records =
+                parse(black_box(&medium_data), ParseOptions::default()).expect("Parse failed");
             black_box(records)
         })
     });
@@ -277,8 +269,8 @@ fn bench_data_size_scaling(c: &mut Criterion) {
     group.throughput(Throughput::Bytes(large_data.len() as u64));
     group.bench_function("large_12KB", |b| {
         b.iter(|| {
-            let records = parse(black_box(&large_data), ParseOptions::default())
-                .expect("Parse failed");
+            let records =
+                parse(black_box(&large_data), ParseOptions::default()).expect("Parse failed");
             black_box(records)
         })
     });
@@ -290,8 +282,7 @@ fn bench_data_size_scaling(c: &mut Criterion) {
 fn bench_error_handling(c: &mut Criterion) {
     let mut group = c.benchmark_group("error_handling");
 
-    let valid_data = fs::read(sample_data_path("cat048.raw"))
-        .expect("Failed to read valid data");
+    let valid_data = fs::read(sample_data_path("cat048.raw")).expect("Failed to read valid data");
     let invalid_data = b"Invalid ASTERIX data";
 
     group.bench_function("valid_data", |b| {
@@ -321,8 +312,7 @@ fn bench_serialization(c: &mut Criterion) {
 
     group.bench_function("to_json", |b| {
         b.iter(|| {
-            let json = serde_json::to_string(black_box(&records))
-                .expect("Serialization failed");
+            let json = serde_json::to_string(black_box(&records)).expect("Serialization failed");
             black_box(json)
         })
     });
@@ -332,8 +322,7 @@ fn bench_serialization(c: &mut Criterion) {
     group.bench_function("from_json", |b| {
         b.iter(|| {
             let records: Vec<asterix_decoder::AsterixRecord> =
-                serde_json::from_str(black_box(&json))
-                    .expect("Deserialization failed");
+                serde_json::from_str(black_box(&json)).expect("Deserialization failed");
             black_box(records)
         })
     });

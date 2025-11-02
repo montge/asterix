@@ -1,0 +1,447 @@
+================================================================================
+UBUNTU 24.04 RELEASE BUILD - COMMAND REFERENCE
+================================================================================
+
+QUICK ONE-LINER BUILD
+================================================================================
+
+# Copy and paste entire block:
+BUILD_DIR="/tmp/asterix-build-ubuntu24-release" && \
+rm -rf "$BUILD_DIR" && \
+mkdir -p "$BUILD_DIR" && \
+cd "$BUILD_DIR" && \
+cmake -B build \
+  -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_STANDARD=23 \
+  -DCMAKE_CXX_STANDARD_REQUIRED=ON \
+  -DCMAKE_C_COMPILER=gcc \
+  -DCMAKE_CXX_COMPILER=g++ \
+  -DBUILD_SHARED_LIBS=ON \
+  -DBUILD_STATIC_LIBS=ON \
+  -DBUILD_EXECUTABLE=ON \
+  -DBUILD_TESTING=OFF \
+  -DCMAKE_INSTALL_PREFIX="$BUILD_DIR/install" \
+  /path/to/asterix && \
+cmake --build build --config Release --parallel $(nproc) && \
+cmake --install build --config Release && \
+"$BUILD_DIR/install/bin/asterix" --version
+
+
+PREREQUISITES INSTALLATION
+================================================================================
+
+# Check what's needed:
+ninja --version || echo "ninja-build NOT installed"
+which lcov || echo "lcov NOT installed (optional)"
+which valgrind || echo "valgrind NOT installed (optional)"
+
+# Install missing (one-time):
+sudo apt-get update
+sudo apt-get install -y ninja-build lcov valgrind
+
+# Verify:
+ninja --version
+gcc --version
+g++ --version
+cmake --version
+
+
+STEP-BY-STEP BUILD
+================================================================================
+
+# 1. Prepare
+BUILD_DIR="/tmp/asterix-build-ubuntu24-release"
+rm -rf "$BUILD_DIR"
+mkdir -p "$BUILD_DIR"
+cd "$BUILD_DIR"
+
+# 2. Configure
+cmake -B build \
+  -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_STANDARD=23 \
+  -DCMAKE_CXX_STANDARD_REQUIRED=ON \
+  -DCMAKE_C_COMPILER=gcc \
+  -DCMAKE_CXX_COMPILER=g++ \
+  -DBUILD_SHARED_LIBS=ON \
+  -DBUILD_STATIC_LIBS=ON \
+  -DBUILD_EXECUTABLE=ON \
+  -DBUILD_TESTING=OFF \
+  -DCMAKE_INSTALL_PREFIX="$BUILD_DIR/install" \
+  /path/to/asterix
+
+# Expected output:
+# -- ASTERIX 2.8.10 Build Configuration:
+# --   Build shared library: ON
+# --   C++ Standard: C++23
+# --   Compiler: GNU 13.3.0
+
+# 3. Build
+cmake --build build --config Release --parallel $(nproc)
+
+# Expected: [1/Y] [2/Y] ... [Y/Y] progress indicators
+
+# 4. Install
+cmake --install build --config Release
+
+# Expected: Installing: ... (list of installed files)
+
+# 5. Verify
+"$BUILD_DIR/install/bin/asterix" --version
+"$BUILD_DIR/install/bin/asterix" --help | head -20
+
+
+VERIFICATION COMMANDS
+================================================================================
+
+BUILD_DIR="/tmp/asterix-build-ubuntu24-release"
+
+# Check binary
+test -f "$BUILD_DIR/install/bin/asterix" && echo "✓ Binary exists" || echo "✗ Binary missing"
+
+# Check libraries
+test -f "$BUILD_DIR/install/lib/libasterix.so" && echo "✓ Shared lib" || echo "✗ Shared lib missing"
+test -f "$BUILD_DIR/install/lib/libasterix.a" && echo "✓ Static lib" || echo "✗ Static lib missing"
+
+# Check headers
+test -d "$BUILD_DIR/install/include/asterix" && echo "✓ Headers exist" || echo "✗ Headers missing"
+
+# Check configuration
+test -d "$BUILD_DIR/install/share/asterix/config" && echo "✓ Config exists" || echo "✗ Config missing"
+
+# Run version
+"$BUILD_DIR/install/bin/asterix" --version
+
+# Check dependencies
+ldd "$BUILD_DIR/install/bin/asterix"
+
+# List all installed files
+find "$BUILD_DIR/install" -type f | sort
+
+# File sizes
+du -sh "$BUILD_DIR/install/"
+du -sh "$BUILD_DIR/install/bin/"*
+du -sh "$BUILD_DIR/install/lib/"*
+du -sh "$BUILD_DIR/install/include/"*
+
+
+PACKAGE CREATION
+================================================================================
+
+BUILD_DIR="/tmp/asterix-build-ubuntu24-release"
+
+# Create DEB (Ubuntu/Debian native format)
+cd "$BUILD_DIR/build"
+cpack -G DEB
+
+# Create TGZ (portable archive)
+cd "$BUILD_DIR/build"
+cpack -G TGZ
+
+# Create ZIP (Windows compatible)
+cd "$BUILD_DIR/build"
+cpack -G ZIP
+
+# List all packages
+ls -lh "$BUILD_DIR/build"/*.deb "$BUILD_DIR/build"/*.tar.gz "$BUILD_DIR/build"/*.zip
+
+# Inspect DEB package
+dpkg -c "$BUILD_DIR/build"/asterix-*.deb | head -20
+
+# Extract DEB info
+dpkg -I "$BUILD_DIR/build"/asterix-*.deb
+
+
+LIBRARY ANALYSIS
+================================================================================
+
+BUILD_DIR="/tmp/asterix-build-ubuntu24-release"
+
+# Check shared library dependencies
+ldd "$BUILD_DIR/install/lib/libasterix.so"
+
+# Check executable dependencies
+ldd "$BUILD_DIR/install/bin/asterix"
+
+# List exported symbols
+nm -D "$BUILD_DIR/install/lib/libasterix.so" | grep " T " | head -20
+
+# List symbols in static library
+nm "$BUILD_DIR/install/lib/libasterix.a" | head -20
+
+# Check file type
+file "$BUILD_DIR/install/lib/libasterix.so"*
+file "$BUILD_DIR/install/lib/libasterix.a"
+file "$BUILD_DIR/install/bin/asterix"
+
+# Check RPATH
+readelf -d "$BUILD_DIR/install/bin/asterix" | grep RPATH
+
+# Size comparison
+ls -lh "$BUILD_DIR/install/lib/libasterix.so"
+ls -lh "$BUILD_DIR/install/lib/libasterix.a"
+
+
+CMAKE CONFIGURATION
+================================================================================
+
+# Show build type:
+cmake -B build -LA ... | grep CMAKE_BUILD_TYPE
+
+# Show C++ standard:
+cmake -B build -LA ... | grep CMAKE_CXX_STANDARD
+
+# Show install prefix:
+cmake -B build -LA ... | grep CMAKE_INSTALL_PREFIX
+
+# Show all CMake variables:
+cmake -B build -LA /path/to/asterix | head -50
+
+
+ENVIRONMENT VARIABLES
+================================================================================
+
+# Show current environment:
+echo "CC=$CC"
+echo "CXX=$CXX"
+echo "CFLAGS=$CFLAGS"
+echo "CXXFLAGS=$CXXFLAGS"
+echo "CMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE"
+
+# Set for build (optional):
+export CC=gcc
+export CXX=g++
+export CMAKE_BUILD_TYPE=Release
+
+# Verify compiler:
+which gcc && gcc --version
+which g++ && g++ --version
+
+# Check CPU cores (for parallel builds):
+nproc
+
+
+TROUBLESHOOTING COMMANDS
+================================================================================
+
+# Check compiler version (must be 13+):
+gcc --version | grep -oP '13\.\d+\.\d+'
+
+# Check CMake version (must be 3.20+):
+cmake --version | grep -oP '3\.2[0-9]'
+
+# Check if Ninja is installed:
+ninja --version || echo "INSTALL NINJA: sudo apt-get install -y ninja-build"
+
+# Check if libexpat is installed:
+dpkg -l | grep libexpat1-dev || echo "INSTALL EXPAT: sudo apt-get install -y libexpat1-dev"
+
+# Clean CMake cache if needed:
+rm -rf "$BUILD_DIR/build"
+
+# Force specific compiler:
+cmake -B build \
+  -DCMAKE_C_COMPILER=/usr/bin/gcc-13 \
+  -DCMAKE_CXX_COMPILER=/usr/bin/g++-13 \
+  ...
+
+# Increase verbosity:
+cmake --build build --verbose
+
+# Show CMake debug info:
+cmake -B build --debug-output ...
+
+
+SUMMARY OF FILES CREATED
+================================================================================
+
+After successful build:
+
+  BINARIES:
+    $BUILD_DIR/install/bin/asterix
+
+  SHARED LIBRARIES:
+    $BUILD_DIR/install/lib/libasterix.so.2.8.10  (real file)
+    $BUILD_DIR/install/lib/libasterix.so.2       (symlink)
+    $BUILD_DIR/install/lib/libasterix.so         (symlink)
+
+  STATIC LIBRARIES:
+    $BUILD_DIR/install/lib/libasterix.a
+
+  HEADERS:
+    $BUILD_DIR/install/include/asterix/*.h
+
+  CONFIGURATION:
+    $BUILD_DIR/install/share/asterix/config/*
+
+  DOCUMENTATION:
+    $BUILD_DIR/install/share/doc/asterix/*
+
+  PACKAGES (Release only):
+    $BUILD_DIR/build/asterix-2.8.10-Linux.deb
+    $BUILD_DIR/build/asterix-2.8.10-Linux.tar.gz
+    $BUILD_DIR/build/asterix-2.8.10-Linux.zip
+
+  BUILD ARTIFACTS:
+    $BUILD_DIR/build/CMakeFiles/
+    $BUILD_DIR/build/lib/ (before install)
+    $BUILD_DIR/build/bin/ (before install)
+
+
+DEPLOYMENT
+================================================================================
+
+# Option 1: Install DEB package
+sudo dpkg -i "$BUILD_DIR/build/asterix-2.8.10-Linux.deb"
+asterix --version
+
+# Option 2: Copy binary to system
+sudo cp "$BUILD_DIR/install/bin/asterix" /usr/local/bin/
+sudo ldconfig  # Update library cache
+asterix --version
+
+# Option 3: Install libraries
+sudo cp "$BUILD_DIR/install/lib/libasterix.so"* /usr/local/lib/
+sudo ldconfig
+echo "/usr/local/lib" | sudo tee -a /etc/ld.so.conf.d/asterix.conf
+sudo ldconfig
+
+# Option 4: Use from build directory (temporary)
+"$BUILD_DIR/install/bin/asterix" --version
+
+
+TESTING
+================================================================================
+
+# Basic functionality test:
+"$BUILD_DIR/install/bin/asterix" --version
+"$BUILD_DIR/install/bin/asterix" --help
+
+# List available filters:
+"$BUILD_DIR/install/bin/asterix" \
+  -d "$BUILD_DIR/install/share/asterix/config/asterix.ini" \
+  -L
+
+# Memory test (if valgrind installed):
+valgrind --leak-check=full \
+  "$BUILD_DIR/install/bin/asterix" \
+  --version
+
+# Full integration tests (if available):
+cd "$BUILD_DIR/install/test" && ./test.sh
+
+
+BUILD TIME ESTIMATES
+================================================================================
+
+  Ninja installation:     ~30 seconds
+  CMake configuration:    ~5 seconds
+  Compilation:            ~30-60 seconds (depends on CPU)
+  Installation:           ~5 seconds
+  Package creation:       ~10 seconds (optional)
+  ────────────────────────────────────
+  TOTAL:                  ~2-3 minutes
+
+
+EXPECTED CMAKE OUTPUT SNIPPET
+================================================================================
+
+-- ASTERIX 2.8.10 Build Configuration:
+--   Build shared library: ON
+--   Build static library: ON
+--   Build executable: ON
+--   Build testing: OFF
+--   Enable coverage: OFF
+--   C++ Standard: C++23
+--   C Standard: C23
+--   Compiler: GNU 13.3.0
+--   Install prefix: /tmp/asterix-build-ubuntu24-release/install
+--   Package generators: TGZ;ZIP;DEB
+--
+
+
+EXPECTED BUILD OUTPUT SNIPPET
+================================================================================
+
+[1/123] Building CXX object CMakeFiles/asterix_shared.dir/src/asterix/AsterixData.cpp.o
+[2/123] Building CXX object CMakeFiles/asterix_shared.dir/src/asterix/AsterixDefinition.cpp.o
+...
+[123/123] Linking CXX executable bin/asterix
+Built target asterix_exe
+
+
+PLATFORM SPECIFIC NOTES
+================================================================================
+
+This guide is specific to:
+  OS:              Ubuntu 24.04 (including WSL2)
+  Compiler:        GCC 13.3.0
+  CMake:           3.28.3 (or similar)
+  C++ Standard:    C++23
+  Build Generator: Ninja
+
+Windows users: Use MSVC 2022 with vcpkg (different workflow)
+macOS users:   Use AppleClang 15+ (different workflow)
+Linux (x86):   Same instructions as Ubuntu 24.04
+
+
+QUICK REFERENCE TABLE
+================================================================================
+
+Command                        Effect
+─────────────────────────────────────────────────────────────────────────
+cmake -B build                 Generate build files in build/ directory
+cmake --build build            Compile source code
+cmake --install build          Copy files to install/ directory
+cpack -G DEB                   Create .deb package
+cpack -G TGZ                   Create .tar.gz archive
+cpack -G ZIP                   Create .zip archive
+ldd ./bin/asterix              Show library dependencies
+nm -D ./lib/libasterix.so      Show exported symbols
+file ./bin/asterix             Show file type info
+ninja --version                Check Ninja installed
+gcc --version                  Check GCC version
+nproc                          Show CPU core count
+
+
+VARIABLES REFERENCE
+================================================================================
+
+BUILD_DIR                 = /tmp/asterix-build-ubuntu24-release
+SOURCE_DIR                = /path/to/asterix
+CMAKE_BUILD_TYPE          = Release
+CMAKE_CXX_STANDARD        = 23
+CMAKE_INSTALL_PREFIX      = $BUILD_DIR/install
+CMAKE_C_COMPILER          = gcc
+CMAKE_CXX_COMPILER        = g++
+BUILD_SHARED_LIBS         = ON
+BUILD_STATIC_LIBS         = ON
+BUILD_EXECUTABLE          = ON
+BUILD_TESTING             = OFF
+
+
+SUCCESS CRITERIA CHECKLIST
+================================================================================
+
+[ ] CMake configuration completes (no errors)
+[ ] Build completes with [X/Y] progress
+[ ] Installation completes without errors
+[ ] Binary exists at: $BUILD_DIR/install/bin/asterix
+[ ] Binary runs: ./install/bin/asterix --version
+[ ] Shared library exists: ./install/lib/libasterix.so*
+[ ] Static library exists: ./install/lib/libasterix.a
+[ ] Headers exist: ./install/include/asterix/*.h
+[ ] Configuration exists: ./install/share/asterix/config/
+[ ] DEB package created: ./build/*.deb (Release only)
+[ ] Library dependencies correct (ldd output shows libexpat)
+
+
+END OF REFERENCE
+================================================================================
+
+For more information, see:
+  - UBUNTU_24_04_BUILD_INSTRUCTIONS.md
+  - UBUNTU_24_04_QUICK_START.md
+  - WORKFLOW_ANALYSIS_SUMMARY.md
+  - .github/workflows/cross-platform-builds.yml

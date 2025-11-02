@@ -23,15 +23,26 @@
 // Standard includes
 #include <stdio.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <termios.h>
+#ifdef _WIN32
+  #include <winsock2.h>
+  #include <time.h>
+  #include <io.h>
+  #include <process.h>
+  #define close _close
+  #define read _read
+  #define write _write
+  #define getpid _getpid
+#else
+  #include <sys/types.h>
+  #include <sys/time.h>
+  #include <unistd.h>
+  #include <fcntl.h>
+  #include <termios.h>
+  #include <sys/select.h> // fd_set
+#endif
 #include <ctype.h>
 #include <stdlib.h> //atoi
 #include <errno.h>
-#include <sys/select.h> // fd_set
 
 
 // Local includes

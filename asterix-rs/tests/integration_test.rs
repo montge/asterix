@@ -2,7 +2,7 @@
 //!
 //! Tests parsing of real ASTERIX data files and validates against expected outputs.
 
-use asterix_decoder::{parse, parse_with_offset, describe, ParseOptions, AsterixError};
+use asterix_decoder::{describe, parse, parse_with_offset, AsterixError, ParseOptions};
 use std::fs;
 use std::path::PathBuf;
 
@@ -56,8 +56,14 @@ fn test_parse_cat062_cat065_raw() {
     let cat62_count = records.iter().filter(|r| r.category == 62).count();
     let cat65_count = records.iter().filter(|r| r.category == 65).count();
 
-    println!("✓ Found {} CAT062 and {} CAT065 records", cat62_count, cat65_count);
-    assert!(cat62_count > 0 || cat65_count > 0, "Expected CAT062 or CAT065 records");
+    println!(
+        "✓ Found {} CAT062 and {} CAT065 records",
+        cat62_count, cat65_count
+    );
+    assert!(
+        cat62_count > 0 || cat65_count > 0,
+        "Expected CAT062 or CAT065 records"
+    );
 }
 
 #[test]
@@ -76,8 +82,7 @@ fn test_parse_pcap_format() {
     assert!(!records.is_empty(), "Expected records from PCAP");
 
     // Verify PCAP contains multiple categories
-    let categories: std::collections::HashSet<_> =
-        records.iter().map(|r| r.category).collect();
+    let categories: std::collections::HashSet<_> = records.iter().map(|r| r.category).collect();
 
     println!("✓ Parsed PCAP with categories: {:?}", categories);
     assert!(categories.len() >= 1, "Expected at least one category");
@@ -96,7 +101,10 @@ fn test_parse_cat034_048_pcap() {
     let cat48_count = records.iter().filter(|r| r.category == 48).count();
 
     println!("✓ CAT034: {}, CAT048: {}", cat34_count, cat48_count);
-    assert!(cat34_count > 0 || cat48_count > 0, "Expected CAT034 or CAT048");
+    assert!(
+        cat34_count > 0 || cat48_count > 0,
+        "Expected CAT034 or CAT048"
+    );
 }
 
 #[test]
@@ -111,8 +119,10 @@ fn test_parse_multicast_pcap() {
 
     // Check record structure
     for (i, record) in records.iter().take(5).enumerate() {
-        println!("  Record {}: CAT{:03} ({} bytes)",
-                 i, record.category, record.length);
+        println!(
+            "  Record {}: CAT{:03} ({} bytes)",
+            i, record.category, record.length
+        );
         assert!(record.category > 0, "Invalid category");
         assert!(record.length > 0, "Invalid length");
     }
@@ -148,7 +158,10 @@ fn test_error_handling_invalid_data() {
 
     match result {
         Err(AsterixError::ParseError { offset, message }) => {
-            println!("✓ Correctly rejected invalid data at offset {} ({})", offset, message);
+            println!(
+                "✓ Correctly rejected invalid data at offset {} ({})",
+                offset, message
+            );
         }
         Err(e) => {
             println!("✓ Rejected with error: {:?}", e);
@@ -170,7 +183,7 @@ fn test_error_handling_empty_data() {
 #[test]
 fn test_error_handling_truncated_data() {
     // Create truncated ASTERIX data (incomplete header)
-    let truncated = b"\x30\x00";  // CAT048, but missing length bytes
+    let truncated = b"\x30\x00"; // CAT048, but missing length bytes
 
     let result = parse(truncated, ParseOptions::default());
 
@@ -200,7 +213,7 @@ fn test_incremental_parsing() {
         let result = parse_with_offset(
             &data,
             offset,
-            10,  // Parse 10 blocks at a time
+            10, // Parse 10 blocks at a time
             ParseOptions::default(),
         );
 
@@ -210,8 +223,12 @@ fn test_incremental_parsing() {
                 offset = parse_result.bytes_consumed;
                 iterations += 1;
 
-                println!("  Iteration {}: parsed {} records, consumed {} bytes",
-                         iterations, parse_result.records.len(), parse_result.bytes_consumed);
+                println!(
+                    "  Iteration {}: parsed {} records, consumed {} bytes",
+                    iterations,
+                    parse_result.records.len(),
+                    parse_result.bytes_consumed
+                );
 
                 if parse_result.remaining_blocks == 0 {
                     break;
@@ -229,8 +246,10 @@ fn test_incremental_parsing() {
         }
     }
 
-    println!("✓ Incremental parsing completed: {} total records in {} iterations",
-             total_records, iterations);
+    println!(
+        "✓ Incremental parsing completed: {} total records in {} iterations",
+        total_records, iterations
+    );
     assert!(total_records > 0, "Expected at least some records");
 }
 
@@ -253,7 +272,10 @@ fn test_parse_with_category_filter() {
         assert_eq!(record.category, 62, "Expected only CAT062 records");
     }
 
-    println!("✓ Category filter working: {} CAT062 records", records.len());
+    println!(
+        "✓ Category filter working: {} CAT062 records",
+        records.len()
+    );
 }
 
 #[test]
@@ -283,8 +305,10 @@ fn test_describe_category() {
     let description = result.unwrap();
     assert!(!description.is_empty(), "Description should not be empty");
 
-    println!("✓ CAT048 description: {}",
-             description.chars().take(100).collect::<String>());
+    println!(
+        "✓ CAT048 description: {}",
+        description.chars().take(100).collect::<String>()
+    );
 }
 
 #[test]
@@ -338,7 +362,10 @@ fn test_record_structure() {
     assert!(!record.hex_data.is_empty());
 
     // Validate hex data format (should be valid hex string)
-    assert!(record.hex_data.chars().all(|c| c.is_ascii_hexdigit() || c.is_whitespace()));
+    assert!(record
+        .hex_data
+        .chars()
+        .all(|c| c.is_ascii_hexdigit() || c.is_whitespace()));
 
     println!("✓ Record structure validated");
     println!("  Category: {}", record.category);
@@ -441,8 +468,8 @@ fn test_serialization_to_json() {
 
 #[test]
 fn test_concurrent_parsing() {
-    use std::thread;
     use std::sync::Arc;
+    use std::thread;
 
     let path = sample_data_path("cat048.raw");
     let data = Arc::new(fs::read(&path).expect("Failed to read file"));
@@ -453,8 +480,8 @@ fn test_concurrent_parsing() {
     for i in 0..4 {
         let data_clone = Arc::clone(&data);
         let handle = thread::spawn(move || {
-            let records = parse(&data_clone, ParseOptions::default())
-                .expect("Failed to parse in thread");
+            let records =
+                parse(&data_clone, ParseOptions::default()).expect("Failed to parse in thread");
             (i, records.len())
         });
         handles.push(handle);
@@ -469,12 +496,18 @@ fn test_concurrent_parsing() {
     // Verify all threads got same results
     let first_count = results[0].1;
     for (thread_id, count) in &results {
-        assert_eq!(*count, first_count,
-                   "Thread {} got different count", thread_id);
+        assert_eq!(
+            *count, first_count,
+            "Thread {} got different count",
+            thread_id
+        );
     }
 
-    println!("✓ Concurrent parsing successful: {} threads, {} records each",
-             results.len(), first_count);
+    println!(
+        "✓ Concurrent parsing successful: {} threads, {} records each",
+        results.len(),
+        first_count
+    );
 }
 
 #[test]
@@ -487,8 +520,7 @@ fn test_memory_safety_large_file() {
 
     // Parse multiple times to check for memory leaks/corruption
     for iteration in 0..10 {
-        let records = parse(&data, ParseOptions::default())
-            .expect("Failed to parse in iteration");
+        let records = parse(&data, ParseOptions::default()).expect("Failed to parse in iteration");
 
         if iteration == 0 {
             println!("  Parsed {} records", records.len());
@@ -518,7 +550,10 @@ fn test_verbose_mode() {
 
     let records = parse(&data, options).expect("Failed to parse with verbose");
 
-    println!("✓ Verbose mode parsing successful: {} records", records.len());
+    println!(
+        "✓ Verbose mode parsing successful: {} records",
+        records.len()
+    );
     assert!(!records.is_empty());
 }
 
@@ -530,8 +565,7 @@ fn test_compare_with_python_output() {
     let path = sample_data_path("cat048.raw");
     let data = fs::read(&path).expect("Failed to read file");
 
-    let rust_records = parse(&data, ParseOptions::default())
-        .expect("Failed to parse in Rust");
+    let rust_records = parse(&data, ParseOptions::default()).expect("Failed to parse in Rust");
 
     // TODO: Run Python parser and compare outputs
     // For now, just validate Rust output structure
@@ -570,8 +604,8 @@ mod benchmarks {
 
         let elapsed = start.elapsed();
         let avg_ms = elapsed.as_millis() as f64 / iterations as f64;
-        let throughput_mbps = (data.len() as f64 * iterations as f64)
-                              / (elapsed.as_secs_f64() * 1_000_000.0);
+        let throughput_mbps =
+            (data.len() as f64 * iterations as f64) / (elapsed.as_secs_f64() * 1_000_000.0);
 
         println!("✓ Performance test ({} iterations):", iterations);
         println!("  Average: {:.2} ms/parse", avg_ms);

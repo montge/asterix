@@ -23,7 +23,12 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <sys/time.h>
+#ifdef _WIN32
+  #include <winsock2.h>
+  #include <time.h>
+#else
+  #include <sys/time.h>
+#endif
 
 #include "asterix.h"
 #include "asterixformat.hxx"

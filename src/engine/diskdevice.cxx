@@ -24,11 +24,23 @@
 #include <stdio.h>
 #include <string>
 #include <string.h>
-#include <unistd.h>
+#ifdef _WIN32
+  #include <winsock2.h>
+  #include <time.h>
+  #include <io.h>
+  #include <process.h>
+  #include <sys/stat.h>
+  #define close _close
+  #define read _read
+  #define write _write
+  #define getpid _getpid
+#else
+  #include <unistd.h>
+  #include <sys/stat.h>
+  #include <sys/time.h>
+  #include <time.h>
+#endif
 #include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <time.h>
 #include <errno.h>
 
 // Local includes

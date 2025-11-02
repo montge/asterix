@@ -27,7 +27,7 @@ fn main() {
     // Note: The actual FFI bridge will be in ffi_wrapper.cpp which wraps C++ classes
     cxx_build::bridge("src/ffi.rs")
         .file("src/ffi_wrapper.cpp")
-        .include("src")  // Include our own src directory for ffi_wrapper.h
+        .include("src") // Include our own src directory for ffi_wrapper.h
         .include("../src/asterix")
         .include("../src/engine")
         .flag_if_supported("-std=c++17")

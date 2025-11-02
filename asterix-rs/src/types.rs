@@ -282,7 +282,11 @@ pub struct ParseResult {
 
 impl ParseResult {
     /// Create a new parse result
-    pub fn new(records: Vec<AsterixRecord>, bytes_consumed: usize, remaining_blocks: usize) -> Self {
+    pub fn new(
+        records: Vec<AsterixRecord>,
+        bytes_consumed: usize,
+        remaining_blocks: usize,
+    ) -> Self {
         Self {
             records,
             bytes_consumed,

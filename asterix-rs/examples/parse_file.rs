@@ -6,7 +6,7 @@
 //! Usage:
 //!   cargo run --example parse_file -- <file.asterix>
 
-use asterix::{init_default, parse, ParseOptions, AsterixError};
+use asterix::{init_default, parse, AsterixError, ParseOptions};
 use std::env;
 use std::fs;
 use std::process;

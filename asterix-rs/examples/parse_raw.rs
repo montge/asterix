@@ -50,9 +50,9 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     // Step 3: Parse with verbose mode enabled to get descriptions
     println!("Parsing ASTERIX data...");
     let options = ParseOptions {
-        verbose: true,  // Include descriptions
-        filter_category: None,  // Parse all categories
-        max_records: Some(10),  // Limit to first 10 records for demo
+        verbose: true,         // Include descriptions
+        filter_category: None, // Parse all categories
+        max_records: Some(10), // Limit to first 10 records for demo
     };
 
     let records = parse(&data, options)?;
@@ -82,8 +82,13 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         if !record.items.is_empty() {
             println!("\n  Data Items:");
             for (item_id, item) in &record.items {
-                println!("    {} ({})", item_id,
-                    item.description.as_ref().unwrap_or(&"No description".to_string()));
+                println!(
+                    "    {} ({})",
+                    item_id,
+                    item.description
+                        .as_ref()
+                        .unwrap_or(&"No description".to_string())
+                );
 
                 // Show first few fields
                 for (field_name, field_value) in item.fields.iter().take(5) {
@@ -137,8 +142,10 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     let total_items: usize = records.iter().map(|r| r.item_count()).sum();
     println!("\nTotal data items: {}", total_items);
-    println!("Average items per record: {:.1}",
-        total_items as f64 / records.len().max(1) as f64);
+    println!(
+        "Average items per record: {:.1}",
+        total_items as f64 / records.len().max(1) as f64
+    );
 
     Ok(())
 }

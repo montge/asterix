@@ -151,9 +151,17 @@ impl fmt::Display for AsterixError {
             AsterixError::FFIError(msg) => {
                 write!(f, "FFI error: {}", msg)
             }
-            AsterixError::XMLParseError { file, line, message } => {
+            AsterixError::XMLParseError {
+                file,
+                line,
+                message,
+            } => {
                 if let Some(line_num) = line {
-                    write!(f, "XML parse error in {} at line {}: {}", file, line_num, message)
+                    write!(
+                        f,
+                        "XML parse error in {} at line {}: {}",
+                        file, line_num, message
+                    )
                 } else {
                     write!(f, "XML parse error in {}: {}", file, message)
                 }

@@ -13,7 +13,7 @@
 //! Example:
 //!     cargo run --example stream_processing -- ../install/test/sample_cat062_065.pcap
 
-use asterix_decoder::{init_default, parse_with_offset, AsterixError, ParseOptions, AsterixRecord};
+use asterix_decoder::{init_default, parse_with_offset, AsterixError, AsterixRecord, ParseOptions};
 use std::collections::HashMap;
 use std::env;
 use std::fs;
@@ -171,16 +171,23 @@ impl StreamProcessor {
         let elapsed_secs = elapsed.as_secs_f64();
 
         println!("Total Records:  {}", self.total_records);
-        println!("Total Bytes:    {} ({:.2} MB)",
+        println!(
+            "Total Bytes:    {} ({:.2} MB)",
             self.total_bytes,
-            self.total_bytes as f64 / 1_048_576.0);
+            self.total_bytes as f64 / 1_048_576.0
+        );
         println!("Elapsed Time:   {:.3} seconds", elapsed_secs);
 
         if elapsed_secs > 0.0 {
             println!("\nPerformance:");
-            println!("  Records/sec:  {:.1}", self.total_records as f64 / elapsed_secs);
-            println!("  Throughput:   {:.2} MB/s",
-                self.total_bytes as f64 / elapsed_secs / 1_048_576.0);
+            println!(
+                "  Records/sec:  {:.1}",
+                self.total_records as f64 / elapsed_secs
+            );
+            println!(
+                "  Throughput:   {:.2} MB/s",
+                self.total_bytes as f64 / elapsed_secs / 1_048_576.0
+            );
         }
 
         if !self.category_counts.is_empty() {
@@ -190,7 +197,10 @@ impl StreamProcessor {
 
             for (cat, count) in cats {
                 let percentage = (*count as f64 / self.total_records as f64) * 100.0;
-                println!("  Category {:3}: {:6} records ({:5.1}%)", cat, count, percentage);
+                println!(
+                    "  Category {:3}: {:6} records ({:5.1}%)",
+                    cat, count, percentage
+                );
             }
         }
 

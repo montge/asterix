@@ -22,17 +22,30 @@
  */
 
 // Networking
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
+#ifdef _WIN32
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
+  #include <time.h>
+  #include <io.h>
+  #include <process.h>
+  #pragma comment(lib, "ws2_32.lib")
+  #define close _close
+  #define read _read
+  #define write _write
+  #define getpid _getpid
+#else
+  #include <sys/types.h>
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <arpa/inet.h>
+  #include <netdb.h>
+  #include <sys/time.h>
+  #include <unistd.h>
+#endif
 
 // Standard includes
-#include <sys/time.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <errno.h>

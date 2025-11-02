@@ -5,7 +5,7 @@
 
 use crate::error::{AsterixError, Result};
 use crate::ffi;
-use crate::types::{AsterixRecord, DataItem, ParsedValue, ParseOptions, ParseResult};
+use crate::types::{AsterixRecord, DataItem, ParseOptions, ParseResult, ParsedValue};
 
 use std::collections::BTreeMap;
 
@@ -56,15 +56,11 @@ pub fn parse(data: &[u8], options: ParseOptions) -> Result<Vec<AsterixRecord>> {
     }
 
     unsafe {
-        let data_ptr = ffi::ffi::asterix_parse(
-            data.as_ptr(),
-            data.len(),
-            options.verbose,
-        );
+        let data_ptr = ffi::ffi::asterix_parse(data.as_ptr(), data.len(), options.verbose);
 
         if data_ptr.is_null() {
             return Err(AsterixError::NullPointer(
-                "C++ parser returned null (check if ASTERIX is initialized)".to_string()
+                "C++ parser returned null (check if ASTERIX is initialized)".to_string(),
             ));
         }
 
@@ -142,7 +138,7 @@ pub fn parse_with_offset(
 
         if data_ptr.is_null() {
             return Err(AsterixError::NullPointer(
-                "C++ parser returned null".to_string()
+                "C++ parser returned null".to_string(),
             ));
         }
 
