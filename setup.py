@@ -52,8 +52,8 @@ if sys.platform == 'darwin':
     os.environ['MACOSX_DEPLOYMENT_TARGET'] = platform.mac_ver()[0]
 
 asterix_module = Extension('_asterix',
-                           sources=['./src/python/asterix.c',
-                                    './src/python/python_wrapper.c',
+                           sources=['./src/python/asterix.cpp',
+                                    './src/python/python_wrapper.cpp',
                                     './src/python/python_parser.cpp',
                                     './src/asterix/AsterixDefinition.cpp',
                                     './src/asterix/AsterixData.cpp',
@@ -80,10 +80,15 @@ asterix_module = Extension('_asterix',
 
                            include_dirs=['./asterix/python', './src/asterix', './src/engine'],
                            # SECURITY: Hardening flags for buffer overflow and stack protection
-                           extra_compile_args=['-DPYTHON_WRAPPER', '-std=c++17',
+                           # Platform-specific C++ standard: C++17 for macOS/Windows (better compiler support),
+                           # C++23 for Linux (matches CMakeLists.txt for feature parity)
+                           extra_compile_args=['-DPYTHON_WRAPPER',
+                                             '-std=c++17' if sys.platform in ('darwin', 'win32') else '-std=c++23',
                                              '-fstack-protector-strong', '-D_FORTIFY_SOURCE=2'],
-                           # SECURITY: Read-only relocations for hardening
-                           extra_link_args=['-lexpat', '-Wl,-z,relro,-z,now'])
+                           # SECURITY: Read-only relocations for hardening (Linux only - macOS doesn't support -z flags)
+                           extra_link_args=['-lexpat'] if sys.platform == 'darwin'
+                                          else (['-lexpat'] if sys.platform == 'win32'
+                                          else ['-lexpat', '-Wl,-z,relro,-z,now']))
 
 f = open('README.rst')
 try:

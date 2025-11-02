@@ -34,11 +34,14 @@
 #include "descriptor.hxx"
 
 /*
- * MSG_NOSIGNAL is not defined on OS X
+ * MSG_NOSIGNAL is not defined on older macOS versions
  * but has an equivalent (SO_NOSIGPIPE)
+ * Newer macOS (14+) defines MSG_NOSIGNAL in sys/socket.h, so check first
  */
 #ifdef __APPLE__
+#ifndef MSG_NOSIGNAL
 #define MSG_NOSIGNAL SO_NOSIGPIPE
+#endif
 #endif
 
 #define MAX_UDP_PACKET_SIZE     3000

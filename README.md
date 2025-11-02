@@ -32,12 +32,12 @@ More about ASTERIX protocol: http://www.eurocontrol.int/services/asterix
 - **Automatic feature detection**: Graceful fallback to C++17/20 for older compilers
 
 ### Cross-Platform Support 🌍
-- **Windows builds**: MSVC 2019/2022, C++17/C++23 support
-- **macOS builds**: Intel (x86_64) and ARM M1 (arm64), AppleClang 15+
-- **Linux x86_64**: Ubuntu 22.04/24.04, GCC 11/13, Debian 12
+- **Windows builds**: Server 2022 (MSVC 2022 v143), C++17 (Python) / C++23 (C++ executable)
+- **macOS builds**: macOS 14/15 Apple Silicon (AppleClang 15+), C++17 (Python) / C++23 (C++ executable)
+- **Linux x86_64**: Ubuntu 22.04/24.04, GCC 11/13, C++17/C++23, Debian 12
 - **Linux ARM64**: Ubuntu 22.04/24.04, GCC 11/13 (Raspberry Pi, AWS Graviton, NVIDIA Jetson, embedded systems)
-- **50+ CI test configurations**: Comprehensive platform and architecture testing
-- **Documentation**: Complete build guides for all platforms (148 KB)
+- **40+ CI test configurations**: Comprehensive platform and architecture testing
+- **Documentation**: Complete build guides for all platforms
 
 ### Python 3.10-3.14 Support 🐍
 - **Dropped**: Python 3.8, 3.9 (EOL October 2025)
@@ -433,7 +433,10 @@ cargo bench
 ### Build System
 
 **Requirements:**
-- C++23 compatible compiler (GCC 13+, Clang 16+, MSVC 2022 v17.4+, AppleClang 15+)
+- **C++ Standard** (platform-specific):
+  - **Linux**: C++23 (GCC 13+, Clang 16+) - full feature set
+  - **macOS**: C++17/C++23 (AppleClang 15+) - Python uses C++17 for compatibility
+  - **Windows**: C++17/C++23 (MSVC 2022 v17.4+) - Python uses C++17 for compatibility
 - CMake 3.20+ or GNU Make
 - libexpat library for XML parsing
 
@@ -453,7 +456,7 @@ cmake .
 make
 ```
 
-**Note:** The project uses C++23 features and requires a modern compiler (GCC 13+, Clang 16+, MSVC 2022 v17.4+). Feature detection is automatic - the build system will use C++23 features when available and gracefully fall back to C++17/20 compatibility mode on older compilers.
+**Note:** The C++ executable and CMake builds use C++23 (with automatic fallback to C++17/20 on older compilers). **Python module builds** use **C++17 on macOS/Windows** and **C++23 on Linux** for optimal compiler compatibility while maintaining feature parity where possible.
 
 ### CI/CD Pipeline
 
@@ -461,10 +464,10 @@ All commits are automatically tested across:
 - **Python versions**: 3.10, 3.11, 3.12, 3.13, 3.14
 - **C++ standards**: C++17 (legacy), C++23 (modern)
 - **Platforms**:
-  - Linux x86_64: Ubuntu 20.04/22.04/24.04, Debian 11/12, RHEL/Rocky 8/9, Fedora 40
+  - Linux x86_64: Ubuntu 22.04/24.04, Debian 11/12, RHEL/Rocky 8/9, Fedora 40
   - Linux ARM64: Ubuntu 22.04/24.04 (Raspberry Pi, AWS Graviton)
-  - Windows: Windows 2019/2022 (MSVC 2019/2022)
-  - macOS: macOS 13 (Intel x86_64), macOS 14 (ARM M1)
+  - Windows: Windows Server 2022 (MSVC 2022 v143)
+  - macOS: macOS 14/15 (Apple Silicon ARM64)
 - **Build systems**: Make, CMake, Visual Studio
 - **Compilers**: GCC 11/13, Clang 16+, MSVC 2019/2022, AppleClang 15+
 - **Quality checks**: Coverage analysis, memory checks (Valgrind), static analysis (cppcheck, CodeQL)

@@ -157,6 +157,7 @@ set(ASTERIX_LIB_SOURCES
     src/asterix/asterixgpssubformat.cxx
 
     # Engine
+    src/engine/globals.cpp
     src/engine/channelfactory.cxx
     src/engine/converterengine.cxx
     src/engine/descriptor.cxx
