@@ -1,5 +1,0 @@
-if(EXISTS "/path/to/asterix/tests/cpp/build/test_uap[1]_tests.cmake")
-  include("/path/to/asterix/tests/cpp/build/test_uap[1]_tests.cmake")
-else()
-  add_test(test_uap_NOT_BUILT test_uap_NOT_BUILT)
-endif()

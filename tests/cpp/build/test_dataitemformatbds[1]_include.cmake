@@ -1,5 +1,0 @@
-if(EXISTS "/path/to/asterix/tests/cpp/build/test_dataitemformatbds[1]_tests.cmake")
-  include("/path/to/asterix/tests/cpp/build/test_dataitemformatbds[1]_tests.cmake")
-else()
-  add_test(test_dataitemformatbds_NOT_BUILT test_dataitemformatbds_NOT_BUILT)
-endif()
