@@ -30,14 +30,24 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libexpat1-dev lcov valgrind
 
-    - name: Build with Make
+    - name: Build with CMake
       run: |
-        cd src
-        make clean
-        make
-        make install
-        make debug
-        make debug install
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_STATIC_LIBS=ON \
+          -DBUILD_EXECUTABLE=ON \
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build --parallel $(nproc)
+        cmake --install build
+        cmake -B build-debug \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_STATIC_LIBS=ON \
+          -DBUILD_EXECUTABLE=ON \
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build-debug --parallel $(nproc)
+        cmake --install build-debug
 
     - name: Run C++ tests
       run: |
@@ -49,7 +59,7 @@ jobs:
       with:
         name: asterix-executable-ubuntu
         path: |
-          install/asterix
+          install/bin/asterix
           install/config/
 
   # Build with CMake
@@ -67,13 +77,19 @@ jobs:
 
     - name: Build with CMake
       run: |
-        cmake .
-        make
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_STATIC_LIBS=ON \
+          -DBUILD_EXECUTABLE=ON \
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build --parallel $(nproc)
+        cmake --install build
 
     - name: Test executable
       run: |
-        ./install/asterix --version || true
-        ./install/asterix --help || true
+        ./install/bin/asterix --version || true
+        ./install/bin/asterix --help || true
 
   # Python module build and test
   test-python:
@@ -139,27 +155,36 @@ jobs:
 
     - name: Build with coverage flags
       run: |
-        cd src
-        # TODO: Add coverage flags to Makefile
-        # For now, this is a placeholder
-        make clean
-        make
-        make install
-        make debug
-        make debug install
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DENABLE_COVERAGE=ON \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_STATIC_LIBS=ON \
+          -DBUILD_EXECUTABLE=ON \
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build --parallel $(nproc)
+        cmake --install build
+        cmake -B build-debug \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DENABLE_COVERAGE=ON \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_STATIC_LIBS=ON \
+          -DBUILD_EXECUTABLE=ON \
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build-debug --parallel $(nproc)
+        cmake --install build-debug
 
     - name: Verify debug executable exists
       run: |
         echo "=== Checking for debug executable ==="
-        ls -la obj/main/debug/ || echo "DEBUG DIRECTORY NOT FOUND"
-        if [ -f obj/main/debug/asterix ]; then
+        if [ -f install/bin/asterix ]; then
           echo "✓ Debug executable exists"
-          file obj/main/debug/asterix
-          obj/main/debug/asterix --version || echo "Failed to run --version"
+          file install/bin/asterix
+          install/bin/asterix --version || echo "Failed to run --version"
         else
           echo "✗ DEBUG EXECUTABLE MISSING!"
           echo "Directory contents:"
-          find obj/main -type f -name "asterix" || echo "No asterix executables found"
+          find install -type f -name "asterix" || echo "No asterix executables found"
         fi
 
     - name: Run tests
@@ -217,21 +242,25 @@ jobs:
 
     - name: Build debug version
       run: |
-        cd src
-        make clean
-        make debug
-        make debug install
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_STATIC_LIBS=ON \
+          -DBUILD_EXECUTABLE=ON \
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build --parallel $(nproc)
+        cmake --install build
 
     - name: Run valgrind tests
       run: |
         cd install/test
         # Run existing valgrind tests from test.sh
         valgrind --leak-check=full --error-exitcode=1 \
-          ../../obj/main/debug/asterix -P -d ../config/asterix.ini \
+          ../bin/asterix -P -d ../config/asterix.ini \
           -f ../sample_data/cat_062_065.pcap -jh > /dev/null 2>&1
 
         valgrind --leak-check=full --error-exitcode=1 \
-          ../../obj/main/debug/asterix -G -d ../config/asterix.ini \
+          ../bin/asterix -G -d ../config/asterix.ini \
           -f ../sample_data/parsegps.gps -jh > /dev/null 2>&1
       continue-on-error: true  # Known memory leaks in legacy C++ code
 
@@ -284,12 +313,22 @@ jobs:
 
     - name: Build C++ executable
       run: |
-        cd src
-        make clean
-        make
-        make install
-        make debug
-        make debug install
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_STATIC_LIBS=ON \
+          -DBUILD_EXECUTABLE=ON \
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build --parallel $(nproc)
+        cmake --install build
+        cmake -B build-debug \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_STATIC_LIBS=ON \
+          -DBUILD_EXECUTABLE=ON \
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build-debug --parallel $(nproc)
+        cmake --install build-debug
 
     - name: Build Python module
       run: |

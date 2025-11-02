@@ -161,7 +161,6 @@ jobs:
             cmake \
             gcc-c++ \
             expat-devel \
-            make \
             git
         else
           yum install -y \
@@ -170,7 +169,6 @@ jobs:
             cmake \
             gcc-c++ \
             expat-devel \
-            make \
             git
         fi
 
@@ -233,9 +231,8 @@ jobs:
 
     - name: Build packages
       run: |
-        cd build
-        make package_source
-        make package
+        cmake --build build --target package_source
+        cmake --build build --target package
 
     - name: Rename to nightly
       run: |

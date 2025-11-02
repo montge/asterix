@@ -105,7 +105,6 @@ jobs:
             cmake \
             gcc-c++ \
             expat-devel \
-            make \
             git
         else
           yum install -y \
@@ -114,7 +113,6 @@ jobs:
             cmake \
             gcc-c++ \
             expat-devel \
-            make \
             git
         fi
 
@@ -170,13 +168,11 @@ jobs:
 
     - name: Build source packages
       run: |
-        cd build
-        make package_source
+        cmake --build build --target package_source
 
     - name: Build binary packages
       run: |
-        cd build
-        make package
+        cmake --build build --target package
 
     - name: List packages
       run: |
