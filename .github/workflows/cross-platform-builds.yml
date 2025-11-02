@@ -698,45 +698,38 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         pip install pytest pytest-cov coverage
 
-    - name: Build Python module
-      shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
+    - name: Build Python module (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
       run: |
-        if [ "${{ runner.os }}" == "Windows" ]; then
-          # Windows: Set environment for vcpkg and suppress D9002 warnings
-          $VCPKG_ROOT = "${{ github.workspace }}/vcpkg"
-          $env:CMAKE_TOOLCHAIN_FILE = "$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
-          $env:VCPKG_DEFAULT_TRIPLET = "x64-windows"
-          
-          # Set expat include and library paths
-          $env:EXPAT_INCLUDE_DIR = "$VCPKG_ROOT/installed/x64-windows/include"
-          $env:EXPAT_LIB_DIR = "$VCPKG_ROOT/installed/x64-windows/lib"
-          
-          # Suppress MSVC D9002 warnings (unknown command-line option)
-          $env:CL = "/wd9002 /W3"
-          $env:_CL_ = "/wd9002 /W3"
-          
-          # Set distutils compiler flags
-          $env:DISTUTILS_USE_SDK = "1"
-          
-          python setup.py build 2>&1 | ForEach-Object { 
-            if ($_ -match 'D9002' -or $_ -match 'warning D9002') { 
-              Write-Host "::warning::$_" 
-            } else { 
-              Write-Host $_ 
-            } 
-          }
-        else
-          # Linux/macOS
-          python setup.py build
-        fi
-      env:
-        # Windows: Set vcpkg toolchain if vcpkg exists
-        CMAKE_TOOLCHAIN_FILE: ${{ runner.os == 'Windows' && format('{0}/vcpkg/scripts/buildsystems/vcpkg.cmake', github.workspace) || '' }}
-        VCPKG_DEFAULT_TRIPLET: ${{ runner.os == 'Windows' && 'x64-windows' || '' }}
-        # Suppress D9002 warnings on Windows
-        CL: ${{ runner.os == 'Windows' && '/wd9002 /W3' || '' }}
-        _CL_: ${{ runner.os == 'Windows' && '/wd9002 /W3' || '' }}
-        DISTUTILS_USE_SDK: ${{ runner.os == 'Windows' && '1' || '' }}
+        # Windows: Set environment for vcpkg and suppress D9002 warnings
+        $VCPKG_ROOT = "${{ github.workspace }}/vcpkg"
+        $env:CMAKE_TOOLCHAIN_FILE = "$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+        $env:VCPKG_DEFAULT_TRIPLET = "x64-windows"
+        
+        # Set expat include and library paths
+        $env:EXPAT_INCLUDE_DIR = "$VCPKG_ROOT/installed/x64-windows/include"
+        $env:EXPAT_LIB_DIR = "$VCPKG_ROOT/installed/x64-windows/lib"
+        
+        # Suppress MSVC D9002 warnings (unknown command-line option)
+        $env:CL = "/wd9002 /W3"
+        $env:_CL_ = "/wd9002 /W3"
+        
+        # Set distutils compiler flags
+        $env:DISTUTILS_USE_SDK = "1"
+        
+        python setup.py build 2>&1 | ForEach-Object { 
+          if ($_ -match 'D9002' -or $_ -match 'warning D9002') { 
+            Write-Host "::warning::$_" 
+          } else { 
+            Write-Host $_ 
+          } 
+        }
+
+    - name: Build Python module (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        python setup.py build
 
     - name: Install Python module
       run: |
