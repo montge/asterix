@@ -80,18 +80,33 @@ jobs:
         brew update
         brew install expat
 
+    - name: Install vcpkg (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $VCPKG_ROOT = "${{ github.workspace }}/vcpkg"
+        if (-not (Test-Path $VCPKG_ROOT)) {
+          git clone https://github.com/Microsoft/vcpkg.git $VCPKG_ROOT
+        }
+        Push-Location $VCPKG_ROOT
+        & .\bootstrap-vcpkg.bat
+        Pop-Location
+
     - name: Install dependencies (Windows)
       if: runner.os == 'Windows'
+      shell: pwsh
       run: |
-        vcpkg install expat:x64-windows
-        vcpkg integrate install
+        $VCPKG_ROOT = "${{ github.workspace }}/vcpkg"
+        $env:VCPKG_DEFAULT_TRIPLET = "x64-windows"
+        & "$VCPKG_ROOT/vcpkg.exe" install expat:x64-windows
+        & "$VCPKG_ROOT/vcpkg.exe" integrate install
 
     - name: Build Rust crate
       run: |
         cd asterix-rs
         cargo build --verbose --all-features
       env:
-        CMAKE_TOOLCHAIN_FILE: 'C:/vcpkg/scripts/buildsystems/vcpkg.cmake'
+        CMAKE_TOOLCHAIN_FILE: ${{ runner.os == 'Windows' && format('{0}/vcpkg/scripts/buildsystems/vcpkg.cmake', github.workspace) || '' }}
 
     - name: Run tests
       run: |
