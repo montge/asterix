@@ -369,7 +369,7 @@ jobs:
         set -e  # Exit on error
 
         exe="${{ github.workspace }}/install/bin/asterix"
-        config="${{ github.workspace }}/asterix/config/asterix.ini"
+        config="${{ github.workspace }}/install/share/asterix/config/asterix.ini"
 
         echo "=== Test 1: Help ==="
         $exe --help
@@ -578,6 +578,7 @@ jobs:
         fi
 
         # Run integration tests
+        export LD_LIBRARY_PATH="${{ github.workspace }}/install/lib:${LD_LIBRARY_PATH:-}"
         cd install/test
         chmod +x ./test.sh
         ./test.sh

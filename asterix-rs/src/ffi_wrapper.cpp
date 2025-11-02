@@ -5,11 +5,10 @@
  */
 
 #include "ffi_wrapper.h"
-#include "AsterixDefinition.h"
-#include "AsterixData.h"
-#include "DataBlock.h"
-#include "InputParser.h"
-#include "XMLParser.h"
+#include "../src/asterix/AsterixDefinition.h"
+#include "../src/asterix/DataBlock.h"
+#include "../src/asterix/XMLParser.h"
+// AsterixData.h and InputParser.h already included via ffi_wrapper.h
 #include <cstring>
 #include <sstream>
 #include <iostream>

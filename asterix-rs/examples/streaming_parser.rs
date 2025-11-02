@@ -58,18 +58,14 @@ fn main() {
     loop {
         iteration += 1;
 
-        let result = match parse_with_offset(
-            &data,
-            offset,
-            blocks_per_batch,
-            ParseOptions::default(),
-        ) {
-            Ok(result) => result,
-            Err(e) => {
-                eprintln!("\nError at iteration {}: {}", iteration, e);
-                break;
-            }
-        };
+        let result =
+            match parse_with_offset(&data, offset, blocks_per_batch, ParseOptions::default()) {
+                Ok(result) => result,
+                Err(e) => {
+                    eprintln!("\nError at iteration {}: {}", iteration, e);
+                    break;
+                }
+            };
 
         let batch_records = result.records.len();
         total_records += batch_records;
@@ -79,11 +75,13 @@ fn main() {
             *category_counts.entry(record.category).or_insert(0) += 1;
         }
 
-        println!("  Iteration {}: {} records, consumed {} bytes, {} blocks remaining",
-                 iteration,
-                 batch_records,
-                 result.bytes_consumed - offset,
-                 result.remaining_blocks);
+        println!(
+            "  Iteration {}: {} records, consumed {} bytes, {} blocks remaining",
+            iteration,
+            batch_records,
+            result.bytes_consumed - offset,
+            result.remaining_blocks
+        );
 
         offset = result.bytes_consumed;
 
@@ -107,10 +105,14 @@ fn main() {
     println!("Total records: {}", total_records);
     println!("Total bytes processed: {}", offset);
     println!("Time elapsed: {:.2} seconds", elapsed.as_secs_f64());
-    println!("Throughput: {:.2} MB/s",
-             (offset as f64) / (elapsed.as_secs_f64() * 1_000_000.0));
-    println!("Records/second: {:.2}",
-             total_records as f64 / elapsed.as_secs_f64());
+    println!(
+        "Throughput: {:.2} MB/s",
+        (offset as f64) / (elapsed.as_secs_f64() * 1_000_000.0)
+    );
+    println!(
+        "Records/second: {:.2}",
+        total_records as f64 / elapsed.as_secs_f64()
+    );
 
     println!("\nCategory distribution:");
     let mut cats: Vec<_> = category_counts.iter().collect();
@@ -118,13 +120,18 @@ fn main() {
 
     for (category, count) in cats {
         let percentage = (*count as f64 / total_records as f64) * 100.0;
-        println!("  CAT{:03}: {:5} records ({:5.2}%)", category, count, percentage);
+        println!(
+            "  CAT{:03}: {:5} records ({:5.2}%)",
+            category, count, percentage
+        );
     }
 
     // Memory efficiency note
     println!("\n💡 Memory efficiency:");
     println!("   Peak memory usage is proportional to blocks_per_batch,");
     println!("   not to total file size.");
-    println!("   Current setting processes ~{} records per iteration.",
-             total_records / iteration.max(1));
+    println!(
+        "   Current setting processes ~{} records per iteration.",
+        total_records / iteration.max(1)
+    );
 }

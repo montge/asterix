@@ -47,16 +47,18 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     // Read PCAP file
     println!("Reading PCAP file: {}", filename);
     let data = fs::read(filename)?;
-    println!("✓ Read {} bytes ({:.2} MB)\n",
+    println!(
+        "✓ Read {} bytes ({:.2} MB)\n",
         data.len(),
-        data.len() as f64 / 1_048_576.0);
+        data.len() as f64 / 1_048_576.0
+    );
 
     // Parse incrementally
     println!("Parsing ASTERIX data from PCAP...");
     let start_time = Instant::now();
 
     let options = ParseOptions {
-        verbose: false,  // Disable verbose for performance
+        verbose: false, // Disable verbose for performance
         filter_category: None,
         max_records,
     };
@@ -76,7 +78,10 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         offset = result.bytes_consumed;
 
         // Print progress
-        print!("\r  Parsed {} blocks, {} bytes consumed...", blocks_parsed, offset);
+        print!(
+            "\r  Parsed {} blocks, {} bytes consumed...",
+            blocks_parsed, offset
+        );
         std::io::Write::flush(&mut std::io::stdout())?;
 
         // Check if we've reached max_records or end of data
@@ -93,9 +98,15 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let elapsed = start_time.elapsed();
-    println!("\n✓ Parsed {} records in {:.3} seconds", all_records.len(), elapsed.as_secs_f64());
-    println!("  Throughput: {:.2} records/sec\n",
-        all_records.len() as f64 / elapsed.as_secs_f64());
+    println!(
+        "\n✓ Parsed {} records in {:.3} seconds",
+        all_records.len(),
+        elapsed.as_secs_f64()
+    );
+    println!(
+        "  Throughput: {:.2} records/sec\n",
+        all_records.len() as f64 / elapsed.as_secs_f64()
+    );
 
     // Analyze results
     println!("Analysis");
@@ -104,7 +115,9 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     // Category distribution
     let mut category_stats: HashMap<u8, CategoryStats> = HashMap::new();
     for record in &all_records {
-        let stats = category_stats.entry(record.category).or_insert(CategoryStats::default());
+        let stats = category_stats
+            .entry(record.category)
+            .or_insert(CategoryStats::default());
         stats.count += 1;
         stats.total_bytes += record.length as usize;
         stats.total_items += record.item_count();
@@ -115,12 +128,14 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     cats.sort_by_key(|&(cat, _)| cat);
 
     for (category, stats) in cats {
-        println!("  Category {:3}: {:6} records, {:8} bytes, {:6} items (avg {:.1} items/record)",
+        println!(
+            "  Category {:3}: {:6} records, {:8} bytes, {:6} items (avg {:.1} items/record)",
             category,
             stats.count,
             stats.total_bytes,
             stats.total_items,
-            stats.total_items as f64 / stats.count as f64);
+            stats.total_items as f64 / stats.count as f64
+        );
     }
 
     // Time range analysis
@@ -135,8 +150,10 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         println!("  Duration:     {:.3} seconds", duration_ms as f64 / 1000.0);
 
         if duration_ms > 0 {
-            println!("  Message rate: {:.2} messages/sec",
-                all_records.len() as f64 / (duration_ms as f64 / 1000.0));
+            println!(
+                "  Message rate: {:.2} messages/sec",
+                all_records.len() as f64 / (duration_ms as f64 / 1000.0)
+            );
         }
     }
 
@@ -164,10 +181,14 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             // Show first few item IDs
             let item_ids: Vec<_> = record.items.keys().take(5).collect();
             if !item_ids.is_empty() {
-                println!("    Item IDs: {}", item_ids.iter()
-                    .map(|s| s.as_str())
-                    .collect::<Vec<_>>()
-                    .join(", "));
+                println!(
+                    "    Item IDs: {}",
+                    item_ids
+                        .iter()
+                        .map(|s| s.as_str())
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                );
             }
         }
     }

@@ -23,8 +23,19 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <sys/time.h>
-#include <unistd.h>
+#ifdef _WIN32
+  #include <winsock2.h>
+  #include <time.h>
+  #include <io.h>
+  #include <process.h>
+  #define close _close
+  #define read _read
+  #define write _write
+  #define getpid _getpid
+#else
+  #include <sys/time.h>
+  #include <unistd.h>
+#endif
 
 #include "asterix.h"
 #include "asterixformat.hxx"

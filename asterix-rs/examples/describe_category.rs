@@ -6,7 +6,7 @@
 //! Usage:
 //!   cargo run --example describe_category -- <category> [item] [field] [value]
 
-use asterix::{init_default, describe};
+use asterix::{describe, init_default};
 use std::env;
 use std::process;
 
@@ -19,7 +19,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         eprintln!("Usage: {} <category> [item] [field] [value]", args[0]);
         eprintln!("\nExamples:");
         eprintln!("  {} 62                    # Describe category 62", args[0]);
-        eprintln!("  {} 62 010                # Describe item I062/010", args[0]);
+        eprintln!(
+            "  {} 62 010                # Describe item I062/010",
+            args[0]
+        );
         eprintln!("  {} 62 010 SAC            # Describe SAC field", args[0]);
         eprintln!("  {} 62 010 SAC 1          # Describe SAC=1 value", args[0]);
         process::exit(1);

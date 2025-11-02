@@ -23,9 +23,15 @@
 #ifndef TCPDEVICE_HXX__
 #define TCPDEVICE_HXX__
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#ifdef _WIN32
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
+  #pragma comment(lib, "ws2_32.lib")
+#else
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <arpa/inet.h>
+#endif
 
 #include "basedevice.hxx"
 #include "descriptor.hxx"

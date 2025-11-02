@@ -166,10 +166,10 @@ mod ffi;
 // Re-export main types and functions for convenience
 pub use error::{AsterixError, Result};
 pub use parser::{parse, parse_with_offset};
-pub use types::{AsterixRecord, DataItem, ParsedValue, ParseOptions, ParseResult};
+pub use types::{AsterixRecord, DataItem, ParseOptions, ParseResult, ParsedValue};
 
 // Re-export FFI initialization functions
-pub use ffi::{init_default, init_config_dir, load_category, describe, is_category_defined};
+pub use ffi::{describe, init_config_dir, init_default, is_category_defined, load_category};
 
 // Version information
 /// Crate version

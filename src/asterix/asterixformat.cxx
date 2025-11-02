@@ -23,7 +23,16 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
+#ifdef _WIN32
+  #include <io.h>
+  #include <process.h>
+  #define close _close
+  #define read _read
+  #define write _write
+  #define getpid _getpid
+#else
+  #include <unistd.h>
+#endif
 #include <stdarg.h>
 
 #include "asterix.h"

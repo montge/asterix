@@ -31,7 +31,7 @@ pub mod ffi {
         unsafe fn asterix_parse(
             data: *const u8,
             len: usize,
-            verbose: bool
+            verbose: bool,
         ) -> *mut AsterixDataWrapper;
 
         // Parse with offset for incremental parsing
@@ -40,7 +40,7 @@ pub mod ffi {
             len: usize,
             offset: u32,
             blocks_count: u32,
-            verbose: bool
+            verbose: bool,
         ) -> *mut AsterixDataWrapper;
 
         // Cleanup
@@ -53,7 +53,7 @@ pub mod ffi {
         // Get a specific data block by index
         unsafe fn asterix_get_data_block(
             data: *const AsterixDataWrapper,
-            index: u32
+            index: u32,
         ) -> *const DataBlockWrapper;
 
         // Data block properties
@@ -86,7 +86,7 @@ pub mod ffi {
             field: *const u8,
             field_len: usize,
             value: *const u8,
-            value_len: usize
+            value_len: usize,
         ) -> *mut u8;
 
         // Check if category is defined
@@ -95,8 +95,8 @@ pub mod ffi {
 }
 
 // Safe wrapper functions for common operations
-use std::ffi::CStr;
 use crate::error::{AsterixError, Result};
+use std::ffi::CStr;
 
 /// Initialize ASTERIX with default config directory
 pub fn init_default() -> Result<()> {
@@ -112,9 +112,10 @@ pub fn init_config_dir(config_dir: &str) -> Result<()> {
         if ffi::asterix_init(c_str.as_c_str().to_str().unwrap()) {
             Ok(())
         } else {
-            Err(AsterixError::InitializationError(
-                format!("Failed to initialize ASTERIX with config dir: {}", config_dir)
-            ))
+            Err(AsterixError::InitializationError(format!(
+                "Failed to initialize ASTERIX with config dir: {}",
+                config_dir
+            )))
         }
     }
 }
@@ -127,18 +128,17 @@ pub fn load_category(xml_path: &str) -> Result<()> {
         if ffi::asterix_load_category(c_str.as_c_str().to_str().unwrap()) {
             Ok(())
         } else {
-            Err(AsterixError::InitializationError(
-                format!("Failed to load category file: {}", xml_path)
-            ))
+            Err(AsterixError::InitializationError(format!(
+                "Failed to load category file: {}",
+                xml_path
+            )))
         }
     }
 }
 
 /// Check if a category is defined
 pub fn is_category_defined(category: u8) -> bool {
-    unsafe {
-        ffi::asterix_category_defined(category)
-    }
+    unsafe { ffi::asterix_category_defined(category) }
 }
 
 /// Get description for a category/item/field/value
@@ -146,7 +146,7 @@ pub fn describe(
     category: u8,
     item: Option<&str>,
     field: Option<&str>,
-    value: Option<&str>
+    value: Option<&str>,
 ) -> Result<String> {
     unsafe {
         let item_ptr = item.map(|s| s.as_ptr()).unwrap_or(std::ptr::null());
@@ -159,18 +159,12 @@ pub fn describe(
         let value_len = value.map(|s| s.len()).unwrap_or(0);
 
         let result_ptr = ffi::asterix_describe(
-            category,
-            item_ptr,
-            item_len,
-            field_ptr,
-            field_len,
-            value_ptr,
-            value_len
+            category, item_ptr, item_len, field_ptr, field_len, value_ptr, value_len,
         );
 
         if result_ptr.is_null() {
             return Err(AsterixError::InternalError(
-                "Failed to get description".to_string()
+                "Failed to get description".to_string(),
             ));
         }
 
@@ -186,7 +180,9 @@ pub fn describe(
 /// Helper to convert C string pointer to Rust String (and free it)
 pub(crate) unsafe fn c_string_to_rust(ptr: *mut u8) -> Result<String> {
     if ptr.is_null() {
-        return Err(AsterixError::NullPointer("Got null string from C++".to_string()));
+        return Err(AsterixError::NullPointer(
+            "Got null string from C++".to_string(),
+        ));
     }
 
     let c_str = CStr::from_ptr(ptr as *const i8);

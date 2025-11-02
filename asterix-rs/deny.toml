@@ -5,18 +5,17 @@
 # ADVISORIES - Check for security vulnerabilities
 # =============================================================================
 [advisories]
+# Use version 2 configuration format
+version = 2
+
 # Check the RustSec Advisory Database for crates with security vulnerabilities
 db-path = "~/.cargo/advisory-db"
 db-urls = ["https://github.com/rustsec/advisory-db"]
 
-# The lint level for security vulnerabilities
-vulnerability = "deny"
-
 # The lint level for unmaintained crates
-unmaintained = "warn"
-
-# The lint level for crates with security notices
-notice = "warn"
+# Valid values: "all", "workspace", "transitive", "none"
+# "workspace" means check only direct workspace dependencies
+unmaintained = "workspace"
 
 # The lint level for yanked crates
 yanked = "deny"
@@ -29,11 +28,12 @@ ignore = []
 # LICENSES - Ensure GPL-3.0-or-later compatibility
 # =============================================================================
 [licenses]
-# The lint level for crates with licenses that are not allowed
-unlicensed = "deny"
+# Use version 2 configuration format
+version = 2
 
 # List of explicitly allowed licenses
 # ASTERIX is GPL-3.0-or-later, so we allow GPL-compatible licenses
+# All licenses not in this list are denied by default
 allow = [
     "GPL-3.0",
     "GPL-3.0-or-later",
@@ -45,24 +45,11 @@ allow = [
     "ISC",
     "Zlib",
     "Unicode-DFS-2016",
+    "Unicode-3.0",  # Added to support unicode-ident
     "CC0-1.0",
     "0BSD",
+    "Unlicense",  # Added to support winapi-util (dev dependency)
 ]
-
-# List of explicitly disallowed licenses
-deny = [
-    # No proprietary licenses
-    # Add any licenses incompatible with GPL-3.0
-]
-
-# Lint level for licenses that do not satisfy allow/deny criteria
-copyleft = "allow"
-
-# Allow or deny multiple licenses - generally should be "warn"
-allow-osi-fsf-free = "both"
-
-# Lint level for crates with a clarifying exception
-default = "deny"
 
 # The confidence threshold for detecting a license from license text
 confidence-threshold = 0.8
