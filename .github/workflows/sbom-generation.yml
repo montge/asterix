@@ -68,7 +68,7 @@ jobs:
       id: sbom-cpp
       run: |
         VERSION="${{ steps.read-version.outputs.version }}"
-        SBOM_FILE="sbom/asterix-${VERSION}-cyclonedx.json"
+        SBOM_FILE="sbom/asterix-sbom.json"
         mkdir -p sbom
         
         # Generate SBOM for C++ project using syft
@@ -98,14 +98,15 @@ jobs:
                 {"name": "commit", "value": $commit},
                 {"name": "repository", "value": $repo},
                 {"name": "generated", "value": $date},
-                {"name": "tool", "value": "syft"}
+                {"name": "tool", "value": "syft"},
+                {"name": "git_tag", "value": "v\($version)"}
               ]' \
             "${SBOM_FILE}" > "${SBOM_FILE}.tmp" && \
           mv "${SBOM_FILE}.tmp" "${SBOM_FILE}"
         fi
         
         echo "sbom_file=${SBOM_FILE}" >> $GITHUB_OUTPUT
-        echo "Generated SBOM: ${SBOM_FILE}"
+        echo "Generated SBOM: ${SBOM_FILE} (version ${VERSION})"
         ls -lh "${SBOM_FILE}"
 
     - name: Generate SBOM for Python dependencies
@@ -113,7 +114,7 @@ jobs:
       if: always()
       run: |
         VERSION="${{ steps.read-version.outputs.version }}"
-        SBOM_FILE="sbom/asterix-python-${VERSION}-cyclonedx.json"
+        SBOM_FILE="sbom/asterix-python-sbom.json"
         
         # Generate SBOM for Python dependencies if requirements files exist
         if [ -f "requirements.txt" ] || [ -f "setup.py" ]; then
@@ -124,19 +125,23 @@ jobs:
             --exclude "*/.git/**"
           
           if command -v jq &> /dev/null; then
-            jq --arg version "$(grep -E '^PYTHON_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')" \
+            PYTHON_VERSION=$(grep -E '^PYTHON_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+            jq --arg version "${PYTHON_VERSION}" \
                --arg commit "${GITHUB_SHA}" \
+               --arg main_version "${VERSION}" \
                '.metadata.component.version = $version |
                 .metadata.component.name = "asterix-python" |
                 .metadata.properties += [
                   {"name": "commit", "value": $commit},
-                  {"name": "generated", "value": "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'"}
+                  {"name": "generated", "value": "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'"},
+                  {"name": "main_version", "value": $main_version},
+                  {"name": "git_tag", "value": "v\($main_version)"}
                 ]' \
               "${SBOM_FILE}" > "${SBOM_FILE}.tmp" && \
             mv "${SBOM_FILE}.tmp" "${SBOM_FILE}"
           fi
           
-          echo "Generated Python SBOM: ${SBOM_FILE}"
+          echo "Generated Python SBOM: ${SBOM_FILE} (Python version ${PYTHON_VERSION})"
         else
           echo "No Python requirements found, skipping Python SBOM"
         fi
@@ -146,7 +151,7 @@ jobs:
       if: always()
       run: |
         VERSION="${{ steps.read-version.outputs.version }}"
-        SBOM_FILE="sbom/asterix-rust-${VERSION}-cyclonedx.json"
+        SBOM_FILE="sbom/asterix-rust-sbom.json"
         
         # Generate SBOM for Rust crate if Cargo.toml exists
         if [ -f "asterix-rs/Cargo.toml" ]; then
@@ -160,32 +165,62 @@ jobs:
             RUST_VERSION=$(grep -E '^RUST_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
             jq --arg version "${RUST_VERSION}" \
                --arg commit "${GITHUB_SHA}" \
+               --arg main_version "${VERSION}" \
                '.metadata.component.version = $version |
                 .metadata.component.name = "asterix-rust" |
                 .metadata.properties += [
                   {"name": "commit", "value": $commit},
-                  {"name": "generated", "value": "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'"}
+                  {"name": "generated", "value": "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'"},
+                  {"name": "main_version", "value": $main_version},
+                  {"name": "git_tag", "value": "v\($main_version)"}
                 ]' \
               "${SBOM_FILE}" > "${SBOM_FILE}.tmp" && \
             mv "${SBOM_FILE}.tmp" "${SBOM_FILE}"
           fi
           
-          echo "Generated Rust SBOM: ${SBOM_FILE}"
+          echo "Generated Rust SBOM: ${SBOM_FILE} (Rust version ${RUST_VERSION})"
         else
           echo "No Rust Cargo.toml found, skipping Rust SBOM"
         fi
 
-    - name: Create combined SBOM (optional)
+    - name: Create README in sbom directory
       if: always()
       run: |
         VERSION="${{ steps.read-version.outputs.version }}"
-        COMBINED_SBOM="sbom/asterix-combined-${VERSION}-cyclonedx.json"
-        
-        # This would require merging multiple SBOMs - for now, use main SBOM
-        if [ -f "sbom/asterix-${VERSION}-cyclonedx.json" ]; then
-          cp "sbom/asterix-${VERSION}-cyclonedx.json" "${COMBINED_SBOM}"
-          echo "Created combined SBOM reference: ${COMBINED_SBOM}"
-        fi
+        cat > sbom/README.md << EOF
+# Software Bill of Materials (SBOM)
+
+This directory contains CycloneDX format SBOM files for the ASTERIX project.
+
+## Files
+
+- **asterix-sbom.json** - Main SBOM for C++ core library (version tracked via git tags)
+- **asterix-python-sbom.json** - SBOM for Python bindings (if applicable)
+- **asterix-rust-sbom.json** - SBOM for Rust crate (if applicable)
+
+## Version Information
+
+- **Current Version**: ${VERSION}
+- **Git Tag**: v${VERSION}
+- **Generated**: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+- **Commit**: ${GITHUB_SHA}
+
+## How to Use
+
+SBOM files are automatically generated and committed to this repository when the version changes.
+Version information is tracked via git tags, not in the filename.
+
+To view version for a specific commit:
+\`\`\`bash
+git show <commit>:sbom/asterix-sbom.json | jq .metadata.component.version
+\`\`\`
+
+To view SBOM for a specific version tag:
+\`\`\`bash
+git show v${VERSION}:sbom/asterix-sbom.json
+\`\`\`
+EOF
+        echo "Created sbom/README.md"
 
     - name: Commit SBOM files
       run: |
@@ -196,8 +231,8 @@ jobs:
         git config --local user.name "GitHub Action"
         
         # Check if SBOM files exist and are new or changed
-        if [ -d "sbom" ] && [ -n "$(find sbom -name '*.json' -newer HEAD 2>/dev/null || find sbom -name '*.json' 2>/dev/null)" ]; then
-          git add sbom/*.json
+        if [ -d "sbom" ]; then
+          git add sbom/*.json sbom/README.md 2>/dev/null || true
           
           # Check if there are changes to commit
           if ! git diff --staged --quiet; then
@@ -300,6 +335,8 @@ jobs:
         echo "**Tag**: ${{ steps.read-version.outputs.tag_name }}" >> $GITHUB_STEP_SUMMARY
         echo "**Commit**: ${GITHUB_SHA}" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### Generated SBOM Files" >> $GITHUB_STEP_SUMMARY
+        echo "### Generated SBOM Files (standard filenames, version tracked via git)" >> $GITHUB_STEP_SUMMARY
         ls -lh sbom/*.json 2>/dev/null | awk '{print "- " $9 " (" $5 ")"}' >> $GITHUB_STEP_SUMMARY || echo "- No SBOM files generated" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Note**: SBOM files use standard filenames. Version is tracked via git tags and commit history." >> $GITHUB_STEP_SUMMARY
 

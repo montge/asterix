@@ -88,9 +88,11 @@ The ASTERIX Decoder is a software component for decoding and parsing EUROCONTROL
 - Software Configuration Management Records
 - Archive/Retrieval records
 - Software Bill of Materials (SBOM) - CycloneDX format
-  - Location: `sbom/asterix-{VERSION}-cyclonedx.json`
+  - Location: `sbom/asterix-sbom.json` (standard filename)
+  - Additional components: `sbom/asterix-python-sbom.json`, `sbom/asterix-rust-sbom.json`
   - Generated automatically via GitHub Actions on version changes
   - Includes dependencies for C++, Python, and Rust components
+  - Version tracked via git tags and commit history (not in filename)
   - Tagged with version tags (v{VERSION}) pointing to commit where SBOM was generated
 
 ### 3.5 Quality Assurance Data
