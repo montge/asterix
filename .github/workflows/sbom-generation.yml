@@ -54,39 +54,18 @@ jobs:
         echo "Using version: ${VERSION}"
         echo "Tag name: v${VERSION}"
 
-    - name: Install Syft
-      uses: anchore/sbom-action/download-syft@v0
-      id: syft
-
     - name: Install jq for JSON processing
       run: |
         sudo apt-get update
         sudo apt-get install -y jq
 
-    - name: Verify Syft installation
+    - name: Install Syft
       run: |
-        # Check if syft is available in PATH (the action adds it to PATH)
-        if command -v syft &> /dev/null; then
-          SYFT_PATH="syft"
-          echo "Using syft from PATH"
-          syft version
-        else
-          echo "Error: syft not found. Checking common locations..."
-          ls -la /usr/local/bin/syft || true
-          ls -la ~/.local/bin/syft || true
-          echo "PATH: ${PATH}"
-          # Try to install syft directly if not found
-          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
-          if command -v syft &> /dev/null; then
-            SYFT_PATH="syft"
-            echo "Installed syft successfully"
-            syft version
-          else
-            echo "Failed to install syft"
-            exit 1
-          fi
-        fi
-        echo "SYFT_PATH=${SYFT_PATH}" >> $GITHUB_ENV
+        # Install syft using the official installation script
+        curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+        sudo chmod +x /usr/local/bin/syft
+        /usr/local/bin/syft version
+        echo "SYFT_PATH=/usr/local/bin/syft" >> $GITHUB_ENV
 
     - name: Generate CycloneDX SBOM for C++ dependencies
       id: sbom-cpp
@@ -96,13 +75,12 @@ jobs:
         mkdir -p sbom
         
         # Use syft from environment or fallback to direct call
-        SYFT_CMD="${SYFT_PATH:-syft}"
+        SYFT_CMD="${SYFT_PATH:-/usr/local/bin/syft}"
         
         # Generate SBOM for C++ project using syft
         # Scan entire repository for dependencies
         ${SYFT_CMD} packages dir:. \
-          -o cyclonedx-json \
-          --file "${SBOM_FILE}" \
+          -o cyclonedx-json="${SBOM_FILE}" \
           --exclude "*/build*/**" \
           --exclude "*/target/**" \
           --exclude "*/.git/**" \
@@ -154,11 +132,10 @@ jobs:
         # Generate SBOM for Python dependencies if requirements files exist
         if [ -f "requirements.txt" ] || [ -f "setup.py" ]; then
           # Use syft from environment or fallback to direct call
-          SYFT_CMD="${SYFT_PATH:-syft}"
+          SYFT_CMD="${SYFT_PATH:-/usr/local/bin/syft}"
           
           ${SYFT_CMD} packages python:. \
-            -o cyclonedx-json \
-            --file "${SBOM_FILE}" \
+            -o cyclonedx-json="${SBOM_FILE}" \
             --exclude "*/build*/**" \
             --exclude "*/.git/**" || {
             echo "::warning::Failed to generate Python SBOM, continuing..."
@@ -203,12 +180,11 @@ jobs:
         # Generate SBOM for Rust crate if Cargo.toml exists
         if [ -f "asterix-rs/Cargo.toml" ]; then
           # Use syft from environment or fallback to direct call
-          SYFT_CMD="${SYFT_PATH:-syft}"
+          SYFT_CMD="${SYFT_PATH:-/usr/local/bin/syft}"
           
           cd asterix-rs
           ${SYFT_CMD} packages cargo:. \
-            -o cyclonedx-json \
-            --file "../${SBOM_FILE}" || {
+            -o cyclonedx-json="../${SBOM_FILE}" || {
             echo "::warning::Failed to generate Rust SBOM, continuing..."
             cd ..
             exit 0
