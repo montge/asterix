@@ -394,7 +394,7 @@ act push
 
 ### Configuration
 - `asterix/config/asterix_cat*.xml` - ASTERIX category definitions
-- `install/config/asterix.ini` - Configuration file list
+- `asterix/config/asterix.ini` - Configuration file list (copied to install/share/asterix/config/ during build)
 
 ---
 

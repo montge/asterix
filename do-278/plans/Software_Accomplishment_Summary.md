@@ -54,7 +54,7 @@ The ASTERIX Decoder is a software component for decoding and parsing EUROCONTROL
 2. **I/O Engine** (`src/engine/`) - Device and format abstraction
 3. **CLI Application** (`src/main/`) - Command-line interface
 4. **Python Bindings** (`src/python/`) - Python C extension
-5. **Configuration** (`asterix/config/`, `install/config/`) - XML category definitions
+5. **Configuration** (`asterix/config/`) - XML category definitions (auto-copied to `install/share/asterix/config/` during build)
 
 ---
 
