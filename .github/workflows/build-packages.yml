@@ -9,20 +9,39 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to build (e.g., 2.8.10)'
+        description: 'Version to build (overrides VERSION file)'
         required: false
-        default: '2.8.10'
 
 permissions:
   contents: write  # Required for creating releases
 
-env:
-  PACKAGE_VERSION: ${{ github.event.inputs.version || '2.8.10' }}
-
 jobs:
+  # Get version from VERSION file
+  get-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.read-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Read version from VERSION file
+        id: read-version
+        run: |
+          # Extract CPP_VERSION or PROJECT_VERSION (whitespace-insensitive)
+          VERSION=$(grep -E '^CPP_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+          if [ -z "$VERSION" ]; then
+            VERSION=$(grep -E '^PROJECT_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+          fi
+          if [ -z "$VERSION" ]; then
+            # Fallback: first non-comment line
+            VERSION=$(grep -v '^#' VERSION | grep -v '^$' | head -n 1 | tr -d '[:space:]')
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Using version: ${VERSION}"
+
   # Build Debian/Ubuntu packages
   build-deb:
     name: Build DEB (${{ matrix.distro }})
+    needs: get-version
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -75,6 +94,7 @@ jobs:
   # Build RPM packages
   build-rpm:
     name: Build RPM (${{ matrix.distro }})
+    needs: get-version
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -123,6 +143,17 @@ jobs:
 
     - name: Create source tarball
       run: |
+        PACKAGE_VERSION="${{ github.event.inputs.version || needs.get-version.outputs.version }}"
+        if [ -z "$PACKAGE_VERSION" ]; then
+          # Extract CPP_VERSION or PROJECT_VERSION from VERSION file
+          PACKAGE_VERSION=$(grep -E '^CPP_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+          if [ -z "$PACKAGE_VERSION" ]; then
+            PACKAGE_VERSION=$(grep -E '^PROJECT_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+          fi
+          if [ -z "$PACKAGE_VERSION" ]; then
+            PACKAGE_VERSION=$(grep -v '^#' VERSION | grep -v '^$' | head -n 1 | tr -d '[:space:]')
+          fi
+        fi
         mkdir -p /tmp/asterix-${PACKAGE_VERSION}
         cp -r . /tmp/asterix-${PACKAGE_VERSION}/
         cd /tmp
@@ -146,6 +177,7 @@ jobs:
   # Build source tarballs and generic packages
   build-source:
     name: Build Source Packages
+    needs: get-version
     runs-on: ubuntu-latest
 
     steps:

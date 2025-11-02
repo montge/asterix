@@ -1,0 +1,15 @@
+# ASTERIX Project Version File
+# This file is the single source of truth for all component versions
+# Format: KEY=value (whitespace around = is ignored)
+
+# Main project version (C/C++)
+CPP_VERSION=2.8.10
+
+# Python package version (0.x.x format, maps from C++ version)
+PYTHON_VERSION=0.7.10
+
+# Rust crate version (semver format)
+RUST_VERSION=0.1.0
+
+# Project-wide version (used for releases, documentation, etc.)
+PROJECT_VERSION=2.8.10

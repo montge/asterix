@@ -9,13 +9,53 @@ from os import listdir
 import sys
 import platform
 
-# Safely load version without using exec()
+# Read version from VERSION file
+# Supports key=value format with PYTHON_VERSION or computes from CPP_VERSION
 __version__ = None
-with open('asterix/version.py', 'r') as version_file:
-    for line in version_file:
-        if line.startswith('__version__'):
-            # Parse the version string safely
-            __version__ = line.split('=')[1].strip().strip('"').strip("'")
+try:
+    with open('VERSION', 'r') as version_file:
+        version_content = version_file.read()
+        
+        # Try to find PYTHON_VERSION first
+        import re
+        python_match = re.search(r'PYTHON_VERSION[ \t]*=[ \t]*([0-9]+\.[0-9]+\.[0-9]+)', version_content)
+        if python_match:
+            __version__ = python_match.group(1).strip()
+        else:
+            # Fallback: extract CPP_VERSION and compute Python version
+            cpp_match = re.search(r'CPP_VERSION[ \t]*=[ \t]*([0-9]+)\.([0-9]+)\.([0-9]+)', version_content)
+            if cpp_match:
+                major = int(cpp_match.group(1))
+                minor = int(cpp_match.group(2))
+                patch = int(cpp_match.group(3))
+                # Convert 2.8.10 -> 0.7.10 (map 2.x.y -> 0.(x-1).y per HISTORY mapping)
+                if major >= 2:
+                    __version__ = f"0.{minor - 1}.{patch}"
+                else:
+                    __version__ = f"{major}.{minor}.{patch}"
+            else:
+                # Legacy format: single line with just version number
+                version_line = version_content.split('\n')[0].strip()
+                if version_line and not version_line.startswith('#'):
+                    parts = version_line.split('.')
+                    if len(parts) >= 3:
+                        major = int(parts[0])
+                        minor = int(parts[1])
+                        patch = int(parts[2])
+                        if major >= 2:
+                            __version__ = f"0.{minor - 1}.{patch}"
+                        else:
+                            __version__ = version_line
+except (IOError, ValueError) as e:
+    # Fallback to reading from asterix/version.py if VERSION file not found
+    try:
+        with open('asterix/version.py', 'r') as version_file:
+            for line in version_file:
+                if line.startswith('__version__'):
+                    __version__ = line.split('=')[1].strip().strip('"').strip("'")
+                    break
+    except IOError:
+        __version__ = "0.0.0"  # Default fallback
 
 CLASSIFIERS = [
     'Development Status :: 4 - Beta',  # Upgraded from Alpha (92.2% coverage, production-ready)

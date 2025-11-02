@@ -44,6 +44,20 @@ jobs:
           doxygen --version
           dot -V
 
+      - name: Update Doxyfile with version from VERSION file
+        run: |
+          # Extract CPP_VERSION or PROJECT_VERSION (whitespace-insensitive)
+          VERSION=$(grep -E '^CPP_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+          if [ -z "$VERSION" ]; then
+            VERSION=$(grep -E '^PROJECT_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+          fi
+          if [ -z "$VERSION" ]; then
+            # Fallback: first non-comment line
+            VERSION=$(grep -v '^#' VERSION | grep -v '^$' | head -n 1 | tr -d '[:space:]')
+          fi
+          sed -i "s|^PROJECT_NUMBER.*|PROJECT_NUMBER         = \"${VERSION}\"|" Doxyfile
+          echo "Updated Doxyfile PROJECT_NUMBER to ${VERSION}"
+
       - name: Generate documentation
         run: |
           doxygen Doxyfile
