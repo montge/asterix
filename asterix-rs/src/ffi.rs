@@ -13,7 +13,7 @@
 pub mod ffi {
     // Opaque C++ types - we don't need to know their internal structure
     unsafe extern "C++" {
-        include!("asterix-rs/src/ffi_wrapper.h");
+        include!("ffi_wrapper.h");
 
         // Opaque wrapper types for C++ objects
         type AsterixDataWrapper;

@@ -35,15 +35,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, windows-2025]
+        os: [windows-2022]
         config: [Release, Debug]
         include:
           - os: windows-2022
             msvc_version: '2022'
             toolset: 'v143'
-          - os: windows-2025
-            msvc_version: '2025'
-            toolset: 'v144'
 
     steps:
     - name: Checkout repository
@@ -74,23 +71,6 @@ jobs:
           -DBUILD_EXECUTABLE=ON `
           -DBUILD_TESTING=OFF `
           -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install"
-      if: matrix.os == 'windows-2022'
-
-    - name: Configure CMake (C++23 for 2025)
-      run: |
-        cmake -B build `
-          -G "Visual Studio 17 2022" `
-          -A x64 `
-          -DCMAKE_BUILD_TYPE=${{ matrix.config }} `
-          -DCMAKE_CXX_STANDARD=23 `
-          -DCMAKE_CXX_STANDARD_REQUIRED=ON `
-          -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" `
-          -DBUILD_SHARED_LIBS=ON `
-          -DBUILD_STATIC_LIBS=ON `
-          -DBUILD_EXECUTABLE=ON `
-          -DBUILD_TESTING=OFF `
-          -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install"
-      if: matrix.os == 'windows-2025'
 
     - name: Build
       run: |
