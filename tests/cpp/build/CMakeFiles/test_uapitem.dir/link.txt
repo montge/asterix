@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/test_uapitem.dir/test_uapitem.cpp.o -o test_uapitem 
