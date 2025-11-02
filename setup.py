@@ -91,6 +91,43 @@ for key, value in cfg_vars.items():
 if sys.platform == 'darwin':
     os.environ['MACOSX_DEPLOYMENT_TARGET'] = platform.mac_ver()[0]
 
+# Windows: Find expat from vcpkg or environment
+expat_include_dirs = ['./asterix/python', './src/asterix', './src/engine']
+expat_library_dirs = []
+expat_libraries = ['expat']
+
+if sys.platform == 'win32':
+    # Check for expat in common locations
+    expat_include_dir = os.environ.get('EXPAT_INCLUDE_DIR')
+    expat_lib_dir = os.environ.get('EXPAT_LIB_DIR')
+    
+    # Try vcpkg paths
+    vcpkg_root = os.environ.get('VCPKG_ROOT', '')
+    if vcpkg_root:
+        vcpkg_expat_include = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
+        vcpkg_expat_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib')
+        if os.path.exists(vcpkg_expat_include):
+            expat_include_dirs.append(vcpkg_expat_include)
+            expat_include_dir = vcpkg_expat_include
+        if os.path.exists(vcpkg_expat_lib):
+            expat_library_dirs.append(vcpkg_expat_lib)
+            expat_lib_dir = vcpkg_expat_lib
+    
+    # Use environment variables if set
+    if expat_include_dir and os.path.exists(expat_include_dir):
+        if expat_include_dir not in expat_include_dirs:
+            expat_include_dirs.append(expat_include_dir)
+    if expat_lib_dir and os.path.exists(expat_lib_dir):
+        if expat_lib_dir not in expat_library_dirs:
+            expat_library_dirs.append(expat_lib_dir)
+    
+    # Suppress MSVC D9002 warnings (unknown command-line option)
+    # This happens when distutils passes flags that MSVC doesn't understand
+    if 'CL' not in os.environ:
+        os.environ['CL'] = '/wd9002 /W3'
+    if '_CL_' not in os.environ:
+        os.environ['_CL_'] = '/wd9002 /W3'
+
 asterix_module = Extension('_asterix',
                            sources=['./src/python/asterix.cpp',
                                     './src/python/python_wrapper.cpp',
@@ -118,16 +155,19 @@ asterix_module = Extension('_asterix',
                                     './src/asterix/XMLParser.cpp',
                                     ],
 
-                           include_dirs=['./asterix/python', './src/asterix', './src/engine'],
+                           include_dirs=expat_include_dirs,
+                           library_dirs=expat_library_dirs if sys.platform == 'win32' else [],
+                           libraries=expat_libraries,
                            # SECURITY: Hardening flags for buffer overflow and stack protection
                            # Platform-specific C++ standard: C++17 for macOS/Windows (better compiler support),
                            # C++23 for Linux (matches CMakeLists.txt for feature parity)
                            extra_compile_args=['-DPYTHON_WRAPPER',
                                              '-std=c++17' if sys.platform in ('darwin', 'win32') else '-std=c++23',
-                                             '-fstack-protector-strong', '-D_FORTIFY_SOURCE=2'],
+                                             '-fstack-protector-strong', '-D_FORTIFY_SOURCE=2'] if sys.platform != 'win32'
+                                          else ['/DPYTHON_WRAPPER', '/std:c++17', '/W3', '/wd9002'],
                            # SECURITY: Read-only relocations for hardening (Linux only - macOS doesn't support -z flags)
                            extra_link_args=['-lexpat'] if sys.platform == 'darwin'
-                                          else (['-lexpat'] if sys.platform == 'win32'
+                                          else (['expat.lib'] if sys.platform == 'win32'
                                           else ['-lexpat', '-Wl,-z,relro,-z,now']))
 
 f = open('README.rst')
