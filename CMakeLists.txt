@@ -251,6 +251,7 @@ if(BUILD_SHARED_LIBS)
     target_link_libraries(asterix_shared ${EXPAT_LIBRARIES})
 
     # Install shared library
+    # On macOS, LIBRARY DESTINATION installs .dylib files
     install(TARGETS asterix_shared
         LIBRARY DESTINATION lib
         PUBLIC_HEADER DESTINATION include/asterix
@@ -268,6 +269,7 @@ if(BUILD_STATIC_LIBS)
     target_link_libraries(asterix_static ${EXPAT_LIBRARIES})
 
     # Install static library
+    # ARCHIVE DESTINATION installs .a files on all platforms including macOS
     install(TARGETS asterix_static
         ARCHIVE DESTINATION lib
         PUBLIC_HEADER DESTINATION include/asterix

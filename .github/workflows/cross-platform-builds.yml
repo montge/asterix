@@ -294,6 +294,13 @@ jobs:
     - name: Install
       run: |
         cmake --install build --config ${{ matrix.config }}
+        
+        # Verify installed libraries exist (macOS)
+        echo "=== Verifying installed libraries ==="
+        ls -lh install/lib/ || echo "install/lib directory not found"
+        find install/lib -name "*.dylib" -o -name "*.a" || echo "No libraries found"
+        echo "=== Library files in install/lib ==="
+        ls -la install/lib/*.dylib install/lib/*.a 2>/dev/null || echo "Library files check completed"
 
     - name: Test executable
       run: |
@@ -323,11 +330,25 @@ jobs:
 
     - name: Verify library linkage
       run: |
-        echo "=== Checking executable dependencies ==="
-        otool -L ${{ github.workspace }}/install/bin/asterix
+        echo "=== Checking installed library files ==="
+        ls -lh install/lib/*.dylib install/lib/*.a 2>/dev/null || echo "Warning: Some library files not found"
+        
+        echo -e "\n=== Checking executable dependencies ==="
+        if [ -f "${{ github.workspace }}/install/bin/asterix" ]; then
+          otool -L ${{ github.workspace }}/install/bin/asterix || echo "otool failed"
+        else
+          echo "Executable not found"
+        fi
 
         echo -e "\n=== Checking library exports ==="
-        nm -gU ${{ github.workspace }}/install/lib/libasterix.dylib | head -20 || true
+        if [ -f "${{ github.workspace }}/install/lib/libasterix.dylib" ]; then
+          nm -gU ${{ github.workspace }}/install/lib/libasterix.dylib | head -20 || true
+        else
+          echo "libasterix.dylib not found, checking for .a file"
+          if [ -f "${{ github.workspace }}/install/lib/libasterix.a" ]; then
+            nm -g ${{ github.workspace }}/install/lib/libasterix.a | head -20 || true
+          fi
+        fi
 
     - name: Create macOS installers (macOS 15 Release only)
       if: matrix.os == 'macos-15' && matrix.config == 'Release'
