@@ -259,15 +259,15 @@ jobs:
         printf '# Software Bill of Materials (SBOM)\n\n' > sbom/README.md
         printf 'This directory contains CycloneDX format SBOM files for the ASTERIX project.\n\n' >> sbom/README.md
         printf '## Files\n\n' >> sbom/README.md
-        printf '- **asterix-sbom.json** - Main SBOM for C++ core library (version tracked via git tags)\n' >> sbom/README.md
+        echo '- **asterix-sbom.json** - Main SBOM for C++ core library (version tracked via git tags)' >> sbom/README.md
         echo '- **asterix-python-sbom.json** - SBOM for Python bindings (if applicable)' >> sbom/README.md
         echo '- **asterix-rust-sbom.json** - SBOM for Rust crate (if applicable)' >> sbom/README.md
         echo '' >> sbom/README.md
         printf '## Version Information\n\n' >> sbom/README.md
-        printf '- **Current Version**: %s\n' "${VERSION}" >> sbom/README.md
-        printf '- **Git Tag**: v%s\n' "${VERSION}" >> sbom/README.md
-        printf '- **Generated**: %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> sbom/README.md
-        printf '- **Commit**: %s\n\n' "${GITHUB_SHA}" >> sbom/README.md
+        printf -- '- **Current Version**: %s\n' "${VERSION}" >> sbom/README.md
+        printf -- '- **Git Tag**: v%s\n' "${VERSION}" >> sbom/README.md
+        printf -- '- **Generated**: %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> sbom/README.md
+        printf -- '- **Commit**: %s\n\n' "${GITHUB_SHA}" >> sbom/README.md
         printf '## How to Use\n\n' >> sbom/README.md
         printf 'SBOM files are automatically generated and committed to this repository when the version changes.\n' >> sbom/README.md
         printf 'Version information is tracked via git tags, not in the filename.\n\n' >> sbom/README.md
