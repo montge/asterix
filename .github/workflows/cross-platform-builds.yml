@@ -102,33 +102,53 @@ jobs:
         $exe = "${{ github.workspace }}/install/bin/asterix.exe"
         if (Test-Path $exe) {
           & $exe --help
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "::error::Help command failed with exit code $LASTEXITCODE"
+            exit $LASTEXITCODE
+          }
           & $exe --version
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "::error::Version command failed with exit code $LASTEXITCODE"
+            exit $LASTEXITCODE
+          }
         } else {
-          Write-Host "Executable not found at $exe"
+          Write-Host "::error::Executable not found at $exe"
+          Get-ChildItem -Path "${{ github.workspace }}" -Filter "asterix.exe" -Recurse -ErrorAction SilentlyContinue
+          exit 1
         }
-      continue-on-error: true
 
     - name: Run basic integration tests (Windows)
       shell: pwsh
       run: |
-        $ErrorActionPreference = "Continue"
+        $ErrorActionPreference = "Stop"
         $exe = "${{ github.workspace }}/install/bin/asterix.exe"
         $config = "${{ github.workspace }}/asterix/config/asterix.ini"
 
         # Test 1: Help output
         Write-Host "=== Test 1: Help ===" -ForegroundColor Cyan
         & $exe --help
+        if ($LASTEXITCODE -ne 0) {
+          Write-Host "::error::Help test failed with exit code $LASTEXITCODE"
+          exit $LASTEXITCODE
+        }
 
         # Test 2: Version output
         Write-Host "`n=== Test 2: Version ===" -ForegroundColor Cyan
         & $exe --version
+        if ($LASTEXITCODE -ne 0) {
+          Write-Host "::error::Version test failed with exit code $LASTEXITCODE"
+          exit $LASTEXITCODE
+        }
 
         # Test 3: List filters (if available)
         Write-Host "`n=== Test 3: Filters ===" -ForegroundColor Cyan
         & $exe -d $config -L 2>&1 | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+          Write-Host "::error::Filter test failed with exit code $LASTEXITCODE"
+          exit $LASTEXITCODE
+        }
 
         Write-Host "`n=== Tests completed ===" -ForegroundColor Green
-      continue-on-error: true
 
     - name: Create Windows installers (Windows 2022 Release only)
       if: matrix.os == 'windows-2022' && matrix.config == 'Release'
@@ -331,14 +351,22 @@ jobs:
 
     - name: Test executable
       run: |
-        ${{ github.workspace }}/install/bin/asterix --help
-        ${{ github.workspace }}/install/bin/asterix --version
-      continue-on-error: true
+        set -e
+        exe="${{ github.workspace }}/install/bin/asterix"
+        if [ ! -f "$exe" ]; then
+          echo "::error::Executable not found at $exe"
+          find "${{ github.workspace }}" -name "asterix" -type f 2>/dev/null || true
+          exit 1
+        fi
+        echo "Testing executable: $exe"
+        "$exe" --help
+        "$exe" --version
+        echo "✅ macOS executable tests passed"
 
     - name: Run integration tests (macOS)
       run: |
         #!/bin/bash
-        set +e  # Continue on error
+        set -e  # Exit on error
 
         exe="${{ github.workspace }}/install/bin/asterix"
         config="${{ github.workspace }}/asterix/config/asterix.ini"
@@ -350,10 +378,9 @@ jobs:
         $exe --version
 
         echo -e "\n=== Test 3: List filters ==="
-        $exe -d $config -L || true
+        $exe -d $config -L
 
-        echo -e "\n=== Tests completed ==="
-      continue-on-error: true
+        echo -e "\n✅ All macOS integration tests passed"
 
     - name: Verify library linkage
       run: |
@@ -509,13 +536,27 @@ jobs:
 
     - name: Test executable
       run: |
-        ${{ github.workspace }}/install/bin/asterix --help
-        ${{ github.workspace }}/install/bin/asterix --version
-      continue-on-error: true
+        set -e
+        exe="${{ github.workspace }}/install/bin/asterix"
+        if [ ! -f "$exe" ]; then
+          echo "::error::Executable not found at $exe"
+          find "${{ github.workspace }}" -name "asterix" -type f 2>/dev/null || true
+          exit 1
+        fi
+
+        # Set LD_LIBRARY_PATH for shared library
+        export LD_LIBRARY_PATH="${{ github.workspace }}/install/lib:${LD_LIBRARY_PATH:-}"
+
+        echo "Testing executable: $exe"
+        "$exe" --help
+        "$exe" --version
+        echo "✅ Linux executable tests passed"
 
     - name: Run integration tests (Unix test.sh)
       if: matrix.config == 'Debug'
       run: |
+        set -e
+
         # Build debug version with CMake for test.sh
         cmake -B build-test \
           -DCMAKE_BUILD_TYPE=Debug \
@@ -526,10 +567,22 @@ jobs:
         cmake --build build-test --parallel $(nproc)
         cmake --install build-test
 
+        # Verify test environment
+        if [ ! -f "${{ github.workspace }}/install/test/test.sh" ]; then
+          echo "::error::test.sh not found"
+          exit 1
+        fi
+        if [ ! -f "${{ github.workspace }}/install/bin/asterix" ]; then
+          echo "::error::asterix executable not found"
+          exit 1
+        fi
+
         # Run integration tests
         cd install/test
+        chmod +x ./test.sh
         ./test.sh
-      continue-on-error: true
+
+        echo "✅ All integration tests passed"
 
     - name: Run valgrind memory check (Debug only)
       if: matrix.config == 'Debug' && matrix.os == 'ubuntu-24.04'
@@ -785,8 +838,23 @@ jobs:
 
     - name: Run Python tests
       run: |
+        set -e
+
+        # Check if test directory exists
+        if [ ! -d "asterix/test" ]; then
+          echo "::warning::asterix/test directory not found, skipping tests"
+          exit 0
+        fi
+
+        # Check if there are any test files
+        if ! find asterix/test -name "test_*.py" -type f | grep -q .; then
+          echo "::warning::No test files found in asterix/test/, skipping tests"
+          exit 0
+        fi
+
+        echo "Running Python tests..."
         python -m pytest asterix/test/ -v --cov=asterix --cov-report=xml
-      continue-on-error: true
+        echo "✅ Python tests passed"
 
     - name: Upload Python coverage
       uses: codecov/codecov-action@v5

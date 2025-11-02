@@ -148,34 +148,47 @@ jobs:
 
     - name: Run Python unit tests
       run: |
+        set -e
+
         # Check if pytest is available
         if ! python -m pytest --version >/dev/null 2>&1; then
-          echo "Warning: pytest not available, skipping pytest tests"
+          echo "::warning::pytest not available, skipping pytest tests"
           exit 0
         fi
-        # Run pytest if test directory exists and has test files
-        if [ -d "asterix/test" ] && find asterix/test -name "test_*.py" -type f | grep -q .; then
-          python -m pytest asterix/test/ -v --cov=asterix --cov-report=xml --cov-report=html || {
-            echo "::warning::pytest tests had failures"
-            exit 0  # Don't fail build on pytest failures for now
-          }
-        else
-          echo "No pytest test files found, skipping"
+
+        # Check if test directory exists and has test files
+        if [ ! -d "asterix/test" ]; then
+          echo "::warning::asterix/test directory not found, skipping pytest tests"
+          exit 0
         fi
-      continue-on-error: true
+
+        if ! find asterix/test -name "test_*.py" -type f | grep -q .; then
+          echo "::warning::No pytest test files found, skipping"
+          exit 0
+        fi
+
+        echo "Running pytest tests..."
+        python -m pytest asterix/test/ -v --cov=asterix --cov-report=xml --cov-report=html
+        echo "✅ pytest tests passed"
 
     - name: Run Python unittest
       run: |
-        # Check if unittest can find tests
-        if [ -d "asterix/test" ] && find asterix/test -name "test_*.py" -type f | grep -q .; then
-          python -m unittest discover -s asterix/test -p 'test_*.py' -v || {
-            echo "::warning::unittest tests had failures"
-            exit 0  # Don't fail build on unittest failures for now
-          }
-        else
-          echo "No unittest test files found, skipping"
+        set -e
+
+        # Check if test directory exists and has test files
+        if [ ! -d "asterix/test" ]; then
+          echo "::warning::asterix/test directory not found, skipping unittest tests"
+          exit 0
         fi
-      continue-on-error: true
+
+        if ! find asterix/test -name "test_*.py" -type f | grep -q .; then
+          echo "::warning::No unittest test files found, skipping"
+          exit 0
+        fi
+
+        echo "Running unittest tests..."
+        python -m unittest discover -s asterix/test -p 'test_*.py' -v
+        echo "✅ unittest tests passed"
 
     - name: Upload Python coverage
       uses: codecov/codecov-action@v5.5.1
