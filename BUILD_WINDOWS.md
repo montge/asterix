@@ -6,10 +6,11 @@ This document describes how to build ASTERIX on Windows without major code modif
 
 **C++ Compiler Requirements:**
 
-This project requires a C++17 compatible compiler. Supported compilers:
+This project requires a C++20 compatible compiler for Windows/MSVC builds. Supported compilers:
 
-- **Visual Studio**: 2017 version 15.3 or later (recommended: VS 2019 or VS 2022)
-  - C++17 support enabled by default in VS 2017 15.3+
+- **Visual Studio**: 2019 version 16.0 or later (recommended: VS 2022)
+  - C++20 support enabled by default in VS 2019 16.0+
+  - Note: MSVC doesn't fully support C++23 yet, so C++20 is used for Windows builds
 - **MinGW-w64 GCC**: 7.0 or later (recommended: GCC 9+)
   - Included with MSYS2 installation
 - **Clang for Windows**: 5.0 or later (optional)
@@ -23,7 +24,7 @@ This project requires a C++17 compatible compiler. Supported compilers:
 pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-expat make
 ```
 
-**Note:** This installs GCC 13+ which has full C++17 support.
+**Note:** This installs GCC 13+ which has full C++23 support (GCC-based builds use C++23, MSVC builds use C++20).
 
 ### Option 2: Visual Studio (Native Windows)
 
