@@ -125,6 +125,50 @@ add_executable(test_integration_pcap_format
     test_integration_pcap_format.cpp
 )
 
+add_executable(test_integration_cat011
+    test_integration_cat011.cpp
+)
+
+add_executable(test_integration_cat015
+    test_integration_cat015.cpp
+)
+
+add_executable(test_integration_cat019
+    test_integration_cat019.cpp
+)
+
+add_executable(test_integration_cat025
+    test_integration_cat025.cpp
+)
+
+add_executable(test_integration_cat031
+    test_integration_cat031.cpp
+)
+
+add_executable(test_integration_cat032
+    test_integration_cat032.cpp
+)
+
+add_executable(test_integration_cat063
+    test_integration_cat063.cpp
+)
+
+add_executable(test_integration_cat205
+    test_integration_cat205.cpp
+)
+
+add_executable(test_integration_cat240
+    test_integration_cat240.cpp
+)
+
+add_executable(test_integration_cat247
+    test_integration_cat247.cpp
+)
+
+add_executable(test_integration_cat252
+    test_integration_cat252.cpp
+)
+
 # Link tests with Google Test and asterix library
 if(TARGET asterix_static)
     target_link_libraries(test_category GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
@@ -152,6 +196,17 @@ if(TARGET asterix_static)
     target_link_libraries(test_integration_cat065 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_integration_error_handling GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_integration_pcap_format GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat011 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat015 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat019 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat025 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat031 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat032 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat063 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat205 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat240 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat247 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat252 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
 else()
     message(WARNING "asterix_static target not found, C++ tests will not be built")
 endif()
@@ -183,6 +238,17 @@ gtest_discover_tests(test_integration_cat062)
 gtest_discover_tests(test_integration_cat065)
 gtest_discover_tests(test_integration_error_handling)
 gtest_discover_tests(test_integration_pcap_format)
+gtest_discover_tests(test_integration_cat011)
+gtest_discover_tests(test_integration_cat015)
+gtest_discover_tests(test_integration_cat019)
+gtest_discover_tests(test_integration_cat025)
+gtest_discover_tests(test_integration_cat031)
+gtest_discover_tests(test_integration_cat032)
+gtest_discover_tests(test_integration_cat063)
+gtest_discover_tests(test_integration_cat205)
+gtest_discover_tests(test_integration_cat240)
+gtest_discover_tests(test_integration_cat247)
+gtest_discover_tests(test_integration_cat252)
 
 # Coverage flags (if enabled)
 if(ENABLE_COVERAGE)
@@ -211,6 +277,17 @@ if(ENABLE_COVERAGE)
     target_compile_options(test_integration_cat065 PRIVATE --coverage)
     target_compile_options(test_integration_error_handling PRIVATE --coverage)
     target_compile_options(test_integration_pcap_format PRIVATE --coverage)
+    target_compile_options(test_integration_cat011 PRIVATE --coverage)
+    target_compile_options(test_integration_cat015 PRIVATE --coverage)
+    target_compile_options(test_integration_cat019 PRIVATE --coverage)
+    target_compile_options(test_integration_cat025 PRIVATE --coverage)
+    target_compile_options(test_integration_cat031 PRIVATE --coverage)
+    target_compile_options(test_integration_cat032 PRIVATE --coverage)
+    target_compile_options(test_integration_cat063 PRIVATE --coverage)
+    target_compile_options(test_integration_cat205 PRIVATE --coverage)
+    target_compile_options(test_integration_cat240 PRIVATE --coverage)
+    target_compile_options(test_integration_cat247 PRIVATE --coverage)
+    target_compile_options(test_integration_cat252 PRIVATE --coverage)
 
     target_link_options(test_category PRIVATE --coverage)
     target_link_options(test_dataitem PRIVATE --coverage)
@@ -237,4 +314,15 @@ if(ENABLE_COVERAGE)
     target_link_options(test_integration_cat065 PRIVATE --coverage)
     target_link_options(test_integration_error_handling PRIVATE --coverage)
     target_link_options(test_integration_pcap_format PRIVATE --coverage)
+    target_link_options(test_integration_cat011 PRIVATE --coverage)
+    target_link_options(test_integration_cat015 PRIVATE --coverage)
+    target_link_options(test_integration_cat019 PRIVATE --coverage)
+    target_link_options(test_integration_cat025 PRIVATE --coverage)
+    target_link_options(test_integration_cat031 PRIVATE --coverage)
+    target_link_options(test_integration_cat032 PRIVATE --coverage)
+    target_link_options(test_integration_cat063 PRIVATE --coverage)
+    target_link_options(test_integration_cat205 PRIVATE --coverage)
+    target_link_options(test_integration_cat240 PRIVATE --coverage)
+    target_link_options(test_integration_cat247 PRIVATE --coverage)
+    target_link_options(test_integration_cat252 PRIVATE --coverage)
 endif()
