@@ -96,18 +96,13 @@ jobs:
         mkdir -p sbom
         
         # Use syft from environment or fallback to direct call
-        if [ -z "${SYFT_PATH}" ]; then
-          SYFT_CMD="syft"
-        else
-          SYFT_CMD="${SYFT_PATH}"
-        fi
+        SYFT_CMD="${SYFT_PATH:-syft}"
         
         # Generate SBOM for C++ project using syft
         # Scan entire repository for dependencies
         ${SYFT_CMD} packages dir:. \
-          --output cyclonedx-json \
+          -o cyclonedx-json \
           --file "${SBOM_FILE}" \
-          --scope all-layers \
           --exclude "*/build*/**" \
           --exclude "*/target/**" \
           --exclude "*/.git/**" \
@@ -115,7 +110,10 @@ jobs:
           --exclude "*/.venv/**" \
           --exclude "*/htmlcov/**" \
           --exclude "*/coverage*/**" \
-          --exclude "*/_deps/**"
+          --exclude "*/_deps/**" || {
+          echo "::error::Failed to generate C++ SBOM"
+          exit 1
+        }
         
         # Verify SBOM file was created
         if [ ! -f "${SBOM_FILE}" ]; then
@@ -156,17 +154,16 @@ jobs:
         # Generate SBOM for Python dependencies if requirements files exist
         if [ -f "requirements.txt" ] || [ -f "setup.py" ]; then
           # Use syft from environment or fallback to direct call
-          if [ -z "${SYFT_PATH}" ]; then
-            SYFT_CMD="syft"
-          else
-            SYFT_CMD="${SYFT_PATH}"
-          fi
+          SYFT_CMD="${SYFT_PATH:-syft}"
           
           ${SYFT_CMD} packages python:. \
-            --output cyclonedx-json \
+            -o cyclonedx-json \
             --file "${SBOM_FILE}" \
             --exclude "*/build*/**" \
-            --exclude "*/.git/**"
+            --exclude "*/.git/**" || {
+            echo "::warning::Failed to generate Python SBOM, continuing..."
+            exit 0
+          }
           
           # Verify SBOM file was created
           if [ ! -f "${SBOM_FILE}" ]; then
@@ -206,16 +203,16 @@ jobs:
         # Generate SBOM for Rust crate if Cargo.toml exists
         if [ -f "asterix-rs/Cargo.toml" ]; then
           # Use syft from environment or fallback to direct call
-          if [ -z "${SYFT_PATH}" ]; then
-            SYFT_CMD="syft"
-          else
-            SYFT_CMD="${SYFT_PATH}"
-          fi
+          SYFT_CMD="${SYFT_PATH:-syft}"
           
           cd asterix-rs
           ${SYFT_CMD} packages cargo:. \
-            --output cyclonedx-json \
-            --file "../${SBOM_FILE}"
+            -o cyclonedx-json \
+            --file "../${SBOM_FILE}" || {
+            echo "::warning::Failed to generate Rust SBOM, continuing..."
+            cd ..
+            exit 0
+          }
           cd ..
           
           # Verify SBOM file was created
@@ -252,40 +249,29 @@ jobs:
         VERSION="${{ steps.read-version.outputs.version }}"
         mkdir -p sbom
         
-        # Create README with proper escaping
-        {
-          echo "# Software Bill of Materials (SBOM)"
-          echo ""
-          echo "This directory contains CycloneDX format SBOM files for the ASTERIX project."
-          echo ""
-          echo "## Files"
-          echo ""
-          echo "- **asterix-sbom.json** - Main SBOM for C++ core library (version tracked via git tags)"
-          echo "- **asterix-python-sbom.json** - SBOM for Python bindings (if applicable)"
-          echo "- **asterix-rust-sbom.json** - SBOM for Rust crate (if applicable)"
-          echo ""
-          echo "## Version Information"
-          echo ""
-          echo "- **Current Version**: ${VERSION}"
-          echo "- **Git Tag**: v${VERSION}"
-          echo "- **Generated**: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          echo "- **Commit**: ${GITHUB_SHA}"
-          echo ""
-          echo "## How to Use"
-          echo ""
-          echo "SBOM files are automatically generated and committed to this repository when the version changes."
-          echo "Version information is tracked via git tags, not in the filename."
-          echo ""
-          echo "To view version for a specific commit:"
-          echo '```bash'
-          echo 'git show <commit>:sbom/asterix-sbom.json | jq .metadata.component.version'
-          echo '```'
-          echo ""
-          echo "To view SBOM for a specific version tag:"
-          echo '```bash'
-          echo "git show v${VERSION}:sbom/asterix-sbom.json"
-          echo '```'
-        } > sbom/README.md
+        # Create README using printf to avoid YAML parsing issues
+        printf '# Software Bill of Materials (SBOM)\n\n' > sbom/README.md
+        printf 'This directory contains CycloneDX format SBOM files for the ASTERIX project.\n\n' >> sbom/README.md
+        printf '## Files\n\n' >> sbom/README.md
+        printf '- **asterix-sbom.json** - Main SBOM for C++ core library (version tracked via git tags)\n' >> sbom/README.md
+        printf '- **asterix-python-sbom.json** - SBOM for Python bindings (if applicable)\n' >> sbom/README.md
+        printf '- **asterix-rust-sbom.json** - SBOM for Rust crate (if applicable)\n\n' >> sbom/README.md
+        printf '## Version Information\n\n' >> sbom/README.md
+        printf '- **Current Version**: %s\n' "${VERSION}" >> sbom/README.md
+        printf '- **Git Tag**: v%s\n' "${VERSION}" >> sbom/README.md
+        printf '- **Generated**: %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> sbom/README.md
+        printf '- **Commit**: %s\n\n' "${GITHUB_SHA}" >> sbom/README.md
+        printf '## How to Use\n\n' >> sbom/README.md
+        printf 'SBOM files are automatically generated and committed to this repository when the version changes.\n' >> sbom/README.md
+        printf 'Version information is tracked via git tags, not in the filename.\n\n' >> sbom/README.md
+        printf 'To view version for a specific commit:\n' >> sbom/README.md
+        printf '```bash\n' >> sbom/README.md
+        printf 'git show <commit>:sbom/asterix-sbom.json | jq .metadata.component.version\n' >> sbom/README.md
+        printf '```\n\n' >> sbom/README.md
+        printf 'To view SBOM for a specific version tag:\n' >> sbom/README.md
+        printf '```bash\n' >> sbom/README.md
+        printf 'git show v%s:sbom/asterix-sbom.json\n' "${VERSION}" >> sbom/README.md
+        printf '```\n' >> sbom/README.md
         
         echo "Created sbom/README.md"
 
