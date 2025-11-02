@@ -172,7 +172,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload Windows artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: asterix-windows-${{ matrix.os }}-${{ matrix.config }}
         path: |
@@ -327,7 +327,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload macOS artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: asterix-macos-${{ matrix.os }}-${{ matrix.config }}
         path: |
@@ -474,7 +474,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload Linux artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: asterix-linux-${{ matrix.os }}-${{ matrix.config }}
         path: |
@@ -580,7 +580,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload ARM64 Linux artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: asterix-linux-arm64-${{ matrix.distro }}-${{ matrix.config }}
         path: |
