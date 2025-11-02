@@ -13,7 +13,7 @@ on:
       force_regenerate:
         description: 'Force regenerate even if SBOM exists'
         required: false
-        default: 'false'
+        default: false
         type: boolean
 
 permissions:
@@ -56,8 +56,6 @@ jobs:
 
     - name: Install Syft
       uses: anchore/sbom-action/download-syft@v0
-      with:
-        download-version: 'latest'
 
     - name: Install jq for JSON processing
       run: |
@@ -187,39 +185,42 @@ jobs:
       if: always()
       run: |
         VERSION="${{ steps.read-version.outputs.version }}"
-        cat > sbom/README.md << EOF
-# Software Bill of Materials (SBOM)
-
-This directory contains CycloneDX format SBOM files for the ASTERIX project.
-
-## Files
-
-- **asterix-sbom.json** - Main SBOM for C++ core library (version tracked via git tags)
-- **asterix-python-sbom.json** - SBOM for Python bindings (if applicable)
-- **asterix-rust-sbom.json** - SBOM for Rust crate (if applicable)
-
-## Version Information
-
-- **Current Version**: ${VERSION}
-- **Git Tag**: v${VERSION}
-- **Generated**: $(date -u +%Y-%m-%dT%H:%M:%SZ)
-- **Commit**: ${GITHUB_SHA}
-
-## How to Use
-
-SBOM files are automatically generated and committed to this repository when the version changes.
-Version information is tracked via git tags, not in the filename.
-
-To view version for a specific commit:
-\`\`\`bash
-git show <commit>:sbom/asterix-sbom.json | jq .metadata.component.version
-\`\`\`
-
-To view SBOM for a specific version tag:
-\`\`\`bash
-git show v${VERSION}:sbom/asterix-sbom.json
-\`\`\`
-EOF
+        mkdir -p sbom
+        cat > sbom/README.md << 'HEREDOC_EOF'
+        # Software Bill of Materials (SBOM)
+        
+        This directory contains CycloneDX format SBOM files for the ASTERIX project.
+        
+        ## Files
+        
+        - **asterix-sbom.json** - Main SBOM for C++ core library (version tracked via git tags)
+        - **asterix-python-sbom.json** - SBOM for Python bindings (if applicable)
+        - **asterix-rust-sbom.json** - SBOM for Rust crate (if applicable)
+        
+        ## Version Information
+        
+        - **Current Version**: HEREDOC_EOF
+        echo "- **Current Version**: ${VERSION}" >> sbom/README.md
+        echo "- **Git Tag**: v${VERSION}" >> sbom/README.md
+        echo "- **Generated**: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> sbom/README.md
+        echo "- **Commit**: ${GITHUB_SHA}" >> sbom/README.md
+        cat >> sbom/README.md << 'HEREDOC_EOF'
+        
+        ## How to Use
+        
+        SBOM files are automatically generated and committed to this repository when the version changes.
+        Version information is tracked via git tags, not in the filename.
+        
+        To view version for a specific commit:
+        ```bash
+        git show <commit>:sbom/asterix-sbom.json | jq .metadata.component.version
+        ```
+        
+        To view SBOM for a specific version tag:
+        ```bash
+        git show vHEREDOC_EOF
+        echo "git show v${VERSION}:sbom/asterix-sbom.json" >> sbom/README.md
+        echo '```' >> sbom/README.md
         echo "Created sbom/README.md"
 
     - name: Commit SBOM files
