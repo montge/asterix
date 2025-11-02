@@ -348,6 +348,13 @@ install(DIRECTORY asterix/config/
     FILES_MATCHING PATTERN "*.xml" PATTERN "*.dtd" PATTERN "*.ini"
 )
 
+# Create symlinks for backwards compatibility with Makefile-based test.sh
+# Tests expect config at install/config/ and sample_data at install/sample_data/
+install(CODE "
+    file(CREATE_LINK \"\${CMAKE_INSTALL_PREFIX}/share/asterix/config\" \"\${CMAKE_INSTALL_PREFIX}/config\" SYMBOLIC)
+    file(CREATE_LINK \"\${CMAKE_INSTALL_PREFIX}/share/asterix/samples\" \"\${CMAKE_INSTALL_PREFIX}/sample_data\" SYMBOLIC)
+")
+
 # Install sample data (optional)
 install(DIRECTORY asterix/sample_data/
     DESTINATION share/asterix/samples
