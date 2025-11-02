@@ -9,6 +9,8 @@
 [![Security Hardened](https://img.shields.io/badge/security-hardened-green.svg)](#security-features)
 [![PyPI](https://img.shields.io/pypi/v/asterix_decoder.svg)](https://pypi.org/project/asterix_decoder/)
 [![Python Versions](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)](https://github.com/montge/asterix)
+[![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
+[![crates.io](https://img.shields.io/badge/crates.io-asterix--decoder-orange.svg)](https://crates.io/)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 
 > Professional ASTERIX protocol decoder for Air Traffic Management surveillance data
@@ -59,12 +61,15 @@ More about ASTERIX protocol: http://www.eurocontrol.int/services/asterix
 ## Features
 
 - **Multi-format support**: PCAP, raw binary, FINAL, HDLC, GPS
-- **Python module** with simple, intuitive API (3.10-3.14)
+- **Three language bindings**: C++23, Python (3.10-3.14), Rust (1.70+)
+- **Python module** with simple, intuitive API
+- **Rust crate** with type-safe, zero-copy parsing
 - **Fast C++ executable** for command-line use (C++23/C23)
 - **Cross-platform**: Linux, Windows, macOS (Intel & ARM M1)
 - **Multiple output formats**: JSON, XML, human-readable text
 - **Network streaming** via UDP multicast
 - **Modern C++23 features**: Ranges algorithms, deduced this (5-10% faster, 15-20% potential)
+- **Memory safety**: Rust bindings with safe FFI via CXX crate
 - **24 ASTERIX categories** supported (CAT 001-252)
 - **92.2% test coverage** | 560 passing tests | 0 memory leaks
 - **DO-278A compliant** development process for aviation software safety
@@ -86,7 +91,7 @@ This decoder is optimized for high-throughput, real-time processing of ASTERIX s
 
 ## Quick Start
 
-### Python Module (Recommended)
+### Python Module
 
 ```bash
 pip install asterix_decoder
@@ -106,21 +111,52 @@ for record in parsed:
     print(asterix.describe(record))
 ```
 
+### Rust Crate
+
+```bash
+cargo add asterix-decoder
+```
+
+```rust
+use asterix_decoder::{init_default, parse, ParseOptions};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Initialize ASTERIX with default config
+    init_default()?;
+
+    // Read and parse ASTERIX data
+    let data = std::fs::read("capture.pcap")?;
+    let records = parse(&data, ParseOptions::default())?;
+
+    // Display results
+    for record in records {
+        println!("Category {}: {} items", record.category, record.items.len());
+    }
+
+    Ok(())
+}
+```
+
 ### Pre-built Packages
 
 Download pre-built packages from [GitHub Releases](https://github.com/montge/asterix/releases):
 
-| Platform | Package Type | C++ Standard | Installation |
-|----------|--------------|--------------|--------------|
-| **Ubuntu 22.04/24.04** | `.deb` | C++23 (GCC 13+) | `sudo dpkg -i asterix_*.deb` |
-| **Ubuntu 20.04** | `.deb` | C++17 (GCC 11) | `sudo dpkg -i asterix_*.deb` |
-| **Debian 11/12** | `.deb` | C++23 (GCC 13+) | `sudo dpkg -i asterix_*.deb` |
-| **RHEL/Rocky 9** | `.rpm` | C++23 (GCC 13+) | `sudo rpm -i asterix-*.rpm` |
-| **Fedora 40** | `.rpm` | C++23 (GCC 14) | `sudo rpm -i asterix-*.rpm` |
-| **Linux ARM64** | `.deb`/`.tar.gz` | C++23 (GCC 13+) | Raspberry Pi, AWS Graviton, NVIDIA Jetson |
-| **Windows 10/11** | `.zip`/`.msi`/`.exe` | C++23 (MSVC 2022) | MSI (WiX), EXE (NSIS), ZIP (portable) |
-| **macOS 13+ (Intel)** | `.tar.gz`/`.pkg` | C++23 (AppleClang 15+) | See [CROSS_PLATFORM_BUILD_GUIDE.md](CROSS_PLATFORM_BUILD_GUIDE.md) |
-| **macOS 14+ (M1/M2)** | `.tar.gz`/`.pkg`/`.dmg` | C++23 (AppleClang 15+) | See [CROSS_PLATFORM_BUILD_GUIDE.md](CROSS_PLATFORM_BUILD_GUIDE.md) |
+| Platform | Package Type | C++ Standard | Python | Rust | Installation |
+|----------|--------------|--------------|--------|------|--------------|
+| **Ubuntu 22.04/24.04** | `.deb` | C++23 (GCC 13+) | 3.10-3.14 | 1.70+ | `sudo dpkg -i asterix_*.deb` |
+| **Ubuntu 20.04** | `.deb` | C++17 (GCC 11) | 3.10-3.14 | 1.70+ | `sudo dpkg -i asterix_*.deb` |
+| **Debian 11/12** | `.deb` | C++23 (GCC 13+) | 3.10-3.14 | 1.70+ | `sudo dpkg -i asterix_*.deb` |
+| **RHEL/Rocky 9** | `.rpm` | C++23 (GCC 13+) | 3.10-3.14 | 1.70+ | `sudo rpm -i asterix-*.rpm` |
+| **Fedora 40** | `.rpm` | C++23 (GCC 14) | 3.10-3.14 | 1.70+ | `sudo rpm -i asterix-*.rpm` |
+| **Linux ARM64** | `.deb`/`.tar.gz` | C++23 (GCC 13+) | 3.10-3.14 | 1.70+ | Raspberry Pi, AWS Graviton, NVIDIA Jetson |
+| **Windows 10/11** | `.zip`/`.msi`/`.exe` | C++23 (MSVC 2022) | 3.10-3.14 | 1.70+ | MSI (WiX), EXE (NSIS), ZIP (portable) |
+| **macOS 13+ (Intel)** | `.tar.gz`/`.pkg` | C++23 (AppleClang 15+) | 3.10-3.14 | 1.70+ | See [CROSS_PLATFORM_BUILD_GUIDE.md](CROSS_PLATFORM_BUILD_GUIDE.md) |
+| **macOS 14+ (M1/M2)** | `.tar.gz`/`.pkg`/`.dmg` | C++23 (AppleClang 15+) | 3.10-3.14 | 1.70+ | See [CROSS_PLATFORM_BUILD_GUIDE.md](CROSS_PLATFORM_BUILD_GUIDE.md) |
+
+**Language-Specific Packages:**
+- **Python**: `pip install asterix_decoder` (PyPI)
+- **Rust**: `cargo add asterix-decoder` (crates.io)
+- **C++**: Pre-built binaries above or build from source
 
 ### Build from Source
 
@@ -137,12 +173,20 @@ cd ../install
 python setup.py install
 ```
 
+**Rust crate:**
+```bash
+cd asterix-rs
+cargo build --release
+cargo test
+```
+
 **Dependencies:**
 - **C++23 compatible compiler** (upgraded from C++17):
   - GCC 13.0+ (recommended for full C++23 support)
   - Clang 16.0+ (recommended for full C++23 support)
   - MSVC 2022 v17.4+ / Visual Studio 2022 version 17.4+
   - AppleClang 15.0+ / Xcode 15+
+- **Rust**: 1.70+ (for Rust bindings)
 - Linux/macOS: `libexpat-devel` (XML parsing)
 - Windows: See [BUILD_WINDOWS.md](BUILD_WINDOWS.md)
 
@@ -151,7 +195,9 @@ python setup.py install
 ## Documentation
 
 - **Installation Guide**: [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md)
-- **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md) (Coming soon)
+- **Language Bindings Comparison**: [LANGUAGE_BINDINGS_COMPARISON.md](LANGUAGE_BINDINGS_COMPARISON.md) - Feature comparison, performance, use cases
+- **Rust Bindings**: [RUST_BINDINGS_INDEX.md](RUST_BINDINGS_INDEX.md) - Complete Rust documentation
+- **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md)
 - **Architecture Overview**: [CLAUDE.md](CLAUDE.md) - Technical architecture
 - **Packaging Status**: [PACKAGING_AND_CI_STATUS.md](PACKAGING_AND_CI_STATUS.md)
 - **ASTERIX Specifications**: [asterix-specs-converter/](asterix-specs-converter/README.md)
@@ -268,9 +314,69 @@ print(description)
 asterix.init('/path/to/custom_asterix_cat.xml')
 ```
 
+### Rust API
+
+**Basic parsing:**
+```rust
+use asterix_decoder::{init_default, parse, ParseOptions};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    init_default()?;
+
+    let data = vec![0x30, 0x00, 0x30, 0xfd]; // Raw ASTERIX bytes
+    let records = parse(&data, ParseOptions::default())?;
+
+    for record in records {
+        println!("{:?}", record);
+    }
+    Ok(())
+}
+```
+
+**Incremental parsing for large streams:**
+```rust
+use asterix_decoder::{parse_with_offset, ParseOptions};
+
+let mut offset = 0;
+let blocks_to_read = 10;
+
+loop {
+    let result = parse_with_offset(&data, offset, blocks_to_read, ParseOptions::default())?;
+
+    if result.records.is_empty() {
+        break;
+    }
+
+    for record in result.records {
+        process_record(record);
+    }
+
+    offset = result.bytes_consumed;
+}
+```
+
+**Get human-readable descriptions:**
+```rust
+use asterix_decoder::describe;
+
+// Get description for a specific value
+let description = describe(48, "010", "SAC", 7)?;
+println!("{}", description);
+```
+
+**Load custom category definitions:**
+```rust
+use asterix_decoder::Parser;
+
+// Create parser with custom category
+let parser = Parser::new()
+    .add_category("/path/to/custom_asterix_cat.xml")?
+    .build()?;
+```
+
 ### More Examples
 
-See [asterix/examples/](asterix/examples/) directory for complete examples:
+**Python examples** - [asterix/examples/](asterix/examples/):
 - [`read_raw_bytes.py`](asterix/examples/read_raw_bytes.py) - Parse from byte array
 - [`read_raw_file.py`](asterix/examples/read_raw_file.py) - Parse from file
 - [`read_pcap_file.py`](asterix/examples/read_pcap_file.py) - Parse PCAP capture
@@ -278,6 +384,15 @@ See [asterix/examples/](asterix/examples/) directory for complete examples:
 - [`multicast_receive.py`](asterix/examples/multicast_receive.py) - Receive multicast stream
 - [`multicast_send_receive.py`](asterix/examples/multicast_send_receive.py) - Full multicast demo
 - [`xml_parser.py`](asterix/examples/xml_parser.py) - Work with XML definitions
+
+**Rust examples** - [asterix-rs/examples/](asterix-rs/examples/):
+- [`parse_raw.rs`](asterix-rs/examples/parse_raw.rs) - Parse from byte array
+- [`parse_file.rs`](asterix-rs/examples/parse_file.rs) - Parse from file
+- [`parse_pcap.rs`](asterix-rs/examples/parse_pcap.rs) - Parse PCAP capture with incremental parsing
+- [`incremental_parsing.rs`](asterix-rs/examples/incremental_parsing.rs) - Efficient stream processing
+- [`json_export.rs`](asterix-rs/examples/json_export.rs) - Export to JSON
+- [`describe_category.rs`](asterix-rs/examples/describe_category.rs) - Query category metadata
+- [`stream_processing.rs`](asterix-rs/examples/stream_processing.rs) - Real-time stream processing
 
 ## Development
 
@@ -298,6 +413,10 @@ pip install -e .
 # Python tests
 python -m unittest
 
+# Rust tests
+cd asterix-rs
+cargo test --all-features
+
 # C++ integration tests
 cd install/test
 ./test.sh
@@ -305,6 +424,10 @@ cd install/test
 # Memory leak tests (requires valgrind)
 cd install/test
 ./valgrind_test.sh
+
+# Rust benchmarks
+cd asterix-rs
+cargo bench
 ```
 
 ### Build System
@@ -393,7 +516,28 @@ See [SECURITY_AUDIT_REPORT.md](SECURITY_AUDIT_REPORT.md) for detailed security a
 
 ## ASTERIX Specification Updates
 
-Category definitions are sourced from [asterix-specs](https://github.com/zoranbosnjak/asterix-specs) and converted to XML format.
+### Specification Sources
+
+ASTERIX category definitions are obtained and maintained from multiple sources:
+
+**Primary Source (Upstream Community):**
+- **Repository**: [asterix-specs](https://github.com/zoranbosnjak/asterix-specs) by Zoran Bosnjak
+- **Online Catalog**: https://zoranbosnjak.github.io/asterix-specs/
+- **Format**: JSON (converted to XML for this project)
+- **Converter**: `asterix-specs-converter/asterixjson2xml.py`
+- **Update Frequency**: Monitor upstream for new category versions
+
+**Original Authority:**
+- **EUROCONTROL**: http://www.eurocontrol.int/services/asterix
+- **Format**: PDF specifications (unstructured)
+- **Note**: Community JSON specs are structured versions of these PDFs
+
+**Conversion Pipeline:**
+```
+EUROCONTROL PDF → Community .ast/.json → Our .xml (via asterixjson2xml.py)
+```
+
+### How to Update Specifications
 
 To update specifications:
 ```bash
