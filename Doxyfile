@@ -6,7 +6,7 @@
 
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "ASTERIX Decoder C++ API"
-PROJECT_NUMBER         = "2.8.9"
+PROJECT_NUMBER         = "2.8.10"
 PROJECT_BRIEF          = "C++ API for parsing EUROCONTROL ASTERIX protocol data"
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = docs/cpp

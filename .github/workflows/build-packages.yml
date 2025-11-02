@@ -9,15 +9,15 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to build (e.g., 2.8.9)'
+        description: 'Version to build (e.g., 2.8.10)'
         required: false
-        default: '2.8.9'
+        default: '2.8.10'
 
 permissions:
   contents: write  # Required for creating releases
 
 env:
-  PACKAGE_VERSION: ${{ github.event.inputs.version || '2.8.9' }}
+  PACKAGE_VERSION: ${{ github.event.inputs.version || '2.8.10' }}
 
 jobs:
   # Build Debian/Ubuntu packages
@@ -27,8 +27,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - distro: ubuntu:20.04
-            name: ubuntu-20.04-focal
           - distro: ubuntu:22.04
             name: ubuntu-22.04-jammy
           - distro: ubuntu:24.04

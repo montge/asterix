@@ -24,7 +24,7 @@ cmake_minimum_required(VERSION 3.20)
 
 # Project version - update for releases
 project(asterix
-    VERSION 2.8.9
+    VERSION 2.8.10
     DESCRIPTION "ASTERIX protocol decoder library and tools"
     LANGUAGES C CXX)
 
