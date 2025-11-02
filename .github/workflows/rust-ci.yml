@@ -111,7 +111,16 @@ jobs:
     - name: Run tests
       run: |
         cd asterix-rs
-        cargo test --verbose --all-features
+        # Check if Cargo.toml exists
+        if [ ! -f "Cargo.toml" ]; then
+          echo "Error: Cargo.toml not found in asterix-rs/"
+          exit 1
+        fi
+        # Run tests with better error reporting
+        cargo test --verbose --all-features || {
+          echo "::error::Rust tests failed"
+          exit 1
+        }
       continue-on-error: ${{ matrix.rust == 'nightly' }}
 
     - name: Run clippy (strict)
