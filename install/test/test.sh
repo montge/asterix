@@ -1,9 +1,20 @@
 #!/bin/bash
 
 failedtests=0
-exec="../../obj/main/release/asterix"
-execd="../../obj/main/debug/asterix"
+# CMake installs executable to bin/ directory
+# When run from install/test, executable is at ../bin/asterix
+exec="../bin/asterix"
+execd="../bin/asterix"  # Debug version also installed to same location by CMake
 config="../config/asterix.ini"
+
+# Verify executable exists
+if [ ! -f "${exec}" ]; then
+    echo "Error: Executable not found at ${exec}"
+    echo "Current directory: $(pwd)"
+    echo "Looking for executable in:"
+    find .. -name "asterix" -type f 2>/dev/null || echo "No asterix executable found"
+    exit 1
+fi
 
 test_compare () {
 	result=$($2)
