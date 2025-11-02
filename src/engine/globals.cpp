@@ -43,3 +43,9 @@ int gHeartbeat = 0;
 
 // Path to ASTERIX definitions file
 const char* gAsterixDefinitionsFile = nullptr;
+
+// Global filtering flag - controls data filtering behavior
+bool gFiltering = false;
+
+// Global synchronous flag - controls synchronous packet processing
+bool gSynchronous = false;

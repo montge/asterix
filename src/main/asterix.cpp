@@ -36,12 +36,14 @@
 #include "../engine/converterengine.hxx"
 #include "../engine/channelfactory.hxx"
 
-bool gVerbose = false;
-bool gSynchronous = false;
-bool gForceRouting = false;
-int gHeartbeat = 0;
-const char *gAsterixDefinitionsFile = NULL;
-bool gFiltering = false;
+// These globals are now defined in src/engine/globals.cpp (part of the library)
+// Declare them as extern to use the library definitions
+extern bool gVerbose;
+extern bool gSynchronous;
+extern bool gForceRouting;
+extern int gHeartbeat;
+extern const char *gAsterixDefinitionsFile;
+extern bool gFiltering;
 
 static void DisplayCopyright() {
     std::cerr << "Asterix " _VERSION_STR " " __DATE__;
