@@ -15,12 +15,32 @@ permissions:
   contents: write  # Required for creating releases
   actions: read    # Required for checking CI status
 
-env:
-  NIGHTLY_VERSION: "2.8.10-nightly"
-
 jobs:
+  # Get version from VERSION file
+  get-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.read-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Read version from VERSION file
+        id: read-version
+        run: |
+          # Extract CPP_VERSION or PROJECT_VERSION (whitespace-insensitive)
+          VERSION=$(grep -E '^CPP_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+          if [ -z "$VERSION" ]; then
+            VERSION=$(grep -E '^PROJECT_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+          fi
+          if [ -z "$VERSION" ]; then
+            # Fallback: first non-comment line
+            VERSION=$(grep -v '^#' VERSION | grep -v '^$' | head -n 1 | tr -d '[:space:]')
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Using version: ${VERSION}"
+
   # Check if CI passed before building packages
   check-ci-status:
+    needs: get-version
     name: Check CI Status
     runs-on: ubuntu-latest
     outputs:
@@ -81,7 +101,7 @@ jobs:
   # Build Debian/Ubuntu nightly packages
   build-deb-nightly:
     name: Nightly DEB (${{ matrix.distro }})
-    needs: check-ci-status
+    needs: [get-version, check-ci-status]
     if: needs.check-ci-status.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     strategy:
@@ -116,8 +136,17 @@ jobs:
 
     - name: Update version to nightly
       run: |
+        # Extract CPP_VERSION or PROJECT_VERSION from VERSION file
+        VERSION=$(grep -E '^CPP_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+        if [ -z "$VERSION" ]; then
+          VERSION=$(grep -E '^PROJECT_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+        fi
+        if [ -z "$VERSION" ]; then
+          VERSION=$(grep -v '^#' VERSION | grep -v '^$' | head -n 1 | tr -d '[:space:]')
+        fi
+        NIGHTLY_DATE=$(date +%Y%m%d)
         # Update debian/changelog with nightly version
-        sed -i "1s/2.8.10-1/2.8.10-nightly-$(date +%Y%m%d)/g" debian/changelog
+        sed -i "1s/${VERSION}-1/${VERSION}-nightly-${NIGHTLY_DATE}/g" debian/changelog
 
     - name: Build Debian package
       run: |
@@ -137,7 +166,7 @@ jobs:
   # Build RPM nightly packages
   build-rpm-nightly:
     name: Nightly RPM (${{ matrix.distro }})
-    needs: check-ci-status
+    needs: [get-version, check-ci-status]
     if: needs.check-ci-status.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     strategy:
@@ -181,15 +210,31 @@ jobs:
 
     - name: Update version to nightly
       run: |
+        # Extract CPP_VERSION or PROJECT_VERSION from VERSION file
+        VERSION=$(grep -E '^CPP_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+        if [ -z "$VERSION" ]; then
+          VERSION=$(grep -E '^PROJECT_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+        fi
+        if [ -z "$VERSION" ]; then
+          VERSION=$(grep -v '^#' VERSION | grep -v '^$' | head -n 1 | tr -d '[:space:]')
+        fi
         NIGHTLY_DATE=$(date +%Y%m%d)
         sed -i "s/Release:        1/Release:        0.nightly.${NIGHTLY_DATE}/g" asterix.spec
 
     - name: Create source tarball
       run: |
-        mkdir -p /tmp/asterix-${NIGHTLY_VERSION}
-        cp -r . /tmp/asterix-${NIGHTLY_VERSION}/
+        # Extract CPP_VERSION or PROJECT_VERSION from VERSION file
+        VERSION=$(grep -E '^CPP_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+        if [ -z "$VERSION" ]; then
+          VERSION=$(grep -E '^PROJECT_VERSION[ \t]*=' VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+        fi
+        if [ -z "$VERSION" ]; then
+          VERSION=$(grep -v '^#' VERSION | grep -v '^$' | head -n 1 | tr -d '[:space:]')
+        fi
+        mkdir -p /tmp/asterix-${VERSION}-nightly
+        cp -r . /tmp/asterix-${VERSION}-nightly/
         cd /tmp
-        tar czf ~/rpmbuild/SOURCES/asterix-2.8.10.tar.gz asterix-${NIGHTLY_VERSION}
+        tar czf ~/rpmbuild/SOURCES/asterix-${VERSION}.tar.gz asterix-${VERSION}-nightly
 
     - name: Build RPM package
       run: |
@@ -209,7 +254,7 @@ jobs:
   # Build source archives
   build-source-nightly:
     name: Nightly Source Archives
-    needs: check-ci-status
+    needs: [get-version, check-ci-status]
     if: needs.check-ci-status.outputs.should_build == 'true'
     runs-on: ubuntu-latest
 
@@ -237,9 +282,17 @@ jobs:
     - name: Rename to nightly
       run: |
         cd build
+        # Extract CPP_VERSION or PROJECT_VERSION from VERSION file
+        VERSION=$(grep -E '^CPP_VERSION[ \t]*=' ../VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+        if [ -z "$VERSION" ]; then
+          VERSION=$(grep -E '^PROJECT_VERSION[ \t]*=' ../VERSION | sed -E 's/^[^=]+=[ \t]*//' | head -n 1 | tr -d '[:space:]')
+        fi
+        if [ -z "$VERSION" ]; then
+          VERSION=$(grep -v '^#' ../VERSION | grep -v '^$' | head -n 1 | tr -d '[:space:]')
+        fi
         NIGHTLY_DATE=$(date +%Y%m%d)
-        for file in asterix-2.8.10-*; do
-          mv "$file" "${file/2.8.10/2.8.10-nightly-${NIGHTLY_DATE}}"
+        for file in asterix-${VERSION}-*; do
+          mv "$file" "${file/${VERSION}/${VERSION}-nightly-${NIGHTLY_DATE}}"
         done
 
     - name: List packages

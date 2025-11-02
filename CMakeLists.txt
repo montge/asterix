@@ -22,9 +22,41 @@
 
 cmake_minimum_required(VERSION 3.20)
 
-# Project version - update for releases
+# Read version from VERSION file
+# Supports key=value format with CPP_VERSION or PROJECT_VERSION
+file(READ "${CMAKE_SOURCE_DIR}/VERSION" VERSION_FILE_CONTENT)
+string(STRIP "${VERSION_FILE_CONTENT}" VERSION_FILE_CONTENT)
+
+# Extract CPP_VERSION or PROJECT_VERSION (whitespace-insensitive)
+string(REGEX MATCH "CPP_VERSION[ \t]*=[ \t]*([0-9]+\\.[0-9]+\\.[0-9]+)" CPP_MATCH "${VERSION_FILE_CONTENT}")
+if(CPP_MATCH)
+    set(PROJECT_VERSION_STRING ${CMAKE_MATCH_1})
+else()
+    # Fallback to PROJECT_VERSION
+    string(REGEX MATCH "PROJECT_VERSION[ \t]*=[ \t]*([0-9]+\\.[0-9]+\\.[0-9]+)" PROJ_MATCH "${VERSION_FILE_CONTENT}")
+    if(PROJ_MATCH)
+        set(PROJECT_VERSION_STRING ${CMAKE_MATCH_1})
+    else()
+        # Legacy format: single line with just version number
+        file(STRINGS "${CMAKE_SOURCE_DIR}/VERSION" PROJECT_VERSION_STRING LIMIT_COUNT 1)
+        string(STRIP "${PROJECT_VERSION_STRING}" PROJECT_VERSION_STRING)
+    endif()
+endif()
+
+# Parse version components (MAJOR.MINOR.PATCH)
+string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.([0-9]+)" VERSION_MATCH "${PROJECT_VERSION_STRING}")
+if(NOT VERSION_MATCH)
+    message(FATAL_ERROR "Invalid version format in VERSION file: ${PROJECT_VERSION_STRING}. Expected format: MAJOR.MINOR.PATCH")
+endif()
+
+set(PROJECT_VERSION_MAJOR ${CMAKE_MATCH_1})
+set(PROJECT_VERSION_MINOR ${CMAKE_MATCH_2})
+set(PROJECT_VERSION_PATCH ${CMAKE_MATCH_3})
+set(PROJECT_VERSION ${PROJECT_VERSION_STRING})
+
+# Project version - read from VERSION file
 project(asterix
-    VERSION 2.8.10
+    VERSION ${PROJECT_VERSION_STRING}
     DESCRIPTION "ASTERIX protocol decoder library and tools"
     LANGUAGES C CXX)
 
@@ -228,13 +260,22 @@ if(BUILD_STATIC_LIBS)
     )
 endif()
 
+# Generate version.h from template
+configure_file(
+    "${CMAKE_SOURCE_DIR}/src/main/version.h.in"
+    "${CMAKE_BINARY_DIR}/version.h"
+    @ONLY
+)
+
 # Build executable (CLI)
 if(BUILD_EXECUTABLE)
     add_executable(asterix_exe
         src/main/asterix.cpp
         src/main/asterix.h
-        src/main/version.h
     )
+    
+    # Use generated version.h from build directory
+    target_include_directories(asterix_exe PRIVATE ${CMAKE_BINARY_DIR})
 
     set_target_properties(asterix_exe PROPERTIES
         OUTPUT_NAME asterix
