@@ -537,8 +537,8 @@ python3 -m pytest asterix/test/ -v --cov=asterix --cov-report=term-missing
 
 The `.github/workflows/cross-platform-builds.yml` workflow runs automated tests on:
 
-- **Windows**: windows-2019, windows-2022 (MSVC)
-- **macOS**: macos-13 (Intel x86_64), macos-14 (ARM64)
+- **Windows**: windows-2022, windows-2025 (MSVC)
+- **macOS**: macos-14, macos-15 (ARM64)
 - **Linux**: ubuntu-22.04, ubuntu-24.04 (GCC)
 - **Python**: 3.9, 3.10, 3.11, 3.12, 3.13 (all platforms)
 

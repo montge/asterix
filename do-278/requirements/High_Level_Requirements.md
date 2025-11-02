@@ -2,7 +2,7 @@
 ## ASTERIX Decoder - DO-278A AL-3
 
 **Document ID:** HLR-ASTERIX-001
-**Revision:** 1.0
+**Revision:** 2.0
 **Date:** 2025-10-17
 **Assurance Level:** AL-3 (Major)
 
@@ -208,6 +208,633 @@ Category 062 contains processed track data from tracker systems, essential for A
 **DO-278A Traceability:** Objective 1.1
 
 ---
+
+## 3. Category-Specific Requirements
+
+### REQ-HLR-CAT-001: Parse ASTERIX Category 001
+
+**Category:** Functional
+**Priority:** High
+**Source:** EUROCONTROL ASTERIX CAT001 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 001 (Radar Detection Messages) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 001 provides radar detection messages essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT001.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT001 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Medium
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-002: Parse ASTERIX Category 002
+
+**Category:** Functional
+**Priority:** High
+**Source:** EUROCONTROL ASTERIX CAT002 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 002 (Monoradar Target Reports) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 002 provides monoradar target reports essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT002.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT002 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** High
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-004: Parse ASTERIX Category 004
+
+**Category:** Functional
+**Priority:** Critical
+**Source:** EUROCONTROL ASTERIX CAT004 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 004 (Safety Net Messages) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 004 provides safety net messages essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT004.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT004 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** High
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-008: Parse ASTERIX Category 008
+
+**Category:** Functional
+**Priority:** Medium
+**Source:** EUROCONTROL ASTERIX CAT008 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 008 (Monoradar Derived Weather Information) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 008 provides monoradar derived weather information essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT008.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT008 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Medium
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-010: Parse ASTERIX Category 010
+
+**Category:** Functional
+**Priority:** Medium
+**Source:** EUROCONTROL ASTERIX CAT010 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 010 (Monoradar Service Messages) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 010 provides monoradar service messages essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT010.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT010 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Medium
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-011: Parse ASTERIX Category 011
+
+**Category:** Functional
+**Priority:** High
+**Source:** EUROCONTROL ASTERIX CAT011 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 011 (Track Status Messages) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 011 provides track status messages essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT011.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT011 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Medium
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-015: Parse ASTERIX Category 015
+
+**Category:** Functional
+**Priority:** Medium
+**Source:** EUROCONTROL ASTERIX CAT015 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 015 (Broadcast Messages) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 015 provides broadcast messages essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT015.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT015 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Low
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-019: Parse ASTERIX Category 019
+
+**Category:** Functional
+**Priority:** High
+**Source:** EUROCONTROL ASTERIX CAT019 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 019 (Multilateration System Status Messages) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 019 provides multilateration system status messages essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT019.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT019 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Medium
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-020: Parse ASTERIX Category 020
+
+**Category:** Functional
+**Priority:** Critical
+**Source:** EUROCONTROL ASTERIX CAT020 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 020 (Multilateration Target Reports) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 020 provides multilateration target reports essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT020.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT020 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** High
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-021: Parse ASTERIX Category 021
+
+**Category:** Functional
+**Priority:** Critical
+**Source:** EUROCONTROL ASTERIX CAT021 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 021 (ADS-B Target Reports) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 021 provides ads-b target reports essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT021.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT021 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** High
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-023: Parse ASTERIX Category 023
+
+**Category:** Functional
+**Priority:** Medium
+**Source:** EUROCONTROL ASTERIX CAT023 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 023 (CNS/ATM Ground Station Status Reports) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 023 provides cns/atm ground station status reports essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT023.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT023 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Medium
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-025: Parse ASTERIX Category 025
+
+**Category:** Functional
+**Priority:** Medium
+**Source:** EUROCONTROL ASTERIX CAT025 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 025 (CNS/ATM Ground System Status Reports) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 025 provides cns/atm ground system status reports essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT025.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT025 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Medium
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-030: Parse ASTERIX Category 030
+
+**Category:** Functional
+**Priority:** High
+**Source:** EUROCONTROL ASTERIX CAT030 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 030 (ARTAS Service Messages) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 030 provides artas service messages essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT030.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT030 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Medium
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-031: Parse ASTERIX Category 031
+
+**Category:** Functional
+**Priority:** High
+**Source:** EUROCONTROL ASTERIX CAT031 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 031 (ARTAS Track Status Messages) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 031 provides artas track status messages essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT031.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT031 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Medium
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-032: Parse ASTERIX Category 032
+
+**Category:** Functional
+**Priority:** Low
+**Source:** EUROCONTROL ASTERIX CAT032 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 032 (Miniature Range Test Messages) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 032 provides miniature range test messages essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT032.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT032 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Low
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-034: Parse ASTERIX Category 034
+
+**Category:** Functional
+**Priority:** High
+**Source:** EUROCONTROL ASTERIX CAT034 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 034 (Monoradar Service Messages) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 034 provides monoradar service messages essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT034.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT034 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Medium
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-048: Parse ASTERIX Category 048
+
+**Category:** Functional
+**Priority:** Critical
+**Source:** EUROCONTROL ASTERIX CAT048 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 048 (Transmission of Monoradar Target Reports) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 048 provides transmission of monoradar target reports essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT048.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT048 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** High
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-062: Parse ASTERIX Category 062
+
+**Category:** Functional
+**Priority:** Critical
+**Source:** EUROCONTROL ASTERIX CAT062 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 062 (System Track Data) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 062 provides system track data essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT062.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT062 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** High
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-063: Parse ASTERIX Category 063
+
+**Category:** Functional
+**Priority:** Medium
+**Source:** EUROCONTROL ASTERIX CAT063 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 063 (Sensor Status Messages) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 063 provides sensor status messages essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT063.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT063 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Medium
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-065: Parse ASTERIX Category 065
+
+**Category:** Functional
+**Priority:** High
+**Source:** EUROCONTROL ASTERIX CAT065 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 065 (SDPS Service Status Messages) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 065 provides sdps service status messages essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT065.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT065 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Medium
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-205: Parse ASTERIX Category 205
+
+**Category:** Functional
+**Priority:** Medium
+**Source:** EUROCONTROL ASTERIX CAT205 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 205 (Multilateration System Status - Extended) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 205 provides multilateration system status - extended essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT205.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT205 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Medium
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-240: Parse ASTERIX Category 240
+
+**Category:** Functional
+**Priority:** Medium
+**Source:** EUROCONTROL ASTERIX CAT240 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 240 (Video Transmission) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 240 provides video transmission essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT240.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT240 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Low
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-247: Parse ASTERIX Category 247
+
+**Category:** Functional
+**Priority:** Low
+**Source:** EUROCONTROL ASTERIX CAT247 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 247 (Reserved for ADS-B Messages) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 247 provides reserved for ads-b messages essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT247.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT247 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** Low
+**DO-278A Traceability:** Objective 1.1
+
+---
+
+### REQ-HLR-CAT-252: Parse ASTERIX Category 252
+
+**Category:** Functional
+**Priority:** High
+**Source:** EUROCONTROL ASTERIX CAT252 Specification
+
+**Description:**
+The software shall parse ASTERIX Category 252 (ADS-B Transponder Tracks) data blocks according to EUROCONTROL specification, extracting all defined data items.
+
+**Rationale:**
+Category 252 provides ads-b transponder tracks essential for ATM surveillance operations.
+
+**Derived Requirements:**
+- See Low_Level_Requirements_CAT252.md for detailed data item requirements
+
+**Verification Method:** Test
+**Verification Criteria:**
+- All CAT252 data items correctly extracted
+- Values match EUROCONTROL reference data
+- Integration test with sample data
+
+**Safety Impact:** High
+**DO-278A Traceability:** Objective 1.1
+
+---
+
 
 ## 4. Input/Output Requirements
 
@@ -604,22 +1231,22 @@ Long-running processes must not accumulate memory over time.
 **DO-278A Traceability:** Objective 4.2 (Testing)
 
 ---
-
 ## 9. Requirements Summary
+
+### System and API Requirements
 
 | Requirement ID | Description | Priority | Safety Impact |
 |----------------|-------------|----------|---------------|
 | REQ-HLR-SYS-001 | ASTERIX Protocol Compliance | Critical | High |
 | REQ-HLR-SYS-002 | Data Integrity Verification | Critical | High |
 | REQ-HLR-SYS-003 | Multiple ASTERIX Categories | High | Medium |
-| REQ-HLR-CAT-048 | Parse CAT048 | Critical | High |
-| REQ-HLR-CAT-062 | Parse CAT062 | Critical | High |
 | REQ-HLR-IO-001 | Multiple Input Formats | High | Medium |
 | REQ-HLR-IO-002 | Multiple Output Formats | High | Low |
 | REQ-HLR-IO-003 | Data Filtering | Medium | Low |
 | REQ-HLR-API-001 | Python API | High | Medium |
 | REQ-HLR-API-002 | C/C++ Library API | High | Medium |
 | REQ-HLR-API-003 | Command-Line Interface | High | Low |
+| REQ-HLR-API-004 | Rust API | High | Medium |
 | REQ-HLR-CFG-001 | XML Configuration Files | Critical | High |
 | REQ-HLR-CFG-002 | Default Configuration | High | Medium |
 | REQ-HLR-CFG-003 | Custom Configuration | Medium | Low |
@@ -628,17 +1255,51 @@ Long-running processes must not accumulate memory over time.
 | REQ-HLR-PERF-001 | Real-Time Processing | Medium | Low |
 | REQ-HLR-PERF-002 | Memory Efficiency | Medium | Medium |
 
-**Total High-Level Requirements:** 18
+### Category-Specific Requirements
+
+| Requirement ID | Category | Description | Priority | Safety Impact |
+|----------------|----------|-------------|----------|---------------|
+| REQ-HLR-CAT-001 | CAT001 | Radar Detection Messages | High | Medium |
+| REQ-HLR-CAT-002 | CAT002 | Monoradar Target Reports | High | High |
+| REQ-HLR-CAT-004 | CAT004 | Safety Net Messages | Critical | High |
+| REQ-HLR-CAT-008 | CAT008 | Monoradar Derived Weather Information | Medium | Medium |
+| REQ-HLR-CAT-010 | CAT010 | Monoradar Service Messages | Medium | Medium |
+| REQ-HLR-CAT-011 | CAT011 | Track Status Messages | High | Medium |
+| REQ-HLR-CAT-015 | CAT015 | Broadcast Messages | Medium | Low |
+| REQ-HLR-CAT-019 | CAT019 | Multilateration System Status Messages | High | Medium |
+| REQ-HLR-CAT-020 | CAT020 | Multilateration Target Reports | Critical | High |
+| REQ-HLR-CAT-021 | CAT021 | ADS-B Target Reports | Critical | High |
+| REQ-HLR-CAT-023 | CAT023 | CNS/ATM Ground Station Status Reports | Medium | Medium |
+| REQ-HLR-CAT-025 | CAT025 | CNS/ATM Ground System Status Reports | Medium | Medium |
+| REQ-HLR-CAT-030 | CAT030 | ARTAS Service Messages | High | Medium |
+| REQ-HLR-CAT-031 | CAT031 | ARTAS Track Status Messages | High | Medium |
+| REQ-HLR-CAT-032 | CAT032 | Miniature Range Test Messages | Low | Low |
+| REQ-HLR-CAT-034 | CAT034 | Monoradar Service Messages | High | Medium |
+| REQ-HLR-CAT-048 | CAT048 | Transmission of Monoradar Target Reports | Critical | High |
+| REQ-HLR-CAT-062 | CAT062 | System Track Data | Critical | High |
+| REQ-HLR-CAT-063 | CAT063 | Sensor Status Messages | Medium | Medium |
+| REQ-HLR-CAT-065 | CAT065 | SDPS Service Status Messages | High | Medium |
+| REQ-HLR-CAT-205 | CAT205 | Multilateration System Status - Extended | Medium | Medium |
+| REQ-HLR-CAT-240 | CAT240 | Video Transmission | Medium | Low |
+| REQ-HLR-CAT-247 | CAT247 | Reserved for ADS-B Messages | Low | Low |
+| REQ-HLR-CAT-252 | CAT252 | ADS-B Transponder Tracks | High | High |
+
+**Total High-Level Requirements:** 41
 
 **Breakdown:**
-- Critical Priority: 6
-- High Priority: 8
-- Medium Priority: 4
+- System/API Requirements: 17
+- Category Requirements: 24
 
-**Safety Impact:**
-- High: 7
-- Medium: 6
-- Low: 5
+**Priority Breakdown:**
+- Critical: 10 (including system reqs)
+- High: 17
+- Medium: 12
+- Low: 2
+
+**Safety Impact Breakdown:**
+- High: 14
+- Medium: 19
+- Low: 9
 
 ---
 
@@ -670,6 +1331,7 @@ Complete bidirectional traceability shall be maintained in the Requirements Trac
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2025-10-17 | Initial | Initial HLR creation with CAT048 focus |
+| 2.0 | 2025-11-02 | Auto-updated | Added all 24 ASTERIX category HLRs |
 
 ---
 
