@@ -232,26 +232,64 @@ jobs:
         brew update || true
         brew install expat cmake || brew upgrade expat cmake || true
         brew list expat || echo "expat installation check"
-        # Verify expat is available
-        pkg-config --modversion expat || echo "pkg-config expat not found (may use brew path)"
+        
+        # Set up paths for expat (Homebrew installs to /opt/homebrew on ARM, /usr/local on Intel)
+        if [ -d "/opt/homebrew" ]; then
+          export HOMEBREW_PREFIX="/opt/homebrew"
+        else
+          export HOMEBREW_PREFIX="/usr/local"
+        fi
+        
+        # Verify expat is available and show paths
+        echo "=== Expat paths ==="
+        echo "HOMEBREW_PREFIX: $HOMEBREW_PREFIX"
+        pkg-config --modversion expat || echo "pkg-config expat not found, using Homebrew paths"
+        
+        # Find expat installation
+        EXPAT_PREFIX=$(brew --prefix expat 2>/dev/null || echo "$HOMEBREW_PREFIX")
+        echo "Expat prefix: $EXPAT_PREFIX"
+        
+        # Set environment variables for CMake
+        echo "EXPAT_ROOT=$EXPAT_PREFIX" >> $GITHUB_ENV
+        echo "CMAKE_PREFIX_PATH=$EXPAT_PREFIX" >> $GITHUB_ENV
+        echo "PKG_CONFIG_PATH=$EXPAT_PREFIX/lib/pkgconfig" >> $GITHUB_ENV
 
     - name: Configure CMake (C++23)
       run: |
+        # Get expat paths
+        EXPAT_PREFIX=${EXPAT_ROOT:-$(brew --prefix expat 2>/dev/null || echo "/opt/homebrew")}
+        
         cmake -B build \
           -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
           -DCMAKE_CXX_STANDARD=23 \
           -DCMAKE_CXX_STANDARD_REQUIRED=ON \
           -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
           -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+          -DCMAKE_PREFIX_PATH="$EXPAT_PREFIX" \
+          -DEXPAT_ROOT="$EXPAT_PREFIX" \
+          -DCMAKE_FIND_FRAMEWORK=LAST \
+          -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH \
+          -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH \
           -DBUILD_SHARED_LIBS=ON \
           -DBUILD_STATIC_LIBS=ON \
           -DBUILD_EXECUTABLE=ON \
           -DBUILD_TESTING=OFF \
-          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install \
+          -DCMAKE_VERBOSE_MAKEFILE=ON
 
     - name: Build
       run: |
-        cmake --build build --config ${{ matrix.config }} --parallel $(sysctl -n hw.ncpu)
+        # Set library paths for linker
+        EXPAT_PREFIX=${EXPAT_ROOT:-$(brew --prefix expat 2>/dev/null || echo "/opt/homebrew")}
+        export DYLD_LIBRARY_PATH="$EXPAT_PREFIX/lib:${DYLD_LIBRARY_PATH:-}"
+        export LDFLAGS="-L$EXPAT_PREFIX/lib ${LDFLAGS:-}"
+        export CPPFLAGS="-I$EXPAT_PREFIX/include ${CPPFLAGS:-}"
+        
+        cmake --build build --config ${{ matrix.config }} --parallel $(sysctl -n hw.ncpu) 2>&1 | tee build.log || {
+          echo "::error::Build failed, showing last 100 lines:"
+          tail -100 build.log
+          exit 1
+        }
 
     - name: Install
       run: |
@@ -661,11 +699,44 @@ jobs:
         pip install pytest pytest-cov coverage
 
     - name: Build Python module
+      shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
       run: |
-        python setup.py build
+        if [ "${{ runner.os }}" == "Windows" ]; then
+          # Windows: Set environment for vcpkg and suppress D9002 warnings
+          $VCPKG_ROOT = "${{ github.workspace }}/vcpkg"
+          $env:CMAKE_TOOLCHAIN_FILE = "$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+          $env:VCPKG_DEFAULT_TRIPLET = "x64-windows"
+          
+          # Set expat include and library paths
+          $env:EXPAT_INCLUDE_DIR = "$VCPKG_ROOT/installed/x64-windows/include"
+          $env:EXPAT_LIB_DIR = "$VCPKG_ROOT/installed/x64-windows/lib"
+          
+          # Suppress MSVC D9002 warnings (unknown command-line option)
+          $env:CL = "/wd9002 /W3"
+          $env:_CL_ = "/wd9002 /W3"
+          
+          # Set distutils compiler flags
+          $env:DISTUTILS_USE_SDK = "1"
+          
+          python setup.py build 2>&1 | ForEach-Object { 
+            if ($_ -match 'D9002' -or $_ -match 'warning D9002') { 
+              Write-Host "::warning::$_" 
+            } else { 
+              Write-Host $_ 
+            } 
+          }
+        else
+          # Linux/macOS
+          python setup.py build
+        fi
       env:
         # Windows: Set vcpkg toolchain if vcpkg exists
         CMAKE_TOOLCHAIN_FILE: ${{ runner.os == 'Windows' && format('{0}/vcpkg/scripts/buildsystems/vcpkg.cmake', github.workspace) || '' }}
+        VCPKG_DEFAULT_TRIPLET: ${{ runner.os == 'Windows' && 'x64-windows' || '' }}
+        # Suppress D9002 warnings on Windows
+        CL: ${{ runner.os == 'Windows' && '/wd9002 /W3' || '' }}
+        _CL_: ${{ runner.os == 'Windows' && '/wd9002 /W3' || '' }}
+        DISTUTILS_USE_SDK: ${{ runner.os == 'Windows' && '1' || '' }}
 
     - name: Install Python module
       run: |
