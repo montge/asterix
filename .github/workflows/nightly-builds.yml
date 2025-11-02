@@ -309,7 +309,7 @@ jobs:
           ### 📊 Current Status
           - Coverage: 92.2%
           - Tests: 560 (100% passing)
-          - Last stable release: v2.8.9
+          - Last stable release: v2.8.10
         files: |
           nightly-packages/**/*.deb
           nightly-packages/**/*.rpm
