@@ -1,0 +1,44 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:2b989ca4-58dd-4b7f-aa3f-d2428eaae969",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-11-02T23:22:41Z",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "author": "anchore",
+          "name": "syft",
+          "version": "1.36.0"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "af63bd4c8601b7f1",
+      "type": "file",
+      "name": "asterix-python",
+      "version": "0.7.10"
+    },
+    "properties": [
+      {
+        "name": "commit",
+        "value": "5d49274f2a6289c95e551a4a59a369eab171a3bd"
+      },
+      {
+        "name": "generated",
+        "value": "2025-11-02T23:22:41Z"
+      },
+      {
+        "name": "main_version",
+        "value": "2.8.10"
+      },
+      {
+        "name": "git_tag",
+        "value": "v2.8.10"
+      }
+    ]
+  }
+}
