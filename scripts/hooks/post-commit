@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+################################################################################
+# ASTERIX Post-Commit Hook (via pre-commit framework)
+#
+# This hook uses the pre-commit framework for background verification.
+# Runs non-blocking checks after commit.
+################################################################################
+
+# Try to use pre-commit from ~/.venv first, then system
+if [ -x "$HOME/.venv/bin/pre-commit" ]; then
+    exec "$HOME/.venv/bin/pre-commit" run --hook-stage post-commit "$@" &
+    disown
+    exit 0
+elif [ -x "$HOME/.venv/bin/python3" ]; then
+    "$HOME/.venv/bin/python3" -m pre_commit run --hook-stage post-commit "$@" >/dev/null 2>&1 &
+    disown
+    exit 0
+elif command -v pre-commit &>/dev/null; then
+    exec pre-commit run --hook-stage post-commit "$@" &
+    disown
+    exit 0
+else
+    # Silently exit if pre-commit not available
+    exit 0
+fi

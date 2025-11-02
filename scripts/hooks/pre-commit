@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+################################################################################
+# ASTERIX Pre-Commit Hook (via pre-commit framework)
+#
+# This hook uses the pre-commit framework for all checks.
+# Framework is installed via pip and configured via .pre-commit-config.yaml
+#
+# To bypass: git commit --no-verify
+################################################################################
+
+# Try to use pre-commit from ~/.venv first, then system
+if [ -x "$HOME/.venv/bin/pre-commit" ]; then
+    exec "$HOME/.venv/bin/pre-commit" run --hook-stage pre-commit "$@"
+elif [ -x "$HOME/.venv/bin/python3" ] && "$HOME/.venv/bin/python3" -m pre_commit run --hook-stage pre-commit "$@" 2>/dev/null; then
+    exit $?
+elif command -v pre-commit &>/dev/null; then
+    exec pre-commit run --hook-stage pre-commit "$@"
+else
+    echo "pre-commit framework not found. Install with: pip install pre-commit" >&2
+    echo "Or run: bash INSTALL_HOOKS.sh --full" >&2
+    exit 1
+fi
