@@ -36,6 +36,12 @@ coverage*.info
 *.gcov
 *.gcda
 *.gcno
+explicit_cov_detail/
+coverage_explicit_html/
+coverage_explicit_html_full/
+dataitembits_filtered.info
+dataitembits_raw.info
+explicit_only.info
 
 # Build artifacts
 *.o
@@ -101,4 +107,8 @@ venv/
 !DO-278*.md
 !NEXT_UPSTREAM_SYNC_CHECKLIST.md
 !RUST_CI_VERIFICATION_CHECKLIST.md
+!GITHUB_PAGES*.md
+!CPP_COVERAGE*.md
+!SPECS_SUBMODULE*.md
+!SPEC_UPDATE*.md
 !asterix-rs/**/*.md
