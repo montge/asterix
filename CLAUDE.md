@@ -251,7 +251,7 @@ curl https://zoranbosnjak.github.io/asterix-specs/specs/cat062/cats/cat1.18/defi
 python3 update-specs.py
 ```
 
-Then copy to `asterix/config/` and `install/config/`.
+Then copy to `asterix/config/` (the build system automatically copies to `install/share/asterix/config/`).
 
 ### C++ Code Organization
 
@@ -302,8 +302,8 @@ Input format flags: `-P` (PCAP), `-R` (ORADIS PCAP), `-O` (ORADIS), `-F` (FINAL)
 - `src/` - C++ source code (engine, asterix, main, python bindings)
 - `install/` - Build output directory and test suite
 - `asterix-specs-converter/` - Tools for converting JSON specs to XML
-- Configuration files are duplicated in `asterix/config/` (Python) and `install/config/` (C++)
-- Rust uses C++ config files directly via FFI
+- Configuration files are in `asterix/config/` (source), copied to `install/share/asterix/config/` during build
+- Rust uses config files from `asterix/config/` via FFI during build
 
 ## Upstream Repository
 

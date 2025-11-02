@@ -4,6 +4,11 @@
 **Update Source:** asterix-specs-converter/specs/ (existing converted specifications)
 **Update Status:** PARTIAL - Discovered malformed XML specs from upstream converter
 
+> **⚠️ DEPRECATION NOTICE (2025-11-02):**
+> The `install/config/` directory mentioned in this document has been **removed** from git.
+> **Current location:** `asterix/config/` (source) → `install/share/asterix/config/` (build output)
+> The build system automatically copies configs during CMake install.
+
 ---
 
 ## Executive Summary

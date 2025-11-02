@@ -53,7 +53,14 @@ explicit_only.info
 *.egg-info/
 dist/
 *.egg
-install/asterix
+
+# Install directory build outputs (keep only test/sample_data/sample_output)
+install/asterix*
+install/config/
+install/coverage_html/
+install/lib/
+install/bin/
+install/share/
 install-test/
 
 # Rust build artifacts
