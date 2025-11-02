@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+################################################################################
+# ASTERIX Pre-Push Hook (via pre-commit framework)
+#
+# This hook uses the pre-commit framework for quick checks.
+# Heavy operations are moved to post-push hooks.
+#
+# To bypass: git push --no-verify
+################################################################################
+
+# Try to use pre-commit from ~/.venv first, then system
+if [ -x "$HOME/.venv/bin/pre-commit" ]; then
+    exec "$HOME/.venv/bin/pre-commit" run --hook-stage pre-push "$@"
+elif [ -x "$HOME/.venv/bin/python3" ] && "$HOME/.venv/bin/python3" -m pre_commit run --hook-stage pre-push "$@" 2>/dev/null; then
+    exit $?
+elif command -v pre-commit &>/dev/null; then
+    exec pre-commit run --hook-stage pre-push "$@"
+else
+    echo "pre-commit framework not found. Skipping pre-push checks." >&2
+    echo "Install with: pip install pre-commit" >&2
+    exit 0  # Don't block push if pre-commit not installed
+fi

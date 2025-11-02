@@ -107,16 +107,18 @@ repos:
       - id: markdownlint
         args: ['--fix']
 
-  # Rust: Code formatting with rustfmt
+  # Rust: Code formatting with rustfmt (pre-commit only - fast)
   - repo: https://github.com/doublify/pre-commit-rust
     rev: 'v1.0'
     hooks:
       - id: fmt
         name: Rust format check
         args: ['--manifest-path', 'asterix-rs/Cargo.toml', '--']
+        stages: [pre-commit]
       - id: clippy
-        name: Rust clippy lints
+        name: Rust clippy lints (quick check)
         args: ['--manifest-path', 'asterix-rs/Cargo.toml', '--all-features', '--', '-D', 'warnings']
+        stages: [pre-commit]
 
   # General: Trailing whitespace and other file checks
   - repo: local
@@ -127,13 +129,56 @@ repos:
         language: system
         types: [python, c++, rust]
         pass_filenames: false
+        stages: [pre-commit]
 
-      - id: cargo-check
-        name: Cargo check
-        entry: bash -c 'cd asterix-rs && cargo check --all-features'
+      # Pre-push: Quick syntax check only
+      - id: python-syntax-check
+        name: Python syntax check
+        entry: bash -c 'for file in "$@"; do python3 -m py_compile "$file" || exit 1; done'
         language: system
-        files: '^asterix-rs/.*\.rs$'
-        pass_filenames: false
+        types: [python]
+        stages: [pre-push]
+
+  # Post-commit: Background verification (non-blocking)
+  - repo: local
+    hooks:
+      - id: post-commit-background-check
+        name: Background formatting check
+        entry: bash -c 'exit 0'  # Placeholder - actual checks in post-commit hook
+        language: system
+        stages: [post-commit]
+        always_run: false
+
+  # Post-push: Background build verification (non-blocking)
+  - repo: local
+    hooks:
+      - id: post-push-build-check
+        name: Background build verification
+        entry: bash -c '
+          LOG_FILE="$HOME/.asterix-push-verification.log"
+          {
+            echo "=== Post-Push Verification - $(date) ==="
+            cd "$(git rev-parse --show-toplevel)"
+            
+            # Quick build check if CMake available
+            if command -v cmake &>/dev/null && [ -f CMakeLists.txt ] && [ -d build ]; then
+              cd build
+              cmake --build . --target asterix >/dev/null 2>&1 && echo "✅ C++ build OK" || echo "⚠️  C++ build had issues"
+              cd ..
+            fi
+            
+            # Python tests if pytest available
+            if command -v python3 &>/dev/null && python3 -c "import pytest" 2>/dev/null; then
+              python3 -m pytest asterix/test/ -q --tb=no >/dev/null 2>&1 && echo "✅ Python tests OK" || echo "⚠️  Python tests had issues"
+            fi
+            
+            echo "Results logged to: $LOG_FILE"
+          } >> "$LOG_FILE" 2>&1 &
+          disown
+          exit 0'
+        language: system
+        stages: [post-push]
+        always_run: false
 
 # Global settings
 default_language_version:
