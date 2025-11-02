@@ -285,20 +285,47 @@ jobs:
         export LDFLAGS="-L$EXPAT_PREFIX/lib ${LDFLAGS:-}"
         export CPPFLAGS="-I$EXPAT_PREFIX/include ${CPPFLAGS:-}"
         
+        # macOS uses single-config generator, --config may be ignored but won't hurt
         cmake --build build --config ${{ matrix.config }} --parallel $(sysctl -n hw.ncpu) 2>&1 | tee build.log || {
           echo "::error::Build failed, showing last 100 lines:"
           tail -100 build.log
           exit 1
         }
+        
+        # Verify libraries were built before install
+        echo "=== Checking built libraries before install ==="
+        echo "Searching for .dylib files:"
+        find build -name "*.dylib" 2>/dev/null | head -20 || echo "No .dylib files found"
+        echo "Searching for .a files:"
+        find build -name "*.a" 2>/dev/null | head -20 || echo "No .a files found"
+        echo "Contents of build/lib/:"
+        ls -lah build/lib/ 2>/dev/null || echo "build/lib directory not found"
+        echo "Checking for versioned library files:"
+        ls -lah build/lib/libasterix* 2>/dev/null || echo "No libasterix files found in build/lib/"
 
     - name: Install
       run: |
-        cmake --install build --config ${{ matrix.config }}
+        # Check what files exist in build/lib before install
+        echo "=== Files in build/lib before install ==="
+        ls -la build/lib/ 2>/dev/null || echo "build/lib not found"
+        
+        # Install - macOS uses single-config generator, so don't use --config
+        # But try it first for compatibility
+        if cmake --install build --config ${{ matrix.config }} 2>&1; then
+          echo "Install completed successfully"
+        else
+          echo "::warning::Install with --config failed, trying without --config (single-config generator)"
+          cmake --install build || {
+            echo "::error::Install failed completely"
+            exit 1
+          }
+        fi
         
         # Verify installed libraries exist (macOS)
         echo "=== Verifying installed libraries ==="
-        ls -lh install/lib/ || echo "install/lib directory not found"
-        find install/lib -name "*.dylib" -o -name "*.a" || echo "No libraries found"
+        ls -lh install/lib/ 2>/dev/null || echo "install/lib directory not found"
+        echo "=== Finding all library files ==="
+        find install/lib -name "*.dylib" -o -name "*.a" 2>/dev/null || echo "No libraries found"
         echo "=== Library files in install/lib ==="
         ls -la install/lib/*.dylib install/lib/*.a 2>/dev/null || echo "Library files check completed"
 

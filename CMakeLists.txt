@@ -252,6 +252,7 @@ if(BUILD_SHARED_LIBS)
 
     # Install shared library
     # On macOS, LIBRARY DESTINATION installs .dylib files
+    # For versioned libraries, CMake automatically handles the symlinks
     install(TARGETS asterix_shared
         LIBRARY DESTINATION lib
         PUBLIC_HEADER DESTINATION include/asterix
