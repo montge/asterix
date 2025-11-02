@@ -80,7 +80,7 @@ jobs:
         # Generate SBOM for C++ project using syft
         # Scan entire repository for dependencies
         ${SYFT_CMD} packages dir:. \
-          -o cyclonedx-json="${SBOM_FILE}" \
+          -o cyclonedx-json \
           --exclude "*/build*/**" \
           --exclude "*/target/**" \
           --exclude "*/.git/**" \
@@ -88,7 +88,7 @@ jobs:
           --exclude "*/.venv/**" \
           --exclude "*/htmlcov/**" \
           --exclude "*/coverage*/**" \
-          --exclude "*/_deps/**" || {
+          --exclude "*/_deps/**" > "${SBOM_FILE}" || {
           echo "::error::Failed to generate C++ SBOM"
           exit 1
         }
@@ -135,9 +135,9 @@ jobs:
           SYFT_CMD="${SYFT_PATH:-/usr/local/bin/syft}"
           
           ${SYFT_CMD} packages python:. \
-            -o cyclonedx-json="${SBOM_FILE}" \
+            -o cyclonedx-json \
             --exclude "*/build*/**" \
-            --exclude "*/.git/**" || {
+            --exclude "*/.git/**" > "${SBOM_FILE}" || {
             echo "::warning::Failed to generate Python SBOM, continuing..."
             exit 0
           }
@@ -184,7 +184,7 @@ jobs:
           
           cd asterix-rs
           ${SYFT_CMD} packages cargo:. \
-            -o cyclonedx-json="../${SBOM_FILE}" || {
+            -o cyclonedx-json > "../${SBOM_FILE}" || {
             echo "::warning::Failed to generate Rust SBOM, continuing..."
             cd ..
             exit 0
