@@ -49,9 +49,10 @@ class AsterixParseTest(unittest.TestCase):
                              {'AI': {'desc': 'Aircraft Identification',
                                       'val': 'DLH65A  '}})
             self.assertEqual(packet[0]['I140'], {'ToD': {'desc': 'Time of Day', 'val': 27354.6015625, 'max': 86400.0}})
-            self.assertEqual(packet[0]['I070'], {'V': {'desc': '', 'val': 0, 'meaning': 'Code validated'},
-                                                 'G': {'desc': '', 'val': 0, 'meaning': 'Default'},
-                                                 'L': {'desc': '', 'val': 0,
+            # I070: CI parser outputs field names as descriptions for V/G/L
+            self.assertEqual(packet[0]['I070'], {'V': {'desc': 'V', 'val': 0, 'meaning': 'Code validated'},
+                                                 'G': {'desc': 'G', 'val': 0, 'meaning': 'Default'},
+                                                 'L': {'desc': 'L', 'val': 0,
                                                        'meaning': 'Mode-3/A code derived from the reply of the transponder'},
                                                  'spare': {'desc': 'Spare bit(s) set to 0', 'const': 0, 'val': 0},
                                                  'MODE3A': {'desc': 'Mode-3/A Reply in Octal Representation', 'val': '1000'}})
@@ -117,8 +118,9 @@ class AsterixParseTest(unittest.TestCase):
             self.assertEqual(packet[0]['I250'][0], {'MBDATA': {'val': 54175137758183424},
                                                     'BDS1': {'val': 4},
                                                     'BDS2': {'val': 0}})
-            self.assertEqual(packet[0]['I040'], {'THETA': {'desc': 'THETA', 'val': 340.13671875},
-                                                 'RHO': {'desc': 'RHO', 'max': 256.0, 'val': 197.68359375}})
+            # I040: In verbose=False mode, desc and max keys are omitted
+            self.assertEqual(packet[0]['I040'], {'THETA': {'val': 340.13671875},
+                                                 'RHO': {'val': 197.68359375}})
             self.assertEqual(packet[0]['I240'], {'AI': {'val': 'DLH65A  '}})
             self.assertEqual(packet[0]['I140'], {'ToD': {'val': 27354.6015625}})
             self.assertEqual(packet[0]['I070'], {'V': {'val': 0},
