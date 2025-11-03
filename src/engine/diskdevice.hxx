@@ -23,8 +23,13 @@
 #ifndef DISKDEVICE_HXX__
 #define DISKDEVICE_HXX__
 
-#include <sys/param.h>
-#include <unistd.h>
+#ifdef _WIN32
+  #include "win32_compat.h"
+  #include <io.h>
+#else
+  #include <sys/param.h>
+  #include <unistd.h>
+#endif
 
 #include "basedevice.hxx"
 #include "descriptor.hxx"
