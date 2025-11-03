@@ -226,11 +226,15 @@ set(ASTERIX_LIB_SOURCES
     src/engine/descriptor.cxx
     src/engine/devicefactory.cxx
     src/engine/diskdevice.cxx
-    src/engine/serialdevice.cxx
     src/engine/stddevice.cxx
     src/engine/tcpdevice.cxx
     src/engine/udpdevice.cxx
 )
+
+# Serial device only supported on POSIX systems (not Windows)
+if(NOT WIN32)
+    list(APPEND ASTERIX_LIB_SOURCES src/engine/serialdevice.cxx)
+endif()
 
 set(ASTERIX_LIB_HEADERS
     src/asterix/AsterixData.h

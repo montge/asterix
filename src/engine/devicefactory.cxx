@@ -23,6 +23,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef _WIN32
+#include "win32_compat.h"
+#endif
+
 #include "asterix.h"
 #include "devicefactory.hxx"
 #include "basedevice.hxx"
@@ -30,7 +34,9 @@
 #include "udpdevice.hxx"
 #include "diskdevice.hxx"
 #include "stddevice.hxx"
+#ifndef _WIN32
 #include "serialdevice.hxx"
+#endif
 
 
 CSingleton<CDeviceFactory> CDeviceFactory::_Instance;
@@ -75,9 +81,11 @@ bool CDeviceFactory::CreateDevice(const char *deviceName, const char *deviceDesc
     } else if (strcasecmp(deviceName, "disk") == 0) {
         CDescriptor descriptor(deviceDescriptor, "|");
         _Device[_nDevices] = new CDiskDevice(descriptor);
+#ifndef _WIN32
     } else if (strcasecmp(deviceName, "serial") == 0) {
         CDescriptor descriptor(deviceDescriptor, ":");
         _Device[_nDevices] = new CSerialDevice(descriptor);
+#endif
     } else {
         LOGERROR(1, "Unknown device '%s'\n", deviceName);
         _Device[_nDevices] = NULL; // redundant since it already must have that value
