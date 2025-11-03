@@ -107,6 +107,8 @@ private:
 
     unsigned long getUnsigned(unsigned char *pData, int bytes, int frombit, int tobit);
 
+    unsigned long long getUnsigned64(unsigned char *pData, int bytes, int frombit, int tobit);
+
     signed long getSigned(unsigned char *pData, int bytes, int frombit, int tobit);
 
     unsigned char *getSixBitString(unsigned char *pData, int bytes, int frombit, int tobit);

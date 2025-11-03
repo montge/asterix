@@ -189,6 +189,51 @@ unsigned long DataItemBits::getUnsigned(unsigned char *pData, int bytes, int fro
     return val;
 }
 
+unsigned long long DataItemBits::getUnsigned64(unsigned char *pData, int bytes, int frombit, int tobit) {
+    unsigned long long val = 0;
+    int numberOfBits = (tobit - frombit + 1);
+
+    if (numberOfBits < 1 || numberOfBits > 64) {
+        Tracer::Error(
+                "DataItemBits::getUnsigned64 : Wrong parameter. Number of bits = %d, and must be between 1 and 64. Currently is from %d to %d",
+                numberOfBits, tobit, frombit);
+    } else {
+        unsigned char *pTmp = getBits(pData, bytes, frombit, tobit);
+
+        if (!pTmp) {
+            Tracer::Error("DataItemBits::getUnsigned64 : Error.");
+            return 0;
+        }
+
+        // Handle byte-aligned 64-bit values (optimization)
+        if (numberOfBits == 64) {
+            // Read 8 bytes in big-endian order
+            for (int i = 0; i < 8; i++) {
+                val = (val << 8) | pTmp[i];
+            }
+        } else {
+            // Bit-by-bit extraction for non-byte-aligned or < 64 bits
+            unsigned char *pTmp2 = pTmp;
+            unsigned char bitmask = 0x80;
+            while (numberOfBits--) {
+                unsigned char bitval = *pTmp2 & bitmask;
+                val <<= 1;
+                if (bitval)
+                    val |= 0x01;
+
+                bitmask >>= 1;
+                bitmask &= 0x7F;
+                if (bitmask == 0) {
+                    bitmask = 0x80;
+                    pTmp2++;
+                }
+            }
+        }
+        delete[] pTmp;
+    }
+    return val;
+}
+
 signed long DataItemBits::getSigned(unsigned char *pData, int bytes, int frombit, int tobit) {
     unsigned long ul = getUnsigned(pData, bytes, frombit, tobit);
     int numberOfBits = (tobit - frombit + 1);
@@ -496,14 +541,30 @@ bool DataItemBits::getText(std::string &strResult, std::string &strHeader, const
 
     switch (m_eEncoding) {
         case DATAITEM_ENCODING_UNSIGNED: {
-            unsigned long value = getUnsigned(pData, nLength, m_nFrom, m_nTo);
+            int numberOfBits = (m_nTo - m_nFrom + 1);
+            unsigned long long value64 = 0;
+            unsigned long value = 0;
+
+            // Use 64-bit extraction for fields > 32 bits
+            if (numberOfBits > 32) {
+                value64 = getUnsigned64(pData, nLength, m_nFrom, m_nTo);
+                value = (unsigned long) value64;  // Truncate for backward compatibility with existing format strings
+            } else {
+                value = getUnsigned(pData, nLength, m_nFrom, m_nTo);
+                value64 = value;  // Promote to 64-bit for consistent handling
+            }
 
             switch (formatType) {
                 case CAsterixFormat::ETxt: {
-                    ss << format("\n\t%s: %ld", m_strName.c_str(), value);
+                    // Use appropriate format specifier based on bit count
+                    if (numberOfBits > 32) {
+                        ss << format("\n\t%s: %llu", m_strName.c_str(), value64);
+                    } else {
+                        ss << format("\n\t%s: %ld", m_strName.c_str(), value);
+                    }
 
                     if (m_dScale != 0) {
-                        double scaled = value * m_dScale;
+                        double scaled = value64 * m_dScale;
                         ss << format(" (%.7lf %s)", scaled, m_strUnit.c_str());
 
                         if (m_bMaxValueSet && scaled > m_dMaxValue) {
@@ -513,14 +574,14 @@ bool DataItemBits::getText(std::string &strResult, std::string &strHeader, const
                             ss << format("\n\tWarning: Value smaller than min (%.7lf)", m_dMinValue);
                         }
                     } else if (m_bIsConst) {
-                        if ((int) value != m_nConst) {
+                        if ((int) value64 != m_nConst) {
                             ss << format("\n\tWarning: Value should be set to %d", m_nConst);
                         }
                     } else if (!m_lValue.empty()) { // check values
                         std::list<BitsValue *>::iterator it;
                         for (it = m_lValue.begin(); it != m_lValue.end(); it++) {
                             BitsValue *bv = (BitsValue *) (*it);
-                            if (bv->m_nVal == (int) value) {
+                            if (bv->m_nVal == (int) value64) {
                                 ss << format(" (%s)", bv->m_strDescription.c_str());
                                 break;
                             }
@@ -532,10 +593,15 @@ bool DataItemBits::getText(std::string &strResult, std::string &strHeader, const
                 }
                     break;
                 case CAsterixFormat::EOut: {
-                    ss << format("\n%s.%s %ld", strHeader.c_str(), m_strShortName.c_str(), value);
+                    // Use appropriate format specifier based on bit count
+                    if (numberOfBits > 32) {
+                        ss << format("\n%s.%s %llu", strHeader.c_str(), m_strShortName.c_str(), value64);
+                    } else {
+                        ss << format("\n%s.%s %ld", strHeader.c_str(), m_strShortName.c_str(), value);
+                    }
 
                     if (m_dScale != 0) {
-                        double scaled = value * m_dScale;
+                        double scaled = value64 * m_dScale;
                         ss << format(" (%.7lf %s)", scaled, m_strUnit.c_str());
 
                         if (m_bMaxValueSet && scaled > m_dMaxValue) {
@@ -545,14 +611,14 @@ bool DataItemBits::getText(std::string &strResult, std::string &strHeader, const
                             ss << format(" Warning: Value smaller than min (%.7lf)", m_dMinValue);
                         }
                     } else if (m_bIsConst) {
-                        if ((int) value != m_nConst) {
+                        if ((int) value64 != m_nConst) {
                             ss << format(" Warning: Value should be set to %d", m_nConst);
                         }
                     } else if (!m_lValue.empty()) { // check values
                         std::list<BitsValue *>::iterator it;
                         for (it = m_lValue.begin(); it != m_lValue.end(); it++) {
                             BitsValue *bv = (BitsValue *) (*it);
-                            if (bv->m_nVal == (int) value) {
+                            if (bv->m_nVal == (int) value64) {
                                 ss << format(" (%s)", bv->m_strDescription.c_str());
                                 break;
                             }
@@ -565,10 +631,14 @@ bool DataItemBits::getText(std::string &strResult, std::string &strHeader, const
                     break;
                 case CAsterixFormat::EJSONE: {
                     if (m_dScale != 0) {
-                        double scaled = value * m_dScale;
+                        double scaled = value64 * m_dScale;
                         ss << format("\"val\"=%.7lf", scaled);
                     } else {
-                        ss << format("\"val\"=%ld", value);
+                        if (numberOfBits > 32) {
+                            ss << format("\"val\"=%llu", value64);
+                        } else {
+                            ss << format("\"val\"=%ld", value);
+                        }
                     }
 
                     unsigned char *hexstr = getHexBitStringFullByte(pData, nLength, m_nFrom, m_nTo);
@@ -587,7 +657,7 @@ bool DataItemBits::getText(std::string &strResult, std::string &strHeader, const
                         std::list<BitsValue *>::iterator it;
                         for (it = m_lValue.begin(); it != m_lValue.end(); it++) {
                             BitsValue *bv = (BitsValue *) (*it);
-                            if (bv->m_nVal == (int) value) {
+                            if (bv->m_nVal == (int) value64) {
                                 ss << format(", \"meaning\"=\"%s\"", bv->m_strDescription.c_str());
                                 break;
                             }
@@ -600,10 +670,14 @@ bool DataItemBits::getText(std::string &strResult, std::string &strHeader, const
                     break;
                 default: {
                     if (m_dScale != 0) {
-                        double scaled = value * m_dScale;
+                        double scaled = value64 * m_dScale;
                         ss << format("%.7lf", scaled);
                     } else {
-                        ss << format("%ld", value);
+                        if (numberOfBits > 32) {
+                            ss << format("%llu", value64);
+                        } else {
+                            ss << format("%ld", value);
+                        }
                     }
                 }
             }
@@ -1112,23 +1186,35 @@ fulliautomatix_data* DataItemBits::getData(unsigned char* pData, long nLength, i
     case DATAITEM_ENCODING_UNSIGNED:
     {
         fulliautomatix_data* pOutData;
-        unsigned long value = getUnsigned(pData, nLength, m_nFrom, m_nTo);
+        unsigned long long value64;
+        unsigned long value;
+
+        // Use 64-bit extraction for fields > 32 bits
+        if (numberOfBits > 32) {
+            value64 = getUnsigned64(pData, nLength, m_nFrom, m_nTo);
+            value = (unsigned long) value64;  // Truncate for Wireshark compatibility
+        } else {
+            value = getUnsigned(pData, nLength, m_nFrom, m_nTo);
+            value64 = value;
+        }
+
         if (value && m_nFrom>1 && numberOfBits%8)
         { // this is because of bitmask presentation in Wireshark
             value <<= ((m_nFrom-1)%(numberOfBytes*8));
+            value64 <<= ((m_nFrom-1)%(numberOfBytes*8));
         }
         pOutData = newDataUL(NULL, getPID(), byteoffset+firstByte, numberOfBytes, value);
 
         if (m_dScale != 0 || m_bIsConst)
         {
-            double scaled = value*m_dScale;
+            double scaled = value64*m_dScale;
             char tmp[128];
             if ((m_bMaxValueSet && scaled > m_dMaxValue) || (m_bMinValueSet && scaled < m_dMinValue))
             {
                 snprintf(tmp, 128, " (%.7lf %s) Warning! Value out of range (%.7lf to %.7lf)", scaled, m_strUnit.c_str(), m_dMinValue, m_dMaxValue);
                 pOutData->err = 1;
             }
-            else if (m_bIsConst && (int)value != m_nConst)
+            else if (m_bIsConst && (int)value64 != m_nConst)
             {
                 snprintf(tmp, 128, " (%.7lf %s) Warning! Value should be %d", scaled, m_strUnit.c_str(), m_nConst);
                 pOutData->err = 1;
@@ -1258,10 +1344,21 @@ void DataItemBits::insertToDict(PyObject* p, unsigned char* pData, long nLength,
     {
     case DATAITEM_ENCODING_UNSIGNED:
     {
-        unsigned long value = getUnsigned(pData, nLength, m_nFrom, m_nTo);
+        int numberOfBits = (m_nTo - m_nFrom + 1);
+        unsigned long long value64;
+        unsigned long value;
+
+        // Use 64-bit extraction for fields > 32 bits
+        if (numberOfBits > 32) {
+            value64 = getUnsigned64(pData, nLength, m_nFrom, m_nTo);
+            value = (unsigned long) value64;  // Truncate for backward compatibility
+        } else {
+            value = getUnsigned(pData, nLength, m_nFrom, m_nTo);
+            value64 = value;
+        }
 
         if (m_dScale != 0) {
-            double scaled = value * m_dScale;
+            double scaled = value64 * m_dScale;
             PyObject* k1 = Py_BuildValue("s", "val");
             PyObject* v1 = Py_BuildValue("d", scaled);
             PyDict_SetItem(pValue, k1, v1);
@@ -1284,7 +1381,7 @@ void DataItemBits::insertToDict(PyObject* p, unsigned char* pData, long nLength,
             }
         } else if (m_bIsConst) {
             PyObject* k1 = Py_BuildValue("s", "val");
-            PyObject* v1 = Py_BuildValue("k", value);
+            PyObject* v1 = Py_BuildValue("K", value64);  // "K" for unsigned long long
             PyDict_SetItem(pValue, k1, v1);
             Py_DECREF(k1);
             Py_DECREF(v1);
@@ -1299,9 +1396,9 @@ void DataItemBits::insertToDict(PyObject* p, unsigned char* pData, long nLength,
             std::list<BitsValue*>::iterator it;
             for (it = m_lValue.begin(); it != m_lValue.end(); it++) {
                 BitsValue* bv = (BitsValue*) (*it);
-                if (bv->m_nVal == (int) value) {
+                if (bv->m_nVal == (int) value64) {
                     PyObject* k1 = Py_BuildValue("s", "val");
-                    PyObject* v1 = Py_BuildValue("k", value);
+                    PyObject* v1 = Py_BuildValue("K", value64);  // "K" for unsigned long long
                     PyDict_SetItem(pValue, k1, v1);
                     Py_DECREF(k1);
                     Py_DECREF(v1);
@@ -1317,7 +1414,7 @@ void DataItemBits::insertToDict(PyObject* p, unsigned char* pData, long nLength,
             }
             if (it == m_lValue.end()) {
                 PyObject* k1 = Py_BuildValue("s", "val");
-                PyObject* v1 = Py_BuildValue("k", value);
+                PyObject* v1 = Py_BuildValue("K", value64);  // "K" for unsigned long long
                 PyDict_SetItem(pValue, k1, v1);
                 Py_DECREF(k1);
                 Py_DECREF(v1);
@@ -1333,7 +1430,7 @@ void DataItemBits::insertToDict(PyObject* p, unsigned char* pData, long nLength,
         else
         {
             PyObject* k1 = Py_BuildValue("s", "val");
-            PyObject* v1 = Py_BuildValue("k", value);
+            PyObject* v1 = Py_BuildValue("K", value64);  // "K" for unsigned long long
             PyDict_SetItem(pValue, k1, v1);
             Py_DECREF(k1);
             Py_DECREF(v1);
