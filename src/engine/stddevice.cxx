@@ -28,7 +28,6 @@
   #include <time.h>
   #include <io.h>
   #include <process.h>
-  #include "win32_compat.h"
   #define close _close
   #define read _read
   #define write _write
@@ -39,6 +38,9 @@
   #include <unistd.h>
   #include <sys/select.h> // fd_set
 #endif
+
+// Cross-platform compatibility layer
+#include "win32_compat.h"
 
 // Local includes
 #include "asterix.h"

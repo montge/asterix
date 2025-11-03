@@ -29,7 +29,6 @@
   #include <time.h>
   #include <io.h>
   #include <process.h>
-  #include "win32_compat.h"
   #pragma comment(lib, "ws2_32.lib")
   #define close _close
   #define read _read
@@ -46,6 +45,9 @@
   #include <unistd.h>
   #include <fcntl.h>
 #endif
+
+// Cross-platform compatibility layer
+#include "win32_compat.h"
 
 // Standard includes
 #include <stdio.h>
