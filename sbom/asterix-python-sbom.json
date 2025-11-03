@@ -2,17 +2,17 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:43ab7ceb-acd2-455a-b695-93713425132a",
+  "serialNumber": "urn:uuid:3f0a2c6b-31ef-432c-9c61-cbd9f3dcea0e",
   "version": 1,
   "metadata": {
-    "timestamp": "2025-11-03T17:20:16Z",
+    "timestamp": "2025-11-03T18:53:29Z",
     "tools": {
       "components": [
         {
           "type": "application",
           "author": "anchore",
           "name": "syft",
-          "version": "1.36.0"
+          "version": "1.37.0"
         }
       ]
     },
@@ -25,11 +25,11 @@
     "properties": [
       {
         "name": "commit",
-        "value": "4f9eb859196bb67c90534747b6411e2593b514c5"
+        "value": "51d003df2d5d0ec8ca44f062f0e1d1a7bada4277"
       },
       {
         "name": "generated",
-        "value": "2025-11-03T17:20:16Z"
+        "value": "2025-11-03T18:53:29Z"
       },
       {
         "name": "main_version",
