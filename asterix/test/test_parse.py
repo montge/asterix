@@ -42,6 +42,7 @@ class AsterixParseTest(unittest.TestCase):
                                                     'BDS1': {'desc': 'Comm B Data Buffer Store 1 Address', 'val': 4},
                                                     'BDS2': {'desc': 'Comm B Data Buffer Store 2 Address', 'val': 0}})
 
+            # I040: Parser now returns field names as descriptions
             self.assertEqual(packet[0]['I040'], {'THETA': {'desc': 'THETA', 'val': 340.13671875},
                                                  'RHO': {'desc': 'RHO', 'max': 256.0, 'val': 197.68359375}})
             self.assertEqual(packet[0]['I240'],
