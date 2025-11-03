@@ -178,9 +178,6 @@ bool CTcpDevice::Read(void *data, size_t len) {
     int totalReceived = 0;
     while (((unsigned int) totalReceived) < len) {
         bytesReceived = recv(socketToRecv, ((char *) data) + totalReceived, len - totalReceived, MSG_NOSIGNAL);
-#else
-        bytesReceived = recv(socketToRecv, data, len, MSG_NOSIGNAL | MSG_WAITALL);
-#endif
 
         if (bytesReceived < 0) {
             LOGERROR(1, "Error %d reading from socket %d. %s\n",
@@ -198,13 +195,36 @@ bool CTcpDevice::Read(void *data, size_t len) {
             return false;
         }
 
-#ifdef __CYGWIN__
         totalReceived += bytesReceived;
     } // while
+
+    // Check if we got all the data
+    if ((unsigned int) totalReceived != len) {
+        LOGWARNING(1, "Read only %d bytes from %d requested from socket %d.\n",
+           totalReceived,
+           (int)len,
+           socketToRecv);
+    }
 #else
-    else if ((unsigned int) bytesReceived != len)
-    {
-        LOGWARNING(1, "Read only %d bytes from %d requested from socket %d.\n", 
+    // Linux/Unix: Use MSG_WAITALL
+    bytesReceived = recv(socketToRecv, data, len, MSG_NOSIGNAL | MSG_WAITALL);
+
+    if (bytesReceived < 0) {
+        LOGERROR(1, "Error %d reading from socket %d. %s\n",
+                 errno,
+                 socketToRecv,
+                 strerror(errno));
+
+        Disconnect(false); // error, do not linger
+        CountReadError();
+        return false;
+    } else if (bytesReceived == 0) {
+        LOGNOTIFY(gVerbose, "Connection closed by remote host\n");
+        Disconnect(false); // error, do not linger
+//        CountReadError(); // this can be a normal disconnection, not an error
+        return false;
+    } else if ((unsigned int) bytesReceived != len) {
+        LOGWARNING(1, "Read only %d bytes from %d requested from socket %d.\n",
            bytesReceived,
            (int)len,
            socketToRecv);
