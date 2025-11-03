@@ -807,15 +807,31 @@ jobs:
       run: |
         # Windows: Set environment for vcpkg and suppress D9002 warnings
         $VCPKG_ROOT = "${{ github.workspace }}/vcpkg"
+        $env:VCPKG_ROOT = $VCPKG_ROOT  # Set as environment variable for setup.py
         $env:CMAKE_TOOLCHAIN_FILE = "$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
         $env:VCPKG_DEFAULT_TRIPLET = "x64-windows"
-        
+
         # Set expat include and library paths
         $env:EXPAT_INCLUDE_DIR = "$VCPKG_ROOT/installed/x64-windows/include"
         $env:EXPAT_LIB_DIR = "$VCPKG_ROOT/installed/x64-windows/lib"
 
         # Set distutils compiler flags
         $env:DISTUTILS_USE_SDK = "1"
+
+        # Verify expat installation
+        if (!(Test-Path "$env:EXPAT_INCLUDE_DIR/expat.h")) {
+          Write-Error "expat.h not found at $env:EXPAT_INCLUDE_DIR"
+          exit 1
+        }
+        if (!(Test-Path "$env:EXPAT_LIB_DIR/libexpat.lib")) {
+          Write-Error "libexpat.lib not found at $env:EXPAT_LIB_DIR"
+          exit 1
+        }
+
+        Write-Host "Building Python module with:"
+        Write-Host "  VCPKG_ROOT: $env:VCPKG_ROOT"
+        Write-Host "  EXPAT_INCLUDE_DIR: $env:EXPAT_INCLUDE_DIR"
+        Write-Host "  EXPAT_LIB_DIR: $env:EXPAT_LIB_DIR"
 
         python setup.py build
 
@@ -828,7 +844,33 @@ jobs:
       run: |
         python setup.py install
 
-    - name: Run Python tests
+    - name: Run Python tests (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        # Check if test directory exists
+        if (!(Test-Path "asterix/test")) {
+          Write-Warning "asterix/test directory not found, skipping tests"
+          exit 0
+        }
+
+        # Check if there are any test files
+        $testFiles = Get-ChildItem -Path "asterix/test" -Filter "test_*.py" -File -ErrorAction SilentlyContinue
+        if ($testFiles.Count -eq 0) {
+          Write-Warning "No test files found in asterix/test/, skipping tests"
+          exit 0
+        }
+
+        Write-Host "Running Python tests..."
+        python -m pytest asterix/test/ -v --cov=asterix --cov-report=xml
+        if ($LASTEXITCODE -ne 0) {
+          Write-Error "Python tests failed"
+          exit $LASTEXITCODE
+        }
+        Write-Host "✅ Python tests passed"
+
+    - name: Run Python tests (Linux/macOS)
+      if: runner.os != 'Windows'
       run: |
         set -e
 

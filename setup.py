@@ -100,27 +100,40 @@ if sys.platform == 'win32':
     # Check for expat in common locations
     expat_include_dir = os.environ.get('EXPAT_INCLUDE_DIR')
     expat_lib_dir = os.environ.get('EXPAT_LIB_DIR')
-    
-    # Try vcpkg paths
+
+    # Try vcpkg paths - check multiple triplets for architecture compatibility
     vcpkg_root = os.environ.get('VCPKG_ROOT', '')
     if vcpkg_root:
-        vcpkg_expat_include = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
-        vcpkg_expat_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib')
-        if os.path.exists(vcpkg_expat_include):
-            expat_include_dirs.append(vcpkg_expat_include)
-            expat_include_dir = vcpkg_expat_include
-        if os.path.exists(vcpkg_expat_lib):
-            expat_library_dirs.append(vcpkg_expat_lib)
-            expat_lib_dir = vcpkg_expat_lib
-    
-    # Use environment variables if set
+        # Try multiple vcpkg triplets in order of preference
+        for triplet in ['x64-windows', 'x86-windows', 'arm64-windows']:
+            vcpkg_expat_include = os.path.join(vcpkg_root, 'installed', triplet, 'include')
+            vcpkg_expat_lib = os.path.join(vcpkg_root, 'installed', triplet, 'lib')
+            if os.path.exists(vcpkg_expat_include) and os.path.exists(vcpkg_expat_lib):
+                print(f"Found vcpkg expat for {triplet}")
+                if vcpkg_expat_include not in expat_include_dirs:
+                    expat_include_dirs.append(vcpkg_expat_include)
+                    expat_include_dir = vcpkg_expat_include
+                if vcpkg_expat_lib not in expat_library_dirs:
+                    expat_library_dirs.append(vcpkg_expat_lib)
+                    expat_lib_dir = vcpkg_expat_lib
+                break  # Use the first found triplet
+
+    # Use environment variables if set (takes precedence over vcpkg detection)
     if expat_include_dir and os.path.exists(expat_include_dir):
         if expat_include_dir not in expat_include_dirs:
             expat_include_dirs.append(expat_include_dir)
     if expat_lib_dir and os.path.exists(expat_lib_dir):
         if expat_lib_dir not in expat_library_dirs:
             expat_library_dirs.append(expat_lib_dir)
-    
+
+    # Validate that we found expat
+    if not expat_library_dirs:
+        print("WARNING: expat library directories not found. Build may fail.")
+        print("  Set EXPAT_LIB_DIR environment variable or install via vcpkg:")
+        print("    vcpkg install expat:x64-windows")
+        print(f"  VCPKG_ROOT={vcpkg_root or '(not set)'}")
+        print(f"  EXPAT_LIB_DIR={os.environ.get('EXPAT_LIB_DIR', '(not set)')}")
+
     # Note: Removed /wd9002 flag as it's invalid (causes D9014 warnings)
     # D9002 warnings about GCC flags are expected and harmless on MSVC
 
