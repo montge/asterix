@@ -171,13 +171,25 @@ if(ENABLE_COVERAGE)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
 endif()
 
-# SECURITY: Compiler and linker hardening flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector-strong")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fstack-protector-strong")
-
-# SECURITY: Buffer overflow detection (only for Release builds with -O2)
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D_FORTIFY_SOURCE=2")
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -D_FORTIFY_SOURCE=2")
+# SECURITY: Platform-specific compiler and linker hardening flags
+if(MSVC)
+    # MSVC: Security Development Lifecycle (SDL) checks and stack protection
+    # /GS enables buffer security checks (stack protection)
+    # /sdl enables additional security checks
+    # /W4 enables high warning level, /WX- makes warnings non-fatal
+    add_compile_options(/W4 /WX- /GS /sdl)
+    # Suppress common MSVC warnings that don't affect functionality
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+    add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)  # Allow POSIX functions like strdup
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    # GCC/Clang: Stack protection
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector-strong")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fstack-protector-strong")
+    
+    # SECURITY: Buffer overflow detection (only for Release builds with -O2)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D_FORTIFY_SOURCE=2")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -D_FORTIFY_SOURCE=2")
+endif()
 
 # SECURITY: Read-only relocations and immediate binding (Linux only)
 if(UNIX AND NOT APPLE)
@@ -344,6 +356,37 @@ if(BUILD_EXECUTABLE)
     install(TARGETS asterix_exe
         RUNTIME DESTINATION bin
     )
+
+    # On Windows with vcpkg, install required DLLs
+    if(WIN32 AND CMAKE_TOOLCHAIN_FILE MATCHES "vcpkg")
+        # Find expat DLL using find_file
+        find_file(EXPAT_DLL_RELEASE
+            NAMES libexpat.dll
+            PATHS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin
+            NO_DEFAULT_PATH
+        )
+
+        if(EXPAT_DLL_RELEASE)
+            install(FILES "${EXPAT_DLL_RELEASE}"
+                DESTINATION bin
+                CONFIGURATIONS Release RelWithDebInfo MinSizeRel
+            )
+        endif()
+
+        # For Debug builds, install debug version if it exists
+        find_file(EXPAT_DLL_DEBUG
+            NAMES libexpatd.dll
+            PATHS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/bin
+            NO_DEFAULT_PATH
+        )
+
+        if(EXPAT_DLL_DEBUG)
+            install(FILES "${EXPAT_DLL_DEBUG}"
+                DESTINATION bin
+                CONFIGURATIONS Debug
+            )
+        endif()
+    endif()
 endif()
 
 # Install configuration files

@@ -24,6 +24,12 @@
 
 // Networking
 #ifdef _WIN32
+  #ifndef WIN32_LEAN_AND_MEAN
+    #define WIN32_LEAN_AND_MEAN
+  #endif
+  #ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
+    #define _WINSOCK_DEPRECATED_NO_WARNINGS  // Suppress deprecated API warnings
+  #endif
   #include <winsock2.h>
   #include <ws2tcpip.h>
   #include <time.h>
@@ -34,6 +40,7 @@
   #define read _read
   #define write _write
   #define getpid _getpid
+  // Note: fcntl, O_NONBLOCK, and other POSIX compatibility are provided by win32_compat.h
 #else
   #include <sys/types.h>
   #include <sys/socket.h>
@@ -260,7 +267,7 @@ bool CTcpDevice::Write(const void *data, size_t len) {
     ASSERT(socketToSend >= 0);
 
     // Write the message (blocking)
-    if (send(socketToSend, data, len, MSG_NOSIGNAL) < 0) {
+    if (send(socketToSend, (const char*)data, (int)len, MSG_NOSIGNAL) < 0) {
         LOGERROR(1, "Error %d writing to socket %d. %s\n",
                  errno, socketToSend, strerror(errno));
 
