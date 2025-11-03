@@ -147,3 +147,4 @@ venv/
 !SPECS_SUBMODULE*.md
 !SPEC_UPDATE*.md
 !asterix-rs/**/*.md
+version.h\n
