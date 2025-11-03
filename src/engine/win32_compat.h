@@ -101,16 +101,11 @@
   #define SENDTO_CAST(ptr) ((const char*)(ptr))
   #define SETSOCKOPT_CAST(ptr) ((const char*)(ptr))
 
-  // POSIX timeval compatibility
-  #ifndef _TIMEVAL_DEFINED
-    struct timeval {
-        long tv_sec;
-        long tv_usec;
-    };
-    #define _TIMEVAL_DEFINED
-  #endif
+  // Note: struct timeval is already defined in winsock2.h on Windows
+  // No need to redefine it here
 
   // gettimeofday implementation for Windows
+  // winsock2.h provides struct timeval but not gettimeofday()
   inline int gettimeofday(struct timeval* tp, void* tzp) {
       (void)tzp; // Unused
       FILETIME ft;
