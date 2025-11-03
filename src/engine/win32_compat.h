@@ -32,6 +32,24 @@
   typedef SSIZE_T ssize_t;
   typedef unsigned long speed_t;  // Serial port baud rate
 
+  // String comparison functions
+  #define strcasecmp _stricmp
+  #define strncasecmp _strnicmp
+
+  // File access constants
+  #ifndef R_OK
+    #define R_OK 4  // Read permission
+  #endif
+  #ifndef W_OK
+    #define W_OK 2  // Write permission
+  #endif
+  #ifndef X_OK
+    #define X_OK 1  // Execute permission
+  #endif
+  #ifndef F_OK
+    #define F_OK 0  // Existence check
+  #endif
+
   // File descriptor constants
   #ifndef STDIN_FILENO
     #define STDIN_FILENO  0

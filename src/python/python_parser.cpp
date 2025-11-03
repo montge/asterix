@@ -28,7 +28,12 @@
 #include "AsterixDefinition.h"
 #include "XMLParser.h"
 #include "InputParser.h"
-#include <sys/time.h>
+
+#ifdef _WIN32
+  #include <time.h>
+#else
+  #include <sys/time.h>
+#endif
 
 static AsterixDefinition *pDefinition = NULL;
 static InputParser *inputParser = NULL;
