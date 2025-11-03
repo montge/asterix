@@ -107,8 +107,11 @@ jobs:
 
     - name: Test executable
       run: |
-        ./install/bin/asterix --version || true
-        ./install/bin/asterix --help || true
+        # Set LD_LIBRARY_PATH for shared library loading
+        export LD_LIBRARY_PATH=${{ github.workspace }}/install/lib:${LD_LIBRARY_PATH:-}
+        ./install/bin/asterix --version
+        ./install/bin/asterix --help
+        echo "✅ Executable tests passed"
 
   # Python module build and test
   test-python:
