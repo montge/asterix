@@ -29,6 +29,7 @@
   #include <time.h>
   #include <io.h>
   #include <process.h>
+  #include "win32_compat.h"
   #pragma comment(lib, "ws2_32.lib")
   #define close _close
   #define read _read
@@ -167,7 +168,8 @@ bool CTcpDevice::Read(void *data, size_t len) {
 
     int bytesReceived = 0;
 
-#ifdef __CYGWIN__
+#if defined(__CYGWIN__) || defined(_WIN32)
+    // Windows and Cygwin don't support MSG_WAITALL, use loop
     int totalReceived = 0;
     while (((unsigned int) totalReceived) < len) {
         bytesReceived = recv(socketToRecv, ((char *) data) + totalReceived, len - totalReceived, MSG_NOSIGNAL);
@@ -356,7 +358,7 @@ bool CTcpDevice::Connect() {
 
             // Enable local address reuse
             int opt = 1;
-            if (setsockopt(_socketDesc, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) != 0) {
+            if (setsockopt(_socketDesc, SOL_SOCKET, SO_REUSEADDR, SETSOCKOPT_CAST(&opt), sizeof(opt)) != 0) {
                 LOGWARNING(1, "Error %d on setsockopt(). %s\n", errno, strerror(errno));
                 close(_socketDesc);
             }
@@ -442,7 +444,7 @@ bool CTcpDevice::Disconnect(bool bLinger) {
         if (_server) {
             ASSERT(_socketDescSession >= 0);
 
-            if (setsockopt(_socketDescSession, SOL_SOCKET, SO_LINGER, &sl, sizeof(sl)) != 0) {
+            if (setsockopt(_socketDescSession, SOL_SOCKET, SO_LINGER, SETSOCKOPT_CAST(&sl), sizeof(sl)) != 0) {
                 LOGWARNING(1, "Error %d on setsockopt(). %s\n", errno, strerror(errno));
             }
 
@@ -457,7 +459,7 @@ bool CTcpDevice::Disconnect(bool bLinger) {
         } else {
             ASSERT(_socketDesc >= 0);
 
-            if (setsockopt(_socketDesc, SOL_SOCKET, SO_LINGER, &sl, sizeof(sl)) != 0) {
+            if (setsockopt(_socketDesc, SOL_SOCKET, SO_LINGER, SETSOCKOPT_CAST(&sl), sizeof(sl)) != 0) {
                 LOGWARNING(1, "Error %d on setsockopt(). %s\n", errno, strerror(errno));
             }
 
@@ -534,7 +536,7 @@ bool CTcpDevice::InitClient(const char *serverAddress, const int serverPort, con
 
     // Enable local address reuse
     int opt = 1;
-    if (setsockopt(_socketDesc, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) != 0) {
+    if (setsockopt(_socketDesc, SOL_SOCKET, SO_REUSEADDR, SETSOCKOPT_CAST(&opt), sizeof(opt)) != 0) {
         LOGWARNING(1, "Error %d on setsockopt(). %s\n", errno, strerror(errno));
     }
 

@@ -28,6 +28,7 @@
   #include <time.h>
   #include <io.h>
   #include <process.h>
+  #include "win32_compat.h"
   #pragma comment(lib, "ws2_32.lib")
   #define close _close
   #define read _read

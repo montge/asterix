@@ -23,7 +23,14 @@
 #ifndef SERIALDEVICE_HXX__
 #define SERIALDEVICE_HXX__
 
-#include <termios.h>  // speed_t
+#ifdef _WIN32
+  #include "win32_compat.h"
+  // Windows serial port support would require significant refactoring
+  // to use Windows API (CreateFile, SetCommState, etc.)
+  #pragma message("Serial device not fully supported on Windows")
+#else
+  #include <termios.h>  // speed_t
+#endif
 
 #include "basedevice.hxx"
 #include "descriptor.hxx"

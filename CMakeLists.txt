@@ -350,17 +350,30 @@ install(DIRECTORY asterix/config/
 
 # Create symlinks for backwards compatibility with Makefile-based test.sh
 # Tests expect config at install/config/ and sample_data at install/sample_data/
+# Skip symlink creation during packaging (CMAKE_INSTALL_PREFIX=/usr requires root)
 install(CODE "
-    # Remove any existing files/directories before creating symlinks
-    # This handles multiple installs to the same prefix (Release + Debug)
-    file(REMOVE_RECURSE \"\${CMAKE_INSTALL_PREFIX}/config\")
-    file(REMOVE_RECURSE \"\${CMAKE_INSTALL_PREFIX}/sample_data\")
-    file(REMOVE_RECURSE \"\${CMAKE_INSTALL_PREFIX}/sample_output\")
+    # Use DESTDIR if set (for packaging), otherwise use CMAKE_INSTALL_PREFIX
+    if(DEFINED ENV{DESTDIR})
+        set(INSTALL_ROOT \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}\")
+    else()
+        set(INSTALL_ROOT \"\${CMAKE_INSTALL_PREFIX}\")
+    endif()
 
-    # Create symlinks
-    file(CREATE_LINK \"\${CMAKE_INSTALL_PREFIX}/share/asterix/config\" \"\${CMAKE_INSTALL_PREFIX}/config\" SYMBOLIC)
-    file(CREATE_LINK \"\${CMAKE_INSTALL_PREFIX}/share/asterix/samples\" \"\${CMAKE_INSTALL_PREFIX}/sample_data\" SYMBOLIC)
-    file(CREATE_LINK \"\${CMAKE_INSTALL_PREFIX}/share/asterix/sample_output\" \"\${CMAKE_INSTALL_PREFIX}/sample_output\" SYMBOLIC)
+    # Skip if installing to system directories during packaging
+    # (CPack sets CMAKE_INSTALL_PREFIX=/usr which needs root)
+    if(NOT \"\${CMAKE_INSTALL_PREFIX}\" STREQUAL \"/usr\")
+        # Remove any existing files/directories before creating symlinks
+        file(REMOVE_RECURSE \"\${INSTALL_ROOT}/config\")
+        file(REMOVE_RECURSE \"\${INSTALL_ROOT}/sample_data\")
+        file(REMOVE_RECURSE \"\${INSTALL_ROOT}/sample_output\")
+
+        # Create symlinks
+        file(CREATE_LINK \"\${INSTALL_ROOT}/share/asterix/config\" \"\${INSTALL_ROOT}/config\" SYMBOLIC)
+        file(CREATE_LINK \"\${INSTALL_ROOT}/share/asterix/samples\" \"\${INSTALL_ROOT}/sample_data\" SYMBOLIC)
+        file(CREATE_LINK \"\${INSTALL_ROOT}/share/asterix/sample_output\" \"\${INSTALL_ROOT}/sample_output\" SYMBOLIC)
+    else()
+        message(STATUS \"Skipping symlink creation for system install prefix: \${CMAKE_INSTALL_PREFIX}\")
+    endif()
 ")
 
 # Install sample data (optional)
