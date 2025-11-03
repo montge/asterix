@@ -12,8 +12,8 @@ This directory contains CycloneDX format SBOM files for the ASTERIX project.
 
 - **Current Version**: 2.8.10
 - **Git Tag**: v2.8.10
-- **Generated**: 2025-11-03T00:51:13Z
-- **Commit**: 470ed87367141539cf726bda320c501d9d8dc0bb
+- **Generated**: 2025-11-03T16:41:16Z
+- **Commit**: 5d3998bfafa7b93ab95677c29a54318b294c9291
 
 ## How to Use
 

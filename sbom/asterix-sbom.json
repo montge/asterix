@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:e47393b8-ebdc-4a53-8e91-5b869fb168c3",
+  "serialNumber": "urn:uuid:cd22096e-b3a2-4743-8b2b-f71b7941fb15",
   "version": 1,
   "metadata": {
-    "timestamp": "2025-11-03T00:51:11Z",
+    "timestamp": "2025-11-03T16:41:14Z",
     "tools": {
       "components": [
         {
@@ -25,7 +25,7 @@
     "properties": [
       {
         "name": "commit",
-        "value": "470ed87367141539cf726bda320c501d9d8dc0bb"
+        "value": "5d3998bfafa7b93ab95677c29a54318b294c9291"
       },
       {
         "name": "repository",
@@ -33,7 +33,7 @@
       },
       {
         "name": "generated",
-        "value": "2025-11-03T00:51:11Z"
+        "value": "2025-11-03T16:41:14Z"
       },
       {
         "name": "tool",
@@ -3877,6 +3877,68 @@
         {
           "name": "syft:location:0:path",
           "value": "/asterix-rs/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/ilammy/msvc-dev-cmd@v1?package-id=b2449573d5157ff0",
+      "type": "library",
+      "name": "ilammy/msvc-dev-cmd",
+      "version": "v1",
+      "cpe": "cpe:2.3:a:ilammy\\/msvc-dev-cmd:ilammy\\/msvc-dev-cmd:v1:*:*:*:*:*:*:*",
+      "purl": "pkg:github/ilammy/msvc-dev-cmd@v1",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ilammy\\/msvc-dev-cmd:ilammy\\/msvc_dev_cmd:v1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ilammy\\/msvc_dev_cmd:ilammy\\/msvc-dev-cmd:v1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ilammy\\/msvc_dev_cmd:ilammy\\/msvc_dev_cmd:v1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ilammy\\/msvc-dev:ilammy\\/msvc-dev-cmd:v1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ilammy\\/msvc-dev:ilammy\\/msvc_dev_cmd:v1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ilammy\\/msvc_dev:ilammy\\/msvc-dev-cmd:v1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ilammy\\/msvc_dev:ilammy\\/msvc_dev_cmd:v1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ilammy\\/msvc:ilammy\\/msvc-dev-cmd:v1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ilammy\\/msvc:ilammy\\/msvc_dev_cmd:v1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/cross-platform-builds.yml"
         }
       ]
     },
@@ -9234,11 +9296,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "9142a5e069314da3dfb3415b334ffd8fafb4cb2a"
+          "content": "06a4ffbd377c6e8349915ffc87655480103043ed"
         },
         {
           "alg": "SHA-256",
-          "content": "b98421b99966d017aa8257f60486b34fa275aa65db77c86a9d70035a8acc67d7"
+          "content": "385bfc50ec8182721837fbc7c1b18cec3f5094f1945c75fedca785760a7ff765"
         }
       ]
     },
@@ -9249,11 +9311,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "6d4312d89348cd9f86c041c6d694f2fa9f57a2d8"
+          "content": "b46f354ec5e5e76727e6eeacd914fb93e5b6ac0a"
         },
         {
           "alg": "SHA-256",
-          "content": "46f5efda4125545a0f92ce80cf9cc3f20fe8a4d57611a528db8404ebbbe8b5aa"
+          "content": "762e80e6d5bed19b50b57160e9d9668a6f1bbb8d14f69f9780b3eef55dc4e4f3"
         }
       ]
     },
