@@ -24,10 +24,20 @@
 #ifndef UDPDEVICE_HXX__
 #define UDPDEVICE_HXX__
 
-#include <sys/socket.h>
-#include <sys/select.h> // fd_set
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#ifdef _WIN32
+  // Windows socket headers
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
+  // Link with Winsock library (ws2_32.lib)
+  #pragma comment(lib, "ws2_32.lib")
+#else
+  // POSIX socket headers
+  #include <sys/socket.h>
+  #include <sys/select.h> // fd_set
+  #include <netinet/in.h>
+  #include <arpa/inet.h>
+#endif
+
 #include <vector>
 
 #include "basedevice.hxx"
