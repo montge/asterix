@@ -445,6 +445,8 @@ jobs:
     - name: Run integration tests
       run: |
         cd install/test
+        # Set LD_LIBRARY_PATH for shared library loading
+        export LD_LIBRARY_PATH=${{ github.workspace }}/install/lib:${LD_LIBRARY_PATH:-}
         ./test.sh || {
           echo "::error::Integration tests failed"
           echo "Test script exit code: $?"
