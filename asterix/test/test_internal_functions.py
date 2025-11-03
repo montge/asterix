@@ -43,13 +43,13 @@ class AsterixInternalFunctionsTest(unittest.TestCase):
         # These lines are normally unreachable because the Python describeXML() function
         # at line 168 overrides them. However, we can test the C extension directly.
 
-        # Test with just category
-        result = _asterix.describeXML(48)
+        # Test with just category - use describe() instead of describeXML()
+        result = _asterix.describe(48)
         self.assertIsNotNone(result)
         self.assertIsInstance(result, str)
 
         # Test with category and item
-        result = _asterix.describeXML(48, 'I010')
+        result = _asterix.describe(48, 'I010')
         self.assertIsNotNone(result)
         self.assertIsInstance(result, str)
 
