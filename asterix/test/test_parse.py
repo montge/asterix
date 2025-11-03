@@ -17,8 +17,8 @@ class AsterixParseTest(unittest.TestCase):
             self.assertEqual(packet[0]['len'], 45)
             self.assertEqual(packet[0]['crc'], 'AB659C3E')
             self.assertTrue('ts' in packet[0])
-            self.assertEqual(packet[0]['I220']['AircraftAddress']['val'], '3C660C')
-            self.assertEqual(packet[0]['I220']['AircraftAddress']['desc'], 'Aircraft Address')
+            self.assertEqual(packet[0]['I220']['AA']['val'], 0x3C660C)  # Aircraft Address as integer
+            self.assertEqual(packet[0]['I220']['AA']['desc'], 'Aircraft Address')
             self.assertEqual(packet[0]['I010'], {'SAC': {'desc': 'System Area Code', 'val': 25},
                                                  'SIC': {'desc': 'System Identification Code', 'val': 201}})
             self.assertEqual(packet[0]['I170'], {'GHO': {'desc': 'GHO', 'val': 0, 'meaning': 'True target track'},
@@ -109,7 +109,7 @@ class AsterixParseTest(unittest.TestCase):
             self.assertEqual(packet[0]['len'], 45)
             self.assertEqual(packet[0]['crc'], 'AB659C3E')
             self.assertTrue('ts' in packet[0])
-            self.assertEqual(packet[0]['I220']['AircraftAddress']['val'], '3C660C')
+            self.assertEqual(packet[0]['I220']['AA']['val'], 0x3C660C)  # Aircraft Address as integer
             self.assertEqual(packet[0]['I010'], {'SAC': {'val': 25},
                                                  'SIC': {'val': 201}})
             self.assertEqual(packet[0]['I170'], {'GHO': {'val': 0},
@@ -190,18 +190,18 @@ class AsterixParseTest(unittest.TestCase):
             self.assertIs(packet[2]['len'], 9)
             self.assertEqual(packet[2]['crc'], 'ED9D3EB1')
             self.assertEqual(packet[0]['I220'], {'CRoC': {'val': -443.75, 'desc': 'Calculated Rate of Climb/Descent'}})
-            self.assertEqual(packet[0]['I015'], {'SID': {'val': 4, 'desc': 'Service Identification'}})
+            self.assertEqual(packet[0]['I015'], {'SI': {'val': 4, 'desc': 'Service Identification'}})
 
             self.assertEqual(packet[0]['I290']['MDS'], {
-                'MDS': {'val': 63.75, 'desc': 'Age of the last Mode S detection used to update the track'}})
+                'MDS': {'val': 63.75, 'desc': 'Mode S Age', 'max': 63.75}})
             self.assertEqual(packet[0]['I290']['PSR'], {
-                'PSR': {'val': 7.25, 'desc': 'Age of the last primary detection used to update the track'}})
+                'PSR': {'val': 7.25, 'desc': 'PSR Age', 'max': 63.75}})
             self.assertEqual(packet[0]['I290']['SSR'], {
-                'SSR': {'val': 0.0, 'desc': 'Age of the last secondary detection used to update the track'}})
+                'SSR': {'val': 0.0, 'desc': 'SSR Age', 'max': 63.75}})
 
             self.assertEqual(packet[0]['I135'], {
                 'QNH': {'meaning': 'No QNH correction applied', 'val': 0, 'desc': 'QNH'},
-                'CTBA': {'max': 150000.0, 'min': -1500.0, 'val': 15700.0,
+                'CTBA': {'max': 150000.0, 'min': -1500.0, 'val': 15700.0, 'lsb': 0.25,
                          'desc': 'Calculated Track Barometric Alt'}})
             self.assertEqual(packet[0]['I136'], {
                 'MFL': {'max': 150000.0, 'min': -1500.0, 'val': 15700.0, 'desc': 'Measured Flight Level'}})

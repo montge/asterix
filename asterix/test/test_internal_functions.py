@@ -39,11 +39,10 @@ class AsterixInternalFunctionsTest(unittest.TestCase):
         self.assertIsInstance(result, str)
 
     def test_describe_xml_c_extension_all_signatures(self):
-        """Test _asterix.describeXML() with all parameter combinations (lines 103-109)."""
-        # These lines are normally unreachable because the Python describeXML() function
-        # at line 168 overrides them. However, we can test the C extension directly.
+        """Test _asterix.describe() with all parameter combinations."""
+        # The C extension exposes describe(), not describeXML()
 
-        # Test with just category - use describe() instead of describeXML()
+        # Test with just category
         result = _asterix.describe(48)
         self.assertIsNotNone(result)
         self.assertIsInstance(result, str)
@@ -54,12 +53,12 @@ class AsterixInternalFunctionsTest(unittest.TestCase):
         self.assertIsInstance(result, str)
 
         # Test with category, item, and field
-        result = _asterix.describeXML(48, 'I010', 'SAC')
+        result = _asterix.describe(48, 'I010', 'SAC')
         self.assertIsNotNone(result)
         self.assertIsInstance(result, str)
 
         # Test with all parameters
-        result = _asterix.describeXML(48, 'I010', 'SAC', '25')
+        result = _asterix.describe(48, 'I010', 'SAC', '25')
         self.assertIsNotNone(result)
         self.assertIsInstance(result, str)
 
