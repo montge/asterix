@@ -40,6 +40,7 @@
   #include <windows.h>
   #include <BaseTsd.h>
   #include <io.h>
+  #include <cstdarg>  // For va_list in fcntl wrapper
 
   // POSIX type compatibility
   typedef SSIZE_T ssize_t;
@@ -94,19 +95,40 @@
   // sleep() takes seconds, Sleep() takes milliseconds
   #define sleep(x) Sleep((x)*1000)
 
-  // fcntl constants (no-ops - Windows uses different APIs)
+  // fcntl constants
   #ifndef F_GETFL
     #define F_GETFL 0
   #endif
   #ifndef F_SETFL
-    #define F_SETFL 0
+    #define F_SETFL 1
   #endif
   #ifndef FNDELAY
     #define FNDELAY 0
   #endif
   #ifndef O_NONBLOCK
-    #define O_NONBLOCK 0
+    // O_NONBLOCK must be non-zero so that (flags & O_NONBLOCK) works correctly
+    #define O_NONBLOCK 1
   #endif
+  #ifndef FIONBIO
+    #define FIONBIO 0x8004667E  // Windows ioctl command for non-blocking I/O
+  #endif
+
+  // fcntl wrapper for Windows - handles F_SETFL with O_NONBLOCK for socket operations
+  // Note: This is a minimal implementation that only supports non-blocking socket I/O
+  inline int fcntl(int fd, int cmd, ...) {
+    if (cmd == F_SETFL) {
+      va_list args;
+      va_start(args, cmd);
+      int flags = va_arg(args, int);
+      va_end(args);
+
+      // Set non-blocking mode on socket
+      u_long mode = (flags & O_NONBLOCK) ? 1 : 0;
+      return ioctlsocket((SOCKET)fd, FIONBIO, &mode);
+    }
+    // F_GETFL returns 0 (no flags) on Windows
+    return 0;
+  }
 
   // Socket data casting helpers
   // Windows Winsock API requires char* pointers, POSIX uses void*

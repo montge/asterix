@@ -34,6 +34,9 @@
   #define read _read
   #define write _write
   #define getpid _getpid
+  #define access _access
+  #define unlink _unlink
+  #define fileno _fileno
 #else
   #include <unistd.h>
   #include <sys/stat.h>
