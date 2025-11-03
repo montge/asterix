@@ -32,6 +32,11 @@
     #define NOMINMAX  // Prevent min/max macro definitions
   #endif
 
+  // Include winsock2.h BEFORE windows.h to ensure we get the right socket API
+  // This also provides struct timeval definition needed by gettimeofday()
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
+
   #include <windows.h>
   #include <BaseTsd.h>
   #include <io.h>
