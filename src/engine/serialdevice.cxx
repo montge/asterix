@@ -20,6 +20,10 @@
  * AUTHORS: Jurica Baricevic, Croatia Control Ltd.
  *
  */
+// Serial device uses POSIX termios API - not supported on Windows
+// Windows would require complete rewrite using CreateFile/DCB/SetCommState
+#ifndef _WIN32
+
 // Standard includes
 #include <stdio.h>
 #include <string.h>
@@ -327,3 +331,5 @@ bool CSerialDevice::ConvertSpeed(int speed, speed_t &baudRate) {
     }
     return true;
 }
+
+#endif // _WIN32 - Serial device not supported on Windows
