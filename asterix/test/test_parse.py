@@ -57,11 +57,12 @@ class AsterixParseTest(unittest.TestCase):
                                                  'spare': {'desc': 'Spare bit(s) set to 0', 'const': 0, 'val': 0},
                                                  'MODE3A': {'desc': 'Mode-3/A Reply in Octal Representation', 'val': '1000'}})
             self.assertEqual(packet[0]['I161'], {'spare': {'desc': 'Spare bit(s) set to 0', 'val': 0, 'const': 0}, 'TRN': {'desc': 'Track Number', 'val': 3563}})
-            self.assertEqual(packet[0]['I020'], {'TYP': {'desc': '', 'val': 5, 'meaning': 'Single ModeS Roll-Call'},
-                                                 'SIM': {'desc': '', 'val': 0, 'meaning': 'Actual target report'},
-                                                 'RDP': {'desc': '', 'val': 0, 'meaning': 'Report from RDP Chain 1'},
-                                                 'SPI': {'desc': '', 'val': 0, 'meaning': 'Absence of SPI'},
-                                                 'RAB': {'desc': '', 'val': 0,
+            # I020: CI parser outputs field names as descriptions (same pattern as I070)
+            self.assertEqual(packet[0]['I020'], {'TYP': {'desc': 'TYP', 'val': 5, 'meaning': 'Single ModeS Roll-Call'},
+                                                 'SIM': {'desc': 'SIM', 'val': 0, 'meaning': 'Actual target report'},
+                                                 'RDP': {'desc': 'RDP', 'val': 0, 'meaning': 'Report from RDP Chain 1'},
+                                                 'SPI': {'desc': 'SPI', 'val': 0, 'meaning': 'Absence of SPI'},
+                                                 'RAB': {'desc': 'RAB', 'val': 0,
                                                          'meaning': 'Report from aircraft transponder'},
                                                  'FX': {'desc': 'Extension Indicator', 'val': 0, 'meaning': 'End of Data Item'}})
             self.assertEqual(packet[0]['I090'], {'V': {'desc': '', 'val': 0, 'meaning': 'Code validated'},
