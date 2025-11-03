@@ -116,8 +116,8 @@ class AsterixParseTest(unittest.TestCase):
             self.assertEqual(packet[0]['I250'][0], {'MBDATA': {'val': 54175137758183424},
                                                     'BDS1': {'val': 4},
                                                     'BDS2': {'val': 0}})
-            self.assertEqual(packet[0]['I040'], {'THETA': {'val': 340.13671875},
-                                                 'RHO': {'val': 197.68359375}})
+            self.assertEqual(packet[0]['I040'], {'THETA': {'desc': 'THETA', 'val': 340.13671875},
+                                                 'RHO': {'desc': 'RHO', 'max': 256.0, 'val': 197.68359375}})
             self.assertEqual(packet[0]['I240'], {'AI': {'val': 'DLH65A  '}})
             self.assertEqual(packet[0]['I140'], {'ToD': {'val': 27354.6015625}})
             self.assertEqual(packet[0]['I070'], {'V': {'val': 0},
