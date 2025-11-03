@@ -24,6 +24,14 @@
 #define WIN32_COMPAT_H
 
 #ifdef _WIN32
+  // Prevent windows.h from including winsock.h (we use winsock2.h instead)
+  #ifndef WIN32_LEAN_AND_MEAN
+    #define WIN32_LEAN_AND_MEAN
+  #endif
+  #ifndef NOMINMAX
+    #define NOMINMAX  // Prevent min/max macro definitions
+  #endif
+
   #include <windows.h>
   #include <BaseTsd.h>
   #include <io.h>
