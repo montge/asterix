@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:cd22096e-b3a2-4743-8b2b-f71b7941fb15",
+  "serialNumber": "urn:uuid:da808034-14a4-45fe-8653-ddcf1793f06c",
   "version": 1,
   "metadata": {
-    "timestamp": "2025-11-03T16:41:14Z",
+    "timestamp": "2025-11-03T17:15:31Z",
     "tools": {
       "components": [
         {
@@ -25,7 +25,7 @@
     "properties": [
       {
         "name": "commit",
-        "value": "5d3998bfafa7b93ab95677c29a54318b294c9291"
+        "value": "fcec1d621a1e5fd5d21c534a8b19493bf6bf0da6"
       },
       {
         "name": "repository",
@@ -33,7 +33,7 @@
       },
       {
         "name": "generated",
-        "value": "2025-11-03T16:41:14Z"
+        "value": "2025-11-03T17:15:31Z"
       },
       {
         "name": "tool",
@@ -9311,11 +9311,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "b46f354ec5e5e76727e6eeacd914fb93e5b6ac0a"
+          "content": "efecfec3a42fee32160ef88b4e734cdbefade32b"
         },
         {
           "alg": "SHA-256",
-          "content": "762e80e6d5bed19b50b57160e9d9668a6f1bbb8d14f69f9780b3eef55dc4e4f3"
+          "content": "a4a68d447a1c2ab2ff1859aafdde3a69c330896818a75ee11e670e741c2d0757"
         }
       ]
     },
