@@ -30,6 +30,8 @@
   #define read _read
   #define write _write
   #define getpid _getpid
+  #define strcasecmp _stricmp
+  #define strncasecmp _strnicmp
 #else
   #include <unistd.h>
 #endif

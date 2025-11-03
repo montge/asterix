@@ -32,6 +32,31 @@
   #define read _read
   #define write _write
   #define getpid _getpid
+
+  // Windows compatibility layer for POSIX time functions
+  typedef unsigned long useconds_t;
+
+  // Implement gettimeofday for Windows
+  inline int gettimeofday(struct timeval* tp, void* tzp) {
+    // Note: some versions of Windows have gettimeofday in <sys/time.h>
+    // but we need to implement it for MSVC
+    FILETIME ft;
+    GetSystemTimeAsFileTime(&ft);
+
+    // Convert FILETIME to Unix epoch (microseconds since 1970)
+    unsigned long long t = ((unsigned long long)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
+    t -= 116444736000000000ULL; // Convert from Windows epoch to Unix epoch
+    t /= 10; // Convert 100-nanosecond intervals to microseconds
+
+    tp->tv_sec = (long)(t / 1000000UL);
+    tp->tv_usec = (long)(t % 1000000UL);
+    return 0;
+  }
+
+  // Implement usleep for Windows (usleep takes microseconds, Sleep takes milliseconds)
+  inline void usleep(useconds_t usec) {
+    Sleep((DWORD)(usec / 1000)); // Convert microseconds to milliseconds
+  }
 #else
   #include <sys/time.h>
   #include <unistd.h>

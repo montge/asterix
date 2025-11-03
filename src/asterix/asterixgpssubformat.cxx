@@ -26,6 +26,20 @@
 #ifdef _WIN32
   #include <winsock2.h>
   #include <time.h>
+
+  // Windows compatibility layer for POSIX time functions
+  inline int gettimeofday(struct timeval* tp, void* tzp) {
+    FILETIME ft;
+    GetSystemTimeAsFileTime(&ft);
+
+    unsigned long long t = ((unsigned long long)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
+    t -= 116444736000000000ULL;
+    t /= 10;
+
+    tp->tv_sec = (long)(t / 1000000UL);
+    tp->tv_usec = (long)(t % 1000000UL);
+    return 0;
+  }
 #else
   #include <sys/time.h>
 #endif
