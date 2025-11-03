@@ -17,8 +17,8 @@ class AsterixParseTest(unittest.TestCase):
             self.assertEqual(packet[0]['len'], 45)
             self.assertEqual(packet[0]['crc'], 'AB659C3E')
             self.assertTrue('ts' in packet[0])
-            self.assertEqual(packet[0]['I220']['ACAddr']['val'], '3C660C')
-            self.assertEqual(packet[0]['I220']['ACAddr']['desc'], 'AircraftAddress')
+            self.assertEqual(packet[0]['I220']['AircraftAddress']['val'], '3C660C')
+            self.assertEqual(packet[0]['I220']['AircraftAddress']['desc'], 'Aircraft Address')
             self.assertEqual(packet[0]['I010'], {'SAC': {'desc': 'System Area Code', 'val': 25},
                                                  'SIC': {'desc': 'System Identification Code', 'val': 201}})
             self.assertEqual(packet[0]['I170'], {'GHO': {'desc': 'GHO', 'val': 0, 'meaning': 'True target track'},
@@ -109,7 +109,7 @@ class AsterixParseTest(unittest.TestCase):
             self.assertEqual(packet[0]['len'], 45)
             self.assertEqual(packet[0]['crc'], 'AB659C3E')
             self.assertTrue('ts' in packet[0])
-            self.assertEqual(packet[0]['I220']['ACAddr']['val'], '3C660C')
+            self.assertEqual(packet[0]['I220']['AircraftAddress']['val'], '3C660C')
             self.assertEqual(packet[0]['I010'], {'SAC': {'val': 25},
                                                  'SIC': {'val': 201}})
             self.assertEqual(packet[0]['I170'], {'GHO': {'val': 0},
@@ -189,7 +189,7 @@ class AsterixParseTest(unittest.TestCase):
             self.assertIs(packet[2]['category'], 65)
             self.assertIs(packet[2]['len'], 9)
             self.assertEqual(packet[2]['crc'], 'ED9D3EB1')
-            self.assertEqual(packet[0]['I220'], {'RoC': {'val': -443.75, 'desc': 'Rate of Climb/Descent'}})
+            self.assertEqual(packet[0]['I220'], {'CRoC': {'val': -443.75, 'desc': 'Calculated Rate of Climb/Descent'}})
             self.assertEqual(packet[0]['I015'], {'SID': {'val': 4, 'desc': 'Service Identification'}})
 
             self.assertEqual(packet[0]['I290']['MDS'], {
