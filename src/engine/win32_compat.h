@@ -95,12 +95,41 @@
     #define O_NONBLOCK 0
   #endif
 
-  // Socket option casting helper
-  // Windows setsockopt() requires const char*, POSIX uses void*
+  // Socket data casting helpers
+  // Windows Winsock API requires char* pointers, POSIX uses void*
+  #define RECVFROM_CAST(ptr) ((char*)(ptr))
+  #define SENDTO_CAST(ptr) ((const char*)(ptr))
   #define SETSOCKOPT_CAST(ptr) ((const char*)(ptr))
 
+  // POSIX timeval compatibility
+  #ifndef _TIMEVAL_DEFINED
+    struct timeval {
+        long tv_sec;
+        long tv_usec;
+    };
+    #define _TIMEVAL_DEFINED
+  #endif
+
+  // gettimeofday implementation for Windows
+  inline int gettimeofday(struct timeval* tp, void* tzp) {
+      (void)tzp; // Unused
+      FILETIME ft;
+      GetSystemTimeAsFileTime(&ft);
+
+      // Convert FILETIME to Unix epoch (microseconds since 1970)
+      unsigned long long t = ((unsigned long long)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
+      t -= 116444736000000000ULL; // Convert from Windows epoch to Unix epoch
+      t /= 10; // Convert 100-nanosecond intervals to microseconds
+
+      tp->tv_sec = (long)(t / 1000000UL);
+      tp->tv_usec = (long)(t % 1000000UL);
+      return 0;
+  }
+
 #else
-  // POSIX systems don't need casting
+  // POSIX systems don't need casting or timeval definitions
+  #define RECVFROM_CAST(ptr) (ptr)
+  #define SENDTO_CAST(ptr) (ptr)
   #define SETSOCKOPT_CAST(ptr) (ptr)
 #endif
 

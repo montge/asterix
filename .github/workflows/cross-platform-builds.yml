@@ -813,21 +813,11 @@ jobs:
         # Set expat include and library paths
         $env:EXPAT_INCLUDE_DIR = "$VCPKG_ROOT/installed/x64-windows/include"
         $env:EXPAT_LIB_DIR = "$VCPKG_ROOT/installed/x64-windows/lib"
-        
-        # Suppress MSVC D9002 warnings (unknown command-line option)
-        $env:CL = "/wd9002 /W3"
-        $env:_CL_ = "/wd9002 /W3"
-        
+
         # Set distutils compiler flags
         $env:DISTUTILS_USE_SDK = "1"
-        
-        python setup.py build 2>&1 | ForEach-Object { 
-          if ($_ -match 'D9002' -or $_ -match 'warning D9002') { 
-            Write-Host "::warning::$_" 
-          } else { 
-            Write-Host $_ 
-          } 
-        }
+
+        python setup.py build
 
     - name: Build Python module (Linux/macOS)
       if: runner.os != 'Windows'
