@@ -36,7 +36,9 @@ class AsterixParseTest(unittest.TestCase):
                                                  'HDG': {'desc': 'Calculated Heading', 'val': 124.002685546875}})
             self.assertEqual(packet[0]['I220'], {'AA': {'desc': 'Aircraft Address', 'val': 3958284}})
 
-            self.assertEqual(packet[0]['I250'][0], {'MBDATA': {'desc': 'Mode S Comm B Message Data', 'val': 0},
+            # MBDATA contains actual BDS 4,0 register data (Selected Vertical Intention)
+            # After 64-bit parser fix, correctly extracts: 0xc0780031bc0000 = 54175137758183424
+            self.assertEqual(packet[0]['I250'][0], {'MBDATA': {'desc': 'Mode S Comm B Message Data', 'val': 54175137758183424},
                                                     'BDS1': {'desc': 'Comm B Data Buffer Store 1 Address', 'val': 4},
                                                     'BDS2': {'desc': 'Comm B Data Buffer Store 2 Address', 'val': 0}})
 
@@ -110,7 +112,8 @@ class AsterixParseTest(unittest.TestCase):
             self.assertEqual(packet[0]['I200'], {'GSP': {'val': 0.12066650390625},
                                                  'HDG': {'val': 124.002685546875}})
             self.assertEqual(packet[0]['I220'], {'AA': {'val': 3958284}})
-            self.assertEqual(packet[0]['I250'][0], {'MBDATA': {'val': 0},
+            # MBDATA: 64-bit BDS register data
+            self.assertEqual(packet[0]['I250'][0], {'MBDATA': {'val': 54175137758183424},
                                                     'BDS1': {'val': 4},
                                                     'BDS2': {'val': 0}})
             self.assertEqual(packet[0]['I040'], {'THETA': {'val': 340.13671875},
