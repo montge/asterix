@@ -1321,9 +1321,10 @@ void DataItemBits::insertToDict(PyObject* p, unsigned char* pData, long nLength,
 
     if (verbose)
     {
-        // Add item description
+        // Add item description - use short name as fallback if long name is empty
         PyObject* k1 = Py_BuildValue("s", "desc");
-        PyObject* v1 = Py_BuildValue("s", m_strName.c_str());
+        const char* desc = m_strName.empty() ? m_strShortName.c_str() : m_strName.c_str();
+        PyObject* v1 = Py_BuildValue("s", desc);
         PyDict_SetItem(pValue, k1, v1);
         Py_DECREF(k1);
         Py_DECREF(v1);
