@@ -164,8 +164,9 @@ asterix_module = Extension('_asterix',
                                              '-fstack-protector-strong', '-D_FORTIFY_SOURCE=2'] if sys.platform != 'win32'
                                           else ['/DPYTHON_WRAPPER', '/std:c++20', '/W3'],
                            # SECURITY: Read-only relocations for hardening (Linux only - macOS doesn't support -z flags)
+                           # Note: On Windows, libraries=['expat'] (line 97) is sufficient - no need for explicit .lib in extra_link_args
                            extra_link_args=['-lexpat'] if sys.platform == 'darwin'
-                                          else (['expat.lib'] if sys.platform == 'win32'
+                                          else ([] if sys.platform == 'win32'
                                           else ['-lexpat', '-Wl,-z,relro,-z,now']))
 
 f = open('README.rst')
