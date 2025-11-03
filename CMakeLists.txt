@@ -355,16 +355,24 @@ install(CODE "
     # This handles multiple installs to the same prefix (Release + Debug)
     file(REMOVE_RECURSE \"\${CMAKE_INSTALL_PREFIX}/config\")
     file(REMOVE_RECURSE \"\${CMAKE_INSTALL_PREFIX}/sample_data\")
+    file(REMOVE_RECURSE \"\${CMAKE_INSTALL_PREFIX}/sample_output\")
 
     # Create symlinks
     file(CREATE_LINK \"\${CMAKE_INSTALL_PREFIX}/share/asterix/config\" \"\${CMAKE_INSTALL_PREFIX}/config\" SYMBOLIC)
     file(CREATE_LINK \"\${CMAKE_INSTALL_PREFIX}/share/asterix/samples\" \"\${CMAKE_INSTALL_PREFIX}/sample_data\" SYMBOLIC)
+    file(CREATE_LINK \"\${CMAKE_INSTALL_PREFIX}/share/asterix/sample_output\" \"\${CMAKE_INSTALL_PREFIX}/sample_output\" SYMBOLIC)
 ")
 
 # Install sample data (optional)
 install(DIRECTORY asterix/sample_data/
     DESTINATION share/asterix/samples
     FILES_MATCHING PATTERN "*"
+)
+
+# Install sample output files (for test comparisons)
+install(DIRECTORY asterix/sample_output/
+    DESTINATION share/asterix/sample_output
+    FILES_MATCHING PATTERN "*.txt" PATTERN "*.xml"
 )
 
 # Install documentation
