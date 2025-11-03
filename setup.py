@@ -121,12 +121,8 @@ if sys.platform == 'win32':
         if expat_lib_dir not in expat_library_dirs:
             expat_library_dirs.append(expat_lib_dir)
     
-    # Suppress MSVC D9002 warnings (unknown command-line option)
-    # This happens when distutils passes flags that MSVC doesn't understand
-    if 'CL' not in os.environ:
-        os.environ['CL'] = '/wd9002 /W3'
-    if '_CL_' not in os.environ:
-        os.environ['_CL_'] = '/wd9002 /W3'
+    # Note: Removed /wd9002 flag as it's invalid (causes D9014 warnings)
+    # D9002 warnings about GCC flags are expected and harmless on MSVC
 
 asterix_module = Extension('_asterix',
                            sources=['./src/python/asterix.cpp',
@@ -166,7 +162,7 @@ asterix_module = Extension('_asterix',
                            extra_compile_args=['-DPYTHON_WRAPPER',
                                              '-std=c++17' if sys.platform == 'darwin' else '-std=c++23',
                                              '-fstack-protector-strong', '-D_FORTIFY_SOURCE=2'] if sys.platform != 'win32'
-                                          else ['/DPYTHON_WRAPPER', '/std:c++20', '/W3', '/wd9002'],
+                                          else ['/DPYTHON_WRAPPER', '/std:c++20', '/W3'],
                            # SECURITY: Read-only relocations for hardening (Linux only - macOS doesn't support -z flags)
                            extra_link_args=['-lexpat'] if sys.platform == 'darwin'
                                           else (['expat.lib'] if sys.platform == 'win32'

@@ -24,6 +24,10 @@
 #define LOGDEBUG(cond, ...)
 #define LOGERROR(cond, ...)
 
+#ifdef _WIN32
+  #include "../engine/win32_compat.h"
+#endif
+
 #include "python_parser.h"
 #include "AsterixDefinition.h"
 #include "XMLParser.h"

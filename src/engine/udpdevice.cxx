@@ -208,7 +208,7 @@ bool CUdpDevice::Read(void *data, size_t *len) {
             _countToRead--;
             // _socketDesc is going to be read, clear bits
             FD_CLR(_socketDesc[i], &_descToRead);
-            ssize_t lenread = recvfrom(_socketDesc[i], data, *len, MSG_DONTWAIT, (struct sockaddr *) &clientAddr,
+            ssize_t lenread = recvfrom(_socketDesc[i], RECVFROM_CAST(data), *len, MSG_DONTWAIT, (struct sockaddr *) &clientAddr,
                                        &clientLen);
             if (lenread < 0) {
                 LOGERROR(1, "Error reading from %s on address %s.\n",
@@ -245,7 +245,7 @@ bool CUdpDevice::Write(const void *data, size_t len) {
     // Set the server address
 
     // Write the message (blocking)
-    if (sendto(_socketDesc[0], data, len, MSG_NOSIGNAL, (struct sockaddr *) &_mcastAddr, sizeof(_mcastAddr)) < 0) {
+    if (sendto(_socketDesc[0], SENDTO_CAST(data), len, MSG_NOSIGNAL, (struct sockaddr *) &_mcastAddr, sizeof(_mcastAddr)) < 0) {
         LOGERROR(1, "Error %d writing to %s.\n",
                  errno, inet_ntoa(_mcastAddr.sin_addr));
 
@@ -354,7 +354,7 @@ bool CUdpDevice::InitServer(int socketDesc) {
             mreq.imr_interface.s_addr = _interfaceAddr.s_addr;
             mreq.imr_sourceaddr.s_addr = _sourceAddr.s_addr;// source address
 
-            if (setsockopt(socketDesc, IPPROTO_IP, IP_ADD_SOURCE_MEMBERSHIP, (void *) &mreq, sizeof(mreq)) < 0) {
+            if (setsockopt(socketDesc, IPPROTO_IP, IP_ADD_SOURCE_MEMBERSHIP, SETSOCKOPT_CAST(&mreq), sizeof(mreq)) < 0) {
                 LOGERROR(1, "Cannot join multicast address %s src: %s\n", inet_ntoa(_mcastAddr.sin_addr),
                          inet_ntoa(_sourceAddr));
                 return false;
@@ -368,7 +368,7 @@ bool CUdpDevice::InitServer(int socketDesc) {
             mreq.imr_multiaddr.s_addr = _mcastAddr.sin_addr.s_addr;
             mreq.imr_interface.s_addr = _interfaceAddr.s_addr;
 
-            if (setsockopt(socketDesc, IPPROTO_IP, IP_ADD_MEMBERSHIP, (void *) &mreq, sizeof(mreq)) < 0) {
+            if (setsockopt(socketDesc, IPPROTO_IP, IP_ADD_MEMBERSHIP, SETSOCKOPT_CAST(&mreq), sizeof(mreq)) < 0) {
                 LOGERROR(1, "Cannot join multicast address %s\n", inet_ntoa(_mcastAddr.sin_addr));
                 return false;
             } else {
@@ -397,7 +397,7 @@ bool CUdpDevice::InitClient(int socketDesc) {
     if (IN_MULTICAST(ntohl(_mcastAddr.sin_addr.s_addr))) {
         unsigned char ttl = 1;  // send multicast on subnet only (ttl = 1)
         // Set ttl on the socket
-        if (setsockopt(socketDesc, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl)) < 0) {
+        if (setsockopt(socketDesc, IPPROTO_IP, IP_MULTICAST_TTL, SETSOCKOPT_CAST(&ttl), sizeof(ttl)) < 0) {
             LOGERROR(1, "Cannot set ttl = %d\n", ttl);
             return false;
         }
@@ -478,7 +478,7 @@ void CUdpDevice::Init(const char *mcastAddress, const char *interfaceAddress, co
     }
 
     // Allow multiple sockets to use the same PORT number
-    if (setsockopt(socketDesc, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0) {
+    if (setsockopt(socketDesc, SOL_SOCKET, SO_REUSEADDR, SETSOCKOPT_CAST(&yes), sizeof(yes)) < 0) {
         LOGERROR(1, "Cannot reuse socket address\n");
         return;
     }
