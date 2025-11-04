@@ -107,6 +107,7 @@ jobs:
         cargo build --verbose --all-features
       env:
         CMAKE_TOOLCHAIN_FILE: ${{ runner.os == 'Windows' && format('{0}/vcpkg/scripts/buildsystems/vcpkg.cmake', github.workspace) || '' }}
+        VCPKG_ROOT: ${{ runner.os == 'Windows' && format('{0}/vcpkg', github.workspace) || '' }}
 
     - name: Run tests
       shell: bash
@@ -123,6 +124,9 @@ jobs:
           echo "::error::Rust tests failed"
           exit 1
         }
+      env:
+        CMAKE_TOOLCHAIN_FILE: ${{ runner.os == 'Windows' && format('{0}/vcpkg/scripts/buildsystems/vcpkg.cmake', github.workspace) || '' }}
+        VCPKG_ROOT: ${{ runner.os == 'Windows' && format('{0}/vcpkg', github.workspace) || '' }}
       continue-on-error: ${{ matrix.rust == 'nightly' }}
 
     - name: Run clippy (strict)
@@ -317,14 +321,10 @@ jobs:
           -- --test-threads=1
 
         cargo llvm-cov report \
-          --all-features \
-          --workspace \
           --html \
           --output-dir coverage-llvm/html
 
         cargo llvm-cov report \
-          --all-features \
-          --workspace \
           --json \
           --output-path coverage-llvm/coverage.json
 
