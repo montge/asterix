@@ -61,7 +61,10 @@ mod tests {
 
     #[test]
     fn test_unexpected_eof() {
-        let err = AsterixError::UnexpectedEOF;
+        let err = AsterixError::UnexpectedEOF {
+            offset: 0,
+            expected: 4,
+        };
 
         let display = format!("{}", err);
         assert!(display.contains("EOF") || display.contains("end of"));
@@ -129,7 +132,10 @@ mod tests {
         }
 
         fn returns_error_helper() -> Result<i32> {
-            Err(AsterixError::UnexpectedEOF)
+            Err(AsterixError::UnexpectedEOF {
+                offset: 0,
+                expected: 1,
+            })
         }
 
         let result = fallible_function();
@@ -155,11 +161,17 @@ mod tests {
                 offset: 0,
                 message: "msg".to_string(),
             },
-            AsterixError::InvalidCategory(1),
+            AsterixError::InvalidCategory {
+                category: 1,
+                reason: "test".to_string(),
+            },
             AsterixError::ConfigNotFound("path".to_string()),
             AsterixError::InitializationError("init".to_string()),
             AsterixError::IOError("io".to_string()),
-            AsterixError::UnexpectedEOF,
+            AsterixError::UnexpectedEOF {
+                offset: 0,
+                expected: 1,
+            },
             AsterixError::InternalError("internal".to_string()),
         ];
 

@@ -111,16 +111,17 @@ fn compile_cpp_from_source() {
     }
 
     // Add engine source files for global variables
-    let engine_sources = [
-        "globals.cpp",
-    ];
+    let engine_sources = ["globals.cpp"];
 
     for source in &engine_sources {
         let source_path = engine_src.join(source);
         if source_path.exists() {
             cc_build.file(source_path);
         } else {
-            panic!("Required engine source file not found: {}", source_path.display());
+            panic!(
+                "Required engine source file not found: {}",
+                source_path.display()
+            );
         }
     }
 
