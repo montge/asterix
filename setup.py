@@ -61,7 +61,6 @@ CLASSIFIERS = [
     'Development Status :: 4 - Beta',  # Upgraded from Alpha (92.2% coverage, production-ready)
     'Intended Audience :: Developers',
     'Intended Audience :: Science/Research',
-    'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
     'Operating System :: OS Independent',
     'Programming Language :: C',
     'Programming Language :: C++',
@@ -87,9 +86,12 @@ for key, value in cfg_vars.items():
     if type(value) == str:
         cfg_vars[key] = value.replace("-Wstrict-prototypes", "")
 
-# If this is MacOSX set correct deployment target (otherwise compile may fail)
+# If this is MacOSX set minimum deployment target for broad compatibility
+# Use 11.0 (Big Sur) as minimum - balances compatibility with modern features
 if sys.platform == 'darwin':
-    os.environ['MACOSX_DEPLOYMENT_TARGET'] = platform.mac_ver()[0]
+    # Only set if not already set (allows override via environment variable)
+    if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
+        os.environ['MACOSX_DEPLOYMENT_TARGET'] = '11.0'
 
 # Windows: Find expat from vcpkg or environment
 expat_include_dirs = ['./asterix/python', './src/asterix', './src/engine']
@@ -194,12 +196,12 @@ asterix_module = Extension('_asterix',
                            library_dirs=expat_library_dirs if sys.platform == 'win32' else [],
                            libraries=expat_libraries,
                            # SECURITY: Hardening flags for buffer overflow and stack protection
-                           # Platform-specific C++ standard: 
+                           # Platform-specific C++ standard:
                            # - macOS: C++17 (better compatibility)
                            # - Windows: C++20 (MSVC supports C++20, not C++23)
-                           # - Linux: C++23 (matches CMakeLists.txt for feature parity)
+                           # - Linux: C++17 (manylinux containers use older GCC without C++23 support)
                            extra_compile_args=['-DPYTHON_WRAPPER',
-                                             '-std=c++17' if sys.platform == 'darwin' else '-std=c++23',
+                                             '-std=c++17',
                                              '-fstack-protector-strong', '-D_FORTIFY_SOURCE=2'] if sys.platform != 'win32'
                                           else ['/DPYTHON_WRAPPER', '/std:c++20', '/W3'],
                            # SECURITY: Read-only relocations for hardening (Linux only - macOS doesn't support -z flags)
