@@ -76,8 +76,8 @@ fn compile_cpp_with_ffi_bridge() {
         .warnings(false); // Suppress warnings from C++ code
 
     // On Windows, add vcpkg include/lib paths if CMAKE_TOOLCHAIN_FILE is set
-    #[cfg(target_os = "windows")]
-    {
+    // Note: This runs when building ON Windows (cross-compilation aware)
+    if cfg!(windows) || env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows" {
         if let Ok(toolchain) = env::var("CMAKE_TOOLCHAIN_FILE") {
             // Extract vcpkg root from toolchain path
             // CMAKE_TOOLCHAIN_FILE = D:/a/asterix/asterix/vcpkg/scripts/buildsystems/vcpkg.cmake
@@ -88,8 +88,34 @@ fn compile_cpp_with_ffi_bridge() {
                 let vcpkg_include = format!("{vcpkg_root}/installed/x64-windows/include");
                 let vcpkg_lib = format!("{vcpkg_root}/installed/x64-windows/lib");
 
+                eprintln!("Using vcpkg paths:");
+                eprintln!("  Include: {vcpkg_include}");
+                eprintln!("  Lib: {vcpkg_lib}");
+
                 bridge.include(&vcpkg_include);
                 println!("cargo:rustc-link-search=native={vcpkg_lib}");
+            } else {
+                eprintln!("Warning: CMAKE_TOOLCHAIN_FILE set but couldn't extract vcpkg root");
+                eprintln!("  Toolchain file: {toolchain}");
+            }
+        } else {
+            // Try to find vcpkg in common locations
+            eprintln!("Warning: CMAKE_TOOLCHAIN_FILE not set, searching for vcpkg...");
+
+            // Check VCPKG_ROOT environment variable
+            if let Ok(vcpkg_root) = env::var("VCPKG_ROOT") {
+                let vcpkg_include = format!("{vcpkg_root}/installed/x64-windows/include");
+                let vcpkg_lib = format!("{vcpkg_root}/installed/x64-windows/lib");
+
+                eprintln!("Found VCPKG_ROOT:");
+                eprintln!("  Include: {vcpkg_include}");
+                eprintln!("  Lib: {vcpkg_lib}");
+
+                bridge.include(&vcpkg_include);
+                println!("cargo:rustc-link-search=native={vcpkg_lib}");
+            } else {
+                eprintln!("Warning: Neither CMAKE_TOOLCHAIN_FILE nor VCPKG_ROOT set on Windows");
+                eprintln!("  Expat headers may not be found!");
             }
         }
     }
