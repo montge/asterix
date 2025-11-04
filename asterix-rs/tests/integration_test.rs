@@ -2,7 +2,7 @@
 //!
 //! Tests parsing of real ASTERIX data files and validates against expected outputs.
 
-use asterix_decoder::{describe, parse, parse_with_offset, AsterixError, ParseOptions};
+use asterix::{describe, parse, parse_with_offset, AsterixError, ParseOptions};
 use std::fs;
 use std::path::PathBuf;
 
@@ -336,9 +336,9 @@ fn test_describe_invalid_category() {
     assert!(result.is_err(), "Should fail for invalid category");
 
     match result {
-        Err(AsterixError::InvalidCategory(cat)) => {
-            assert_eq!(cat, 255);
-            println!("✓ Correctly rejected invalid category {}", cat);
+        Err(AsterixError::InvalidCategory { category, .. }) => {
+            assert_eq!(category, 255);
+            println!("✓ Correctly rejected invalid category {}", category);
         }
         Err(e) => {
             println!("✓ Rejected with error: {:?}", e);
@@ -404,7 +404,7 @@ fn test_data_item_structure() {
 
 #[test]
 fn test_parsed_value_types() {
-    use asterix_decoder::ParsedValue;
+    use asterix::ParsedValue;
 
     let path = sample_data_path("cat048.raw");
     let data = fs::read(&path).expect("Failed to read file");
@@ -460,7 +460,7 @@ fn test_serialization_to_json() {
     assert!(!json.is_empty());
 
     // Verify JSON is valid by deserializing
-    let _deserialized: Vec<asterix_decoder::AsterixRecord> =
+    let _deserialized: Vec<asterix::AsterixRecord> =
         serde_json::from_str(&json).expect("Failed to deserialize");
 
     println!("✓ JSON round-trip successful");

@@ -10,7 +10,7 @@
 //! Example:
 //!     cargo run --example parse_raw -- ../install/test/sample_cat062_065.raw
 
-use asterix_decoder::{init_default, parse, AsterixError, ParseOptions};
+use asterix::{init_default, parse, AsterixError, ParseOptions};
 use std::env;
 use std::fs;
 use std::process;
@@ -93,22 +93,22 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 // Show first few fields
                 for (field_name, field_value) in item.fields.iter().take(5) {
                     match field_value {
-                        asterix_decoder::ParsedValue::Integer(v) => {
+                        asterix::ParsedValue::Integer(v) => {
                             println!("      {}: {}", field_name, v);
                         }
-                        asterix_decoder::ParsedValue::Float(v) => {
+                        asterix::ParsedValue::Float(v) => {
                             println!("      {}: {:.4}", field_name, v);
                         }
-                        asterix_decoder::ParsedValue::String(v) => {
+                        asterix::ParsedValue::String(v) => {
                             println!("      {}: \"{}\"", field_name, v);
                         }
-                        asterix_decoder::ParsedValue::Boolean(v) => {
+                        asterix::ParsedValue::Boolean(v) => {
                             println!("      {}: {}", field_name, v);
                         }
-                        asterix_decoder::ParsedValue::Nested(_) => {
+                        asterix::ParsedValue::Nested(_) => {
                             println!("      {}: <nested>", field_name);
                         }
-                        asterix_decoder::ParsedValue::Array(_) => {
+                        asterix::ParsedValue::Array(_) => {
                             println!("      {}: <array>", field_name);
                         }
                         _ => {}

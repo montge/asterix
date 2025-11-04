@@ -11,7 +11,7 @@
 //!     cargo run --example parse_pcap -- ../install/test/sample_cat062_065.pcap
 //!     cargo run --example parse_pcap -- capture.pcap --max-records 100
 
-use asterix_decoder::{init_default, parse_with_offset, AsterixError, ParseOptions, ParseResult};
+use asterix::{init_default, parse_with_offset, AsterixError, ParseOptions, ParseResult};
 use std::collections::HashMap;
 use std::env;
 use std::fs;

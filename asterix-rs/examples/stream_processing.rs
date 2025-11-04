@@ -13,7 +13,7 @@
 //! Example:
 //!     cargo run --example stream_processing -- ../install/test/sample_cat062_065.pcap
 
-use asterix_decoder::{init_default, parse_with_offset, AsterixError, AsterixRecord, ParseOptions};
+use asterix::{init_default, parse_with_offset, AsterixError, AsterixRecord, ParseOptions};
 use std::collections::HashMap;
 use std::env;
 use std::fs;

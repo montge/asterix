@@ -16,7 +16,7 @@ fn main() {
 
 #[cfg(feature = "serde")]
 fn main() {
-    use asterix_decoder::{parse, ParseOptions};
+    use asterix::{parse, ParseOptions};
     use std::env;
     use std::fs;
     use std::io::Write;
