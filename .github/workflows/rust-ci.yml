@@ -560,8 +560,9 @@ jobs:
 
     - name: Build for target
       run: |
-        cd asterix-rs
-        cross build --target ${{ matrix.target }} --verbose
+        # Run cross from repo root so it mounts the entire project including ../src/
+        # Use --manifest-path to specify the crate to build
+        cross build --manifest-path asterix-rs/Cargo.toml --target ${{ matrix.target }} --verbose
       continue-on-error: false
 
   # =============================================================================

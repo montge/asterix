@@ -1,0 +1,22 @@
+# Cross-compilation configuration
+# This file configures the cross tool to properly set up the Docker environment
+
+[build]
+# No special build configuration needed
+
+# ARM64 Linux target
+[target.aarch64-unknown-linux-gnu]
+# Use a custom Dockerfile to install libexpat-dev
+pre-build = [
+    "dpkg --add-architecture arm64",
+    "apt-get update",
+    "apt-get install -y libexpat1-dev:arm64",
+]
+
+# x86_64 Linux target (for testing)
+[target.x86_64-unknown-linux-gnu]
+# Use a custom Dockerfile to install libexpat-dev
+pre-build = [
+    "apt-get update",
+    "apt-get install -y libexpat1-dev",
+]
