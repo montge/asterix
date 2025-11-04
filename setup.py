@@ -126,13 +126,39 @@ if sys.platform == 'win32':
         if expat_lib_dir not in expat_library_dirs:
             expat_library_dirs.append(expat_lib_dir)
 
-    # Validate that we found expat
+    # Validate that we found expat and auto-detect library name
     if not expat_library_dirs:
         print("WARNING: expat library directories not found. Build may fail.")
         print("  Set EXPAT_LIB_DIR environment variable or install via vcpkg:")
         print("    vcpkg install expat:x64-windows")
         print(f"  VCPKG_ROOT={vcpkg_root or '(not set)'}")
         print(f"  EXPAT_LIB_DIR={os.environ.get('EXPAT_LIB_DIR', '(not set)')}")
+    else:
+        # Auto-detect actual library name in the directory
+        # vcpkg may install libexpatMD.lib, libexpatdMD.lib, libexpat.lib, etc.
+        import glob
+        found_lib_names = []
+        for lib_dir in expat_library_dirs:
+            # Look for any expat*.lib file
+            lib_pattern = os.path.join(lib_dir, '*expat*.lib')
+            matches = glob.glob(lib_pattern)
+            for match in matches:
+                basename = os.path.basename(match)
+                # Remove .lib extension and lib prefix to get library name for linker
+                libname = os.path.splitext(basename)[0]
+                if libname.startswith('lib'):
+                    libname = libname[3:]  # Remove 'lib' prefix
+                if libname not in found_lib_names:
+                    found_lib_names.append(libname)
+                    print(f"Found expat library: {basename} -> using linker name '{libname}'")
+
+        if found_lib_names:
+            # Use detected library names instead of generic 'expat'
+            expat_libraries = found_lib_names
+        else:
+            print(f"WARNING: No *expat*.lib files found in {expat_library_dirs}")
+            print("  Falling back to generic library name 'expat'")
+            # Keep default expat_libraries = ['expat']
 
     # Note: Removed /wd9002 flag as it's invalid (causes D9014 warnings)
     # D9002 warnings about GCC flags are expected and harmless on MSVC

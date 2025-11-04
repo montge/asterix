@@ -155,41 +155,36 @@ jobs:
       run: |
         cd build
 
-        # Create ZIP archive (always works)
+        # Create ZIP archive (always works, primary distribution method)
         Write-Host "Creating ZIP package..."
         cpack -G ZIP -C Release
-
-        # Install WiX Toolset for MSI creation (enterprise standard)
-        Write-Host "`nInstalling WiX Toolset for MSI..."
-        choco install wixtoolset -y --no-progress 2>$null || Write-Host "WiX install skipped"
-
-        # Create MSI installer using WiX
-        $wixPath = "$env:WIX\bin\candle.exe"
-        if (Test-Path $wixPath) {
-          Write-Host "Creating MSI installer with WiX..."
-          cpack -G WIX -C Release
-          Write-Host "✅ MSI created successfully"
-        } else {
-          Write-Host "⚠️  WiX not available - MSI creation skipped"
+        if ($LASTEXITCODE -ne 0) {
+          Write-Error "ZIP package creation failed"
+          exit 1
         }
 
-        # Install NSIS for alternative .exe installer
-        Write-Host "`nInstalling NSIS for EXE installer..."
-        choco install nsis -y --no-progress 2>$null || Write-Host "NSIS install skipped"
+        # Create 7Z archive (should also work)
+        Write-Host "`nCreating 7Z package..."
+        cpack -G 7Z -C Release || Write-Host "⚠️ 7Z creation skipped"
 
-        # Create NSIS .exe installer
-        $nsisPath = "C:\Program Files (x86)\NSIS\makensis.exe"
-        if (Test-Path $nsisPath) {
-          Write-Host "Creating NSIS .exe installer..."
-          cpack -G NSIS -C Release
-          Write-Host "✅ NSIS installer created successfully"
-        } else {
-          Write-Host "⚠️  NSIS not available - EXE creation skipped"
-        }
+        # Note: WiX and NSIS installers disabled for now
+        # Reason: Require additional CPack configuration in CMakeLists.txt
+        # (CPACK_WIX_* and CPACK_NSIS_* variables not set)
+        # See: https://cmake.org/cmake/help/latest/cpack_gen/wix.html
+        #      https://cmake.org/cmake/help/latest/cpack_gen/nsis.html
 
         # List all created packages
         Write-Host "`n=== Created Packages ==="
-        Get-ChildItem -Filter "asterix*" | Format-Table Name, Length
+        Get-ChildItem -Filter "asterix*" | ForEach-Object {
+          Write-Host "  ✓ $($_.Name) ($([math]::Round($_.Length/1MB, 2)) MB)"
+        }
+
+        $zipCount = (Get-ChildItem *.zip -ErrorAction SilentlyContinue).Count
+        if ($zipCount -eq 0) {
+          Write-Error "No installer packages were created!"
+          exit 1
+        }
+        Write-Host "`n✅ Successfully created installer packages"
       shell: pwsh
 
     - name: Upload Windows artifacts
@@ -821,10 +816,25 @@ jobs:
         # Verify expat installation
         if (!(Test-Path "$env:EXPAT_INCLUDE_DIR/expat.h")) {
           Write-Error "expat.h not found at $env:EXPAT_INCLUDE_DIR"
+          Get-ChildItem $env:EXPAT_INCLUDE_DIR | Select-Object -First 10
           exit 1
         }
-        if (!(Test-Path "$env:EXPAT_LIB_DIR/libexpat.lib")) {
-          Write-Error "libexpat.lib not found at $env:EXPAT_LIB_DIR"
+
+        # Check for expat library (multiple possible names from vcpkg)
+        $expatLibFound = $false
+        $possibleLibNames = @("libexpat.lib", "expat.lib", "libexpatMD.lib", "libexpatd.lib", "libexpatdMD.lib")
+        foreach ($libName in $possibleLibNames) {
+          $libPath = Join-Path $env:EXPAT_LIB_DIR $libName
+          if (Test-Path $libPath) {
+            Write-Host "✓ Found expat library: $libName"
+            $expatLibFound = $true
+          }
+        }
+        if (-not $expatLibFound) {
+          Write-Error "No expat library found in $env:EXPAT_LIB_DIR"
+          Write-Host "Checked for: $($possibleLibNames -join ', ')"
+          Write-Host "Actually found:"
+          Get-ChildItem $env:EXPAT_LIB_DIR | Where-Object { $_.Name -like "*expat*" }
           exit 1
         }
 
