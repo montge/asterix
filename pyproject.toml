@@ -70,6 +70,8 @@ repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel}"
 VCPKG_ROOT = "C:/vcpkg"
 EXPAT_INCLUDE_DIR = "C:/vcpkg/installed/x64-windows/include"
 EXPAT_LIB_DIR = "C:/vcpkg/installed/x64-windows/lib"
+# Add vcpkg bin directory to PATH so delvewheel can find libexpat.dll
+PATH = "C:/vcpkg/installed/x64-windows/bin;$PATH"
 
 [tool.cibuildwheel.macos]
 # Set macOS deployment target to ensure compatibility with older macOS versions
