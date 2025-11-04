@@ -30,7 +30,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     match init_default() {
         Ok(_) => println!("Initialization successful"),
         Err(e) => {
-            eprintln!("Failed to initialize ASTERIX: {}", e);
+            eprintln!("Failed to initialize ASTERIX: {e}");
             eprintln!("\nNote: Make sure ASTERIX configuration files are installed.");
             eprintln!("Default locations:");
             eprintln!("  Linux:   ~/.config/asterix/config or /etc/asterix/config");
@@ -41,11 +41,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // Read file
-    println!("\nReading file: {}", filename);
+    println!("\nReading file: {filename}");
     let data = match fs::read(filename) {
         Ok(d) => d,
         Err(e) => {
-            eprintln!("Error reading file: {}", e);
+            eprintln!("Error reading file: {e}");
             process::exit(1);
         }
     };
@@ -63,15 +63,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let records = match parse(&data, options) {
         Ok(r) => r,
         Err(e) => {
-            eprintln!("Parse error: {}", e);
+            eprintln!("Parse error: {e}");
             match e {
                 AsterixError::ParseError { offset, message } => {
-                    eprintln!("  Offset: {} (0x{:X})", offset, offset);
-                    eprintln!("  Message: {}", message);
+                    eprintln!("  Offset: {offset} (0x{offset:X})");
+                    eprintln!("  Message: {message}");
                 }
                 AsterixError::InvalidCategory { category, reason } => {
-                    eprintln!("  Category: {}", category);
-                    eprintln!("  Reason: {}", reason);
+                    eprintln!("  Category: {category}");
+                    eprintln!("  Reason: {reason}");
                 }
                 _ => {}
             }
@@ -90,7 +90,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("\nRecords by category:");
     for (cat, count) in &category_counts {
-        println!("  Category {:03}: {} records", cat, count);
+        println!("  Category {cat:03}: {count} records");
     }
 
     // Display first record details
@@ -105,9 +105,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if !first.items.is_empty() {
             println!("\n  Data items:");
             for (item_id, item) in &first.items {
-                println!("    {}", item_id);
+                println!("    {item_id}");
                 if let Some(desc) = &item.description {
-                    println!("      Description: {}", desc);
+                    println!("      Description: {desc}");
                 }
                 println!("      Fields: {}", item.fields.len());
             }

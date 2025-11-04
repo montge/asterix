@@ -69,6 +69,7 @@ impl AsterixRecord {
     }
 }
 
+#[allow(clippy::derivable_impls)]
 impl Default for AsterixRecord {
     fn default() -> Self {
         Self {
@@ -235,6 +236,7 @@ pub struct ParseOptions {
     pub max_records: Option<usize>,
 }
 
+#[allow(clippy::derivable_impls)]
 impl Default for ParseOptions {
     fn default() -> Self {
         Self {
@@ -324,8 +326,8 @@ mod tests {
 
     #[test]
     fn test_parsed_value_float() {
-        let val = ParsedValue::Float(3.14);
-        assert_eq!(val.as_f64(), Some(3.14));
+        let val = ParsedValue::Float(2.5);
+        assert_eq!(val.as_f64(), Some(2.5));
         assert_eq!(val.as_i64(), None);
     }
 
@@ -367,8 +369,10 @@ mod tests {
 
     #[test]
     fn test_asterix_record_methods() {
-        let mut record = AsterixRecord::default();
-        record.category = 48;
+        let mut record = AsterixRecord {
+            category: 48,
+            ..Default::default()
+        };
 
         let mut item = DataItem::new(Some("Test".to_string()));
         item.insert_field("SAC".to_string(), ParsedValue::Integer(1));

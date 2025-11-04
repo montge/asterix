@@ -9,6 +9,7 @@
 //! All FFI functions are marked `unsafe` as they cross language boundaries. The safe
 //! Rust API in `parser.rs` wraps these functions and ensures memory safety.
 
+#[allow(clippy::module_inception)]
 #[cxx::bridge(namespace = "asterix")]
 pub mod ffi {
     // Opaque C++ types - we don't need to know their internal structure
@@ -71,6 +72,7 @@ pub mod ffi {
         unsafe fn asterix_block_to_json(block: *const DataBlockWrapper) -> *mut u8;
 
         // Get text representation of data block
+        #[allow(dead_code)]
         unsafe fn asterix_block_to_text(block: *const DataBlockWrapper) -> *mut u8;
 
         // Free string allocated by C++ side
@@ -113,8 +115,7 @@ pub fn init_config_dir(config_dir: &str) -> Result<()> {
             Ok(())
         } else {
             Err(AsterixError::InitializationError(format!(
-                "Failed to initialize ASTERIX with config dir: {}",
-                config_dir
+                "Failed to initialize ASTERIX with config dir: {config_dir}"
             )))
         }
     }
@@ -129,8 +130,7 @@ pub fn load_category(xml_path: &str) -> Result<()> {
             Ok(())
         } else {
             Err(AsterixError::InitializationError(format!(
-                "Failed to load category file: {}",
-                xml_path
+                "Failed to load category file: {xml_path}"
             )))
         }
     }
@@ -198,9 +198,9 @@ fn get_default_config_dir() -> String {
     #[cfg(target_os = "linux")]
     {
         if let Ok(xdg_config) = std::env::var("XDG_CONFIG_HOME") {
-            format!("{}/asterix/config", xdg_config)
+            format!("{xdg_config}/asterix/config")
         } else if let Ok(home) = std::env::var("HOME") {
-            format!("{}/.config/asterix/config", home)
+            format!("{home}/.config/asterix/config")
         } else {
             "/etc/asterix/config".to_string()
         }

@@ -11,7 +11,7 @@
 //!     cargo run --example parse_pcap -- ../install/test/sample_cat062_065.pcap
 //!     cargo run --example parse_pcap -- capture.pcap --max-records 100
 
-use asterix::{init_default, parse_with_offset, AsterixError, ParseOptions, ParseResult};
+use asterix::{init_default, parse_with_offset, ParseOptions, ParseResult};
 use std::collections::HashMap;
 use std::env;
 use std::fs;
@@ -20,7 +20,7 @@ use std::time::Instant;
 
 fn main() {
     if let Err(e) = run() {
-        eprintln!("Error: {}", e);
+        eprintln!("Error: {e}");
         process::exit(1);
     }
 }
@@ -45,7 +45,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     println!("✓ Parser initialized\n");
 
     // Read PCAP file
-    println!("Reading PCAP file: {}", filename);
+    println!("Reading PCAP file: {filename}");
     let data = fs::read(filename)?;
     println!(
         "✓ Read {} bytes ({:.2} MB)\n",
@@ -79,8 +79,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 
         // Print progress
         print!(
-            "\r  Parsed {} blocks, {} bytes consumed...",
-            blocks_parsed, offset
+            "\r  Parsed {blocks_parsed} blocks, {offset} bytes consumed..."
         );
         std::io::Write::flush(&mut std::io::stdout())?;
 
@@ -117,7 +116,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     for record in &all_records {
         let stats = category_stats
             .entry(record.category)
-            .or_insert(CategoryStats::default());
+            .or_default();
         stats.count += 1;
         stats.total_bytes += record.length as usize;
         stats.total_items += record.item_count();
@@ -145,8 +144,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         let max_ts = all_records.iter().map(|r| r.timestamp_ms).max().unwrap();
         let duration_ms = max_ts - min_ts;
 
-        println!("  First record: {} ms", min_ts);
-        println!("  Last record:  {} ms", max_ts);
+        println!("  First record: {min_ts} ms");
+        println!("  Last record:  {max_ts} ms");
         println!("  Duration:     {:.3} seconds", duration_ms as f64 / 1000.0);
 
         if duration_ms > 0 {
@@ -164,13 +163,13 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let min_size = all_records.iter().map(|r| r.length).min().unwrap_or(0);
     let max_size = all_records.iter().map(|r| r.length).max().unwrap_or(0);
 
-    println!("  Total:   {} bytes", total_bytes);
-    println!("  Average: {:.1} bytes/record", avg_size);
-    println!("  Min:     {} bytes", min_size);
-    println!("  Max:     {} bytes", max_size);
+    println!("  Total:   {total_bytes} bytes");
+    println!("  Average: {avg_size:.1} bytes/record");
+    println!("  Min:     {min_size} bytes");
+    println!("  Max:     {max_size} bytes");
 
     // Sample records
-    if all_records.len() > 0 {
+    if !all_records.is_empty() {
         println!("\nSample Records (first 3):");
         for (i, record) in all_records.iter().take(3).enumerate() {
             println!("\n  Record #{}:", i + 1);
@@ -206,12 +205,12 @@ struct CategoryStats {
 }
 
 fn print_usage(program: &str) {
-    eprintln!("Usage: {} <pcap_file> [OPTIONS]", program);
+    eprintln!("Usage: {program} <pcap_file> [OPTIONS]");
     eprintln!("\nOptions:");
     eprintln!("  --max-records N    Limit parsing to N records");
     eprintln!("\nExample:");
-    eprintln!("  {} ../install/test/sample_cat062_065.pcap", program);
-    eprintln!("  {} capture.pcap --max-records 1000", program);
+    eprintln!("  {program} ../install/test/sample_cat062_065.pcap");
+    eprintln!("  {program} capture.pcap --max-records 1000");
 }
 
 fn parse_max_records(args: &[String]) -> Result<Option<usize>, Box<dyn std::error::Error>> {

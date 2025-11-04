@@ -36,13 +36,13 @@ fn main() {
     let input_file = &args[1];
     let output_file = args.get(2).map(|s| s.as_str());
 
-    println!("Reading: {}", input_file);
+    println!("Reading: {input_file}");
 
     // Read input file
     let data = match fs::read(input_file) {
         Ok(data) => data,
         Err(e) => {
-            eprintln!("Error reading file: {}", e);
+            eprintln!("Error reading file: {e}");
             process::exit(1);
         }
     };
@@ -54,7 +54,7 @@ fn main() {
     let records = match parse(&data, ParseOptions::default()) {
         Ok(records) => records,
         Err(e) => {
-            eprintln!("Parse error: {}", e);
+            eprintln!("Parse error: {e}");
             process::exit(1);
         }
     };
@@ -66,7 +66,7 @@ fn main() {
     let json = match serde_json::to_string_pretty(&records) {
         Ok(json) => json,
         Err(e) => {
-            eprintln!("JSON serialization error: {}", e);
+            eprintln!("JSON serialization error: {e}");
             process::exit(1);
         }
     };
@@ -80,20 +80,20 @@ fn main() {
             match fs::File::create(path) {
                 Ok(mut file) => {
                     if let Err(e) = file.write_all(json.as_bytes()) {
-                        eprintln!("Error writing file: {}", e);
+                        eprintln!("Error writing file: {e}");
                         process::exit(1);
                     }
-                    println!("✓ Written to: {}", path);
+                    println!("✓ Written to: {path}");
                 }
                 Err(e) => {
-                    eprintln!("Error creating file: {}", e);
+                    eprintln!("Error creating file: {e}");
                     process::exit(1);
                 }
             }
         }
         None => {
             // Write to stdout
-            println!("\n{}", json);
+            println!("\n{json}");
         }
     }
 

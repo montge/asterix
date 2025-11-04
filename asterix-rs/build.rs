@@ -37,7 +37,7 @@ fn main() {
 
     // Set library search path
     let out_dir = env::var("OUT_DIR").unwrap();
-    println!("cargo:rustc-link-search=native={}", out_dir);
+    println!("cargo:rustc-link-search=native={out_dir}");
 
     // Link against expat
     match target_os.as_str() {
@@ -136,7 +136,7 @@ fn link_system_library() {
     // Attempt to use system-installed ASTERIX library
     // This is for advanced users who have built and installed the library system-wide
     if let Err(e) = pkg_config::probe_library("asterix") {
-        eprintln!("Warning: Could not find system ASTERIX library: {}", e);
+        eprintln!("Warning: Could not find system ASTERIX library: {e}");
         eprintln!("Falling back to compilation from source...");
         compile_cpp_from_source();
     } else {

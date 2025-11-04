@@ -183,6 +183,7 @@ mod tests {
     use super::*;
 
     #[test]
+    #[allow(clippy::const_is_empty)]
     fn test_version_info() {
         assert!(!VERSION.is_empty());
         assert_eq!(CRATE_NAME, "asterix");
@@ -221,7 +222,7 @@ mod tests {
             offset: 100,
             message: "Invalid data".to_string(),
         };
-        let display = format!("{}", err);
+        let display = format!("{err}");
         assert!(display.contains("100"));
         assert!(display.contains("Invalid data"));
     }

@@ -46,27 +46,27 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Query description
     println!("\nQuerying description...");
-    print!("  Category: {}", category);
+    print!("  Category: {category}");
     if let Some(i) = item {
-        print!(", Item: {}", i);
+        print!(", Item: {i}");
     }
     if let Some(f) = field {
-        print!(", Field: {}", f);
+        print!(", Field: {f}");
     }
     if let Some(v) = value {
-        print!(", Value: {}", v);
+        print!(", Value: {v}");
     }
     println!("\n");
 
     match describe(category, item, field, value) {
         Ok(description) => {
             println!("Description:");
-            println!("{}", description);
+            println!("{description}");
         }
         Err(e) => {
-            eprintln!("Error getting description: {}", e);
+            eprintln!("Error getting description: {e}");
             eprintln!("\nPossible reasons:");
-            eprintln!("  - Category {} is not defined", category);
+            eprintln!("  - Category {category} is not defined");
             eprintln!("  - Configuration files not found");
             eprintln!("  - Item/field does not exist");
             process::exit(1);
