@@ -93,6 +93,13 @@ pub mod ffi {
 
         // Check if category is defined
         unsafe fn asterix_category_defined(category: u8) -> bool;
+
+        // Log level control
+        // Set log level: 0 = silent, 1 = errors only, 2 = warnings, 3 = info, 4 = debug
+        unsafe fn asterix_set_log_level(level: i32);
+
+        // Get current log level
+        unsafe fn asterix_get_log_level() -> i32;
     }
 }
 
@@ -199,6 +206,59 @@ pub fn load_category(xml_path: &str) -> Result<()> {
 /// Check if a category is defined
 pub fn is_category_defined(category: u8) -> bool {
     unsafe { ffi::asterix_category_defined(category) }
+}
+
+/// Log level for ASTERIX parser output
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum LogLevel {
+    /// Silent - no output
+    Silent = 0,
+    /// Errors only (default)
+    Error = 1,
+    /// Warnings and errors
+    Warn = 2,
+    /// Info, warnings, and errors
+    Info = 3,
+    /// Debug output (verbose)
+    Debug = 4,
+}
+
+/// Set the log level for C++ output
+///
+/// Controls how much diagnostic output the ASTERIX parser produces.
+/// By default, the log level is set to Error.
+///
+/// # Example
+///
+/// ```no_run
+/// use asterix::{set_log_level, LogLevel};
+///
+/// // Silence all output (useful for tests)
+/// set_log_level(LogLevel::Silent);
+///
+/// // Show only errors (default)
+/// set_log_level(LogLevel::Error);
+///
+/// // Show debug output
+/// set_log_level(LogLevel::Debug);
+/// ```
+pub fn set_log_level(level: LogLevel) {
+    unsafe {
+        ffi::asterix_set_log_level(level as i32);
+    }
+}
+
+/// Get the current log level
+pub fn get_log_level() -> LogLevel {
+    let level = unsafe { ffi::asterix_get_log_level() };
+    match level {
+        0 => LogLevel::Silent,
+        1 => LogLevel::Error,
+        2 => LogLevel::Warn,
+        3 => LogLevel::Info,
+        4 => LogLevel::Debug,
+        _ => LogLevel::Error, // Default fallback
+    }
 }
 
 /// Get description for a category/item/field/value

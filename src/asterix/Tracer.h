@@ -46,8 +46,13 @@ public:
 
     static Tracer &instance();
 
+    // Log level control
+    static void SetLogLevel(int level);
+    static int GetLogLevel();
+
     ptExtPrintf pPrintFunc;
     ptExtVoidPrintf pPrintFunc2;
+    int m_logLevel;  // 0 = silent, 1 = errors only, 2 = warnings, 3 = info, 4 = debug
 };
 
 #endif /* TRACER_H_ */

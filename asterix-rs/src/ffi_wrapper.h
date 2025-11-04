@@ -67,6 +67,18 @@ bool asterix_load_category(rust::Str xml_path);
  */
 bool asterix_category_defined(uint8_t category);
 
+/**
+ * Set log level for C++ Tracer
+ * @param level 0 = silent, 1 = errors only, 2 = warnings, 3 = info, 4 = debug
+ */
+void asterix_set_log_level(int level);
+
+/**
+ * Get current log level
+ * @return Current log level
+ */
+int asterix_get_log_level();
+
 } // extern "C"
 
 // Parsing functions
