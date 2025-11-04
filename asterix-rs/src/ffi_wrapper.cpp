@@ -5,10 +5,12 @@
  */
 
 #include "ffi_wrapper.h"
-#include "../src/asterix/AsterixDefinition.h"
-#include "../src/asterix/DataBlock.h"
-#include "../src/asterix/XMLParser.h"
+#include "AsterixDefinition.h"
+#include "DataBlock.h"
+#include "XMLParser.h"
+#include "DataRecord.h"
 // AsterixData.h and InputParser.h already included via ffi_wrapper.h
+#include <cstdio>
 #include <cstring>
 #include <sstream>
 #include <iostream>
@@ -21,10 +23,12 @@ namespace asterix {
 // Initialization functions
 extern "C" {
 
-bool asterix_init(const char* config_dir) {
+bool asterix_init(rust::Str config_dir) {
     try {
-        if (!config_dir || strlen(config_dir) == 0) {
-            std::cerr << "Error: config_dir is null or empty" << std::endl;
+        std::string config_path = std::string(config_dir);
+
+        if (config_path.empty()) {
+            std::cerr << "Error: config_dir is empty" << std::endl;
             return false;
         }
 
@@ -36,7 +40,6 @@ bool asterix_init(const char* config_dir) {
         // Load configuration files from directory
         // This is a simplified version - real implementation should scan directory
         // For now, we expect the config directory to contain asterix.ini
-        std::string config_path = std::string(config_dir);
 
         // The original code uses XMLParser to load definitions
         // We'll return true for now - actual loading happens via asterix_load_category
@@ -51,9 +54,11 @@ bool asterix_init(const char* config_dir) {
     }
 }
 
-bool asterix_load_category(const char* xml_path) {
+bool asterix_load_category(rust::Str xml_path) {
     try {
-        if (!xml_path || strlen(xml_path) == 0) {
+        std::string path = std::string(xml_path);
+
+        if (path.empty()) {
             return false;
         }
 
@@ -62,15 +67,17 @@ bool asterix_load_category(const char* xml_path) {
         }
 
         // Use XMLParser to load category definition
-        XMLParser parser;
-        Category* cat = parser.parseCategory(xml_path);
-
-        if (cat) {
-            g_asterix_definition->setCategory(cat);
-            return true;
+        FILE* file = fopen(path.c_str(), "r");
+        if (!file) {
+            std::cerr << "Failed to open XML file: " << path << std::endl;
+            return false;
         }
 
-        return false;
+        XMLParser parser;
+        bool result = parser.Parse(file, g_asterix_definition, path.c_str());
+        fclose(file);
+
+        return result;
 
     } catch (const std::exception& e) {
         std::cerr << "Exception in asterix_load_category: " << e.what() << std::endl;
@@ -219,10 +226,10 @@ const DataBlockWrapper* asterix_get_data_block(
 }
 
 uint8_t asterix_block_category(const DataBlockWrapper* block) {
-    if (!block || !block->block) {
+    if (!block || !block->block || !block->block->m_pCategory) {
         return 0;
     }
-    return static_cast<uint8_t>(block->block->m_nCategory);
+    return static_cast<uint8_t>(block->block->m_pCategory->m_id);
 }
 
 uint32_t asterix_block_length(const DataBlockWrapper* block) {
@@ -236,15 +243,23 @@ uint64_t asterix_block_timestamp_ms(const DataBlockWrapper* block) {
     if (!block || !block->block) {
         return 0;
     }
-    // Convert timestamp to milliseconds
-    return static_cast<uint64_t>(block->block->m_dTimestamp * 1000.0);
+    // Convert timestamp from seconds to milliseconds
+    return static_cast<uint64_t>(block->block->m_nTimestamp * 1000.0);
 }
 
 uint32_t asterix_block_crc(const DataBlockWrapper* block) {
     if (!block || !block->block) {
         return 0;
     }
-    return static_cast<uint32_t>(block->block->m_nCRC);
+    // CRC is stored on DataRecord, not DataBlock
+    // Return CRC from first data record if available
+    if (!block->block->m_lDataRecords.empty()) {
+        DataRecord* firstRecord = block->block->m_lDataRecords.front();
+        if (firstRecord) {
+            return static_cast<uint32_t>(firstRecord->m_nCrc);
+        }
+    }
+    return 0;
 }
 
 const uint8_t* asterix_block_hex_data(const DataBlockWrapper* block) {
@@ -252,14 +267,16 @@ const uint8_t* asterix_block_hex_data(const DataBlockWrapper* block) {
         return nullptr;
     }
 
-    // Get hex representation
-    std::string hex = block->block->getHexString();
-
-    // Return pointer to internal string
-    // WARNING: This has lifetime issues - the string will be destroyed
-    // when the function returns. In production, we should cache this.
+    // Build hex string from data records
     static std::string cached_hex;
-    cached_hex = hex;
+    cached_hex.clear();
+
+    for (const auto& record : block->block->m_lDataRecords) {
+        if (record && record->m_pHexData) {
+            cached_hex += record->m_pHexData;
+        }
+    }
+
     return reinterpret_cast<const uint8_t*>(cached_hex.c_str());
 }
 
@@ -269,8 +286,10 @@ uint8_t* asterix_block_to_json(const DataBlockWrapper* block) {
     }
 
     try {
-        // Generate JSON representation
-        std::string json = block->block->toJSON();
+        // Generate JSON representation using getText with EJSON format
+        std::string json;
+        // EJSON = 6 (compact JSON format)
+        block->block->getText(json, 6);
 
         // Allocate and copy string
         size_t len = json.length() + 1;
@@ -293,8 +312,10 @@ uint8_t* asterix_block_to_text(const DataBlockWrapper* block) {
     }
 
     try {
-        // Generate text representation
-        std::string text = block->block->toString();
+        // Generate text representation using getText with ETxt format
+        std::string text;
+        // ETxt = 2 (human readable text format)
+        block->block->getText(text, 2);
 
         // Allocate and copy
         size_t len = text.length() + 1;

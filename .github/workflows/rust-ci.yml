@@ -509,7 +509,7 @@ jobs:
         cargo doc --all-features --no-deps
       env:
         RUSTDOCFLAGS: "--deny warnings"
-      continue-on-error: true
+      continue-on-error: false
 
     - name: Upload documentation
       uses: actions/upload-artifact@v5
@@ -556,7 +556,7 @@ jobs:
       run: |
         cd asterix-rs
         cross build --target ${{ matrix.target }} --verbose
-      continue-on-error: true
+      continue-on-error: false
 
   # =============================================================================
   # MINIMUM SUPPORTED RUST VERSION (MSRV)
