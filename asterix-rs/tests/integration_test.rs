@@ -190,7 +190,7 @@ fn test_error_handling_truncated_data() {
     assert!(result.is_err(), "Expected error for truncated data");
 
     match result {
-        Err(AsterixError::UnexpectedEOF) => {
+        Err(AsterixError::UnexpectedEOF { .. }) => {
             println!("✓ Detected unexpected EOF in truncated data");
         }
         Err(e) => {
@@ -356,7 +356,7 @@ fn test_record_structure() {
     let record = &records[0];
 
     // Validate record structure
-    assert!(record.category > 0 && record.category < 256);
+    assert!(record.category > 0); // Category is u8 (0-255), so checking < 256 is redundant
     assert!(record.length >= 3); // Minimum ASTERIX record size
     assert!(record.timestamp_ms >= 0);
     assert!(!record.hex_data.is_empty());
@@ -428,6 +428,7 @@ fn test_parsed_value_types() {
                 ParsedValue::Boolean(_) => bool_count += 1,
                 ParsedValue::Bytes(_) => bytes_count += 1,
                 ParsedValue::Nested(_) => {} // Count as parent type
+                ParsedValue::Array(_) => {}  // Count as array type
             }
         }
     }
