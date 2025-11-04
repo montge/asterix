@@ -18,6 +18,17 @@
 // Global ASTERIX definition (singleton pattern from original code)
 static AsterixDefinition* g_asterix_definition = nullptr;
 
+// Automatic cleanup on program exit to prevent memory leaks and use-after-free
+struct AsterixGlobalCleanup {
+    ~AsterixGlobalCleanup() {
+        if (g_asterix_definition) {
+            delete g_asterix_definition;
+            g_asterix_definition = nullptr;
+        }
+    }
+};
+static AsterixGlobalCleanup g_cleanup;
+
 namespace asterix {
 
 // Initialization functions
