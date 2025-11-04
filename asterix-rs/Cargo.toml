@@ -52,6 +52,7 @@ cc = "1.0"
 
 # System library detection
 pkg-config = "0.3"
+vcpkg = "0.2"  # Windows vcpkg library detection (handles libexpatMD.lib naming)
 
 # File globbing
 glob = "0.3"
