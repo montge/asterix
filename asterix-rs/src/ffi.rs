@@ -288,7 +288,7 @@ pub fn describe(
             ));
         }
 
-        let c_str = CStr::from_ptr(result_ptr as *const i8);
+        let c_str = CStr::from_ptr(result_ptr as *const std::os::raw::c_char);
         let result = c_str.to_string_lossy().to_string();
 
         ffi::asterix_free_string(result_ptr);
@@ -305,7 +305,7 @@ pub(crate) unsafe fn c_string_to_rust(ptr: *mut u8) -> Result<String> {
         ));
     }
 
-    let c_str = CStr::from_ptr(ptr as *const i8);
+    let c_str = CStr::from_ptr(ptr as *const std::os::raw::c_char);
     let result = c_str.to_string_lossy().to_string();
 
     ffi::asterix_free_string(ptr);
