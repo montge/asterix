@@ -125,6 +125,38 @@ fn compile_cpp_with_ffi_bridge() {
         if source_path.exists() {
             bridge.file(source_path);
         } else {
+            // Debug output to understand cross-compile environment
+            eprintln!("ERROR: Source file not found: {}", source_path.display());
+            eprintln!("  asterix_src: {}", asterix_src.display());
+            eprintln!("  asterix_root: {}", asterix_root.display());
+            eprintln!("  Looking for: {source}");
+            eprintln!(
+                "  CARGO_MANIFEST_DIR: {}",
+                env::var("CARGO_MANIFEST_DIR").unwrap()
+            );
+            if let Ok(current) = env::current_dir() {
+                eprintln!("  Current dir: {}", current.display());
+            }
+
+            // List what files ARE in asterix_src
+            if let Ok(entries) = std::fs::read_dir(&asterix_src) {
+                eprintln!("  Files in asterix_src:");
+                for entry in entries.flatten() {
+                    eprintln!("    - {}", entry.file_name().to_string_lossy());
+                }
+            } else {
+                eprintln!("  Could not read asterix_src directory!");
+            }
+
+            // Also check parent directories
+            eprintln!("  Parent directory structure:");
+            if let Ok(parent_entries) = std::fs::read_dir(asterix_root.join("src")) {
+                eprintln!("  Files in src/:");
+                for entry in parent_entries.flatten() {
+                    eprintln!("    - {}", entry.file_name().to_string_lossy());
+                }
+            }
+
             panic!("Required source file not found: {}", source_path.display());
         }
     }
