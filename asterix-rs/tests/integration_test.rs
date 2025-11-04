@@ -57,8 +57,7 @@ fn test_parse_cat062_cat065_raw() {
     let cat65_count = records.iter().filter(|r| r.category == 65).count();
 
     println!(
-        "✓ Found {} CAT062 and {} CAT065 records",
-        cat62_count, cat65_count
+        "✓ Found {cat62_count} CAT062 and {cat65_count} CAT065 records"
     );
     assert!(
         cat62_count > 0 || cat65_count > 0,
@@ -84,8 +83,8 @@ fn test_parse_pcap_format() {
     // Verify PCAP contains multiple categories
     let categories: std::collections::HashSet<_> = records.iter().map(|r| r.category).collect();
 
-    println!("✓ Parsed PCAP with categories: {:?}", categories);
-    assert!(categories.len() >= 1, "Expected at least one category");
+    println!("✓ Parsed PCAP with categories: {categories:?}");
+    assert!(!categories.is_empty(), "Expected at least one category");
 }
 
 #[test]
@@ -100,7 +99,7 @@ fn test_parse_cat034_048_pcap() {
     let cat34_count = records.iter().filter(|r| r.category == 34).count();
     let cat48_count = records.iter().filter(|r| r.category == 48).count();
 
-    println!("✓ CAT034: {}, CAT048: {}", cat34_count, cat48_count);
+    println!("✓ CAT034: {cat34_count}, CAT048: {cat48_count}");
     assert!(
         cat34_count > 0 || cat48_count > 0,
         "Expected CAT034 or CAT048"
@@ -142,7 +141,7 @@ fn test_parse_gps_format() {
             assert!(!records.is_empty(), "Expected GPS records");
         }
         Err(e) => {
-            println!("⚠ GPS format not yet supported: {:?}", e);
+            println!("⚠ GPS format not yet supported: {e:?}");
             // This is acceptable if GPS format isn't implemented yet
         }
     }
@@ -159,12 +158,11 @@ fn test_error_handling_invalid_data() {
     match result {
         Err(AsterixError::ParseError { offset, message }) => {
             println!(
-                "✓ Correctly rejected invalid data at offset {} ({})",
-                offset, message
+                "✓ Correctly rejected invalid data at offset {offset} ({message})"
             );
         }
         Err(e) => {
-            println!("✓ Rejected with error: {:?}", e);
+            println!("✓ Rejected with error: {e:?}");
         }
         Ok(_) => panic!("Should not successfully parse invalid data"),
     }
@@ -194,7 +192,7 @@ fn test_error_handling_truncated_data() {
             println!("✓ Detected unexpected EOF in truncated data");
         }
         Err(e) => {
-            println!("✓ Rejected truncated data: {:?}", e);
+            println!("✓ Rejected truncated data: {e:?}");
         }
         Ok(_) => panic!("Should not parse truncated data"),
     }
@@ -240,15 +238,14 @@ fn test_incremental_parsing() {
                 }
             }
             Err(e) => {
-                println!("⚠ Incremental parsing stopped: {:?}", e);
+                println!("⚠ Incremental parsing stopped: {e:?}");
                 break;
             }
         }
     }
 
     println!(
-        "✓ Incremental parsing completed: {} total records in {} iterations",
-        total_records, iterations
+        "✓ Incremental parsing completed: {total_records} total records in {iterations} iterations"
     );
     assert!(total_records > 0, "Expected at least some records");
 }
@@ -318,11 +315,11 @@ fn test_describe_item() {
 
     match result {
         Ok(description) => {
-            println!("✓ CAT048/010 description: {}", description);
+            println!("✓ CAT048/010 description: {description}");
             assert!(!description.is_empty());
         }
         Err(e) => {
-            println!("⚠ Describe item failed: {:?}", e);
+            println!("⚠ Describe item failed: {e:?}");
             // May not be implemented yet
         }
     }
@@ -338,10 +335,10 @@ fn test_describe_invalid_category() {
     match result {
         Err(AsterixError::InvalidCategory { category, .. }) => {
             assert_eq!(category, 255);
-            println!("✓ Correctly rejected invalid category {}", category);
+            println!("✓ Correctly rejected invalid category {category}");
         }
         Err(e) => {
-            println!("✓ Rejected with error: {:?}", e);
+            println!("✓ Rejected with error: {e:?}");
         }
         Ok(_) => panic!("Should not succeed for invalid category"),
     }
@@ -358,7 +355,7 @@ fn test_record_structure() {
     // Validate record structure
     assert!(record.category > 0); // Category is u8 (0-255), so checking < 256 is redundant
     assert!(record.length >= 3); // Minimum ASTERIX record size
-    assert!(record.timestamp_ms >= 0);
+    // timestamp_ms is u64, always >= 0, no need to check
     assert!(!record.hex_data.is_empty());
 
     // Validate hex data format (should be valid hex string)
@@ -387,17 +384,17 @@ fn test_data_item_structure() {
 
     // Examine first item
     if let Some((item_name, item)) = record.items.iter().next() {
-        println!("✓ First data item: {}", item_name);
+        println!("✓ First data item: {item_name}");
 
         if let Some(desc) = &item.description {
-            println!("  Description: {}", desc);
+            println!("  Description: {desc}");
         }
 
         println!("  Fields: {}", item.fields.len());
 
         // Check fields
         for (field_name, value) in &item.fields {
-            println!("    {} = {:?}", field_name, value);
+            println!("    {field_name} = {value:?}");
         }
     }
 }
@@ -434,11 +431,11 @@ fn test_parsed_value_types() {
     }
 
     println!("✓ Value type distribution:");
-    println!("  Integers: {}", int_count);
-    println!("  Floats: {}", float_count);
-    println!("  Strings: {}", string_count);
-    println!("  Booleans: {}", bool_count);
-    println!("  Bytes: {}", bytes_count);
+    println!("  Integers: {int_count}");
+    println!("  Floats: {float_count}");
+    println!("  Strings: {string_count}");
+    println!("  Booleans: {bool_count}");
+    println!("  Bytes: {bytes_count}");
 
     let total = int_count + float_count + string_count + bool_count + bytes_count;
     assert!(total > 0, "Should have parsed some values");
@@ -499,8 +496,7 @@ fn test_concurrent_parsing() {
     for (thread_id, count) in &results {
         assert_eq!(
             *count, first_count,
-            "Thread {} got different count",
-            thread_id
+            "Thread {thread_id} got different count"
         );
     }
 
@@ -608,12 +604,12 @@ mod benchmarks {
         let throughput_mbps =
             (data.len() as f64 * iterations as f64) / (elapsed.as_secs_f64() * 1_000_000.0);
 
-        println!("✓ Performance test ({} iterations):", iterations);
-        println!("  Average: {:.2} ms/parse", avg_ms);
-        println!("  Throughput: {:.2} MB/s", throughput_mbps);
+        println!("✓ Performance test ({iterations} iterations):");
+        println!("  Average: {avg_ms:.2} ms/parse");
+        println!("  Throughput: {throughput_mbps:.2} MB/s");
         println!("  File size: {} bytes", data.len());
 
         // Performance regression check: should be reasonably fast
-        assert!(avg_ms < 100.0, "Parsing too slow: {:.2} ms", avg_ms);
+        assert!(avg_ms < 100.0, "Parsing too slow: {avg_ms:.2} ms");
     }
 }

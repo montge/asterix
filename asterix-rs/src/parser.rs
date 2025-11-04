@@ -258,7 +258,7 @@ fn parse_items_from_json(json_str: &str) -> Result<BTreeMap<String, DataItem>> {
         use serde_json::Value;
 
         let value: Value = serde_json::from_str(json_str)
-            .map_err(|e| AsterixError::InternalError(format!("JSON parse error: {}", e)))?;
+            .map_err(|e| AsterixError::InternalError(format!("JSON parse error: {e}")))?;
 
         let mut items = BTreeMap::new();
 
@@ -287,7 +287,6 @@ fn parse_items_from_json(json_str: &str) -> Result<BTreeMap<String, DataItem>> {
 /// Convert serde_json::Value to DataItem
 #[cfg(feature = "serde")]
 fn json_value_to_data_item(value: &serde_json::Value) -> Result<DataItem> {
-    use serde_json::Value;
 
     let mut data_item = DataItem::new(None);
 

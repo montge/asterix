@@ -35,7 +35,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     init_default()?;
 
     // Read file
-    println!("Reading file: {}", filename);
+    println!("Reading file: {filename}");
     let data = fs::read(filename)?;
     println!("File size: {} bytes", data.len());
 
@@ -50,16 +50,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut total_records = 0;
     let mut chunk_num = 0;
 
-    println!("\nParsing in chunks of {} blocks...\n", blocks_per_chunk);
+    println!("\nParsing in chunks of {blocks_per_chunk} blocks...\n");
 
     loop {
         chunk_num += 1;
-        print!("Chunk {}: ", chunk_num);
+        print!("Chunk {chunk_num}: ");
 
         let result = match parse_with_offset(&data, offset, blocks_per_chunk, options.clone()) {
             Ok(r) => r,
             Err(e) => {
-                eprintln!("\nParse error at offset {}: {}", offset, e);
+                eprintln!("\nParse error at offset {offset}: {e}");
                 break;
             }
         };
@@ -90,7 +90,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     println!("\nParsing complete!");
-    println!("Total records parsed: {}", total_records);
+    println!("Total records parsed: {total_records}");
     println!("Total bytes processed: {}/{}", offset, data.len());
 
     Ok(())

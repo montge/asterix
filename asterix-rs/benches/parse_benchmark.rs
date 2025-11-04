@@ -6,8 +6,9 @@
 //! Run with: cargo bench
 
 use asterix::{parse, parse_with_offset, ParseOptions};
-use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
+use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
 use std::fs;
+use std::hint::black_box;
 use std::path::PathBuf;
 
 fn sample_data_path(filename: &str) -> PathBuf {
@@ -122,22 +123,17 @@ fn bench_incremental_parsing(c: &mut Criterion) {
                     let mut offset = 0;
                     let mut total_records = 0;
 
-                    loop {
-                        match parse_with_offset(
-                            black_box(&data),
-                            offset,
-                            blocks,
-                            ParseOptions::default(),
-                        ) {
-                            Ok(result) => {
-                                total_records += result.records.len();
-                                offset = result.bytes_consumed;
+                    while let Ok(result) = parse_with_offset(
+                        black_box(&data),
+                        offset,
+                        blocks,
+                        ParseOptions::default(),
+                    ) {
+                        total_records += result.records.len();
+                        offset = result.bytes_consumed;
 
-                                if result.remaining_blocks == 0 {
-                                    break;
-                                }
-                            }
-                            Err(_) => break,
+                        if result.remaining_blocks == 0 {
+                            break;
                         }
                     }
 

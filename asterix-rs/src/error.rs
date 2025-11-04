@@ -118,38 +118,37 @@ impl fmt::Display for AsterixError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             AsterixError::ParseError { offset, message } => {
-                write!(f, "Parse error at byte offset {}: {}", offset, message)
+                write!(f, "Parse error at byte offset {offset}: {message}")
             }
             AsterixError::InvalidCategory { category, reason } => {
-                write!(f, "Invalid ASTERIX category {}: {}", category, reason)
+                write!(f, "Invalid ASTERIX category {category}: {reason}")
             }
             AsterixError::ConfigNotFound(path) => {
-                write!(f, "Configuration file not found: {}", path)
+                write!(f, "Configuration file not found: {path}")
             }
             AsterixError::InitializationError(msg) => {
-                write!(f, "Initialization error: {}", msg)
+                write!(f, "Initialization error: {msg}")
             }
             AsterixError::IOError(msg) => {
-                write!(f, "I/O error: {}", msg)
+                write!(f, "I/O error: {msg}")
             }
             AsterixError::UnexpectedEOF { offset, expected } => {
                 write!(
                     f,
-                    "Unexpected end of input at byte {}: expected {} more bytes",
-                    offset, expected
+                    "Unexpected end of input at byte {offset}: expected {expected} more bytes"
                 )
             }
             AsterixError::InternalError(msg) => {
-                write!(f, "Internal error: {}", msg)
+                write!(f, "Internal error: {msg}")
             }
             AsterixError::InvalidData(msg) => {
-                write!(f, "Invalid data: {}", msg)
+                write!(f, "Invalid data: {msg}")
             }
             AsterixError::NullPointer(msg) => {
-                write!(f, "Null pointer: {}", msg)
+                write!(f, "Null pointer: {msg}")
             }
             AsterixError::FFIError(msg) => {
-                write!(f, "FFI error: {}", msg)
+                write!(f, "FFI error: {msg}")
             }
             AsterixError::XMLParseError {
                 file,
@@ -159,11 +158,10 @@ impl fmt::Display for AsterixError {
                 if let Some(line_num) = line {
                     write!(
                         f,
-                        "XML parse error in {} at line {}: {}",
-                        file, line_num, message
+                        "XML parse error in {file} at line {line_num}: {message}"
                     )
                 } else {
-                    write!(f, "XML parse error in {}: {}", file, message)
+                    write!(f, "XML parse error in {file}: {message}")
                 }
             }
         }
@@ -180,13 +178,13 @@ impl From<std::io::Error> for AsterixError {
 
 impl From<std::ffi::NulError> for AsterixError {
     fn from(err: std::ffi::NulError) -> Self {
-        AsterixError::InvalidData(format!("Null byte in string: {}", err))
+        AsterixError::InvalidData(format!("Null byte in string: {err}"))
     }
 }
 
 impl From<std::str::Utf8Error> for AsterixError {
     fn from(err: std::str::Utf8Error) -> Self {
-        AsterixError::FFIError(format!("Invalid UTF-8: {}", err))
+        AsterixError::FFIError(format!("Invalid UTF-8: {err}"))
     }
 }
 

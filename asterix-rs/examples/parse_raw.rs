@@ -10,14 +10,14 @@
 //! Example:
 //!     cargo run --example parse_raw -- ../install/test/sample_cat062_065.raw
 
-use asterix::{init_default, parse, AsterixError, ParseOptions};
+use asterix::{init_default, parse, ParseOptions};
 use std::env;
 use std::fs;
 use std::process;
 
 fn main() {
     if let Err(e) = run() {
-        eprintln!("Error: {}", e);
+        eprintln!("Error: {e}");
         process::exit(1);
     }
 }
@@ -43,7 +43,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     println!("✓ Parser initialized with default categories\n");
 
     // Step 2: Read raw ASTERIX data from file
-    println!("Reading file: {}", filename);
+    println!("Reading file: {filename}");
     let data = fs::read(filename)?;
     println!("✓ Read {} bytes\n", data.len());
 
@@ -76,7 +76,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         } else {
             record.hex_data.clone()
         };
-        println!("  Hex data:    {}", hex_preview);
+        println!("  Hex data:    {hex_preview}");
 
         // Display data items
         if !record.items.is_empty() {
@@ -94,22 +94,22 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 for (field_name, field_value) in item.fields.iter().take(5) {
                     match field_value {
                         asterix::ParsedValue::Integer(v) => {
-                            println!("      {}: {}", field_name, v);
+                            println!("      {field_name}: {v}");
                         }
                         asterix::ParsedValue::Float(v) => {
-                            println!("      {}: {:.4}", field_name, v);
+                            println!("      {field_name}: {v:.4}");
                         }
                         asterix::ParsedValue::String(v) => {
-                            println!("      {}: \"{}\"", field_name, v);
+                            println!("      {field_name}: \"{v}\"");
                         }
                         asterix::ParsedValue::Boolean(v) => {
-                            println!("      {}: {}", field_name, v);
+                            println!("      {field_name}: {v}");
                         }
                         asterix::ParsedValue::Nested(_) => {
-                            println!("      {}: <nested>", field_name);
+                            println!("      {field_name}: <nested>");
                         }
                         asterix::ParsedValue::Array(_) => {
-                            println!("      {}: <array>", field_name);
+                            println!("      {field_name}: <array>");
                         }
                         _ => {}
                     }
@@ -137,11 +137,11 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut cats: Vec<_> = category_counts.iter().collect();
     cats.sort_by_key(|&(cat, _)| cat);
     for (cat, count) in cats {
-        println!("  Category {}: {} records", cat, count);
+        println!("  Category {cat}: {count} records");
     }
 
     let total_items: usize = records.iter().map(|r| r.item_count()).sum();
-    println!("\nTotal data items: {}", total_items);
+    println!("\nTotal data items: {total_items}");
     println!(
         "Average items per record: {:.1}",
         total_items as f64 / records.len().max(1) as f64

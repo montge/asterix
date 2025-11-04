@@ -31,14 +31,14 @@ fn main() {
     };
 
     println!("=== Streaming ASTERIX Parser ===");
-    println!("File: {}", filename);
-    println!("Blocks per batch: {}\n", blocks_per_batch);
+    println!("File: {filename}");
+    println!("Blocks per batch: {blocks_per_batch:}\n");
 
     // Read file
     let data = match fs::read(filename) {
         Ok(data) => data,
         Err(e) => {
-            eprintln!("Error reading file: {}", e);
+            eprintln!("Error reading file: {e}");
             process::exit(1);
         }
     };
@@ -62,7 +62,7 @@ fn main() {
             match parse_with_offset(&data, offset, blocks_per_batch, ParseOptions::default()) {
                 Ok(result) => result,
                 Err(e) => {
-                    eprintln!("\nError at iteration {}: {}", iteration, e);
+                    eprintln!("\nError at iteration {iteration}: {e}");
                     break;
                 }
             };
@@ -101,9 +101,9 @@ fn main() {
 
     // Print summary
     println!("\n=== Summary ===");
-    println!("Total iterations: {}", iteration);
-    println!("Total records: {}", total_records);
-    println!("Total bytes processed: {}", offset);
+    println!("Total iterations: {iteration}");
+    println!("Total records: {total_records}");
+    println!("Total bytes processed: {offset}");
     println!("Time elapsed: {:.2} seconds", elapsed.as_secs_f64());
     println!(
         "Throughput: {:.2} MB/s",
@@ -121,8 +121,7 @@ fn main() {
     for (category, count) in cats {
         let percentage = (*count as f64 / total_records as f64) * 100.0;
         println!(
-            "  CAT{:03}: {:5} records ({:5.2}%)",
-            category, count, percentage
+            "  CAT{category:03}: {count:5} records ({percentage:5.2}%)"
         );
     }
 

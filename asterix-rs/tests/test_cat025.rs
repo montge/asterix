@@ -15,10 +15,11 @@
 //! - TC-RS-CAT025-004: Test API usage
 
 use asterix::{parse, AsterixError, ParseOptions};
-use std::fs;
+
 use std::path::PathBuf;
 
 /// Helper function to get path to sample data
+#[allow(dead_code)]
 fn sample_data_path(filename: &str) -> PathBuf {
     let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     path.pop(); // Go up from asterix-rs/
@@ -61,7 +62,7 @@ fn test_parse_cat025_packet() {
         }
         Err(e) => {
             // Parsing minimal packet may fail, which is acceptable
-            println!("⚠ CAT025 minimal packet parsing: {:?}", e);
+            println!("⚠ CAT025 minimal packet parsing: {e:?}");
         }
     }
 }
@@ -105,7 +106,7 @@ fn test_parse_cat025_with_data_items() {
         }
         Err(e) => {
             // May fail if configuration not loaded, which is acceptable
-            println!("⚠ CAT025 with data items: {:?}", e);
+            println!("⚠ CAT025 with data items: {e:?}");
         }
     }
 }
@@ -139,10 +140,10 @@ fn test_cat025_error_handling() {
         }
         Err(AsterixError::InvalidCategory { category, .. }) => {
             assert_eq!(category, 255);
-            println!("✓ Correctly rejected invalid category {}", category);
+            println!("✓ Correctly rejected invalid category {category}");
         }
         Err(e) => {
-            println!("✓ Rejected invalid data: {:?}", e);
+            println!("✓ Rejected invalid data: {e:?}");
         }
     }
 }
@@ -205,7 +206,7 @@ fn test_cat025_api_usage() {
         }
         (Err(e1), Err(e2)) => {
             // Both failed, which may be acceptable for minimal packets
-            println!("⚠ CAT025 both modes failed: {:?} / {:?}", e1, e2);
+            println!("⚠ CAT025 both modes failed: {e1:?} / {e2:?}");
         }
     }
 
@@ -228,7 +229,7 @@ fn test_cat025_api_usage() {
             );
         }
         Err(e) => {
-            println!("⚠ Category filter test: {:?}", e);
+            println!("⚠ Category filter test: {e:?}");
         }
     }
 }

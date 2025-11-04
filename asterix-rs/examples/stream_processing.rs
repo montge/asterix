@@ -13,7 +13,7 @@
 //! Example:
 //!     cargo run --example stream_processing -- ../install/test/sample_cat062_065.pcap
 
-use asterix::{init_default, parse_with_offset, AsterixError, AsterixRecord, ParseOptions};
+use asterix::{init_default, parse_with_offset, AsterixRecord, ParseOptions};
 use std::collections::HashMap;
 use std::env;
 use std::fs;
@@ -22,7 +22,7 @@ use std::time::{Duration, Instant};
 
 fn main() {
     if let Err(e) = run() {
-        eprintln!("Error: {}", e);
+        eprintln!("Error: {e}");
         process::exit(1);
     }
 }
@@ -91,7 +91,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
             Err(e) => {
-                eprintln!("Parse error at offset {}: {}", offset, e);
+                eprintln!("Parse error at offset {offset}: {e}");
                 // In a real application, you might try to recover or skip
                 break;
             }
@@ -162,8 +162,8 @@ impl StreamProcessor {
 
         print!("\r  ");
         print!("Records: {:6}  ", self.total_records);
-        print!("Rate: {:7.1} rec/s  ", rate);
-        print!("Throughput: {:6.2} MB/s  ", throughput);
+        print!("Rate: {rate:7.1} rec/s  ");
+        print!("Throughput: {throughput:6.2} MB/s  ");
         std::io::Write::flush(&mut std::io::stdout()).ok();
     }
 
@@ -176,7 +176,7 @@ impl StreamProcessor {
             self.total_bytes,
             self.total_bytes as f64 / 1_048_576.0
         );
-        println!("Elapsed Time:   {:.3} seconds", elapsed_secs);
+        println!("Elapsed Time:   {elapsed_secs:.3} seconds");
 
         if elapsed_secs > 0.0 {
             println!("\nPerformance:");
@@ -198,8 +198,7 @@ impl StreamProcessor {
             for (cat, count) in cats {
                 let percentage = (*count as f64 / self.total_records as f64) * 100.0;
                 println!(
-                    "  Category {:3}: {:6} records ({:5.1}%)",
-                    cat, count, percentage
+                    "  Category {cat:3}: {count:6} records ({percentage:5.1}%)"
                 );
             }
         }
@@ -207,7 +206,7 @@ impl StreamProcessor {
         // Calculate efficiency metrics
         let avg_record_size = self.total_bytes as f64 / self.total_records.max(1) as f64;
         println!("\nEfficiency:");
-        println!("  Avg record size: {:.1} bytes", avg_record_size);
+        println!("  Avg record size: {avg_record_size:.1} bytes");
         println!("  Memory efficiency: Good (streaming mode)");
         println!("  CPU usage: Moderate");
     }
