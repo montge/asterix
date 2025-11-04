@@ -341,13 +341,14 @@ mod tests {
     }
 
     #[test]
+    #[allow(invalid_from_utf8)]
     fn test_error_from_conversions() {
         // From NulError
         let null_err = std::ffi::CString::new("test\0test").unwrap_err();
         let asterix_err: AsterixError = null_err.into();
         assert!(matches!(asterix_err, AsterixError::InvalidData(_)));
 
-        // From Utf8Error
+        // From Utf8Error (deliberately invalid UTF-8 to test conversion)
         let bad_utf8: &[u8] = &[0xFF, 0xFE, 0xFD];
         let utf8_err = std::str::from_utf8(bad_utf8).unwrap_err();
         let asterix_err: AsterixError = utf8_err.into();
