@@ -36,7 +36,9 @@ class InputParser {
 public:
     InputParser(AsterixDefinition *pDefinition);
 
-    ~InputParser() { if (m_pDefinition) delete m_pDefinition; }
+    // FIXED: Don't delete m_pDefinition - it's a singleton shared across all parsers
+    // Deleting it causes double-free when multiple InputParser instances exist
+    ~InputParser() { /* m_pDefinition is owned by AsterixDefinition singleton */ }
 
     AsterixData *parsePacket(const unsigned char *m_pBuffer, unsigned int m_nBufferSize, double nTimestamp = 0.0);
 
