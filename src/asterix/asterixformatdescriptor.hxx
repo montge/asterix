@@ -44,6 +44,7 @@ public:
      * Empty constructor
      */
     CAsterixFormatDescriptor(AsterixDefinition *pDefinition) :
+            m_pDefinition(pDefinition),
             m_InputParser(pDefinition),
             m_pAsterixData(NULL),
             m_ePcapNetworkType(CAsterixFormatDescriptor::ePcapNetworkType(0)),
@@ -64,8 +65,14 @@ public:
         if (m_pAsterixData) {
             delete m_pAsterixData;
         }
+        // FIXED: Delete the AsterixDefinition that was allocated in CreateFormatDescriptor
+        // The InputParser doesn't own this pointer, the format descriptor does
+        if (m_pDefinition) {
+            delete m_pDefinition;
+        }
     }
 
+    AsterixDefinition *m_pDefinition;  // Owned pointer - must be deleted in destructor
     InputParser m_InputParser;
     AsterixData *m_pAsterixData;
 
