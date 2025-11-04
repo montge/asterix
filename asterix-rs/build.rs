@@ -19,21 +19,21 @@ fn main() {
 
     if use_system_lib {
         link_system_library();
+        // Generate CXX bridge code that links against system library
+        cxx_build::bridge("src/ffi.rs")
+            .file("src/ffi_wrapper.cpp")
+            .include("src")
+            .include("../src/asterix")
+            .include("../src/engine")
+            .flag_if_supported("-std=c++17")
+            .flag_if_supported("-fPIC")
+            .warnings(false)
+            .compile("asterix_ffi_bridge");
     } else {
-        compile_cpp_from_source();
+        // When compiling from source, add all CPP files to the cxx_build
+        // to ensure symbols are available (avoids static library link order issues)
+        compile_cpp_with_ffi_bridge();
     }
-
-    // Generate CXX bridge code
-    // Note: The actual FFI bridge will be in ffi_wrapper.cpp which wraps C++ classes
-    cxx_build::bridge("src/ffi.rs")
-        .file("src/ffi_wrapper.cpp")
-        .include("src") // Include our own src directory for ffi_wrapper.h
-        .include("../src/asterix")
-        .include("../src/engine")
-        .flag_if_supported("-std=c++17")
-        .flag_if_supported("-fPIC")
-        .warnings(false) // Suppress warnings from C++ code
-        .compile("asterix_ffi_bridge");
 
     // Set library search path
     let out_dir = env::var("OUT_DIR").unwrap();
@@ -53,7 +53,9 @@ fn main() {
     }
 }
 
-fn compile_cpp_from_source() {
+fn compile_cpp_with_ffi_bridge() {
+    // Compile all C++ source files together with the FFI bridge
+    // This avoids static library link order issues
     let asterix_root = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
         .parent()
         .unwrap()
@@ -62,20 +64,18 @@ fn compile_cpp_from_source() {
     let asterix_src = asterix_root.join("src").join("asterix");
     let engine_src = asterix_root.join("src").join("engine");
 
-    // Build C++ core library
-    let mut cc_build = cc::Build::new();
-
-    cc_build
-        .cpp(true)
-        .std("c++17")
-        .flag_if_supported("-fPIC")
-        .flag_if_supported("-fstack-protector-strong")
-        .flag_if_supported("-D_FORTIFY_SOURCE=2")
+    // Generate CXX bridge code and compile everything together
+    let mut bridge = cxx_build::bridge("src/ffi.rs");
+    bridge
+        .file("src/ffi_wrapper.cpp")
+        .include("src") // Include our own src directory for ffi_wrapper.h
         .include(&asterix_src)
         .include(&engine_src)
-        .warnings(false); // Suppress warnings from legacy C++ code
+        .flag_if_supported("-std=c++17")
+        .flag_if_supported("-fPIC")
+        .warnings(false); // Suppress warnings from C++ code
 
-    // Add all ASTERIX core C++ files
+    // Add all ASTERIX core C++ files to the same compilation unit
     let asterix_sources = [
         "AsterixData.cpp",
         "AsterixDefinition.cpp",
@@ -104,7 +104,7 @@ fn compile_cpp_from_source() {
     for source in &asterix_sources {
         let source_path = asterix_src.join(source);
         if source_path.exists() {
-            cc_build.file(source_path);
+            bridge.file(source_path);
         } else {
             panic!("Required source file not found: {}", source_path.display());
         }
@@ -116,7 +116,7 @@ fn compile_cpp_from_source() {
     for source in &engine_sources {
         let source_path = engine_src.join(source);
         if source_path.exists() {
-            cc_build.file(source_path);
+            bridge.file(source_path);
         } else {
             panic!(
                 "Required engine source file not found: {}",
@@ -125,11 +125,8 @@ fn compile_cpp_from_source() {
         }
     }
 
-    // Compile the ASTERIX core library
-    cc_build.compile("asterix_core");
-
-    // Tell cargo to link against the compiled library
-    println!("cargo:rustc-link-lib=static=asterix_core");
+    // Compile everything together into one library
+    bridge.compile("asterix_ffi_bridge");
 }
 
 fn link_system_library() {
@@ -138,7 +135,7 @@ fn link_system_library() {
     if let Err(e) = pkg_config::probe_library("asterix") {
         eprintln!("Warning: Could not find system ASTERIX library: {e}");
         eprintln!("Falling back to compilation from source...");
-        compile_cpp_from_source();
+        compile_cpp_with_ffi_bridge();
     } else {
         println!("cargo:rustc-link-lib=asterix");
     }

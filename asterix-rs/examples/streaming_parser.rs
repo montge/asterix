@@ -120,9 +120,7 @@ fn main() {
 
     for (category, count) in cats {
         let percentage = (*count as f64 / total_records as f64) * 100.0;
-        println!(
-            "  CAT{category:03}: {count:5} records ({percentage:5.2}%)"
-        );
+        println!("  CAT{category:03}: {count:5} records ({percentage:5.2}%)");
     }
 
     // Memory efficiency note

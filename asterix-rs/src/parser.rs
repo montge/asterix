@@ -287,7 +287,6 @@ fn parse_items_from_json(json_str: &str) -> Result<BTreeMap<String, DataItem>> {
 /// Convert serde_json::Value to DataItem
 #[cfg(feature = "serde")]
 fn json_value_to_data_item(value: &serde_json::Value) -> Result<DataItem> {
-
     let mut data_item = DataItem::new(None);
 
     if let Some(obj) = value.as_object() {

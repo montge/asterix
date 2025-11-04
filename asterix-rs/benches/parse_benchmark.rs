@@ -123,12 +123,9 @@ fn bench_incremental_parsing(c: &mut Criterion) {
                     let mut offset = 0;
                     let mut total_records = 0;
 
-                    while let Ok(result) = parse_with_offset(
-                        black_box(&data),
-                        offset,
-                        blocks,
-                        ParseOptions::default(),
-                    ) {
+                    while let Ok(result) =
+                        parse_with_offset(black_box(&data), offset, blocks, ParseOptions::default())
+                    {
                         total_records += result.records.len();
                         offset = result.bytes_consumed;
 

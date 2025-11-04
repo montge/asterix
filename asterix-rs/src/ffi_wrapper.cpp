@@ -209,20 +209,22 @@ const DataBlockWrapper* asterix_get_data_block(
         return nullptr;
     }
 
-    std::list<DataBlock*> blocks = data->data->m_lDataBlocks;
+    std::list<DataBlock*>& blocks = data->data->m_lDataBlocks;
 
     if (index >= blocks.size()) {
         return nullptr;
     }
 
-    // Navigate to the indexed element
-    auto it = blocks.begin();
-    std::advance(it, index);
+    // Ensure we have cached all wrappers (done once per AsterixDataWrapper)
+    if (data->block_wrappers.empty()) {
+        data->block_wrappers.reserve(blocks.size());
+        for (auto* block : blocks) {
+            data->block_wrappers.emplace_back(block);
+        }
+    }
 
-    // Return wrapped block (non-owning)
-    static DataBlockWrapper wrapper(nullptr);
-    wrapper.block = *it;
-    return &wrapper;
+    // Return stable pointer to cached wrapper (lifetime tied to AsterixDataWrapper)
+    return &data->block_wrappers[index];
 }
 
 uint8_t asterix_block_category(const DataBlockWrapper* block) {
@@ -267,17 +269,16 @@ const uint8_t* asterix_block_hex_data(const DataBlockWrapper* block) {
         return nullptr;
     }
 
-    // Build hex string from data records
-    static std::string cached_hex;
-    cached_hex.clear();
+    // Build hex string from data records (cached in wrapper for stable lifetime)
+    block->hex_data_cache.clear();
 
     for (const auto& record : block->block->m_lDataRecords) {
         if (record && record->m_pHexData) {
-            cached_hex += record->m_pHexData;
+            block->hex_data_cache += record->m_pHexData;
         }
     }
 
-    return reinterpret_cast<const uint8_t*>(cached_hex.c_str());
+    return reinterpret_cast<const uint8_t*>(block->hex_data_cache.c_str());
 }
 
 uint8_t* asterix_block_to_json(const DataBlockWrapper* block) {

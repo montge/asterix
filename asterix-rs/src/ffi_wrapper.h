@@ -25,23 +25,26 @@ class AsterixDefinition;
 namespace asterix {
 
 /**
+ * Wrapper for DataBlock (doesn't own the data)
+ */
+struct DataBlockWrapper {
+    DataBlock* block;  // Non-owning pointer
+    mutable std::string hex_data_cache;  // Cache for hex data (lifetime tied to wrapper)
+
+    explicit DataBlockWrapper(DataBlock* b) : block(b) {}
+};
+
+/**
  * Wrapper for AsterixData to provide stable ABI
  */
 struct AsterixDataWrapper {
     std::unique_ptr<AsterixData> data;
     std::unique_ptr<InputParser> parser;
+    mutable std::vector<DataBlockWrapper> block_wrappers;  // Cache wrappers to avoid use-after-free
+    mutable std::vector<std::string> hex_cache;  // Cache hex strings per block
 
     AsterixDataWrapper(AsterixData* d, InputParser* p)
         : data(d), parser(p) {}
-};
-
-/**
- * Wrapper for DataBlock (doesn't own the data)
- */
-struct DataBlockWrapper {
-    DataBlock* block;  // Non-owning pointer
-
-    explicit DataBlockWrapper(DataBlock* b) : block(b) {}
 };
 
 // Initialization functions

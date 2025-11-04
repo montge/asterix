@@ -102,8 +102,68 @@ use std::ffi::CStr;
 
 /// Initialize ASTERIX with default config directory
 pub fn init_default() -> Result<()> {
+    use std::path::PathBuf;
+
+    // First, initialize the AsterixDefinition object (stub implementation in C++)
     let config_dir = get_default_config_dir();
-    init_config_dir(&config_dir)
+    init_config_dir(&config_dir)?;
+
+    // Then, load all XML category files from the source tree
+    // (since asterix_init is a stub that doesn't load files)
+    let manifest_dir = env!("CARGO_MANIFEST_DIR");
+    let config_path = PathBuf::from(manifest_dir)
+        .parent()
+        .ok_or_else(|| AsterixError::InitializationError("Invalid manifest dir".to_string()))?
+        .join("asterix/config");
+
+    if !config_path.exists() {
+        return Err(AsterixError::ConfigNotFound(format!(
+            "Config directory not found: {}",
+            config_path.display()
+        )));
+    }
+
+    // Load BDS definitions first (required by many categories)
+    let bds_file = config_path.join("asterix_bds.xml");
+    if bds_file.exists() {
+        load_category(
+            bds_file.to_str().ok_or_else(|| {
+                AsterixError::InvalidData("Invalid UTF-8 in BDS path".to_string())
+            })?,
+        )?;
+    }
+
+    // Load all category XML files from the config directory
+    let entries = std::fs::read_dir(&config_path)
+        .map_err(|e| AsterixError::IOError(format!("Failed to read config directory: {e}")))?;
+
+    let mut loaded_count = 0;
+    for entry in entries {
+        let entry = entry?;
+        let path = entry.path();
+
+        // Skip BDS file (already loaded) and non-XML files
+        if path.file_name().and_then(|n| n.to_str()) == Some("asterix_bds.xml") {
+            continue;
+        }
+
+        if path.extension().and_then(|e| e.to_str()) == Some("xml") {
+            load_category(
+                path.to_str().ok_or_else(|| {
+                    AsterixError::InvalidData("Invalid UTF-8 in path".to_string())
+                })?,
+            )?;
+            loaded_count += 1;
+        }
+    }
+
+    if loaded_count == 0 {
+        return Err(AsterixError::InitializationError(
+            "No XML configuration files found in config directory".to_string(),
+        ));
+    }
+
+    Ok(())
 }
 
 /// Initialize ASTERIX with specific config directory

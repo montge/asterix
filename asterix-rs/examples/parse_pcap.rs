@@ -78,9 +78,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         offset = result.bytes_consumed;
 
         // Print progress
-        print!(
-            "\r  Parsed {blocks_parsed} blocks, {offset} bytes consumed..."
-        );
+        print!("\r  Parsed {blocks_parsed} blocks, {offset} bytes consumed...");
         std::io::Write::flush(&mut std::io::stdout())?;
 
         // Check if we've reached max_records or end of data
@@ -114,9 +112,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     // Category distribution
     let mut category_stats: HashMap<u8, CategoryStats> = HashMap::new();
     for record in &all_records {
-        let stats = category_stats
-            .entry(record.category)
-            .or_default();
+        let stats = category_stats.entry(record.category).or_default();
         stats.count += 1;
         stats.total_bytes += record.length as usize;
         stats.total_items += record.item_count();
