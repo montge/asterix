@@ -27,7 +27,7 @@ use std::collections::BTreeMap;
 ///
 /// ```no_run
 /// # use asterix::*;
-/// # fn main() -> Result<(), AsterixError> {
+/// # fn main() -> Result<()> {
 /// let data = std::fs::read("sample.asterix")?;
 /// let options = ParseOptions {
 ///     verbose: true,
@@ -93,7 +93,7 @@ pub fn parse(data: &[u8], options: ParseOptions) -> Result<Vec<AsterixRecord>> {
 ///
 /// ```no_run
 /// # use asterix::*;
-/// # fn main() -> Result<(), AsterixError> {
+/// # fn main() -> Result<()> {
 /// let data = std::fs::read("large_file.asterix")?;
 /// let mut offset = 0;
 /// let mut all_records = Vec::new();
@@ -257,19 +257,55 @@ fn parse_items_from_json(json_str: &str) -> Result<BTreeMap<String, DataItem>> {
     {
         use serde_json::Value;
 
-        let value: Value = serde_json::from_str(json_str)
-            .map_err(|e| AsterixError::InternalError(format!("JSON parse error: {e}")))?;
+        // Handle empty or whitespace-only JSON (indicates no data was parsed by C++)
+        let trimmed = json_str.trim();
+        if trimmed.is_empty() || trimmed == "{}" || trimmed == "[]" {
+            return Ok(BTreeMap::new());
+        }
+
+        // Try to parse JSON, but handle common failure cases gracefully
+        let value: Value = match serde_json::from_str(json_str) {
+            Ok(v) => v,
+            Err(e) => {
+                // If JSON parsing fails, it likely means C++ returned malformed data
+                // This can happen with PCAP files or other encapsulated formats
+                // Return empty items instead of propagating the error
+                eprintln!("Warning: Failed to parse JSON from C++ ({e}), returning empty items");
+                return Ok(BTreeMap::new());
+            }
+        };
 
         let mut items = BTreeMap::new();
 
         if let Some(obj) = value.as_object() {
             for (key, val) in obj {
-                if key == "category" || key == "length" || key == "timestamp" || key == "crc" {
+                // Skip metadata fields
+                if key == "id"
+                    || key == "cat"
+                    || key == "category"
+                    || key == "length"
+                    || key == "timestamp"
+                    || key == "crc"
+                    || key == "hexdata"
+                {
                     continue;
                 }
 
-                let data_item = json_value_to_data_item(val)?;
-                items.insert(key.clone(), data_item);
+                // The actual ASTERIX items are nested under a key like "CAT048"
+                // Check if this is a category object containing items
+                if key.starts_with("CAT") && val.is_object() {
+                    // Extract items from the nested category object
+                    if let Some(cat_obj) = val.as_object() {
+                        for (item_key, item_val) in cat_obj {
+                            let data_item = json_value_to_data_item(item_val)?;
+                            items.insert(item_key.clone(), data_item);
+                        }
+                    }
+                } else {
+                    // For backward compatibility, also handle top-level items
+                    let data_item = json_value_to_data_item(val)?;
+                    items.insert(key.clone(), data_item);
+                }
             }
         }
 

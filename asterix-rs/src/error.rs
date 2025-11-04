@@ -16,7 +16,7 @@ pub type Result<T> = std::result::Result<T, AsterixError>;
 ///
 /// # Example
 /// ```
-/// # use asterix_decoder::{parse, ParseOptions, AsterixError};
+/// # use asterix::{parse, ParseOptions, AsterixError};
 /// # let data = &[];
 /// match parse(data, ParseOptions::default()) {
 ///     Ok(records) => println!("Parsed {} records", records.len()),

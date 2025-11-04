@@ -11,7 +11,7 @@ use std::collections::BTreeMap;
 ///
 /// # Example
 /// ```no_run
-/// # use asterix_decoder::AsterixRecord;
+/// # use asterix::AsterixRecord;
 /// let record = AsterixRecord {
 ///     category: 48,
 ///     length: 256,
@@ -48,7 +48,7 @@ impl AsterixRecord {
     ///
     /// # Example
     /// ```no_run
-    /// # use asterix_decoder::AsterixRecord;
+    /// # use asterix::AsterixRecord;
     /// # let record = AsterixRecord::default();
     /// if let Some(item) = record.get_item("I062/010") {
     ///     println!("Track number: {:?}", item.fields.get("TRK"));
@@ -158,7 +158,7 @@ impl ParsedValue {
     ///
     /// # Example
     /// ```
-    /// # use asterix_decoder::ParsedValue;
+    /// # use asterix::ParsedValue;
     /// let val = ParsedValue::Integer(42);
     /// assert_eq!(val.as_i64(), Some(42));
     /// ```
@@ -217,7 +217,7 @@ impl ParsedValue {
 ///
 /// # Example
 /// ```
-/// # use asterix_decoder::ParseOptions;
+/// # use asterix::ParseOptions;
 /// let opts = ParseOptions {
 ///     verbose: true,
 ///     filter_category: Some(62),
@@ -254,7 +254,7 @@ impl Default for ParseOptions {
 ///
 /// # Example
 /// ```no_run
-/// # use asterix_decoder::{parse_with_offset, ParseOptions};
+/// # use asterix::{parse_with_offset, ParseOptions};
 /// # let data = &[];
 /// let mut offset = 0;
 /// let mut all_records = Vec::new();
@@ -268,7 +268,7 @@ impl Default for ParseOptions {
 ///         break;
 ///     }
 /// }
-/// # Ok::<(), asterix_decoder::AsterixError>(())
+/// # Ok::<(), asterix::AsterixError>(())
 /// ```
 #[derive(Debug)]
 pub struct ParseResult {
