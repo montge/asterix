@@ -12,10 +12,11 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "rust/cxx.h"
 
 // Include complete type definitions needed for std::unique_ptr
-#include "../src/asterix/AsterixData.h"
-#include "../src/asterix/InputParser.h"
+#include "AsterixData.h"
+#include "InputParser.h"
 
 // Forward declarations of other C++ ASTERIX types
 class DataBlock;
@@ -50,13 +51,13 @@ extern "C" {
  * Initialize ASTERIX parser with config directory
  * Returns true on success, false on failure
  */
-bool asterix_init(const char* config_dir);
+bool asterix_init(rust::Str config_dir);
 
 /**
  * Load a specific category definition file
  * Returns true on success, false on failure
  */
-bool asterix_load_category(const char* xml_path);
+bool asterix_load_category(rust::Str xml_path);
 
 /**
  * Check if a category is defined
