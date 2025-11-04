@@ -117,7 +117,8 @@ jobs:
           exit 1
         fi
         # Run tests with better error reporting
-        cargo test --verbose --all-features || {
+        # Note: --test-threads=1 works around global state SIGSEGV issue (temporary)
+        cargo test --verbose --all-features -- --test-threads=1 || {
           echo "::error::Rust tests failed"
           exit 1
         }
@@ -230,7 +231,8 @@ jobs:
           --out Json \
           --out Lcov \
           --output-dir coverage \
-          --fail-under 80
+          --fail-under 80 \
+          -- --test-threads=1
 
     - name: Check coverage thresholds
       run: |
@@ -303,11 +305,13 @@ jobs:
     - name: Generate coverage with llvm-cov
       run: |
         cd asterix-rs
+        # Note: --test-threads=1 works around global state SIGSEGV issue (temporary)
         cargo llvm-cov \
           --all-features \
           --workspace \
           --lcov \
-          --output-path coverage-llvm/lcov.info
+          --output-path coverage-llvm/lcov.info \
+          -- --test-threads=1
 
         cargo llvm-cov report \
           --all-features \

@@ -75,6 +75,25 @@ fn compile_cpp_with_ffi_bridge() {
         .flag_if_supported("-fPIC")
         .warnings(false); // Suppress warnings from C++ code
 
+    // On Windows, add vcpkg include/lib paths if CMAKE_TOOLCHAIN_FILE is set
+    #[cfg(target_os = "windows")]
+    {
+        if let Ok(toolchain) = env::var("CMAKE_TOOLCHAIN_FILE") {
+            // Extract vcpkg root from toolchain path
+            // CMAKE_TOOLCHAIN_FILE = D:/a/asterix/asterix/vcpkg/scripts/buildsystems/vcpkg.cmake
+            if let Some(vcpkg_root) = toolchain
+                .strip_suffix("/scripts/buildsystems/vcpkg.cmake")
+                .or_else(|| toolchain.strip_suffix("\\scripts\\buildsystems\\vcpkg.cmake"))
+            {
+                let vcpkg_include = format!("{vcpkg_root}/installed/x64-windows/include");
+                let vcpkg_lib = format!("{vcpkg_root}/installed/x64-windows/lib");
+
+                bridge.include(&vcpkg_include);
+                println!("cargo:rustc-link-search=native={vcpkg_lib}");
+            }
+        }
+    }
+
     // Add all ASTERIX core C++ files to the same compilation unit
     let asterix_sources = [
         "AsterixData.cpp",

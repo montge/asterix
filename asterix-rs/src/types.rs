@@ -92,7 +92,7 @@ impl Default for AsterixRecord {
 /// # Structure
 /// - Simple items: Single value in fields map
 /// - Compound items: Multiple fields in nested structure
-/// - Repetitive items: Represented as Vec<DataItem>
+/// - Repetitive items: Represented as `Vec<DataItem>`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DataItem {
     /// Human-readable description of this data item (if verbose mode enabled)
