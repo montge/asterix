@@ -40,7 +40,7 @@ engine = "Llvm"
 verbose = true
 
 # Post-test hook
-post-test-delay = "0s"
+post-test-delay = 0
 
 # Line coverage (default)
 line = true

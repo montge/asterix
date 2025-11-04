@@ -109,6 +109,7 @@ jobs:
         CMAKE_TOOLCHAIN_FILE: ${{ runner.os == 'Windows' && format('{0}/vcpkg/scripts/buildsystems/vcpkg.cmake', github.workspace) || '' }}
 
     - name: Run tests
+      shell: bash
       run: |
         cd asterix-rs
         # Check if Cargo.toml exists
@@ -305,6 +306,8 @@ jobs:
     - name: Generate coverage with llvm-cov
       run: |
         cd asterix-rs
+        # Create output directory for coverage reports
+        mkdir -p coverage-llvm/html
         # Note: --test-threads=1 works around global state SIGSEGV issue (temporary)
         cargo llvm-cov \
           --all-features \

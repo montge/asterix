@@ -222,7 +222,7 @@ unsafe fn convert_data_block(
     // Get hex data
     let hex_ptr = ffi::ffi::asterix_block_hex_data(block_ptr);
     let hex_data = if !hex_ptr.is_null() {
-        std::ffi::CStr::from_ptr(hex_ptr as *const i8)
+        std::ffi::CStr::from_ptr(hex_ptr as *const std::os::raw::c_char)
             .to_string_lossy()
             .to_string()
     } else {
