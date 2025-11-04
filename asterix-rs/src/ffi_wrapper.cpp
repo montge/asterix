@@ -9,6 +9,7 @@
 #include "DataBlock.h"
 #include "XMLParser.h"
 #include "DataRecord.h"
+#include "Tracer.h"
 // AsterixData.h and InputParser.h already included via ffi_wrapper.h
 #include <cstdio>
 #include <cstring>
@@ -104,6 +105,14 @@ bool asterix_category_defined(uint8_t category) {
         return false;
     }
     return g_asterix_definition->CategoryDefined(category);
+}
+
+void asterix_set_log_level(int level) {
+    Tracer::SetLogLevel(level);
+}
+
+int asterix_get_log_level() {
+    return Tracer::GetLogLevel();
 }
 
 } // extern "C"

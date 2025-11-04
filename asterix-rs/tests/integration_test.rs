@@ -2,7 +2,10 @@
 //!
 //! Tests parsing of real ASTERIX data files and validates against expected outputs.
 
-use asterix::{describe, init_default, parse, parse_with_offset, AsterixError, ParseOptions};
+use asterix::{
+    describe, init_default, parse, parse_with_offset, set_log_level, AsterixError, LogLevel,
+    ParseOptions,
+};
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Once;
@@ -15,8 +18,12 @@ static INIT: Once = Once::new();
 /// This function must be called at the start of every test that uses parse(),
 /// parse_with_offset(), or describe(). It uses std::sync::Once to ensure
 /// init_default() is called exactly once, even in concurrent test execution.
+///
+/// The log level is set to Silent to reduce verbose C++ output during tests.
 fn ensure_asterix_initialized() {
     INIT.call_once(|| {
+        // Set log level to Silent to reduce test output
+        set_log_level(LogLevel::Silent);
         init_default().expect("Failed to initialize ASTERIX");
     });
 }

@@ -39,7 +39,8 @@ Tracer &Tracer::instance() {
 }
 
 Tracer::Tracer()
-        : pPrintFunc(NULL), pPrintFunc2(NULL) {
+        : pPrintFunc(NULL), pPrintFunc2(NULL), m_logLevel(1) {
+    // Default log level is 1 (errors only)
 }
 
 void Tracer::Configure(ptExtPrintf pFunc) {
@@ -57,12 +58,19 @@ void Tracer::Delete() {
 }
 
 void Tracer::Error(const char *format, ...) {
+    Tracer &instance = Tracer::instance();
+
+    // Check log level - if silent (0), don't output anything
+    if (instance.m_logLevel <= 0) {
+        return;
+    }
+
     char buffer[1024];
     va_list args;
     va_start (args, format);
     vsnprintf(buffer, 1024, format, args);
     va_end (args);
-    Tracer &instance = Tracer::instance();
+
     if (instance.pPrintFunc) {
         instance.pPrintFunc(buffer);
     } else if (instance.pPrintFunc2) {
@@ -70,4 +78,14 @@ void Tracer::Error(const char *format, ...) {
     } else {
         puts(buffer);
     }
+}
+
+void Tracer::SetLogLevel(int level) {
+    Tracer &instance = Tracer::instance();
+    instance.m_logLevel = level;
+}
+
+int Tracer::GetLogLevel() {
+    Tracer &instance = Tracer::instance();
+    return instance.m_logLevel;
 }

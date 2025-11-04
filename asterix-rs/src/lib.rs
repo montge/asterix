@@ -169,7 +169,10 @@ pub use parser::{parse, parse_with_offset};
 pub use types::{AsterixRecord, DataItem, ParseOptions, ParseResult, ParsedValue};
 
 // Re-export FFI initialization functions
-pub use ffi::{describe, init_config_dir, init_default, is_category_defined, load_category};
+pub use ffi::{
+    describe, get_log_level, init_config_dir, init_default, is_category_defined, load_category,
+    set_log_level, LogLevel,
+};
 
 // Version information
 /// Crate version
