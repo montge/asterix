@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:81cb0139-9f56-4dac-934a-06ccea5e8cf6",
+  "serialNumber": "urn:uuid:6b80fe34-9289-4dca-b4a9-36f812580876",
   "version": 1,
   "metadata": {
-    "timestamp": "2025-11-04T00:44:43Z",
+    "timestamp": "2025-11-04T03:33:06Z",
     "tools": {
       "components": [
         {
@@ -25,7 +25,7 @@
     "properties": [
       {
         "name": "commit",
-        "value": "cb90ff07e4d958e47c7e31022a6f7462f33d120d"
+        "value": "1dc3b64ba54fa868843cae291ebf05ea69baa69c"
       },
       {
         "name": "repository",
@@ -33,7 +33,7 @@
       },
       {
         "name": "generated",
-        "value": "2025-11-04T00:44:43Z"
+        "value": "2025-11-04T03:33:06Z"
       },
       {
         "name": "tool",
@@ -2029,52 +2029,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:github/codecov/codecov-action@v5?package-id=19a05710c5bc1b50",
-      "type": "library",
-      "name": "codecov/codecov-action",
-      "version": "v5",
-      "cpe": "cpe:2.3:a:codecov\\/codecov-action:codecov\\/codecov-action:v5:*:*:*:*:*:*:*",
-      "purl": "pkg:github/codecov/codecov-action@v5",
-      "properties": [
-        {
-          "name": "syft:package:foundBy",
-          "value": "github-actions-usage-cataloger"
-        },
-        {
-          "name": "syft:package:type",
-          "value": "github-action"
-        },
-        {
-          "name": "syft:package:metadataType",
-          "value": "github-actions-use-statement"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:codecov\\/codecov-action:codecov\\/codecov_action:v5:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:codecov\\/codecov_action:codecov\\/codecov-action:v5:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:codecov\\/codecov_action:codecov\\/codecov_action:v5:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:codecov\\/codecov:codecov\\/codecov-action:v5:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:codecov\\/codecov:codecov\\/codecov_action:v5:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:location:0:path",
-          "value": "/.github/workflows/cross-platform-builds.yml"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:github/codecov/codecov-action@v5?package-id=97b2aea4b0d95f0e",
       "type": "library",
       "name": "codecov/codecov-action",
@@ -3877,68 +3831,6 @@
         {
           "name": "syft:location:0:path",
           "value": "/asterix-rs/Cargo.lock"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:github/ilammy/msvc-dev-cmd@v1?package-id=b2449573d5157ff0",
-      "type": "library",
-      "name": "ilammy/msvc-dev-cmd",
-      "version": "v1",
-      "cpe": "cpe:2.3:a:ilammy\\/msvc-dev-cmd:ilammy\\/msvc-dev-cmd:v1:*:*:*:*:*:*:*",
-      "purl": "pkg:github/ilammy/msvc-dev-cmd@v1",
-      "properties": [
-        {
-          "name": "syft:package:foundBy",
-          "value": "github-actions-usage-cataloger"
-        },
-        {
-          "name": "syft:package:type",
-          "value": "github-action"
-        },
-        {
-          "name": "syft:package:metadataType",
-          "value": "github-actions-use-statement"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:ilammy\\/msvc-dev-cmd:ilammy\\/msvc_dev_cmd:v1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:ilammy\\/msvc_dev_cmd:ilammy\\/msvc-dev-cmd:v1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:ilammy\\/msvc_dev_cmd:ilammy\\/msvc_dev_cmd:v1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:ilammy\\/msvc-dev:ilammy\\/msvc-dev-cmd:v1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:ilammy\\/msvc-dev:ilammy\\/msvc_dev_cmd:v1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:ilammy\\/msvc_dev:ilammy\\/msvc-dev-cmd:v1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:ilammy\\/msvc_dev:ilammy\\/msvc_dev_cmd:v1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:ilammy\\/msvc:ilammy\\/msvc-dev-cmd:v1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:ilammy\\/msvc:ilammy\\/msvc_dev_cmd:v1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:location:0:path",
-          "value": "/.github/workflows/cross-platform-builds.yml"
         }
       ]
     },
@@ -9311,11 +9203,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "baae79e4aa9b0dbdd1c0f6b99d2120445974f7a0"
+          "content": "14210ba54858285af76185859041ddc72bb58c29"
         },
         {
           "alg": "SHA-256",
-          "content": "88b18895b6ab0a0abd53560d466c1212aa8f264ebe85dd1de004431197cfda5b"
+          "content": "807f048dba616c8112021ea4be213957b02a382f835023d7443dbf48374cf630"
         }
       ]
     },
