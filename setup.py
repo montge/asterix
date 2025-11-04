@@ -144,10 +144,10 @@ if sys.platform == 'win32':
             matches = glob.glob(lib_pattern)
             for match in matches:
                 basename = os.path.basename(match)
-                # Remove .lib extension and lib prefix to get library name for linker
+                # Remove .lib extension to get library name for MSVC linker
+                # On Windows, MSVC link.exe expects the library basename without extension
+                # e.g., libexpat.lib -> libexpat (NOT expat)
                 libname = os.path.splitext(basename)[0]
-                if libname.startswith('lib'):
-                    libname = libname[3:]  # Remove 'lib' prefix
                 if libname not in found_lib_names:
                     found_lib_names.append(libname)
                     print(f"Found expat library: {basename} -> using linker name '{libname}'")
