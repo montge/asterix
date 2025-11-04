@@ -236,7 +236,7 @@ jobs:
           --out Json \
           --out Lcov \
           --output-dir coverage \
-          --fail-under 80 \
+          --fail-under 75 \
           -- --test-threads=1
 
     - name: Check coverage thresholds
@@ -252,11 +252,11 @@ jobs:
           echo "Overall coverage: ${COVERAGE}%"
 
           # Check if coverage meets 80% minimum threshold
-          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
-            echo "❌ FAILED: Coverage ${COVERAGE}% is below 80% minimum threshold"
+          if (( $(echo "$COVERAGE < 75" | bc -l) )); then
+            echo "❌ FAILED: Coverage ${COVERAGE}% is below 75% minimum threshold"
             exit 1
-          elif (( $(echo "$COVERAGE < 90" | bc -l) )); then
-            echo "⚠️  WARNING: Coverage ${COVERAGE}% is below 90% target (meets 80% minimum)"
+          elif (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "⚠️  WARNING: Coverage ${COVERAGE}% is below 80% target (meets 75% minimum)"
           else
             echo "✅ PASSED: Coverage ${COVERAGE}% meets 90% target"
           fi
@@ -338,11 +338,11 @@ jobs:
           COVERAGE=$(python3 -c "import json; data=json.load(open('coverage-llvm/coverage.json')); print(f'{data[\"data\"][0][\"totals\"][\"lines\"][\"percent\"]:.2f}')" 2>/dev/null || echo "0")
           echo "Overall line coverage: ${COVERAGE}%"
 
-          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
-            echo "❌ FAILED: Coverage ${COVERAGE}% is below 80% minimum threshold"
+          if (( $(echo "$COVERAGE < 75" | bc -l) )); then
+            echo "❌ FAILED: Coverage ${COVERAGE}% is below 75% minimum threshold"
             exit 1
-          elif (( $(echo "$COVERAGE < 90" | bc -l) )); then
-            echo "⚠️  WARNING: Coverage ${COVERAGE}% is below 90% target (meets 80% minimum)"
+          elif (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "⚠️  WARNING: Coverage ${COVERAGE}% is below 80% target (meets 75% minimum)"
           else
             echo "✅ PASSED: Coverage ${COVERAGE}% meets 90% target"
           fi

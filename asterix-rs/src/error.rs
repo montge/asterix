@@ -288,4 +288,84 @@ mod tests {
         assert!(display.contains("42"));
         assert!(display.contains("Missing element"));
     }
+
+    #[test]
+    fn test_all_error_display_variants() {
+        // ConfigNotFound
+        let err = AsterixError::ConfigNotFound("/path/to/config".to_string());
+        assert!(err.to_string().contains("/path/to/config"));
+
+        // InitializationError
+        let err = AsterixError::InitializationError("init failed".to_string());
+        assert!(err.to_string().contains("init failed"));
+
+        // IOError
+        let err = AsterixError::IOError("file error".to_string());
+        assert!(err.to_string().contains("file error"));
+
+        // UnexpectedEOF
+        let err = AsterixError::UnexpectedEOF {
+            offset: 100,
+            expected: 20,
+        };
+        let display = err.to_string();
+        assert!(display.contains("100"));
+        assert!(display.contains("20"));
+
+        // InternalError
+        let err = AsterixError::InternalError("internal".to_string());
+        assert!(err.to_string().contains("internal"));
+
+        // InvalidData
+        let err = AsterixError::InvalidData("bad data".to_string());
+        assert!(err.to_string().contains("bad data"));
+
+        // NullPointer
+        let err = AsterixError::NullPointer("null ptr".to_string());
+        assert!(err.to_string().contains("null ptr"));
+
+        // FFIError
+        let err = AsterixError::FFIError("ffi failed".to_string());
+        assert!(err.to_string().contains("ffi failed"));
+
+        // XMLParseError without line number
+        let err = AsterixError::XMLParseError {
+            file: "test.xml".to_string(),
+            line: None,
+            message: "parse error".to_string(),
+        };
+        let display = err.to_string();
+        assert!(display.contains("test.xml"));
+        assert!(display.contains("parse error"));
+        assert!(!display.contains("line"));
+    }
+
+    #[test]
+    fn test_error_from_conversions() {
+        // From NulError
+        let null_err = std::ffi::CString::new("test\0test").unwrap_err();
+        let asterix_err: AsterixError = null_err.into();
+        assert!(matches!(asterix_err, AsterixError::InvalidData(_)));
+
+        // From Utf8Error
+        let bad_utf8: &[u8] = &[0xFF, 0xFE, 0xFD];
+        let utf8_err = std::str::from_utf8(bad_utf8).unwrap_err();
+        let asterix_err: AsterixError = utf8_err.into();
+        assert!(matches!(asterix_err, AsterixError::FFIError(_)));
+    }
+
+    #[test]
+    fn test_error_helper_constructors() {
+        // initialization_error
+        let err = AsterixError::initialization_error("init failed");
+        assert!(matches!(err, AsterixError::InitializationError(_)));
+
+        // internal_error
+        let err = AsterixError::internal_error("internal");
+        assert!(matches!(err, AsterixError::InternalError(_)));
+
+        // ffi_error
+        let err = AsterixError::ffi_error("ffi failed");
+        assert!(matches!(err, AsterixError::FFIError(_)));
+    }
 }
