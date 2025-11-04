@@ -197,9 +197,7 @@ impl StreamProcessor {
 
             for (cat, count) in cats {
                 let percentage = (*count as f64 / self.total_records as f64) * 100.0;
-                println!(
-                    "  Category {cat:3}: {count:6} records ({percentage:5.1}%)"
-                );
+                println!("  Category {cat:3}: {count:6} records ({percentage:5.1}%)");
             }
         }
 

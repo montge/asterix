@@ -14,9 +14,20 @@
 //! - TC-RS-CAT025-003: Test error handling
 //! - TC-RS-CAT025-004: Test API usage
 
-use asterix::{parse, AsterixError, ParseOptions};
+use asterix::{init_default, parse, AsterixError, ParseOptions};
 
 use std::path::PathBuf;
+use std::sync::Once;
+
+/// Global initialization flag to ensure ASTERIX is initialized only once
+static INIT: Once = Once::new();
+
+/// Ensures ASTERIX is initialized before running tests
+fn ensure_asterix_initialized() {
+    INIT.call_once(|| {
+        init_default().expect("Failed to initialize ASTERIX");
+    });
+}
 
 /// Helper function to get path to sample data
 #[allow(dead_code)]
@@ -30,10 +41,12 @@ fn sample_data_path(filename: &str) -> PathBuf {
 
 #[test]
 fn test_parse_cat025_packet() {
-    //! Test parsing CAT025 packet
-    //!
-    //! Requirement: REQ-HLR-001, REQ-LLR-025-010
-    //! Verification: TC-RS-CAT025-001
+    ensure_asterix_initialized();
+
+    // Test parsing CAT025 packet
+    //
+    // Requirement: REQ-HLR-001, REQ-LLR-025-010
+    // Verification: TC-RS-CAT025-001
 
     // Create minimal valid CAT025 packet
     // Structure: [Category: 25] [Length MSB: 0x00] [Length LSB: 0x03]
@@ -69,10 +82,12 @@ fn test_parse_cat025_packet() {
 
 #[test]
 fn test_parse_cat025_with_data_items() {
-    //! Test parsing CAT025 with data items
-    //!
-    //! Requirement: REQ-LLR-025-010
-    //! Verification: TC-RS-CAT025-002
+    ensure_asterix_initialized();
+
+    // Test parsing CAT025 with data items
+    //
+    // Requirement: REQ-LLR-025-010
+    // Verification: TC-RS-CAT025-002
 
     // Create CAT025 packet with I025/010 (Data Source Identifier)
     // Structure: [Category: 25] [Length MSB: 0x00] [Length LSB: 0x08] [FSPEC: 0x80] [I025/010: 2 bytes]
@@ -113,10 +128,12 @@ fn test_parse_cat025_with_data_items() {
 
 #[test]
 fn test_cat025_error_handling() {
-    //! Test error handling for invalid CAT025 data
-    //!
-    //! Requirement: REQ-HLR-001 (Error handling)
-    //! Verification: TC-RS-CAT025-003
+    ensure_asterix_initialized();
+
+    // Test error handling for invalid CAT025 data
+    //
+    // Requirement: REQ-HLR-001 (Error handling)
+    // Verification: TC-RS-CAT025-003
 
     // Test with empty data
     let empty_data = b"";
@@ -150,10 +167,12 @@ fn test_cat025_error_handling() {
 
 #[test]
 fn test_cat025_api_usage() {
-    //! Test Rust API usage for CAT025
-    //!
-    //! Requirement: REQ-HLR-001
-    //! Verification: TC-RS-CAT025-004
+    ensure_asterix_initialized();
+
+    // Test Rust API usage for CAT025
+    //
+    // Requirement: REQ-HLR-001
+    // Verification: TC-RS-CAT025-004
 
     // Create minimal valid packet
     let cat025_packet = vec![
