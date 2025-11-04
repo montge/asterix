@@ -5,7 +5,7 @@
 //!
 //! Run with: cargo bench
 
-use asterix_decoder::{parse, parse_with_offset, ParseOptions};
+use asterix::{parse, parse_with_offset, ParseOptions};
 use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
 use std::fs;
 use std::path::PathBuf;
@@ -321,7 +321,7 @@ fn bench_serialization(c: &mut Criterion) {
 
     group.bench_function("from_json", |b| {
         b.iter(|| {
-            let records: Vec<asterix_decoder::AsterixRecord> =
+            let records: Vec<asterix::AsterixRecord> =
                 serde_json::from_str(black_box(&json)).expect("Deserialization failed");
             black_box(records)
         })

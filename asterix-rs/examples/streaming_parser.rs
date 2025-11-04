@@ -6,7 +6,7 @@
 //! Usage:
 //!   cargo run --example streaming_parser -- <file> [blocks_per_batch]
 
-use asterix_decoder::{parse_with_offset, ParseOptions};
+use asterix::{parse_with_offset, ParseOptions};
 use std::env;
 use std::fs;
 use std::process;

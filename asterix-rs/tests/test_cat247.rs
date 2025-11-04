@@ -137,9 +137,9 @@ fn test_cat247_error_handling() {
             // May return empty list for invalid category, which is acceptable
             println!("✓ Invalid category handled: {} records", records.len());
         }
-        Err(AsterixError::InvalidCategory(cat)) => {
-            assert_eq!(cat, 255);
-            println!("✓ Correctly rejected invalid category {}", cat);
+        Err(AsterixError::InvalidCategory { category, .. }) => {
+            assert_eq!(category, 255);
+            println!("✓ Correctly rejected invalid category {}", category);
         }
         Err(e) => {
             println!("✓ Rejected invalid data: {:?}", e);
