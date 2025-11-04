@@ -343,7 +343,7 @@ fn test_describe_category() {
             );
         }
         Err(e) => {
-            println!("⚠ describe() returned error: {:?}", e);
+            println!("⚠ describe() returned error: {e:?}");
             // This is acceptable - describe might not be fully implemented yet
         }
     }
