@@ -33,7 +33,7 @@ run-types = ["Tests", "Doctests"]
 fail-under = 80.0
 
 # Engine options
-engine = "llvm"
+engine = "Llvm"
 
 # Verbosity
 verbose = true
