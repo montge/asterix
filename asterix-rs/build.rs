@@ -42,7 +42,21 @@ fn main() {
     // Link against expat
     match target_os.as_str() {
         "windows" => {
-            println!("cargo:rustc-link-lib=expat");
+            // Use vcpkg to find expat on Windows
+            // This correctly handles vcpkg's libexpatMD.lib naming convention
+            // (vcpkg uses libexpatMD.lib instead of expat.lib for x64-windows-static-md triplet)
+            match vcpkg::find_package("expat") {
+                Ok(lib) => {
+                    eprintln!("Successfully found expat via vcpkg:");
+                    eprintln!("  Include paths: {:?}", lib.include_paths);
+                    eprintln!("  Link paths: {:?}", lib.link_paths);
+                }
+                Err(e) => {
+                    eprintln!("Warning: vcpkg could not find expat: {}", e);
+                    eprintln!("Falling back to manual linking (may fail with LNK1181 error)");
+                    println!("cargo:rustc-link-lib=expat");
+                }
+            }
         }
         _ => {
             // Use pkg-config to find expat on Unix-like systems
