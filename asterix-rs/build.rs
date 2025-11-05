@@ -89,47 +89,47 @@ fn compile_cpp_with_ffi_bridge() {
         .flag_if_supported("-fPIC")
         .warnings(false); // Suppress warnings from C++ code
 
-    // On Windows, add vcpkg include/lib paths if CMAKE_TOOLCHAIN_FILE is set
-    // Note: This runs when building ON Windows (cross-compilation aware)
+    // On Windows, use vcpkg to find expat and add include paths
+    // vcpkg-rs automatically detects the correct triplet (e.g., x64-windows-static-md)
     if cfg!(windows) || env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows" {
-        if let Ok(toolchain) = env::var("CMAKE_TOOLCHAIN_FILE") {
-            // Extract vcpkg root from toolchain path
-            // CMAKE_TOOLCHAIN_FILE = D:/a/asterix/asterix/vcpkg/scripts/buildsystems/vcpkg.cmake
-            if let Some(vcpkg_root) = toolchain
-                .strip_suffix("/scripts/buildsystems/vcpkg.cmake")
-                .or_else(|| toolchain.strip_suffix("\\scripts\\buildsystems\\vcpkg.cmake"))
-            {
-                let vcpkg_include = format!("{vcpkg_root}/installed/x64-windows/include");
-                let vcpkg_lib = format!("{vcpkg_root}/installed/x64-windows/lib");
+        match vcpkg::Config::new().find_package("expat") {
+            Ok(lib) => {
+                eprintln!("Successfully found expat via vcpkg during compile phase:");
+                eprintln!("  Include paths: {:?}", lib.include_paths);
+                eprintln!("  Link paths: {:?}", lib.link_paths);
 
-                eprintln!("Using vcpkg paths:");
-                eprintln!("  Include: {vcpkg_include}");
-                eprintln!("  Lib: {vcpkg_lib}");
-
-                bridge.include(&vcpkg_include);
-                println!("cargo:rustc-link-search=native={vcpkg_lib}");
-            } else {
-                eprintln!("Warning: CMAKE_TOOLCHAIN_FILE set but couldn't extract vcpkg root");
-                eprintln!("  Toolchain file: {toolchain}");
+                // Add include paths to the C++ build
+                for include_path in &lib.include_paths {
+                    bridge.include(include_path);
+                }
             }
-        } else {
-            // Try to find vcpkg in common locations
-            eprintln!("Warning: CMAKE_TOOLCHAIN_FILE not set, searching for vcpkg...");
+            Err(e) => {
+                eprintln!("Warning: vcpkg could not find expat during compile phase: {}", e);
+                eprintln!("Attempting manual vcpkg path detection as fallback...");
 
-            // Check VCPKG_ROOT environment variable
-            if let Ok(vcpkg_root) = env::var("VCPKG_ROOT") {
-                let vcpkg_include = format!("{vcpkg_root}/installed/x64-windows/include");
-                let vcpkg_lib = format!("{vcpkg_root}/installed/x64-windows/lib");
+                // Fallback: Try manual path detection using VCPKG_DEFAULT_TRIPLET
+                let triplet = env::var("VCPKG_DEFAULT_TRIPLET")
+                    .unwrap_or_else(|_| "x64-windows-static-md".to_string());
 
-                eprintln!("Found VCPKG_ROOT:");
-                eprintln!("  Include: {vcpkg_include}");
-                eprintln!("  Lib: {vcpkg_lib}");
+                if let Ok(vcpkg_root) = env::var("VCPKG_ROOT")
+                    .or_else(|_| env::var("CMAKE_TOOLCHAIN_FILE")
+                        .map(|p| p.replace("/scripts/buildsystems/vcpkg.cmake", "")
+                                  .replace("\\scripts\\buildsystems\\vcpkg.cmake", "")))
+                {
+                    let vcpkg_include = format!("{}/installed/{}/include", vcpkg_root, triplet);
+                    eprintln!("  Trying fallback include path: {}", vcpkg_include);
 
-                bridge.include(&vcpkg_include);
-                println!("cargo:rustc-link-search=native={vcpkg_lib}");
-            } else {
-                eprintln!("Warning: Neither CMAKE_TOOLCHAIN_FILE nor VCPKG_ROOT set on Windows");
-                eprintln!("  Expat headers may not be found!");
+                    if std::path::Path::new(&vcpkg_include).exists() {
+                        bridge.include(&vcpkg_include);
+                        eprintln!("  ✓ Fallback include path exists and was added");
+                    } else {
+                        eprintln!("  ✗ Fallback include path does not exist!");
+                        eprintln!("  This will likely cause 'expat.h: No such file or directory' errors");
+                    }
+                } else {
+                    eprintln!("  Neither VCPKG_ROOT nor CMAKE_TOOLCHAIN_FILE is set!");
+                    eprintln!("  Cannot add expat include paths - build will likely fail");
+                }
             }
         }
     }
