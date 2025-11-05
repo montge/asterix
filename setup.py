@@ -210,11 +210,12 @@ asterix_module = Extension('_asterix',
                                           else ([] if sys.platform == 'win32'
                                           else ['-lexpat', '-Wl,-z,relro,-z,now']))
 
-f = open('README.rst')
+# Read README.md for PyPI long description
 try:
-    README = f.read()
-finally:
-    f.close()
+    with open('README.md', 'r', encoding='utf-8') as f:
+        README = f.read()
+except FileNotFoundError:
+    README = "ASTERIX decoder/parser for Python"
 
 config_files = [os.path.join('./asterix/config/', f) for f in listdir('./asterix/config/') if
                 os.path.isfile(os.path.join('./asterix/config/', f))]
@@ -230,6 +231,7 @@ setup(name='asterix_decoder',
       description="ASTERIX decoder in Python",
       keywords="asterix, eurocontrol, radar, track, croatiacontrol",
       long_description=README,
+      long_description_content_type="text/markdown",  # Specify markdown format
       ext_modules=[asterix_module],
       # data_files = [('asterix/config', config_files), ('asterix/sample_data', sample_files)],
       include_package_data=True,
