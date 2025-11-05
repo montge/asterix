@@ -149,18 +149,9 @@ python setup.py install
 
 **C++ Executable:**
 ```bash
-cd src
-make install
-cd ..
-```
-
-**Or using CMake:**
-```bash
-mkdir -p build
-cd build
-cmake .. -DBUILD_TESTING=ON -DENABLE_COVERAGE=ON
-make -j$(nproc)
-cd ..
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DENABLE_COVERAGE=ON
+cmake --build build --parallel
+cmake --install build
 ```
 
 #### 5. Verify Installation
