@@ -7,6 +7,7 @@ import json
 import hashlib
 from copy import copy
 from itertools import chain, repeat
+from xml.sax.saxutils import escape as xml_escape
 
 def getNumber(value):
     """Get Natural/Real/Rational number as an object."""
@@ -480,9 +481,9 @@ class Bits(object):
                     else:
                         tell('<Bits from="{}" to="{}">'.format(bitsFrom, bitsTo))
                     with indent:
-                        tell('<BitsShortName>{}</BitsShortName>'.format(self.name))
+                        tell('<BitsShortName>{}</BitsShortName>'.format(xmlquote(self.name)))
                         if item['title']:
-                            tell('<BitsName>{}</BitsName>'.format(item['title']))
+                            tell('<BitsName>{}</BitsName>'.format(xmlquote(item['title'])))
                     tell('</Bits>')
 
                 elif t == 'Table':
@@ -491,9 +492,9 @@ class Bits(object):
                     else:
                         tell('<Bits from="{}" to="{}">'.format(bitsFrom, bitsTo))
                     with indent:
-                        tell('<BitsShortName>{}</BitsShortName>'.format(self.name))
+                        tell('<BitsShortName>{}</BitsShortName>'.format(xmlquote(self.name)))
                         if item['title']:
-                            tell('<BitsName>{}</BitsName>'.format(item['title']))
+                            tell('<BitsName>{}</BitsName>'.format(xmlquote(item['title'])))
                         for key,value in sorted(rule['values']):
                             tell('<BitsValue val="{}">{}</BitsValue>'.format(key, xmlquote(value)))
                     tell('</Bits>')
@@ -507,9 +508,9 @@ class Bits(object):
                     assert bitsFrom != bitsTo
                     tell('<Bits from="{}" to="{}" encode="{}">'.format(bitsFrom, bitsTo, variation))
                     with indent:
-                        tell('<BitsShortName>{}</BitsShortName>'.format(self.name))
+                        tell('<BitsShortName>{}</BitsShortName>'.format(xmlquote(self.name)))
                         if item['title']:
-                            tell('<BitsName>{}</BitsName>'.format(item['title']))
+                            tell('<BitsName>{}</BitsName>'.format(xmlquote(item['title'])))
                     tell('</Bits>')
 
                 elif t == 'Integer':
@@ -520,9 +521,9 @@ class Bits(object):
                     else:
                         tell('<Bits from="{}" to="{}" encode="{}">'.format(bitsFrom, bitsTo, signed))
                     with indent:
-                        tell('<BitsShortName>{}</BitsShortName>'.format(self.name))
+                        tell('<BitsShortName>{}</BitsShortName>'.format(xmlquote(self.name)))
                         if item['title']:
-                            tell('<BitsName>{}</BitsName>'.format(item['title']))
+                            tell('<BitsName>{}</BitsName>'.format(xmlquote(item['title'])))
                         msg = '<BitsUnit'
                         for c in constraints:
                             if c['type'] in ['>=', '>']:
@@ -556,9 +557,9 @@ class Bits(object):
                     else:
                         tell('<Bits from="{}" to="{}" encode="{}">'.format(bitsFrom, bitsTo, signed))
                     with indent:
-                        tell('<BitsShortName>{}</BitsShortName>'.format(self.name))
+                        tell('<BitsShortName>{}</BitsShortName>'.format(xmlquote(self.name)))
                         if item['title']:
-                            tell('<BitsName>{}</BitsName>'.format(item['title']))
+                            tell('<BitsName>{}</BitsName>'.format(xmlquote(item['title'])))
                         msg = '<BitsUnit scale="{}"'.format(scale)
                         for c in constraints:
                             if c['type'] in ['>=', '>']:
@@ -586,9 +587,9 @@ class Bits(object):
                 else:
                     tell('<Bits from="{}" to="{}">'.format(bitsFrom, bitsTo))
                 with indent:
-                    tell('<BitsShortName>{}</BitsShortName>'.format(self.name))
+                    tell('<BitsShortName>{}</BitsShortName>'.format(xmlquote(self.name)))
                     if item['title']:
-                        tell('<BitsName>{}</BitsName>'.format(item['title']))
+                        tell('<BitsName>{}</BitsName>'.format(xmlquote(item['title'])))
                 tell('</Bits>')
 
             renderRule(content, case1, case2)
@@ -756,6 +757,12 @@ class Variable(Variation):
                             continue
                         n = getItemSize(item)
                         bitsTo = bitsFrom - n + 1
+                        # Ensure bitsTo doesn't go negative or below FX bit position
+                        # In Variable structures with FX, minimum bitsTo is 2 (bit 1 is FX)
+                        if bitsTo < 2:
+                            # Item size exceeds available space, clamp to minimum
+                            bitsTo = 2
+                            n = bitsFrom - bitsTo + 1  # Recalculate actual size used
                         Bits(self, item, bitsFrom, bitsTo).render()
                         bitsFrom -= n
                         if bitsFrom <= 1:
@@ -842,8 +849,8 @@ class Compound(Variation):
                             if item:
                                 tell('<Bits bit="{}">'.format(n))
                                 with indent:
-                                    tell('<BitsShortName>{}</BitsShortName>'.format(item['name']))
-                                    tell('<BitsName>{}</BitsName>'.format(item['title']))
+                                    tell('<BitsShortName>{}</BitsShortName>'.format(xmlquote(item['name'])))
+                                    tell('<BitsName>{}</BitsName>'.format(xmlquote(item['title'])))
                                     tell('<BitsPresence>{}</BitsPresence>'.format(bp))
                                 tell('</Bits>')
                                 bp += 1
@@ -873,8 +880,8 @@ class Compound(Variation):
                                 if item:
                                     tell('<Bits bit="{}">'.format(n))
                                     with indent:
-                                        tell('<BitsShortName>{}</BitsShortName>'.format(item['name']))
-                                        tell('<BitsName>{}</BitsName>'.format(item['title']))
+                                        tell('<BitsShortName>{}</BitsShortName>'.format(xmlquote(item['name'])))
+                                        tell('<BitsName>{}</BitsName>'.format(xmlquote(item['title'])))
                                         tell('<BitsPresence>{}</BitsPresence>'.format(bp))
                                     tell('</Bits>')
                                     bp += 1
