@@ -115,10 +115,12 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <Bits from="8" to="1" encode="ascii">
-                    <BitsShortName>VS</BitsShortName>
-                    <BitsName>Video Summary</BitsName>
-                </Bits>
+                <Fixed length="1">
+                    <Bits from="8" to="1" encode="ascii">
+                        <BitsShortName>VS</BitsShortName>
+                        <BitsName>Video Summary</BitsName>
+                    </Bits>
+                </Fixed>
             </Repetitive>
         </DataItemFormat>
     </DataItem>
@@ -239,12 +241,12 @@
             <Fixed length="5">
                 <Bits from="40" to="25" encode="unsigned">
                     <BitsShortName>NBVB</BitsShortName>
-                    <BitsName>Number of 'valid' Octets</BitsName>
+                    <BitsName>Number of &apos;valid&apos; Octets</BitsName>
                     <BitsUnit></BitsUnit>
                 </Bits>
                 <Bits from="24" to="1" encode="unsigned">
                     <BitsShortName>NBCELLS</BitsShortName>
-                    <BitsName>Number of 'valid' Cells</BitsName>
+                    <BitsName>Number of &apos;valid&apos; Cells</BitsName>
                     <BitsUnit></BitsUnit>
                 </Bits>
             </Fixed>
@@ -261,10 +263,12 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <Bits from="32" to="1">
-                    <BitsShortName>VBLDV</BitsShortName>
-                    <BitsName>Video Block Low Data Volume</BitsName>
-                </Bits>
+                <Fixed length="4">
+                    <Bits from="32" to="1">
+                        <BitsShortName>VBLDV</BitsShortName>
+                        <BitsName>Video Block Low Data Volume</BitsName>
+                    </Bits>
+                </Fixed>
             </Repetitive>
         </DataItemFormat>
         <DataItemNote>
@@ -289,10 +293,12 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <Bits from="512" to="1">
-                    <BitsShortName>VBMDV</BitsShortName>
-                    <BitsName>Video Block Medium Data Volume</BitsName>
-                </Bits>
+                <Fixed length="64">
+                    <Bits from="512" to="1">
+                        <BitsShortName>VBMDV</BitsShortName>
+                        <BitsName>Video Block Medium Data Volume</BitsName>
+                    </Bits>
+                </Fixed>
             </Repetitive>
         </DataItemFormat>
         <DataItemNote>
@@ -317,10 +323,12 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <Bits from="2048" to="1">
-                    <BitsShortName>VBHDV</BitsShortName>
-                    <BitsName>Video Block High Data Volume</BitsName>
-                </Bits>
+                <Fixed length="256">
+                    <Bits from="2048" to="1">
+                        <BitsShortName>VBHDV</BitsShortName>
+                        <BitsName>Video Block High Data Volume</BitsName>
+                    </Bits>
+                </Fixed>
             </Repetitive>
         </DataItemFormat>
         <DataItemNote>

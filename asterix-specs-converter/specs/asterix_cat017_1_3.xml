@@ -253,10 +253,12 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <Bits from="24" to="1">
-                    <BitsShortName>MSAL</BitsShortName>
-                    <BitsName>Mode S Address List</BitsName>
-                </Bits>
+                <Fixed length="3">
+                    <Bits from="24" to="1">
+                        <BitsShortName>MSAL</BitsShortName>
+                        <BitsName>Mode S Address List</BitsName>
+                    </Bits>
+                </Fixed>
             </Repetitive>
         </DataItemFormat>
         <DataItemNote>

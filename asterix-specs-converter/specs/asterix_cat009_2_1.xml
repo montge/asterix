@@ -213,7 +213,7 @@
                         <BitsName>Scaling Factor</BitsName>
                         <BitsUnit></BitsUnit>
                     </Bits>
-                    <Bits from="3" to="1">
+                    <Bits from="3" to="2">
                         <BitsShortName>R</BitsShortName>
                         <BitsName>Current Reduction Stage in Use</BitsName>
                     </Bits>
@@ -225,7 +225,7 @@
                     </Bits>
                 </Fixed>
                 <Fixed length="1">
-                    <Bits from="8" to="-6">
+                    <Bits from="8" to="2">
                         <BitsShortName>Q</BitsShortName>
                         <BitsName>Processing Parameters</BitsName>
                     </Bits>

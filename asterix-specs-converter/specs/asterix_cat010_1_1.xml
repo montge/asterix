@@ -854,7 +854,7 @@
                 </Bits>
                 <Bits from="16" to="1" encode="signed">
                     <BitsShortName>COVXY</BitsShortName>
-                    <BitsName>Covariance in Two’s Complement Form</BitsName>
+                    <BitsName>Covariance in Two&apos;s Complement Form</BitsName>
                     <BitsUnit scale="0.25">m</BitsUnit>
                 </Bits>
             </Fixed>

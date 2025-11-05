@@ -300,10 +300,12 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <Bits from="8" to="1">
-                    <BitsShortName>CS</BitsShortName>
-                    <BitsName>Contributing Sensors</BitsName>
-                </Bits>
+                <Fixed length="1">
+                    <Bits from="8" to="1">
+                        <BitsShortName>CS</BitsShortName>
+                        <BitsName>Contributing Sensors</BitsName>
+                    </Bits>
+                </Fixed>
             </Repetitive>
         </DataItemFormat>
         <DataItemNote>

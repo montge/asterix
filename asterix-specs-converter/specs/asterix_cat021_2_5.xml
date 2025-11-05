@@ -823,17 +823,17 @@
                         </Bits>
                         <Bits from="112" to="97" encode="signed">
                             <BitsShortName>ALT</BitsShortName>
-                            <BitsName>Altitude in Two's Complement Form</BitsName>
+                            <BitsName>Altitude in Two&apos;s Complement Form</BitsName>
                             <BitsUnit scale="10.0" min="-1500" max="150000">ft</BitsUnit>
                         </Bits>
                         <Bits from="96" to="73" encode="signed">
                             <BitsShortName>LAT</BitsShortName>
-                            <BitsName>In WGS.84 in Two's Complement</BitsName>
+                            <BitsName>In WGS.84 in Two&apos;s Complement</BitsName>
                             <BitsUnit scale="0.000021457672119140625" min="-90" max="90">deg</BitsUnit>
                         </Bits>
                         <Bits from="72" to="49" encode="signed">
                             <BitsShortName>LON</BitsShortName>
-                            <BitsName>In WGS.84 in Two's Complement</BitsName>
+                            <BitsName>In WGS.84 in Two&apos;s Complement</BitsName>
                             <BitsUnit scale="0.000021457672119140625" min="-180" max="180">deg</BitsUnit>
                         </Bits>
                         <Bits from="48" to="45">
@@ -1582,7 +1582,9 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <BDS/>
+                <Fixed length="8">
+                    <BDS/>
+                </Fixed>
             </Repetitive>
         </DataItemFormat>
         <DataItemNote>

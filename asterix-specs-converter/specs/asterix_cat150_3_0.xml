@@ -440,12 +440,12 @@
                 <Fixed length="6">
                     <Bits from="48" to="25" encode="signed">
                         <BitsShortName>LAT</BitsShortName>
-                        <BitsName>Latitude in WGS.84 in Two's Complement Form</BitsName>
+                        <BitsName>Latitude in WGS.84 in Two&apos;s Complement Form</BitsName>
                         <BitsUnit scale="0.000021457672119140625" min="-90" max="90">deg</BitsUnit>
                     </Bits>
                     <Bits from="24" to="1" encode="signed">
                         <BitsShortName>LON</BitsShortName>
-                        <BitsName>Longitude in WGS.84 in Two's Complement Form</BitsName>
+                        <BitsName>Longitude in WGS.84 in Two&apos;s Complement Form</BitsName>
                         <BitsUnit scale="0.000021457672119140625" min="-180" max="180">deg</BitsUnit>
                     </Bits>
                 </Fixed>
@@ -489,10 +489,12 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <Bits from="24" to="1" encode="ascii">
-                    <BitsShortName>RPFL</BitsShortName>
-                    <BitsName>Route Points, Flight Level</BitsName>
-                </Bits>
+                <Fixed length="3">
+                    <Bits from="24" to="1" encode="ascii">
+                        <BitsShortName>RPFL</BitsShortName>
+                        <BitsName>Route Points, Flight Level</BitsName>
+                    </Bits>
+                </Fixed>
             </Repetitive>
         </DataItemFormat>
         <DataItemNote>
@@ -511,10 +513,12 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <Bits from="24" to="1" encode="ascii">
-                    <BitsShortName>RPRFL</BitsShortName>
-                    <BitsName>Route Points, Requested Flight Level</BitsName>
-                </Bits>
+                <Fixed length="3">
+                    <Bits from="24" to="1" encode="ascii">
+                        <BitsShortName>RPRFL</BitsShortName>
+                        <BitsName>Route Points, Requested Flight Level</BitsName>
+                    </Bits>
+                </Fixed>
             </Repetitive>
         </DataItemFormat>
         <DataItemNote>
@@ -530,10 +534,12 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <Bits from="32" to="1" encode="ascii">
-                    <BitsShortName>RPS</BitsShortName>
-                    <BitsName>Route Points, Speed</BitsName>
-                </Bits>
+                <Fixed length="4">
+                    <Bits from="32" to="1" encode="ascii">
+                        <BitsShortName>RPS</BitsShortName>
+                        <BitsName>Route Points, Speed</BitsName>
+                    </Bits>
+                </Fixed>
             </Repetitive>
         </DataItemFormat>
         <DataItemNote>
@@ -570,10 +576,12 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <Bits from="8" to="1" encode="ascii">
-                    <BitsShortName>F1</BitsShortName>
-                    <BitsName>Field 18</BitsName>
-                </Bits>
+                <Fixed length="1">
+                    <Bits from="8" to="1" encode="ascii">
+                        <BitsShortName>F1</BitsShortName>
+                        <BitsName>Field 18</BitsName>
+                    </Bits>
+                </Fixed>
             </Repetitive>
         </DataItemFormat>
     </DataItem>
@@ -670,10 +678,12 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <Bits from="16" to="1">
-                    <BitsShortName>NDP</BitsShortName>
-                    <BitsName>Newly De-correlated Plans</BitsName>
-                </Bits>
+                <Fixed length="2">
+                    <Bits from="16" to="1">
+                        <BitsShortName>NDP</BitsShortName>
+                        <BitsName>Newly De-correlated Plans</BitsName>
+                    </Bits>
+                </Fixed>
             </Repetitive>
         </DataItemFormat>
         <DataItemNote>
