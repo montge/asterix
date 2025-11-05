@@ -3,8 +3,8 @@ theme: jekyll-theme-cayman
 # Site settings
 title: ASTERIX Decoder Documentation
 description: Multi-language ASTERIX protocol decoder/parser for ATM surveillance data
-baseurl: "/asterix"
-url: "https://montge.github.io"
+baseurl: ""  # Empty when deploying from docs/ directory
+url: "https://montge.github.io/asterix"
 
 # Build settings
 markdown: kramdown
