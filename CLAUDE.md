@@ -148,42 +148,32 @@ ASTERIX_PATH = os.getenv("ASTERIX_PATH", ".")
   - MSVC 2019 v16.0+ or later (Visual Studio 2019/2022, uses C++20 - MSVC doesn't fully support C++23 yet)
   - AppleClang 15.0+ (Xcode 15 or later, uses C++23)
 - libexpat-devel (for XML parsing)
-- CMake 3.20+ or GNU Make
+- CMake 3.20+
 
-**Using CMake (Primary method, recommended):**
+> **Note:** GNU Make build files were removed in v2.8.10. CMake is now the only supported build system.
+
+**Using CMake:**
 ```bash
-# Out-of-source build (recommended)
-mkdir build && cd build
-cmake ..
-make
-make install      # Installs to bin/asterix (or CMAKE_INSTALL_PREFIX)
+# Configure and build (out-of-source build)
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
 
-# In-source build (alternative)
-cmake .
-make
+# Install to install/ directory
+cmake --install build
 
-# The executable will be in build/bin/asterix or install/asterix
+# Debug build
+cmake -B build-debug -DCMAKE_BUILD_TYPE=Debug
+cmake --build build-debug --parallel
+
+# The executable will be in install/bin/asterix
 ```
 
-**Using GNU Make (Alternative, legacy systems):**
-```bash
-# Build from src/ directory
-cd src
-make              # Production build
-make install      # Install to install/ directory
-make debug        # Debug build
-make debug install
-make clean
-make test         # Run test suite (from src/)
-
-# The executable will be created at install/asterix
-```
-
-**Why CMake is preferred:**
-- Modern, cross-platform build system
-- Used by Python module (setup.py) and Rust crate (build.rs)
-- Better dependency management and feature detection
-- Out-of-source builds keep source tree clean
+**Why CMake:**
+- ✅ Cross-platform (Linux, Windows, macOS)
+- ✅ Out-of-source builds (keeps source tree clean)
+- ✅ Used by Python module (setup.py) and Rust crate (build.rs)
+- ✅ Better dependency management and feature detection
+- ✅ Modern IDE integration (VS Code, CLion, Visual Studio)
 
 **C++ Standard (Platform-Specific):**
 - **C++ Executable & CMake builds:** 
