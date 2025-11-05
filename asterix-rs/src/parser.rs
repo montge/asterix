@@ -9,6 +9,10 @@ use crate::types::{AsterixRecord, DataItem, ParseOptions, ParseResult, ParsedVal
 
 use std::collections::BTreeMap;
 
+// Safety limits for FFI boundary validation
+const MAX_ASTERIX_MESSAGE_SIZE: usize = 65536; // 64 KB - reasonable max for ASTERIX message
+const MAX_BLOCKS_PER_CALL: usize = 10000; // Maximum blocks to parse in single call
+
 /// Parse raw ASTERIX data into structured records
 ///
 /// This is the main entry point for parsing ASTERIX data. It accepts a byte slice
@@ -51,8 +55,17 @@ use std::collections::BTreeMap;
 /// - Requested category is not defined
 /// - C++ parsing layer encounters an error
 pub fn parse(data: &[u8], options: ParseOptions) -> Result<Vec<AsterixRecord>> {
+    // CRITICAL-005 FIX: Validate input data length
     if data.is_empty() {
         return Err(AsterixError::InvalidData("Empty input data".to_string()));
+    }
+
+    if data.len() > MAX_ASTERIX_MESSAGE_SIZE {
+        return Err(AsterixError::InvalidData(format!(
+            "Input data too large: {} bytes (maximum {} bytes)",
+            data.len(),
+            MAX_ASTERIX_MESSAGE_SIZE
+        )));
     }
 
     unsafe {
@@ -116,8 +129,29 @@ pub fn parse_with_offset(
     blocks_count: usize,
     options: ParseOptions,
 ) -> Result<ParseResult> {
+    // CRITICAL-005 FIX: Validate input data length (same as parse())
     if data.is_empty() {
         return Err(AsterixError::InvalidData("Empty input data".to_string()));
+    }
+
+    if data.len() > MAX_ASTERIX_MESSAGE_SIZE {
+        return Err(AsterixError::InvalidData(format!(
+            "Input data too large: {} bytes (maximum {} bytes)",
+            data.len(),
+            MAX_ASTERIX_MESSAGE_SIZE
+        )));
+    }
+
+    // CRITICAL-004 FIX: Validate offset fits in u32 before casting
+    if offset > u32::MAX as usize {
+        return Err(AsterixError::ParseError {
+            offset,
+            message: format!(
+                "Offset {} exceeds FFI maximum (u32::MAX = {})",
+                offset,
+                u32::MAX
+            ),
+        });
     }
 
     if offset >= data.len() {
@@ -127,12 +161,33 @@ pub fn parse_with_offset(
         });
     }
 
+    // CRITICAL-004 FIX: Validate blocks_count fits in u32 before casting
+    if blocks_count > u32::MAX as usize {
+        return Err(AsterixError::InvalidData(format!(
+            "blocks_count {} exceeds FFI maximum (u32::MAX = {})",
+            blocks_count,
+            u32::MAX
+        )));
+    }
+
+    // HIGH-002 equivalent: Limit blocks_count to reasonable maximum
+    if blocks_count > MAX_BLOCKS_PER_CALL {
+        return Err(AsterixError::InvalidData(format!(
+            "blocks_count {} exceeds maximum ({})",
+            blocks_count, MAX_BLOCKS_PER_CALL
+        )));
+    }
+
     unsafe {
+        // CRITICAL-004 FIX: Safe to cast after validation
+        let offset_u32 = offset as u32;
+        let blocks_count_u32 = blocks_count as u32;
+
         let data_ptr = ffi::ffi::asterix_parse_offset(
             data.as_ptr(),
             data.len(),
-            offset as u32,
-            blocks_count as u32,
+            offset_u32,
+            blocks_count_u32,
             options.verbose,
         );
 
@@ -214,6 +269,13 @@ unsafe fn convert_asterix_data(
 unsafe fn convert_data_block(
     block_ptr: *const ffi::ffi::DataBlockWrapper,
 ) -> Result<AsterixRecord> {
+    // HIGH-003 FIX: Validate block_ptr is not null
+    if block_ptr.is_null() {
+        return Err(AsterixError::NullPointer(
+            "C++ returned null data block".to_string(),
+        ));
+    }
+
     let category = ffi::ffi::asterix_block_category(block_ptr);
     let length = ffi::ffi::asterix_block_length(block_ptr);
     let timestamp_ms = ffi::ffi::asterix_block_timestamp_ms(block_ptr);
