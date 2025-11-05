@@ -96,6 +96,8 @@ asterix-rs/Cargo.lock
 
 # Test outputs
 valgrind.result
+build_output.txt
+test_output.txt
 
 # IDE
 .vscode/
@@ -112,6 +114,13 @@ sbom/*.bak
 # Virtual environment
 venv/
 .venv/
+
+# vcpkg dependency directory (user-specific)
+vcpkg/
+
+# Personal development scripts (user-specific)
+build_rust*.ps1
+test_rust*.ps1
 
 # Interim work products and agent reports
 *_REPORT.md
