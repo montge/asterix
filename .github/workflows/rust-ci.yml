@@ -186,21 +186,18 @@ jobs:
         cd asterix-rs
         cargo install cargo-outdated --locked || true
         cargo outdated --exit-code 1 || echo "⚠️  Some dependencies are outdated"
-      continue-on-error: true
 
     - name: Security audit
       run: |
         cd asterix-rs
         cargo install cargo-audit --locked || true
         cargo audit
-      continue-on-error: true
 
     - name: Check unused dependencies
       run: |
         cd asterix-rs
         cargo install cargo-udeps --locked || true
         cargo +nightly udeps --all-targets
-      continue-on-error: true
 
   # =============================================================================
   # CODE COVERAGE (TARPAULIN)
