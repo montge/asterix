@@ -80,8 +80,10 @@ dist/
 
 # Install directory build outputs (keep only test/sample_data/sample_output)
 install/asterix*
+install/config
 install/config/
 install/coverage_html/
+install/include/
 install/lib/
 install/bin/
 install/share/
