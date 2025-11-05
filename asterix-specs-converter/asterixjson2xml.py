@@ -784,27 +784,47 @@ class Repetitive(Variation):
         tell('<Repetitive>')
         items = variation.get('items')
         if items is None:
-            # Single item repetitive - must wrap in Fixed
+            # Single item repetitive - check if it's BDS
             item = self.item
-            bitSize = getItemSize(item)
-            bitsFrom = bitSize
-            bitsTo = bitsFrom - bitSize + 1
-            with indent:
-                tell('<Fixed length="{}">'.format(byteSize))
+            content_type = variation.get('rule', {}).get('content', {}).get('type')
+
+            # Check if BDS type
+            is_bds = (content_type == 'Bds')
+
+            if is_bds:
+                # BDS should NOT be wrapped in Fixed
                 with indent:
-                    Bits(self, item, bitsFrom, bitsTo).render()
-                tell('</Fixed>')
-        else:
-            with indent:
-                tell('<Fixed length="{}">'.format(byteSize))
+                    tell('<BDS/>')
+            else:
+                # Wrap other types in Fixed
+                bitSize = getItemSize(item)
                 bitsFrom = bitSize
-                for item in items:
-                    n = getItemSize(item)
-                    bitsTo = bitsFrom - n + 1
+                bitsTo = bitsFrom - bitSize + 1
+                with indent:
+                    tell('<Fixed length="{}">'.format(byteSize))
                     with indent:
                         Bits(self, item, bitsFrom, bitsTo).render()
-                    bitsFrom -= n
-                tell('</Fixed>')
+                    tell('</Fixed>')
+        else:
+            # Check if this is a BDS-only repetitive (defensive access)
+            # For BDS, the variation itself has the Bds content type
+            is_bds_only = (variation.get('rule', {}).get('content', {}).get('type') == 'Bds')
+
+            with indent:
+                if is_bds_only:
+                    # BDS items should NOT be wrapped in Fixed
+                    # Example: CAT011/I380/MBS - <Repetitive><BDS/></Repetitive>
+                    tell('<BDS/>')
+                else:
+                    tell('<Fixed length="{}">'.format(byteSize))
+                    bitsFrom = bitSize
+                    for item in items:
+                        n = getItemSize(item)
+                        bitsTo = bitsFrom - n + 1
+                        with indent:
+                            Bits(self, item, bitsFrom, bitsTo).render()
+                        bitsFrom -= n
+                    tell('</Fixed>')
         tell('</Repetitive>')
 
 class Explicit(Variation):

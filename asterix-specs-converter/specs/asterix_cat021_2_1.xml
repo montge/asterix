@@ -1520,9 +1520,7 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <Fixed length="8">
-                    <BDS/>
-                </Fixed>
+                <BDS/>
             </Repetitive>
         </DataItemFormat>
         <DataItemNote>
