@@ -104,18 +104,22 @@ fn compile_cpp_with_ffi_bridge() {
                 }
             }
             Err(e) => {
-                eprintln!("Warning: vcpkg could not find expat during compile phase: {}", e);
+                eprintln!(
+                    "Warning: vcpkg could not find expat during compile phase: {}",
+                    e
+                );
                 eprintln!("Attempting manual vcpkg path detection as fallback...");
 
                 // Fallback: Try manual path detection using VCPKG_DEFAULT_TRIPLET
                 let triplet = env::var("VCPKG_DEFAULT_TRIPLET")
                     .unwrap_or_else(|_| "x64-windows-static-md".to_string());
 
-                if let Ok(vcpkg_root) = env::var("VCPKG_ROOT")
-                    .or_else(|_| env::var("CMAKE_TOOLCHAIN_FILE")
-                        .map(|p| p.replace("/scripts/buildsystems/vcpkg.cmake", "")
-                                  .replace("\\scripts\\buildsystems\\vcpkg.cmake", "")))
-                {
+                if let Ok(vcpkg_root) = env::var("VCPKG_ROOT").or_else(|_| {
+                    env::var("CMAKE_TOOLCHAIN_FILE").map(|p| {
+                        p.replace("/scripts/buildsystems/vcpkg.cmake", "")
+                            .replace("\\scripts\\buildsystems\\vcpkg.cmake", "")
+                    })
+                }) {
                     let vcpkg_include = format!("{}/installed/{}/include", vcpkg_root, triplet);
                     eprintln!("  Trying fallback include path: {}", vcpkg_include);
 
@@ -124,7 +128,9 @@ fn compile_cpp_with_ffi_bridge() {
                         eprintln!("  ✓ Fallback include path exists and was added");
                     } else {
                         eprintln!("  ✗ Fallback include path does not exist!");
-                        eprintln!("  This will likely cause 'expat.h: No such file or directory' errors");
+                        eprintln!(
+                            "  This will likely cause 'expat.h: No such file or directory' errors"
+                        );
                     }
                 } else {
                     eprintln!("  Neither VCPKG_ROOT nor CMAKE_TOOLCHAIN_FILE is set!");
