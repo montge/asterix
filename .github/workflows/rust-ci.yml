@@ -574,15 +574,15 @@ jobs:
   # MINIMUM SUPPORTED RUST VERSION (MSRV)
   # =============================================================================
   msrv:
-    name: Check MSRV (1.70)
+    name: Check MSRV (1.75)
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v5
 
-    - name: Install Rust 1.70
-      uses: dtolnay/rust-toolchain@1.70
+    - name: Install Rust 1.75
+      uses: dtolnay/rust-toolchain@1.75
 
     - name: Install dependencies
       run: |
@@ -593,7 +593,7 @@ jobs:
       run: |
         cd asterix-rs
         cargo check --all-features
-      continue-on-error: true
+      continue-on-error: false
 
   # =============================================================================
   # COMPARE PERFORMANCE WITH PYTHON
