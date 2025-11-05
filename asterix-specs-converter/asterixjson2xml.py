@@ -75,8 +75,15 @@ def getVariationSize(variation):
 
 def getItemSize(item):
     """Determine the size of an item with apriory known size."""
-    if item['spare']:
-        return item['length']
+    # Handle None items (optional/spare fields in Extended structures)
+    if item is None:
+        return 0
+    if item.get('spare'):
+        return item.get('length', 0)
+    # If no variation field, item may not be fully converted - return 0 as safe default
+    if 'variation' not in item:
+        # This can happen with unconverted items - log warning would be good in production
+        return 0
     return getVariationSize(item['variation'])
 
 accumulator = []
@@ -97,6 +104,281 @@ def replaceString(s, mapping):
     for (key,val) in mapping.items():
         s = s.replace(key, val)
     return s
+
+def evaluate_constraint_value(value_obj):
+    """Evaluate a constraint value which can be Integer, Div, Pow, etc.
+
+    Constraint values can have various types:
+    - Integer: {type: "Integer", value: 123}
+    - Div: {type: "Div", numerator: {...}, denominator: {...}}
+    - Pow: {type: "Pow", base: 2, exponent: 10}
+    """
+    vtype = value_obj.get('type')
+
+    if vtype == 'Integer':
+        return value_obj.get('value', 0)
+    elif vtype == 'Div':
+        numerator = evaluate_constraint_value(value_obj.get('numerator', {}))
+        denominator = evaluate_constraint_value(value_obj.get('denominator', {}))
+        if denominator != 0:
+            return numerator / denominator
+        return 0
+    elif vtype == 'Pow':
+        base = value_obj.get('base', 0)
+        exponent = value_obj.get('exponent', 0)
+        return base ** exponent
+    else:
+        # Unknown type, try to get 'value' field as fallback
+        return value_obj.get('value', 0)
+
+def convert_rule_to_variation(item):
+    """Convert rule-based format (from convertspec) to variation format.
+
+    This function bridges the new JSON schema (post-July 2024) with the
+    variation-based format that the XML generator expects.
+    """
+    # Handle None items (can occur in Extended/Variable structures)
+    if item is None:
+        return None
+
+    if item.get('spare'):
+        return item
+
+    if 'rule' not in item:
+        return item
+
+    rule = item['rule']
+    rule_type = rule.get('type')
+
+    if rule_type == 'ContextFree':
+        value = rule.get('value', {})
+        variation_type = value.get('type')
+
+        if variation_type == 'Element':
+            # Simple element with size and content rule
+            size = value.get('size', 0)
+            content_rule = value.get('rule', {})
+            variation = {
+                'type': 'Element',
+                'size': size
+            }
+
+            # Add content information and normalize rule format
+            rule_type = content_rule.get('type')
+
+            if rule_type == 'ContextFree':
+                content_value = content_rule.get('value', {})
+                content_type = content_value.get('type')
+
+                if content_type == 'Table':
+                    # Normalize: convert 'value' to 'content' for compatibility
+                    variation['rule'] = {
+                        'type': content_rule['type'],
+                        'content': content_value
+                    }
+                elif content_type == 'Quantity':
+                    # Quantity needs lsb → scaling + fractionalBits conversion
+                    # lsb format: 1 / 2^n means fractionalBits=n, scaling=1
+                    lsb = content_value.get('lsb', {})
+
+                    # Default values if lsb is simple
+                    fractional_bits = 0
+                    scaling = {'type': 'Integer', 'value': 1}
+
+                    # Parse lsb structure: typically 1 / 2^n
+                    if lsb.get('type') == 'Div':
+                        numerator = lsb.get('numerator', {})
+                        denominator = lsb.get('denominator', {})
+
+                        # Extract scaling (numerator)
+                        scaling = numerator
+
+                        # Extract fractional bits from denominator (2^n)
+                        if denominator.get('type') == 'Pow' and denominator.get('base') == 2:
+                            fractional_bits = denominator.get('exponent', 0)
+                    elif lsb.get('type') == 'Integer':
+                        # Simple integer scaling
+                        scaling = lsb
+                        fractional_bits = 0
+
+                    # Create normalized content
+                    normalized_content = {
+                        'type': 'Quantity',
+                        'scaling': scaling,
+                        'fractionalBits': fractional_bits,
+                        'signed': content_value.get('signed', False),
+                        'unit': content_value.get('unit', ''),
+                        'constraints': content_value.get('constraints', [])
+                    }
+
+                    variation['rule'] = {
+                        'type': content_rule['type'],
+                        'content': normalized_content
+                    }
+                elif content_type in ['String', 'Integer', 'Raw', 'Bds']:
+                    # Normalize: convert 'value' to 'content' for compatibility
+                    # Bds = Mode S BDS (Broadcast Data Services) register data
+                    variation['rule'] = {
+                        'type': content_rule['type'],
+                        'content': content_value
+                    }
+            elif rule_type == 'Dependent':
+                # Dependent rules (context-dependent values)
+                # Extract size from default case (all cases should have same size)
+                default_case = content_rule.get('default', {})
+                if 'size' in default_case:
+                    variation['size'] = default_case['size']
+                # Pass through as-is - rendering code handles Dependent logic
+                variation['rule'] = content_rule
+            elif not content_rule or not rule_type:
+                # No content rule - add default Raw rule
+                # This handles simple Elements with no metadata (just size)
+                variation['rule'] = {
+                    'type': 'ContextFree',
+                    'content': {'type': 'Raw'}
+                }
+
+            item['variation'] = variation
+
+        elif variation_type == 'Group':
+            # Group of items (Fixed length composite)
+            items = value.get('items', [])
+            converted_items = []
+            for i in items:
+                if i is None:
+                    converted_items.append(None)
+                else:
+                    converted_items.append(convert_rule_to_variation(i))
+            item['variation'] = {
+                'type': 'Group',
+                'items': converted_items
+            }
+
+        elif variation_type == 'Extended':
+            # Variable length with FX extension
+            # Extended items pack fields into 8-bit (1-byte) chunks
+            # First chunk: 7 bits of data + 1 FX bit = 8 bits total
+            # Each extent: 7 bits of data + 1 FX bit = 8 bits total
+            items = value.get('items', [])
+            converted_items = []
+            for i in items:
+                if i is None:
+                    converted_items.append(None)
+                else:
+                    converted_items.append(convert_rule_to_variation(i))
+
+            # For Extended/Variable items:
+            # - first: number of BITS in first Fixed segment (typically 8 = 1 byte)
+            # - extents: number of BITS in each extension segment (typically 8 = 1 byte)
+            # The FX bit is implicit and handled by the rendering code
+            item['variation'] = {
+                'type': 'Extended',
+                'first': 8,      # First segment is always 1 byte (8 bits)
+                'extents': 8,    # Each extension is always 1 byte (8 bits)
+                'items': converted_items
+            }
+
+        elif variation_type == 'Repetitive':
+            # Repetitive structure - but RepetitiveFx should be Extended!
+            rep_info = value.get('rep', {})
+            rep_type = rep_info.get('type')
+
+            if rep_type == 'Fx':
+                # RepetitiveFx → Extended (Variable with FX extension)
+                # This is like item 030 - repetitive with FX bit
+                rep_variation = value.get('variation', {})
+
+                # The rep_variation is already a variation dict (has type, size, rule)
+                # We need to create an item dict to wrap it
+                # First, normalize the rule format (value → content) if needed
+                if 'rule' in rep_variation:
+                    rule = rep_variation['rule']
+                    if 'value' in rule and 'content' not in rule:
+                        rule['content'] = rule['value']
+
+                # Create a proper item structure for the Extended items list
+                extended_item = {
+                    'name': item.get('name', ''),
+                    'title': item.get('title', ''),
+                    'spare': False,
+                    'variation': rep_variation  # Use the variation as-is
+                }
+
+                # Wrap as Extended structure
+                item['variation'] = {
+                    'type': 'Extended',
+                    'first': 8,      # First segment is 1 byte
+                    'extents': 8,    # Extensions are 1 byte each
+                    'items': [extended_item]  # Properly structured item
+                }
+            else:
+                # Regular Repetitive (RepetitiveRegular)
+                rep_variation = value.get('variation', {})
+
+                # rep_variation is a variation dict (Group, Element, etc), not an item dict
+                # We need to convert the items inside it based on its type
+                converted_variation = dict(rep_variation)  # shallow copy
+
+                var_type = rep_variation.get('type')
+                if var_type == 'Group':
+                    # Convert group items recursively
+                    items = rep_variation.get('items', [])
+                    converted_items = []
+                    for i in items:
+                        if i is None:
+                            converted_items.append(None)
+                        else:
+                            converted_items.append(convert_rule_to_variation(i))
+                    converted_variation['items'] = converted_items
+                elif var_type == 'Element':
+                    # Element variation might have a nested rule that needs normalization
+                    if 'rule' in rep_variation:
+                        rule = rep_variation['rule']
+                        if 'value' in rule and 'content' not in rule:
+                            rule['content'] = rule['value']
+
+                item['variation'] = {
+                    'type': 'Repetitive',
+                    'variation': converted_variation
+                }
+
+        elif variation_type == 'Explicit':
+            # Explicit (length-prefixed)
+            item['variation'] = {
+                'type': 'Explicit'
+            }
+
+        elif variation_type == 'Compound':
+            # Compound with FSPEC
+            fspec = value.get('fspec', 0)
+            items = value.get('items', [])
+            # Items can be None for optional compound items
+            converted_items = []
+            for i in items:
+                if i is None:
+                    converted_items.append(None)
+                else:
+                    converted_items.append(convert_rule_to_variation(i))
+            item['variation'] = {
+                'type': 'Compound',
+                'fspec': fspec,
+                'items': converted_items
+            }
+
+    elif rule_type == 'Dependent':
+        # Top-level Dependent rules (context-dependent items)
+        # These are Elements with Dependent content
+        # Extract size from default case
+        default_case = rule.get('default', {})
+        size = default_case.get('size', 0)
+
+        item['variation'] = {
+            'type': 'Element',
+            'size': size,
+            'rule': rule
+        }
+
+    return item
 
 def replaceOutput(s):
     return replaceString(s, {
@@ -178,6 +460,12 @@ class Bits(object):
                 content = variation['rule']
             elif vt == 'Repetitive':
                 content = variation['variation']['rule']
+            elif vt == 'Group':
+                # Group items have multiple subitems, treat as Raw for bit rendering
+                content = {
+                    'type': 'ContextFree',
+                    'content': {'type': 'Raw'}
+                }
             else:
                 raise Exception('unexpected variation type {}'.format(vt))
 
@@ -274,11 +562,11 @@ class Bits(object):
                         msg = '<BitsUnit scale="{}"'.format(scale)
                         for c in constraints:
                             if c['type'] in ['>=', '>']:
-                                msg += ' min="{}"'.format(c['value']['value'])
+                                msg += ' min="{}"'.format(evaluate_constraint_value(c['value']))
                                 break
                         for c in constraints:
                             if c['type'] in ['<=', '<']:
-                                msg += ' max="{}"'.format(c['value']['value'])
+                                msg += ' max="{}"'.format(evaluate_constraint_value(c['value']))
                                 break
                         msg +='>{}</BitsUnit>'.format(unit)
 
@@ -307,10 +595,12 @@ class Bits(object):
 
 def get_bit_size(item):
     """Return bit size of a (spare) item."""
-    if item['spare']:
-        return item['length']
+    if item is None:
+        return 0
+    if item.get('spare'):
+        return item.get('length', 0)
     else:
-        return item['variation']['size']
+        return item.get('variation', {}).get('size', 0)
 
 def ungroup(item):
     """Convert group of items of known size to element"""
@@ -351,7 +641,7 @@ class Variation(object):
             n2 = variation['extents']
             items = []
             for i in variation['items']:
-                if i.get('variation') is not None:
+                if i is not None and i.get('variation') is not None:
                     if i['variation']['type'] == 'Group':
                         i = ungroup(i)
                 items.append(i)
@@ -407,13 +697,22 @@ class Fixed(Variation):
 
     def render(self):
         bitSize, items = self.args
-        assert (bitSize % 8) == 0, "bit alignment error"
+        if (bitSize % 8) != 0:
+            # Better error message showing which item has alignment issue
+            item_info = ""
+            if items:
+                item = items[0]
+                if isinstance(item, dict):
+                    item_info = f" in item {item.get('name', '?')} (title: {item.get('title', '?')})"
+            raise AssertionError(f"bit alignment error: bitSize={bitSize} (not multiple of 8){item_info}")
         byteSize = bitSize // 8
         bitsFrom = bitSize
 
-        if len(items) == 1 and \
-            'content' in items[0]['variation']['rule'] and \
-            items[0]['variation']['rule']['content']['type'] == 'Bds':
+        # Check if single item is BDS type (defensive access)
+        is_bds = (len(items) == 1 and
+                  items[0].get('variation', {}).get('rule', {}).get('content', {}).get('type') == 'Bds')
+
+        if is_bds:
             # Example: CAT062/I380/ACS/BDS
             n = getItemSize(items[0])
             bitsTo = bitsFrom - n + 1
@@ -436,14 +735,25 @@ class Variable(Variation):
         with indent:
             while True:
                 bitSize = next(chunks)
-                assert (bitSize % 8) == 0, "bit alignment error"
+                if (bitSize % 8) != 0:
+                    item_name = self.item.get('name', '?')
+                    item_title = self.item.get('title', '?')
+                    raise Exception(f"bit alignment error in item {item_name} ({item_title}): bitSize={bitSize}, expected multiple of 8")
                 byteSize = bitSize // 8
                 tell('<Fixed length="{}">'.format(byteSize))
                 bitsFrom = bitSize
                 with indent:
                     while True:
+                        # Check if items list is empty
+                        if not items:
+                            break
                         item = items[0]
                         items = items[1:]
+                        # Skip None items (optional fields in Extended structures)
+                        if item is None:
+                            if not items:
+                                break
+                            continue
                         n = getItemSize(item)
                         bitsTo = bitsFrom - n + 1
                         Bits(self, item, bitsFrom, bitsTo).render()
@@ -459,7 +769,10 @@ class Variable(Variation):
 class Repetitive(Variation):
     def render(self):
         bitSize, variation = self.args
-        assert (bitSize % 8) == 0, "bit alignment error"
+        if (bitSize % 8) != 0:
+            item_name = self.item.get('name', '?')
+            item_title = self.item.get('title', '?')
+            raise Exception(f"bit alignment error in Repetitive item {item_name} ({item_title}): bitSize={bitSize}, expected multiple of 8")
         byteSize = bitSize // 8
         tell('<Repetitive>')
         items = variation.get('items')
@@ -647,11 +960,16 @@ class Category(object):
 
     @property
     def cat(self):
-        return self.root['number']
+        # Handle both old ('number') and new ('category') schema
+        return self.root.get('category', self.root.get('number'))
 
     def render(self):
         category = self.cat
         edition = self.root['edition']
+        # Handle both old (string "1.4") and new (dict {'major': 1, 'minor': 4}) edition formats
+        if isinstance(edition, str):
+            major, minor = edition.split('.')
+            edition = {'major': int(major), 'minor': int(minor)}
         title = self.root['title']
         tell('<?xml version="1.0" encoding="UTF-8"?>')
         tell('<!DOCTYPE Category SYSTEM "asterix.dtd">')
@@ -717,6 +1035,9 @@ class Category(object):
 
 class AsterixJson2XML(object):
     def __init__(self, root, cks, re=None, sp=None):
+        # Handle new JSON schema with 'contents' wrapper
+        if 'contents' in root:
+            root = root['contents']
         self.cat = Category(root, cks, re, sp)
 
     def parse(self):
