@@ -784,12 +784,16 @@ class Repetitive(Variation):
         tell('<Repetitive>')
         items = variation.get('items')
         if items is None:
+            # Single item repetitive - must wrap in Fixed
             item = self.item
             bitSize = getItemSize(item)
             bitsFrom = bitSize
             bitsTo = bitsFrom - bitSize + 1
             with indent:
-                Bits(self, item, bitsFrom, bitsTo).render()
+                tell('<Fixed length="{}">'.format(byteSize))
+                with indent:
+                    Bits(self, item, bitsFrom, bitsTo).render()
+                tell('</Fixed>')
         else:
             with indent:
                 tell('<Fixed length="{}">'.format(byteSize))
