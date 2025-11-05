@@ -39,22 +39,22 @@ More about ASTERIX protocol: http://www.eurocontrol.int/services/asterix
 - **40+ CI test configurations**: Comprehensive platform and architecture testing
 - **Documentation**: Complete build guides for all platforms
 
-### Python 3.10-3.14 Support 🐍
+### Python 3.10-3.14 Support
 - **Dropped**: Python 3.8, 3.9 (EOL October 2025)
-- **Added**: Python 3.14 support (future-proofing)
+- **Added**: Python 3.14 support
 - **Testing**: Full matrix testing across all supported versions
 
-### Upstream Sync ✅
+### Upstream Sync
 - **Merged v2.8.10** from CroatiaControlLtd/asterix
 - **New category**: CAT 015 v1.2 (INCS Target Reports)
 - **Fixed**: CAT 004 cartesian values, improved type portability
-- **Zero conflicts**: All security patches and performance optimizations preserved
+- **Preserved**: All security patches and performance optimizations
 
-### Development Infrastructure 🛠️
+### Development Infrastructure
 - **Pre-commit hooks**: 19 automated quality checks
 - **Pre-commit framework**: Team-friendly setup (`pip install pre-commit`)
-- **Security tools guide**: Comprehensive FREE vs commercial tools documentation
-- **Git hooks**: Complete setup, troubleshooting, and best practices guides
+- **Security tools guide**: FREE vs commercial tools documentation
+- **Git hooks**: Setup, troubleshooting, and best practices guides
 
 **See**: [CROSS_PLATFORM_SUMMARY.md](CROSS_PLATFORM_SUMMARY.md), [CPP23_BUILD_UPGRADE_SUMMARY.md](CPP23_BUILD_UPGRADE_SUMMARY.md), and [SECURITY_TOOLS_GUIDE.md](SECURITY_TOOLS_GUIDE.md) for details.
 
@@ -509,7 +509,7 @@ See [SECURITY_AUDIT_REPORT.md](SECURITY_AUDIT_REPORT.md) for detailed security a
 - **Version**: 2.8.10 (synced with upstream CroatiaControlLtd/asterix)
 - **Standards**: C++23, C23 (backward compatible to C++17/C17)
 - **Test Coverage**: 92.2% (560 tests, 100% passing)
-- **Platforms**: Linux x86_64 ✅ | Linux ARM64 ✅ | Windows ✅ | macOS ✅ (Intel & ARM M1)
+- **Platforms**: Linux x86_64, Linux ARM64, Windows, macOS (Intel & ARM M1)
 - **Python Support**: 3.10, 3.11, 3.12, 3.13, 3.14
 - **CI/CD**: 50+ test configurations across all platforms and architectures
 - **Security**: CodeQL enabled, 41 vulnerabilities fixed, 0 known active vulnerabilities
