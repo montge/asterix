@@ -11,6 +11,72 @@ ASTERIX (All Purpose STructured EUROCONTROL SuRveillance Information EXchange) i
 
 All three bindings share the same C++ core for parsing ASTERIX data from various sources (files, stdin, network multicast streams).
 
+## Development Guidelines
+
+### Local Development Directory
+
+Use the `local/` directory for development files that should never be committed to git:
+- **Testing scripts** - PowerShell, Bash, Python scripts for local testing
+- **Build experiments** - Custom build configurations and outputs
+- **Draft documentation** - Work-in-progress markdown files
+- **Personal notes** - Development notes, TODO lists, debugging logs
+- **Temporary data** - Test data, output files, logs
+
+The `local/` directory is ignored by git (except for `local/README.md`).
+
+**Example:**
+```bash
+# Create your local testing script
+cat > local/my_test.sh <<'EOF'
+#!/bin/bash
+./install/asterix -f local/test_data.pcap -j
+EOF
+chmod +x local/my_test.sh
+
+# Run it (won't be committed to git)
+./local/my_test.sh
+```
+
+### Repository Hygiene - No Hardcoded Paths
+
+**CRITICAL:** Never commit hardcoded personal directory paths to git.
+
+**❌ BAD Examples:**
+```bash
+# In documentation or scripts
+cd C:\Users\username\Documents\Development\asterix
+cd /home/username/projects/asterix
+
+# In code or config files
+ASTERIX_PATH = "/Users/username/asterix"
+```
+
+**✅ GOOD Examples:**
+```bash
+# Use relative paths
+cd <path-to-asterix-repo>
+cd $(git rev-parse --show-toplevel)
+
+# Use placeholders in documentation
+ASTERIX_PATH = "<path-to-asterix-repo>"
+
+# Use environment variables in code
+ASTERIX_PATH = os.getenv("ASTERIX_PATH", ".")
+```
+
+**Before committing:**
+1. Search for your username: `git grep -i "$(whoami)"` or `git grep -i "your-username"`
+2. Search for home directory patterns: `git grep -E "(C:\\\\Users|/home/|/Users/)"`
+3. Review changes: `git diff` before `git add`
+4. Use the `local/` directory for user-specific files
+
+**Allowed path references:**
+- Relative paths (e.g., `./install/asterix`, `../config/`)
+- Placeholder paths (e.g., `<path-to-repo>`, `/path/to/asterix`)
+- Environment variables (e.g., `$ASTERIX_HOME`, `${PWD}`)
+- Example paths that are clearly generic (e.g., `/opt/asterix`, `C:\Program Files\asterix`)
+- Public repository URLs (e.g., `github.com/montge/asterix`)
+
 ## Build System & Commands
 
 ### C++ Executable
