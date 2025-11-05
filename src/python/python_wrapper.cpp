@@ -22,6 +22,7 @@
 */
 
 #include "python_parser.h"
+#include <limits.h>
 
 static int bInitialized = 0;
 
@@ -31,6 +32,10 @@ static int bInitialized = 0;
 
 static char *ini_filename;
 PyObject *my_callback = NULL;
+
+// Safety limits for FFI boundary validation
+#define MAX_ASTERIX_MESSAGE_SIZE (65536)  // 64 KB - reasonable max for ASTERIX message
+#define MAX_BLOCKS_PER_CALL (10000)       // Maximum blocks to parse in single call
 
 PyObject *
 say_hello(PyObject *self, PyObject *args, PyObject *kwargs) {
@@ -111,8 +116,23 @@ parse(PyObject *self, PyObject *args, PyObject *kwargs) {
     if (!PyArg_ParseTuple(args, "s#i", &data, &len, &verbose))
         return NULL;
 
+    // CRITICAL-003 FIX: Validate buffer length
+    if (len <= 0) {
+        PyErr_SetString(PyExc_ValueError, "Empty input data");
+        return NULL;
+    }
+
+    if (len > MAX_ASTERIX_MESSAGE_SIZE) {
+        PyErr_Format(PyExc_ValueError,
+            "Input data too large: %zd bytes (maximum %d bytes)",
+            len, MAX_ASTERIX_MESSAGE_SIZE);
+        return NULL;
+    }
+
+    // HIGH-001 FIX: Use PyErr_SetString instead of printf
     if (!bInitialized) {
-        printf("Not initialized!");
+        PyErr_SetString(PyExc_RuntimeError,
+            "ASTERIX parser not initialized. Call init() first.");
         return NULL;
     }
 
@@ -140,8 +160,52 @@ parse_with_offset(PyObject *self, PyObject *args, PyObject *kwargs)
     if (!PyArg_ParseTuple(args, "s#IIi", &data, &len, &offset, &blocks_count, &verbose))
         return NULL;
 
+    // CRITICAL-003 FIX: Validate buffer length (same as parse())
+    if (len <= 0) {
+        PyErr_SetString(PyExc_ValueError, "Empty input data");
+        return NULL;
+    }
+
+    if (len > MAX_ASTERIX_MESSAGE_SIZE) {
+        PyErr_Format(PyExc_ValueError,
+            "Input data too large: %zd bytes (maximum %d bytes)",
+            len, MAX_ASTERIX_MESSAGE_SIZE);
+        return NULL;
+    }
+
+    // CRITICAL-001 FIX: Validate offset is within bounds
+    if (offset >= (unsigned int)len) {
+        PyErr_Format(PyExc_ValueError,
+            "Offset %u exceeds data length %zd",
+            offset, len);
+        return NULL;
+    }
+
+    // HIGH-002 FIX: Validate blocks_count is reasonable
+    if (blocks_count > MAX_BLOCKS_PER_CALL) {
+        PyErr_Format(PyExc_ValueError,
+            "blocks_count %u exceeds maximum (%d)",
+            blocks_count, MAX_BLOCKS_PER_CALL);
+        return NULL;
+    }
+
+    // CRITICAL-002 FIX: Prevent integer overflow in offset arithmetic
+    // Check if offset + (blocks_count * estimated_block_size) would overflow
+    // Conservative estimate: average ASTERIX block is ~256 bytes
+    if (blocks_count > 0) {
+        unsigned long long estimated_end = (unsigned long long)offset +
+                                          (unsigned long long)blocks_count * 256ULL;
+        if (estimated_end > (unsigned long long)UINT_MAX) {
+            PyErr_SetString(PyExc_ValueError,
+                "Offset + blocks_count range would cause integer overflow");
+            return NULL;
+        }
+    }
+
+    // HIGH-001 FIX: Use PyErr_SetString instead of printf
     if (!bInitialized) {
-        printf("Not initialized!");
+        PyErr_SetString(PyExc_RuntimeError,
+            "ASTERIX parser not initialized. Call init() first.");
         return NULL;
     }
 

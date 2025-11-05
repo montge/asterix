@@ -111,6 +111,12 @@ python_parse_with_offset(const unsigned char *pBuf, Py_ssize_t len, unsigned int
 /* AUTHOR: Krzysztof Rutkowski, ICM UW, krutk@icm.edu.pl
 */
 {
+    // CRITICAL-002 FIX: Additional bounds checking at parser level
+    // Note: Validation already done in python_wrapper.cpp, but defense-in-depth
+    if (offset >= len) {
+        return NULL;  // Return empty result for out-of-bounds offset
+    }
+
     // get current timstamp in ms since epoch
     struct timeval tp;
     gettimeofday(&tp, NULL);
@@ -121,8 +127,20 @@ python_parse_with_offset(const unsigned char *pBuf, Py_ssize_t len, unsigned int
         unsigned int m_nPos = offset;
         unsigned int current_blocks_count = 0;
         while (m_nPos < len && current_blocks_count < blocks_count) {
+            // CRITICAL-002 FIX: Explicit bounds check before subtraction
+            if (m_nPos >= len) {
+                break;  // Prevent underflow
+            }
+
             unsigned int m_nDataLength = len - m_nPos;
+
+            // Ensure we have minimum data to parse (at least 3 bytes for ASTERIX header)
             while (m_nDataLength > 3 && current_blocks_count < blocks_count) {
+                // CRITICAL-002 FIX: Validate pointer arithmetic before use
+                if (m_nPos >= len) {
+                    break;  // Prevent buffer overflow
+                }
+
                 const unsigned char *pBuf_offset = (pBuf + m_nPos);
                 DataBlock *block = inputParser->parse_next_data_block(
                         pBuf_offset, m_nPos, len, nTimestamp, m_nDataLength);
