@@ -67,6 +67,22 @@ jobs:
       - name: Copy _config.yml to docs directory
         run: |
           cp _config.yml docs/
+          # Create .nojekyll to disable Jekyll processing (we're using GitHub Actions deploy)
+          touch docs/.nojekyll
+
+      - name: Verify generated files
+        run: |
+          echo "=== Contents of docs/ directory ==="
+          ls -laR docs/ | head -100
+          echo "=== Checking for index.html in cpp/html/ ==="
+          if [ -f "docs/cpp/html/index.html" ]; then
+            echo "✓ docs/cpp/html/index.html exists"
+            ls -lh docs/cpp/html/index.html
+          else
+            echo "✗ docs/cpp/html/index.html NOT FOUND"
+          fi
+          echo "=== File count in cpp/html/ ==="
+          find docs/cpp/html -type f | wc -l
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
@@ -84,3 +100,38 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Wait for deployment to propagate
+        run: sleep 30
+
+      - name: Test deployed pages (HTTP status checks)
+        run: |
+          BASE_URL="${{ steps.deployment.outputs.page_url }}"
+          echo "Testing deployed site at: $BASE_URL"
+
+          # Function to test URL and report status
+          test_url() {
+            url="$1"
+            expected="$2"
+            status=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+            if [ "$status" = "$expected" ]; then
+              echo "✓ $url → HTTP $status (expected)"
+            else
+              echo "✗ $url → HTTP $status (expected $expected)"
+              return 1
+            fi
+          }
+
+          # Test main pages (expect 200)
+          test_url "${BASE_URL}" "200"
+          test_url "${BASE_URL}index.html" "200"
+          test_url "${BASE_URL}BUILD.html" "200"
+
+          # Test C++ API docs (expect 200)
+          test_url "${BASE_URL}cpp/html/index.html" "200"
+          test_url "${BASE_URL}cpp/html/classes.html" "200"
+
+          # Test invalid page (expect 404)
+          test_url "${BASE_URL}nonexistent.html" "404"
+
+          echo "All HTTP status checks passed!"

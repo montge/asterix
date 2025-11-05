@@ -5,7 +5,7 @@ title: ASTERIX Decoder Documentation
 
 # ASTERIX Decoder Documentation
 
-[![C++ Docs](https://img.shields.io/badge/docs-C%2B%2B%20API-blue)](cpp/html/index.html)
+[![C++ Docs](https://img.shields.io/badge/docs-C%2B%2B%20API-blue)](cpp/html/)
 [![Python Docs](https://img.shields.io/badge/docs-Python-blue)](https://asterix.readthedocs.io/)
 [![Rust Docs](https://img.shields.io/badge/docs-Rust-blue)](https://docs.rs/asterix-decoder)
 [![GitHub](https://img.shields.io/badge/source-GitHub-black)](https://github.com/montge/asterix)
@@ -19,7 +19,7 @@ ASTERIX (All Purpose STructured EUROCONTROL SuRveillance Information EXchange) i
 ### 🔧 C++
 High-performance command-line tool for processing ASTERIX data.
 
-- **[C++ API Reference](cpp/html/index.html)** - Complete API documentation (Doxygen)
+- **[C++ API Reference](cpp/html/)** - Complete API documentation (Doxygen)
 - **[Build Guide](BUILD.html)** - Building from source
 - **[GitHub Repository](https://github.com/montge/asterix)** - Source code
 
