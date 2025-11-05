@@ -28,12 +28,13 @@
 **Linux (Ubuntu/Debian):**
 ```bash
 sudo apt-get update && sudo apt-get install -y build-essential cmake libexpat1-dev gcc-13 g++-13 && \
-cd src && make && make install
+cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel && cmake --install build
 ```
 
 **macOS:**
 ```bash
-brew install cmake expat && cd src && make && make install
+brew install cmake expat && \
+cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel && cmake --install build
 ```
 
 **Windows (PowerShell with vcpkg):**
@@ -191,30 +192,11 @@ xcodebuild -version
 
 ### 3.1 Linux
 
-#### Method 1: Using Make (Traditional - Recommended)
+#### CMake Build (Recommended)
 
-This is the primary build method for the C++ executable.
+This is the official build method for the C++ executable.
 
-**Build:**
-```bash
-cd src
-
-# Production build
-make clean
-make -j$(nproc)
-make install
-
-# Debug build
-make debug
-make debug install
-```
-
-**Output:**
-- Executable: `install/bin/asterix`
-- Configuration: `install/share/asterix/config/`
-- Test scripts: `install/test/`
-
-#### Method 2: Using CMake with Ninja (Faster)
+> **Note**: GNU Make build files were removed in v2.8.10. CMake is now the only supported build system.
 
 **Step 1: Configure**
 ```bash
@@ -296,7 +278,7 @@ sudo apt-get install cmake
 
 3. **Git for Windows** (optional)
 
-#### Method 1: Using CMake with Visual Studio 2022 (Recommended)
+#### CMake Build with Visual Studio 2022
 
 **Step 1: Configure**
 ```powershell
@@ -445,7 +427,7 @@ brew update
 brew install cmake expat
 ```
 
-#### Method 1: Using CMake (Recommended)
+#### CMake Build
 
 **Step 1: Configure for Apple Silicon (M1/M2/M3)**
 ```bash
@@ -507,15 +489,6 @@ cmake --install build --config Release
 ./install/bin/asterix --help
 ```
 
-#### Method 2: Using Make (Traditional)
-
-```bash
-cd src
-make clean
-make -j$(sysctl -n hw.ncpu)
-make install
-```
-
 #### Known Issues (macOS)
 
 **Platform Compatibility:**
@@ -564,31 +537,26 @@ export CPPFLAGS="-I/opt/homebrew/include"
 
 The C++ executable provides a high-performance command-line tool for parsing ASTERIX data.
 
-#### Build with Make (Primary Method)
+#### Build with CMake
 
+> **Note**: GNU Make build files were removed in v2.8.10. CMake is now the only supported build system.
+
+See platform-specific instructions:
+- **Linux**: [Section 3.1 Linux](#31-linux)
+- **Windows**: [Section 3.2 Windows](#32-windows)
+- **macOS**: [Section 3.3 macOS](#33-macos)
+
+**Quick Build (all platforms):**
 ```bash
-cd src
-
-# Production build
-make              # Build
-make install      # Install to install/ directory
-
-# Debug build
-make debug        # Build with debug symbols
-make debug install
-
-# Clean build
-make clean
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+cmake --install build
 ```
 
 **Output Locations:**
-- Executable: `install/bin/asterix` (not asterix.exe despite documentation)
+- Executable: `install/bin/asterix`
 - Configuration: `install/share/asterix/config/`
 - Test scripts: `install/test/`
-
-#### Build with CMake (Alternative Method)
-
-See platform-specific sections above ([Linux](#31-linux), [Windows](#32-windows), [macOS](#33-macos)).
 
 #### C++ Standard Configuration
 

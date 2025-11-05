@@ -162,10 +162,13 @@ Download pre-built packages from [GitHub Releases](https://github.com/montge/ast
 
 **C++ executable:**
 ```bash
-cd src
-make install
-cd ../install
-./asterix --help
+# Create build directory (out-of-source build)
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+cmake --install build
+
+# Run the executable
+./install/bin/asterix --help
 ```
 
 **Python module:**
@@ -179,6 +182,8 @@ cd asterix-rs
 cargo build --release
 cargo test
 ```
+
+> **Migration Note**: GNU Make build files were removed in v2.8.10. All builds now use CMake as the unified cross-platform build system.
 
 **Dependencies:**
 - **C++23 compatible compiler** (upgraded from C++17):
@@ -438,24 +443,36 @@ cargo bench
   - **Linux**: C++23 (GCC 13+, Clang 16+) - full feature set
   - **macOS**: C++17/C++23 (AppleClang 15+) - Python uses C++17 for compatibility
   - **Windows**: C++20 (MSVC 2022 v16.0+) - MSVC doesn't fully support C++23 yet, so C++20 is used
-- CMake 3.20+ or GNU Make
+- CMake 3.20+
 - libexpat library for XML parsing
 
-**Make (Primary):**
+**CMake Build Commands:**
 ```bash
-cd src
-make              # Production build
-make debug        # Debug build with symbols
-make install      # Install to install/ directory
-make clean        # Clean build artifacts
-make test         # Run test suite
+# Configure and build (out-of-source build)
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+
+# Install to install/ directory
+cmake --install build
+
+# Debug build
+cmake -B build-debug -DCMAKE_BUILD_TYPE=Debug
+cmake --build build-debug --parallel
+
+# Clean build artifacts
+rm -rf build build-debug
+
+# Run tests
+cd build && ctest
 ```
 
-**CMake (Alternative):**
-```bash
-cmake .
-make
-```
+**Why CMake:**
+- ✅ Cross-platform (Linux, Windows, macOS)
+- ✅ Out-of-source builds (keeps source tree clean)
+- ✅ Better dependency management (pkg-config, vcpkg)
+- ✅ Modern IDE integration (VS Code, CLion, Visual Studio)
+- ✅ Already required by Python and Rust bindings
+- ✅ Unified build system across all platforms
 
 **Note:** The C++ executable and CMake builds use C++23 on Linux/macOS (with automatic fallback to C++17/20 on older compilers), and C++20 on Windows/MSVC (MSVC doesn't fully support C++23 yet). **Python module builds** use **C++17 on macOS**, **C++20 on Windows**, and **C++23 on Linux** for optimal compiler compatibility while maintaining feature parity where possible.
 
@@ -469,7 +486,7 @@ All commits are automatically tested across:
   - Linux ARM64: Ubuntu 22.04/24.04 (Raspberry Pi, AWS Graviton)
   - Windows: Windows Server 2022 (MSVC 2022 v143)
   - macOS: macOS 14/15 (Apple Silicon ARM64)
-- **Build systems**: Make, CMake, Visual Studio
+- **Build systems**: CMake (generates Makefiles, Ninja, Visual Studio projects)
 - **Compilers**: GCC 11/13, Clang 16+, MSVC 2019/2022, AppleClang 15+
 - **Quality checks**: Coverage analysis, memory checks (Valgrind), static analysis (cppcheck, CodeQL)
 - **Security**: CodeQL scanning for C++ and Python, compiler hardening flags
