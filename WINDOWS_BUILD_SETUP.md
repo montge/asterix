@@ -81,7 +81,8 @@ cd C:\vcpkg
 ### 2. Configure CMake
 
 ```powershell
-cd C:\path\to\asterix
+# Navigate to your asterix repository directory
+cd <path-to-asterix-repo>
 
 cmake -B build `
   -G "Visual Studio 17 2022" `
