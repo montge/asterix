@@ -1,4 +1,4 @@
-name: Generate C++ Documentation
+name: Build Documentation Site
 
 on:
   push:
@@ -12,6 +12,8 @@ on:
       - 'src/**/*.hxx'
       - 'src/**/*.hpp'
       - 'Doxyfile'
+      - 'docs/**/*.md'
+      - '_config.yml'
       - '.github/workflows/doxygen.yml'
   workflow_dispatch:
 
@@ -62,28 +64,14 @@ jobs:
         run: |
           doxygen Doxyfile
 
-      - name: Create index redirect for GitHub Pages
+      - name: Copy _config.yml to docs directory
         run: |
-          mkdir -p docs/cpp/html
-          cat > docs/cpp/html/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <title>ASTERIX Decoder C++ API Documentation</title>
-            <meta http-equiv="refresh" content="0; url=./html/index.html">
-            <link rel="canonical" href="./html/index.html">
-          </head>
-          <body>
-            <p>Redirecting to <a href="./html/index.html">ASTERIX C++ API documentation</a>...</p>
-          </body>
-          </html>
-          EOF
+          cp _config.yml docs/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: docs/cpp/html
+          path: docs
 
   deploy:
     environment:
