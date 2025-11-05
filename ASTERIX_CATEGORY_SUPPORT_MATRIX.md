@@ -51,7 +51,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.2 ✓ |
 | **Latest Available** | v1.4 |
 | **Version Gap** | 2 minor versions behind |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | LOW (core category, update available) |
 
 #### **CAT002: Transmission of Monoradar Service Messages**
@@ -64,7 +64,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.0 ✓ |
 | **Latest Available** | v1.1 |
 | **Version Gap** | 1 minor version behind |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | LOW |
 
 #### **CAT004: Safety Net Messages**
@@ -77,7 +77,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.12 ✓ |
 | **Latest Available** | v1.12 |
 | **Version Gap** | Current |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | LOW |
 
 #### **CAT008: Monoradar Derived Weather Information**
@@ -90,7 +90,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.0 ✓ |
 | **Latest Available** | v1.3 |
 | **Version Gap** | 3 minor versions behind |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | MEDIUM (weather data, significant update) |
 
 #### **CAT010: Transmission of Monosensor Surface Movement Data**
@@ -103,7 +103,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.1 ✓ |
 | **Latest Available** | v1.1 |
 | **Version Gap** | Current |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | LOW |
 
 #### **CAT011: Transmission of A-SMGCS Data**
@@ -116,7 +116,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.2 ✓ |
 | **Latest Available** | v1.3 |
 | **Version Gap** | 1 minor version behind |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | LOW |
 
 #### **CAT015: Independent Non-Cooperative Surveillance System Target Reports**
@@ -143,7 +143,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.3 ✓ |
 | **Latest Available** | v1.3 |
 | **Version Gap** | Current |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | LOW |
 
 #### **CAT020: Multilateration Target Reports**
@@ -156,7 +156,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.10 ✓ |
 | **Latest Available** | v1.10 |
 | **Version Gap** | Current |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | LOW |
 
 #### **CAT021: ADS-B Target Reports**
@@ -169,7 +169,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v2.6 ✓ |
 | **Latest Available** | v2.6 |
 | **Version Gap** | Current |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | LOW |
 
 #### **CAT023: CNS/ATM Ground Station and Service Status Reports**
@@ -182,7 +182,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.3 ✓ |
 | **Latest Available** | v1.3 |
 | **Version Gap** | Current |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | LOW |
 
 #### **CAT025: CNS/ATM Ground System Status Reports**
@@ -195,7 +195,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.5 ✓ |
 | **Latest Available** | v1.5 |
 | **Version Gap** | Current |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | LOW |
 
 #### **CAT030: Transmission of Data on Secondary Radar Data Processing System to SDPS**
@@ -208,7 +208,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v6.2 ✓ |
 | **Latest Available** | v6.2 |
 | **Version Gap** | Current |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | LOW (legacy but still in use) |
 
 #### **CAT031: Transmission of Data on Radar Data Processing System to SDPS**
@@ -221,7 +221,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v6.2 ✓ |
 | **Latest Available** | v6.2 |
 | **Version Gap** | Current |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | LOW |
 
 #### **CAT032: Miniplan Reports to an SDPS**
@@ -234,7 +234,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v6.2 (per .ini: 7.0 expected) ✓ |
 | **Latest Available** | v7.0 |
 | **Version Gap** | Discrepancy noted - versions vary |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | MEDIUM (flight plan data, version mismatch) |
 
 #### **CAT034: Transmission of Monoradar Service Messages**
@@ -247,7 +247,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.27 ✓ |
 | **Latest Available** | v1.29 |
 | **Version Gap** | 2 minor versions behind |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | MEDIUM (actively evolving) |
 
 #### **CAT048: Monoradar Target Reports**
@@ -260,7 +260,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.21 ✓ |
 | **Latest Available** | v1.30 |
 | **Version Gap** | 9 minor versions behind |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | **CRITICAL** (most actively developed, major version gap) |
 
 #### **CAT062: SDPS Track Messages**
@@ -273,7 +273,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.18 ✓ |
 | **Latest Available** | v1.19 |
 | **Version Gap** | 1 minor version behind |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | MEDIUM (core processing category) |
 
 #### **CAT063: Sensor Status Reports**
@@ -286,7 +286,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.3 ✓ |
 | **Latest Available** | v1.6 |
 | **Version Gap** | 3 minor versions behind |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | MEDIUM (actively evolving) |
 
 #### **CAT065: SDPS Service Status Reports**
@@ -299,7 +299,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.3 ✓ |
 | **Latest Available** | v1.5 |
 | **Version Gap** | 2 minor versions behind |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | MEDIUM |
 
 #### **CAT205: Radio Direction Finder Reports**
@@ -312,7 +312,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.0 ✓ |
 | **Latest Available** | v1.0 |
 | **Version Gap** | Current |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | LOW (specialized) |
 
 #### **CAT240: Radar Video Transmission**
@@ -325,7 +325,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.3 ✓ |
 | **Latest Available** | v1.3 |
 | **Version Gap** | Current |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | LOW |
 
 #### **CAT247: Version Number Exchange**
@@ -338,7 +338,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v1.2 (Per .ini: listed as 1.2) ✓ |
 | **Latest Available** | v1.3 |
 | **Version Gap** | 1 minor version behind |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | LOW |
 
 #### **CAT252: System and Session Control Messages**
@@ -351,7 +351,7 @@ Our current implementation focuses on the 001-127 range.
 | **Current Version** | v6.2 (Per .ini: listed as 7.0 in git status) |
 | **Latest Available** | v7.0 |
 | **Version Gap** | Needs verification |
-| **Support Status** | ✅ SUPPORTED |
+| **Support Status** | SUPPORTED |
 | **Priority** | MEDIUM (system critical) |
 
 ---
@@ -395,14 +395,14 @@ The following categories have significant version gaps (≥2 minor versions behi
 
 | Category | Current | Latest | Gap | Impact |
 |----------|---------|--------|-----|--------|
-| **CAT048** | v1.21 | v1.30 | **9 versions** | ⚠️ **CRITICAL** - Most actively developed category |
-| **CAT008** | v1.0 | v1.3 | 3 versions | 🟡 Weather data improvements |
-| **CAT063** | v1.3 | v1.6 | 3 versions | 🟡 Sensor status enhancements |
-| **CAT034** | v1.27 | v1.29 | 2 versions | 🟡 Service messaging evolution |
-| **CAT065** | v1.3 | v1.5 | 2 versions | 🟡 SDPS status updates |
-| **CAT247** | v1.2 | v1.3 | 1 version | 🟢 Minor updates |
-| **CAT062** | v1.18 | v1.19 | 1 version | 🟢 Minor updates |
-| **CAT011** | v1.2 | v1.3 | 1 version | 🟢 Minor updates |
+| **CAT048** | v1.21 | v1.30 | **9 versions** | **CRITICAL** - Most actively developed category |
+| **CAT008** | v1.0 | v1.3 | 3 versions | Weather data improvements |
+| **CAT063** | v1.3 | v1.6 | 3 versions | Sensor status enhancements |
+| **CAT034** | v1.27 | v1.29 | 2 versions | Service messaging evolution |
+| **CAT065** | v1.3 | v1.5 | 2 versions | SDPS status updates |
+| **CAT247** | v1.2 | v1.3 | 1 version | Minor updates |
+| **CAT062** | v1.18 | v1.19 | 1 version | Minor updates |
+| **CAT011** | v1.2 | v1.3 | 1 version | Minor updates |
 
 ### Missing Categories (23 categories with no support)
 
@@ -566,10 +566,10 @@ EUROCONTROL Specs → Community JSON → JSON→XML Converter → Our XML Config
 ### Category Status Legend
 
 - ✅ **SUPPORTED** - Fully implemented and tested
-- 🟡 **OUTDATED** - Supported but with version gaps
-- 🔴 **NOT SUPPORTED** - No implementation
-- 🟢 **CURRENT** - Latest version implemented
-- ⚠️ **CRITICAL** - Requires immediate attention
+- **OUTDATED** - Supported but with version gaps
+- **NOT SUPPORTED** - No implementation
+- **CURRENT** - Latest version implemented
+- **CRITICAL** - Requires immediate attention
 
 ### Implementation Complexity Guide
 

@@ -335,7 +335,7 @@ lcov --remove coverage.info '/usr/*' '*/googletest/*' '*/test/*' --output-file c
 genhtml coverage_filtered.info --output-directory coverage_html
 
 echo ""
-echo "✅ Setup complete!"
+echo "Setup complete."
 echo ""
 echo "Coverage reports:"
 echo "  - Python: htmlcov/index.html"
@@ -491,12 +491,12 @@ lcov --capture --directory . -o coverage.info
 
 ## Next Steps After Installation
 
-1. ✅ Verify all tools are installed
-2. ✅ Run full test suite (Python + C++)
-3. ✅ Generate coverage reports (Python + C++)
-4. ✅ Review coverage gaps
-5. ⏳ Add tests to reach 90% coverage
-6. ⏳ Continue with Task #8 (RPM packages)
+1. Verify all tools are installed
+2. Run full test suite (Python + C++)
+3. Generate coverage reports (Python + C++)
+4. Review coverage gaps
+5. Add tests to reach 90% coverage
+6. Continue with Task #8 (RPM packages)
 
 ---
 
