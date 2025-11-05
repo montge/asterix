@@ -13,6 +13,66 @@ All three bindings share the same C++ core for parsing ASTERIX data from various
 
 ## Development Guidelines
 
+### Issue-First Workflow
+
+**IMPORTANT:** This project uses GitHub Issues for tracking all development work. Before starting any significant changes:
+
+1. **Check existing issues** - Review open issues to avoid duplicates
+2. **Create an issue** - Document the problem, scope, and acceptance criteria
+3. **Reference in commits** - Use `Relates to #<issue>` in commit messages
+4. **Keep issues open** - Issues remain open until ALL CI/CD pipelines pass across all platforms
+5. **Close verification** - Only close issues when all acceptance criteria are met and verified in CI
+
+**Issue Creation Guidelines:**
+- **Enhancement**: New features, language bindings, protocol integrations
+- **Bug**: Defects, incorrect behavior, crashes
+- **Documentation**: README updates, API docs, guides
+- **Security**: Vulnerabilities, safety-critical concerns
+
+**Using `gh` CLI:**
+```bash
+# Create an issue
+gh issue create --repo montge/asterix --title "Add feature X" --label enhancement
+
+# List issues
+gh issue list --repo montge/asterix
+
+# View issue details
+gh issue view 21 --repo montge/asterix
+```
+
+**Commit Message Format:**
+```
+Brief description of change
+
+Relates to #<issue-number>
+
+- Detailed point 1
+- Detailed point 2
+- Testing performed
+```
+
+**Example:**
+```bash
+# 1. Create issue first
+gh issue create --title "Add Node.js bindings" --label enhancement
+
+# 2. Implement feature
+git checkout -b feature/nodejs-bindings
+
+# 3. Commit with reference
+git commit -m "Add N-API wrapper for Node.js bindings
+
+Relates to #24
+
+- Implement core parsing API
+- Add TypeScript definitions
+- Include unit tests with >80% coverage"
+
+# 4. Issue stays open until CI/CD passes on all platforms
+# 5. Close only when all acceptance criteria verified
+```
+
 ### Local Development Directory
 
 Use the `local/` directory for development files that should never be committed to git:
@@ -90,7 +150,22 @@ ASTERIX_PATH = os.getenv("ASTERIX_PATH", ".")
 - libexpat-devel (for XML parsing)
 - CMake 3.20+ or GNU Make
 
-**Using Make (Primary method):**
+**Using CMake (Primary method, recommended):**
+```bash
+# Out-of-source build (recommended)
+mkdir build && cd build
+cmake ..
+make
+make install      # Installs to bin/asterix (or CMAKE_INSTALL_PREFIX)
+
+# In-source build (alternative)
+cmake .
+make
+
+# The executable will be in build/bin/asterix or install/asterix
+```
+
+**Using GNU Make (Alternative, legacy systems):**
 ```bash
 # Build from src/ directory
 cd src
@@ -100,15 +175,15 @@ make debug        # Debug build
 make debug install
 make clean
 make test         # Run test suite (from src/)
+
+# The executable will be created at install/asterix
 ```
 
-**Using CMake (Alternative):**
-```bash
-cmake .
-make
-```
-
-The executable will be created at `install/asterix` (not asterix.exe despite documentation).
+**Why CMake is preferred:**
+- Modern, cross-platform build system
+- Used by Python module (setup.py) and Rust crate (build.rs)
+- Better dependency management and feature detection
+- Out-of-source builds keep source tree clean
 
 **C++ Standard (Platform-Specific):**
 - **C++ Executable & CMake builds:** 
