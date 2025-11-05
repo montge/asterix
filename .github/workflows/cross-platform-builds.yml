@@ -700,19 +700,30 @@ jobs:
             cd build && \
             cpack -G TGZ && \
             cpack -G DEB && \
-            ls -lh *.tar.gz *.deb || true
+
+            echo "=== Renaming packages to include arm64 suffix ===" && \
+            for file in asterix-2.8.10-*.tar.gz; do
+              if [ -f "$file" ] && [[ ! "$file" =~ arm64 ]]; then
+                new_name="${file%.tar.gz}-arm64.tar.gz"
+                mv "$file" "$new_name" && echo "Renamed: $file -> $new_name"
+              fi
+            done && \
+
+            echo "=== Final package list ===" && \
+            ls -lh *arm64* 2>/dev/null || echo "No ARM64 packages found" && \
+
+            echo "=== Fixing file permissions for GitHub Actions runner ===" && \
+            chmod 644 *.tar.gz *.deb 2>/dev/null || true
           '
 
-    - name: Rename ARM64 packages
+    - name: Verify ARM64 packages
       run: |
-        cd build
-        for file in asterix-2.8.10-*.tar.gz; do
-          [ -f "$file" ] && mv "$file" "${file%.tar.gz}-arm64.tar.gz" || true
-        done
-        for file in asterix_2.8.10-*.deb; do
-          [ -f "$file" ] && mv "$file" "${file%.deb}-arm64.deb" || true
-        done
-        ls -lh *arm64* || echo "No ARM64 packages found"
+        echo "=== Verifying ARM64 packages were created ==="
+        ls -lh build/*arm64* 2>/dev/null || {
+          echo "::warning::ARM64 packages not found in build/"
+          echo "Contents of build/ directory:"
+          ls -la build/ || echo "build/ directory not found"
+        }
 
     - name: Upload ARM64 Linux artifacts
       uses: actions/upload-artifact@v5
