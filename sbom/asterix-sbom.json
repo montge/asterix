@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:054a814a-01b3-4b29-bec5-0ea6639b2f13",
+  "serialNumber": "urn:uuid:6fd06fda-9c9d-4b4f-864a-52c991d79499",
   "version": 1,
   "metadata": {
-    "timestamp": "2025-11-05T17:28:42Z",
+    "timestamp": "2025-11-05T18:04:45Z",
     "tools": {
       "components": [
         {
@@ -25,7 +25,7 @@
     "properties": [
       {
         "name": "commit",
-        "value": "508ef936a94288c7b8630283c928553abd051940"
+        "value": "dff9f0c25f4db88a34d7a5d024f047fd68083d61"
       },
       {
         "name": "repository",
@@ -33,7 +33,7 @@
       },
       {
         "name": "generated",
-        "value": "2025-11-05T17:28:42Z"
+        "value": "2025-11-05T18:04:45Z"
       },
       {
         "name": "tool",
@@ -2893,12 +2893,12 @@
       ]
     },
     {
-      "bom-ref": "pkg:github/dtolnay/rust-toolchain@1.75?package-id=5be1a8d9d6e96950",
+      "bom-ref": "pkg:github/dtolnay/rust-toolchain@1.82?package-id=530c1f2c21d19562",
       "type": "library",
       "name": "dtolnay/rust-toolchain",
-      "version": "1.75",
-      "cpe": "cpe:2.3:a:dtolnay\\/rust-toolchain:dtolnay\\/rust-toolchain:1.75:*:*:*:*:*:*:*",
-      "purl": "pkg:github/dtolnay/rust-toolchain@1.75",
+      "version": "1.82",
+      "cpe": "cpe:2.3:a:dtolnay\\/rust-toolchain:dtolnay\\/rust-toolchain:1.82:*:*:*:*:*:*:*",
+      "purl": "pkg:github/dtolnay/rust-toolchain@1.82",
       "properties": [
         {
           "name": "syft:package:foundBy",
@@ -2914,23 +2914,23 @@
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:dtolnay\\/rust-toolchain:dtolnay\\/rust_toolchain:1.75:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:dtolnay\\/rust-toolchain:dtolnay\\/rust_toolchain:1.82:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:dtolnay\\/rust_toolchain:dtolnay\\/rust-toolchain:1.75:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:dtolnay\\/rust_toolchain:dtolnay\\/rust-toolchain:1.82:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:dtolnay\\/rust_toolchain:dtolnay\\/rust_toolchain:1.75:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:dtolnay\\/rust_toolchain:dtolnay\\/rust_toolchain:1.82:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:dtolnay\\/rust:dtolnay\\/rust-toolchain:1.75:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:dtolnay\\/rust:dtolnay\\/rust-toolchain:1.82:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:dtolnay\\/rust:dtolnay\\/rust_toolchain:1.75:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:dtolnay\\/rust:dtolnay\\/rust_toolchain:1.82:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -9345,11 +9345,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "bf8a3ab01573bf69d248bec30ceeca88c852e6f5"
+          "content": "e36910af9275c80ac8c91cee9754e4f3f5926fd7"
         },
         {
           "alg": "SHA-256",
-          "content": "1a307d834bec95c2d9517015304baa60c663dd19dc6f5339acedfebe5252ffc9"
+          "content": "24a31af11636e54a0dc1a1378e03f56c5fd2a342715787c4c213549be816ec13"
         }
       ]
     },
