@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:d9ddbdea-c92b-4ab3-b9c1-781a37d1706d",
+  "serialNumber": "urn:uuid:9bb332c0-68d3-424b-acdb-3f40589251ed",
   "version": 1,
   "metadata": {
-    "timestamp": "2025-11-04T23:36:29Z",
+    "timestamp": "2025-11-05T01:49:04Z",
     "tools": {
       "components": [
         {
@@ -25,11 +25,11 @@
     "properties": [
       {
         "name": "commit",
-        "value": "1eb9c6f7c5a72f7461440d32a9fecde79ce99461"
+        "value": "2eda454ae470b8f351f10b9a73f18c9afd9fffbc"
       },
       {
         "name": "generated",
-        "value": "2025-11-04T23:36:29Z"
+        "value": "2025-11-05T01:49:04Z"
       },
       {
         "name": "main_version",
@@ -411,7 +411,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/asterix@0.1.0?package-id=1cee4e8ab10c8133",
+      "bom-ref": "pkg:cargo/asterix@0.1.0?package-id=777bfe0b506d8e0f",
       "type": "library",
       "name": "asterix",
       "version": "0.1.0",
@@ -5969,6 +5969,42 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/vcpkg@0.2.15?package-id=951e5041141dc1f9",
+      "type": "library",
+      "name": "vcpkg",
+      "version": "0.2.15",
+      "cpe": "cpe:2.3:a:vcpkg:vcpkg:0.2.15:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/vcpkg@0.2.15",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/wait-timeout@0.2.1?package-id=714f72b7485304e8",
       "type": "library",
       "name": "wait-timeout",
@@ -7535,11 +7571,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "7d1881c958b2e1954a47b6ae2bdacaf2690c48bd"
+          "content": "4a42bf24a1196fb502e28b605e777b97a984594a"
         },
         {
           "alg": "SHA-256",
-          "content": "1158e3479e855abfecdbf9e7048dda80311a75981f9ccc5d24a5888769cf7205"
+          "content": "65e0445a6adf24da83763c9ab633e3f9659fd427bad6a3479b231a044e0c51b8"
         }
       ]
     }
@@ -7584,7 +7620,7 @@
       ]
     },
     {
-      "ref": "pkg:cargo/asterix@0.1.0?package-id=1cee4e8ab10c8133",
+      "ref": "pkg:cargo/asterix@0.1.0?package-id=777bfe0b506d8e0f",
       "dependsOn": [
         "pkg:cargo/anyhow@1.0.100?package-id=b40382a142f22b02",
         "pkg:cargo/cc@1.2.44?package-id=9c49548513121bdf",
@@ -7600,7 +7636,8 @@
         "pkg:cargo/serde@1.0.228?package-id=bc7b9aacea66060b",
         "pkg:cargo/serde_json@1.0.145?package-id=12a6f5288b90b95a",
         "pkg:cargo/tempfile@3.23.0?package-id=d729b51db1320803",
-        "pkg:cargo/thiserror@2.0.17?package-id=e7622816075931ee"
+        "pkg:cargo/thiserror@2.0.17?package-id=e7622816075931ee",
+        "pkg:cargo/vcpkg@0.2.15?package-id=951e5041141dc1f9"
       ]
     },
     {
