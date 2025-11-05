@@ -87,7 +87,7 @@ This decoder is optimized for high-throughput, real-time processing of ASTERIX s
 
 **Documentation**:
 - [BENCHMARK_RESULTS_2025-10-20.md](BENCHMARK_RESULTS_2025-10-20.md) - Validated performance benchmarks
-- [PERFORMANCE_OPTIMIZATIONS_COMPLETED.md](PERFORMANCE_OPTIMIZATIONS_COMPLETED.md) - Detailed optimization strategies
+- [PERFORMANCE_OPTIMIZATIONS.md](PERFORMANCE_OPTIMIZATIONS.md) - Detailed optimization strategies and results
 
 ## Quick Start
 

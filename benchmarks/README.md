@@ -448,7 +448,7 @@ int main(int argc, char** argv) {
 - [ASTERIX Protocol Specification](https://www.eurocontrol.int/asterix)
 - [Google Benchmark Documentation](https://github.com/google/benchmark)
 - [Performance Analysis Guide](../docs/performance.md)
-- [Optimization Report](../PERFORMANCE_OPTIMIZATIONS_COMPLETED.md)
+- [Optimization Report](../PERFORMANCE_OPTIMIZATIONS.md)
 
 ## Support
 

@@ -411,4 +411,4 @@ The codebase has been optimized through 6 Quick Wins achieving **55-61% cumulati
 
 **⚠️ WARNING:** Do NOT optimize FSPEC parsing (`DataRecord::parse()` FSPEC loop) - causes memory corruption and segfaults.
 
-See `PERFORMANCE_OPTIMIZATIONS_COMPLETED.md` for detailed analysis and measurements.
+See `PERFORMANCE_OPTIMIZATIONS.md` for detailed analysis and measurements.
