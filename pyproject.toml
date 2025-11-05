@@ -1,3 +1,75 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "asterix-decoder"
+version = "0.7.10"
+description = "ASTERIX (All Purpose STructured EUROCONTROL SuRveillance Information EXchange) decoder"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "GPL-3.0-or-later"}
+keywords = ["asterix", "eurocontrol", "radar", "track", "croatiacontrol", "aviation", "atm", "surveillance"]
+authors = [
+    {name = "Damir Salantic", email = "damir.salantic@gmail.com"},
+]
+maintainers = [
+    {name = "montge"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: OS Independent",
+    "Programming Language :: C",
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = []
+
+[project.optional-dependencies]
+xml = ["lxml>=4.9.0"]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "coverage>=7.0.0",
+    "memory-profiler>=0.60.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/montge/asterix"
+Documentation = "https://montge.github.io/asterix/"
+Repository = "https://github.com/montge/asterix"
+Issues = "https://github.com/montge/asterix/issues"
+Download = "https://github.com/montge/asterix"
+
+[tool.setuptools]
+packages = ["asterix"]
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.package-data]
+asterix = [
+    "config/*.xml",
+    "config/*.ini",
+    "config/*.dtd",
+    "sample_data/*.raw",
+    "sample_data/*.pcap",
+]
+
+# C++ extension configuration remains in setup.py
+# due to complex platform-specific compiler flags and library detection
+
 [tool.black]
 line-length = 100
 target-version = ['py38', 'py39', 'py310', 'py311', 'py312']
