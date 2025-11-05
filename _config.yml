@@ -1,1 +1,40 @@
 theme: jekyll-theme-cayman
+
+# Site settings
+title: ASTERIX Decoder Documentation
+description: Multi-language ASTERIX protocol decoder/parser for ATM surveillance data
+baseurl: "/asterix"
+url: "https://montge.github.io"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /:collection/:path/
+
+# Defaults
+defaults:
+  - scope:
+      path: "docs"
+    values:
+      layout: "default"
+
+# Exclude from build
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - src
+  - install
+  - build
+  - tests
+  - asterix
+  - asterix-rs
+  - benchmarks
+  - do-278
+  - local

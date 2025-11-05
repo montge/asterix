@@ -150,8 +150,8 @@ Download pre-built packages from [GitHub Releases](https://github.com/montge/ast
 | **Fedora 40** | `.rpm` | C++23 (GCC 14) | 3.10-3.14 | 1.70+ | `sudo rpm -i asterix-*.rpm` |
 | **Linux ARM64** | `.deb`/`.tar.gz` | C++23 (GCC 13+) | 3.10-3.14 | 1.70+ | Raspberry Pi, AWS Graviton, NVIDIA Jetson |
 | **Windows 10/11** | `.zip`/`.msi`/`.exe` | C++20 (MSVC 2022) | 3.10-3.14 | 1.70+ | MSI (WiX), EXE (NSIS), ZIP (portable) |
-| **macOS 13+ (Intel)** | `.tar.gz`/`.pkg` | C++23 (AppleClang 15+) | 3.10-3.14 | 1.70+ | See [CROSS_PLATFORM_BUILD_GUIDE.md](CROSS_PLATFORM_BUILD_GUIDE.md) |
-| **macOS 14+ (M1/M2)** | `.tar.gz`/`.pkg`/`.dmg` | C++23 (AppleClang 15+) | 3.10-3.14 | 1.70+ | See [CROSS_PLATFORM_BUILD_GUIDE.md](CROSS_PLATFORM_BUILD_GUIDE.md) |
+| **macOS 13+ (Intel)** | `.tar.gz`/`.pkg` | C++23 (AppleClang 15+) | 3.10-3.14 | 1.70+ | See [BUILD Guide](https://montge.github.io/asterix/BUILD.html#macos) |
+| **macOS 14+ (M1/M2)** | `.tar.gz`/`.pkg`/`.dmg` | C++23 (AppleClang 15+) | 3.10-3.14 | 1.70+ | See [BUILD Guide](https://montge.github.io/asterix/BUILD.html#macos) |
 
 **Language-Specific Packages:**
 - **Python**: `pip install asterix_decoder` (PyPI)
@@ -194,7 +194,8 @@ cargo test
 
 ## Documentation
 
-- **Installation Guide**: [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md)
+- **Build & Installation Guide**: [docs/BUILD.md](https://montge.github.io/asterix/BUILD.html) - Multi-platform build instructions
+- **Complete Documentation**: [montge.github.io/asterix](https://montge.github.io/asterix/) - Full documentation site
 - **Language Bindings Comparison**: [LANGUAGE_BINDINGS_COMPARISON.md](LANGUAGE_BINDINGS_COMPARISON.md) - Feature comparison, performance, use cases
 - **Rust Bindings**: [RUST_BINDINGS_INDEX.md](RUST_BINDINGS_INDEX.md) - Complete Rust documentation
 - **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md)

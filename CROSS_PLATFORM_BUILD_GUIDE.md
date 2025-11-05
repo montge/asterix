@@ -1,5 +1,16 @@
 # Cross-Platform Build Guide
 
+> **⚠️ DEPRECATED:** This file has been consolidated into [docs/BUILD.md](https://montge.github.io/asterix/BUILD.html)
+>
+> Please use the new consolidated build guide at:
+> - **GitHub Pages:** https://montge.github.io/asterix/BUILD.html
+> - **Repository:** [docs/BUILD.md](docs/BUILD.md)
+>
+> The new guide includes all content from this file (Windows, macOS, Linux) plus installation prerequisites and C++23 features.
+> This file will be removed in a future release.
+
+---
+
 This guide provides comprehensive instructions for building the ASTERIX decoder on Windows, macOS, and Linux platforms.
 
 ## Table of Contents

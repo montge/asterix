@@ -1,5 +1,16 @@
 # C++23 Implementation Guide for ASTERIX
 
+> **⚠️ DEPRECATED:** This file has been consolidated into [docs/BUILD.md](https://montge.github.io/asterix/BUILD.html)
+>
+> Please use the new consolidated build guide at:
+> - **GitHub Pages:** https://montge.github.io/asterix/BUILD.html#c23-features-advanced
+> - **Repository:** [docs/BUILD.md](docs/BUILD.md)
+>
+> The new guide includes all C++23 content from this file (feature detection, deduced this, ranges, std::format) integrated with build instructions.
+> This file will be removed in a future release.
+
+---
+
 **Purpose:** Detailed code examples and patterns for C++23 migration
 **Reference:** CPP23_C23_UPGRADE_PLAN.md (main document)
 **Status:** Implementation Ready
