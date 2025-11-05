@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question / Discussion
+    url: https://github.com/montge/asterix/discussions
+    about: Ask questions or discuss ideas in GitHub Discussions
+  - name: Security Vulnerability
+    url: https://github.com/montge/asterix/security/advisories/new
+    about: Report security vulnerabilities privately

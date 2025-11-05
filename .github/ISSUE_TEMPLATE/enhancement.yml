@@ -1,0 +1,120 @@
+name: Enhancement / Feature Request
+description: Propose a new feature or enhancement to the ASTERIX decoder
+title: "[Enhancement]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to propose an enhancement! Please fill out the sections below.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Brief description of the proposed enhancement
+      placeholder: What do you want to add or improve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this enhancement needed?
+      placeholder: What problem does this solve? What use case does it enable?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: How would you implement this enhancement?
+      placeholder: Technical approach, architectural changes, new APIs, etc.
+    validations:
+      required: false
+
+  - type: textarea
+    id: documentation-impact
+    attributes:
+      label: Documentation Impact
+      description: |
+        **REQUIRED:** All enhancements must include documentation updates.
+        Please check all applicable items and describe what needs to be documented.
+      value: |
+        **Files to Update:**
+        - [ ] README.md (if user-facing change)
+        - [ ] docs/ARCHITECTURE.md (if architectural change)
+        - [ ] docs/BUILD.md (if build process changes)
+        - [ ] CONTRIBUTING.md (if developer workflow changes)
+        - [ ] Language-specific READMEs (if binding-specific)
+          - [ ] asterix/README.md (Python)
+          - [ ] asterix-rs/README.md (Rust)
+        - [ ] CHANGELOG.md (always for user-facing changes)
+        - [ ] API documentation (if public API changes)
+
+        **New Documentation Needed:**
+        - [ ] User guide for new feature
+        - [ ] Architecture diagrams (if applicable)
+        - [ ] Code examples / tutorials
+        - [ ] Migration guide (if breaking change)
+
+        **Safety/Security Documentation (if applicable):**
+        - [ ] FFI boundary validation (if touches language bindings)
+        - [ ] Safety-critical design patterns (if core parser changes)
+        - [ ] Performance impact (if optimization or hot path changes)
+
+        **Additional Documentation Notes:**
+        *(Describe what documentation will be added/updated)*
+
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: What must be completed for this enhancement to be considered done?
+      value: |
+        - [ ] Feature implemented and tested
+        - [ ] Unit tests added (>80% coverage)
+        - [ ] Integration tests added (if applicable)
+        - [ ] Documentation updated (see Documentation Impact section)
+        - [ ] All code examples compile and run
+        - [ ] Links validated (no 404s)
+        - [ ] CI/CD passes
+        - [ ] Performance regression check (if applicable)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: safety-critical
+    attributes:
+      label: Safety-Critical Impact
+      description: Does this enhancement affect safety-critical components?
+      options:
+        - "No - Application layer only"
+        - "Yes - Core parser changes"
+        - "Yes - FFI boundary changes"
+        - "Unknown - Needs review"
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: related-issues
+    attributes:
+      label: Related Issues
+      description: Link to related issues or dependencies
+      placeholder: "#123, #456"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context, screenshots, or examples
+    validations:
+      required: false
