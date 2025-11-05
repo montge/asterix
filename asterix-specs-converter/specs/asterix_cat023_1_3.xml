@@ -221,7 +221,7 @@
         <DataItemFormat desc="Variable data item.">
             <Variable>
                 <Fixed length="1">
-                    <Bits from="8" to="1" encode="unsigned">
+                    <Bits from="8" to="2" encode="unsigned">
                         <BitsShortName>RP</BitsShortName>
                         <BitsName>Report Period for Category 021 Reports</BitsName>
                         <BitsUnit scale="1.0">s</BitsUnit>

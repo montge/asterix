@@ -601,10 +601,12 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <Bits from="40" to="1">
-                    <BitsShortName>A</BitsShortName>
-                    <BitsName>Associations</BitsName>
-                </Bits>
+                <Fixed length="5">
+                    <Bits from="40" to="1">
+                        <BitsShortName>A</BitsShortName>
+                        <BitsName>Associations</BitsName>
+                    </Bits>
+                </Fixed>
             </Repetitive>
         </DataItemFormat>
     </DataItem>

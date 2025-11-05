@@ -784,7 +784,7 @@
                 </Bits>
                 <Bits from="14" to="1" encode="signed">
                     <BitsShortName>3DH</BitsShortName>
-                    <BitsName>3D Height, in Binary Notation. Negative Values Are Expressed in Two's Complement</BitsName>
+                    <BitsName>3D Height, in Binary Notation. Negative Values Are Expressed in Two&apos;s Complement</BitsName>
                     <BitsUnit scale="25.0">ft</BitsUnit>
                 </Bits>
             </Fixed>
@@ -852,7 +852,7 @@
                     </Bits>
                     <Bits from="10" to="1" encode="signed">
                         <BitsShortName>CAL</BitsShortName>
-                        <BitsName>Calculated Doppler Speed, Coded in Two's Complement</BitsName>
+                        <BitsName>Calculated Doppler Speed, Coded in Two&apos;s Complement</BitsName>
                         <BitsUnit scale="1.0">m/s</BitsUnit>
                     </Bits>
                 </Fixed>

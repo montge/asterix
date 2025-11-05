@@ -1447,12 +1447,12 @@
                 <Fixed length="10">
                     <Bits from="80" to="49" encode="signed">
                         <BitsShortName>LAT</BitsShortName>
-                        <BitsName>Latitude in WGS-84 in Two’s Complement</BitsName>
+                        <BitsName>Latitude in WGS-84 in Two&apos;s Complement</BitsName>
                         <BitsUnit scale="0.00000536441802978515625" min="-90" max="90">deg</BitsUnit>
                     </Bits>
                     <Bits from="48" to="17" encode="signed">
                         <BitsShortName>LON</BitsShortName>
-                        <BitsName>Longitude in WGS-84 in Two’s Complement</BitsName>
+                        <BitsName>Longitude in WGS-84 in Two&apos;s Complement</BitsName>
                         <BitsUnit scale="0.00000536441802978515625" min="-180" max="180">deg</BitsUnit>
                     </Bits>
                     <Bits from="16" to="1" encode="signed">
@@ -1807,12 +1807,12 @@
                 <Fixed length="10">
                     <Bits from="80" to="49" encode="signed">
                         <BitsShortName>LAT</BitsShortName>
-                        <BitsName>Latitude in WGS-84 in Two’s Complement</BitsName>
+                        <BitsName>Latitude in WGS-84 in Two&apos;s Complement</BitsName>
                         <BitsUnit scale="0.00000536441802978515625" min="-90" max="90">deg</BitsUnit>
                     </Bits>
                     <Bits from="48" to="17" encode="signed">
                         <BitsShortName>LON</BitsShortName>
-                        <BitsName>Longitude in WGS-84 in Two’s Complement</BitsName>
+                        <BitsName>Longitude in WGS-84 in Two&apos;s Complement</BitsName>
                         <BitsUnit scale="0.00000536441802978515625" min="-180" max="180">deg</BitsUnit>
                     </Bits>
                     <Bits from="16" to="1" encode="signed">

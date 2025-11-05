@@ -157,10 +157,12 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <Bits from="24" to="1">
-                    <BitsShortName>MSAL</BitsShortName>
-                    <BitsName>Mode S Address List</BitsName>
-                </Bits>
+                <Fixed length="3">
+                    <Bits from="24" to="1">
+                        <BitsShortName>MSAL</BitsShortName>
+                        <BitsName>Mode S Address List</BitsName>
+                    </Bits>
+                </Fixed>
             </Repetitive>
         </DataItemFormat>
     </DataItem>
@@ -563,11 +565,13 @@
         </DataItemDefinition>
         <DataItemFormat desc="Repetitive data item.">
             <Repetitive>
-                <Bits from="32" to="1" encode="unsigned">
-                    <BitsShortName>PNL</BitsShortName>
-                    <BitsName>Packet Number List</BitsName>
-                    <BitsUnit></BitsUnit>
-                </Bits>
+                <Fixed length="4">
+                    <Bits from="32" to="1" encode="unsigned">
+                        <BitsShortName>PNL</BitsShortName>
+                        <BitsName>Packet Number List</BitsName>
+                        <BitsUnit></BitsUnit>
+                    </Bits>
+                </Fixed>
             </Repetitive>
         </DataItemFormat>
     </DataItem>

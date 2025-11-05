@@ -199,7 +199,7 @@
         <DataItemFormat desc="Variable data item.">
             <Variable>
                 <Fixed length="1">
-                    <Bits from="8" to="1" encode="unsigned">
+                    <Bits from="8" to="2" encode="unsigned">
                         <BitsShortName>SUI</BitsShortName>
                         <BitsName>System Unit Identification</BitsName>
                         <BitsUnit></BitsUnit>
@@ -212,7 +212,7 @@
                     </Bits>
                 </Fixed>
                 <Fixed length="1">
-                    <Bits from="8" to="-6" encode="unsigned">
+                    <Bits from="8" to="2" encode="unsigned">
                         <BitsShortName>STN</BitsShortName>
                         <BitsName>System Track Number</BitsName>
                         <BitsUnit></BitsUnit>
@@ -529,7 +529,7 @@
                         </Bits>
                         <Bits bit="7">
                             <BitsShortName>RVP</BitsShortName>
-                            <BitsName>RVSM & Flight Priority</BitsName>
+                            <BitsName>RVSM &amp; Flight Priority</BitsName>
                             <BitsPresence>2</BitsPresence>
                         </Bits>
                         <Bits bit="6">

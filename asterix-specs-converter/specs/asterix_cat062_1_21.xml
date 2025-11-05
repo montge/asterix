@@ -2242,7 +2242,7 @@
                     </Bits>
                     <Bits from="13" to="1" encode="signed">
                         <BitsShortName>ALT</BitsShortName>
-                        <BitsName>Altitude in Two's Complement Form</BitsName>
+                        <BitsName>Altitude in Two&apos;s Complement Form</BitsName>
                         <BitsUnit scale="25.0" min="-1300" max="100000">ft</BitsUnit>
                     </Bits>
                 </Fixed>
@@ -2268,7 +2268,7 @@
                     </Bits>
                     <Bits from="13" to="1" encode="signed">
                         <BitsShortName>ALT</BitsShortName>
-                        <BitsName>Altitude in Two's Complement Form</BitsName>
+                        <BitsName>Altitude in Two&apos;s Complement Form</BitsName>
                         <BitsUnit scale="25.0" min="-1300" max="100000">ft</BitsUnit>
                     </Bits>
                 </Fixed>
@@ -2329,17 +2329,17 @@
                         </Bits>
                         <Bits from="112" to="97" encode="signed">
                             <BitsShortName>ALT</BitsShortName>
-                            <BitsName>Altitude in Two's Complement Form</BitsName>
+                            <BitsName>Altitude in Two&apos;s Complement Form</BitsName>
                             <BitsUnit scale="10.0" min="-1500" max="150000">ft</BitsUnit>
                         </Bits>
                         <Bits from="96" to="73" encode="signed">
                             <BitsShortName>LAT</BitsShortName>
-                            <BitsName>Latitude in WGS.84 in Two's Complement</BitsName>
+                            <BitsName>Latitude in WGS.84 in Two&apos;s Complement</BitsName>
                             <BitsUnit scale="0.000021457672119140625" min="-90" max="90">deg</BitsUnit>
                         </Bits>
                         <Bits from="72" to="49" encode="signed">
                             <BitsShortName>LON</BitsShortName>
-                            <BitsName>Longitude in WGS.84 in Two's Complement</BitsName>
+                            <BitsName>Longitude in WGS.84 in Two&apos;s Complement</BitsName>
                             <BitsUnit scale="0.000021457672119140625" min="-180" max="180">deg</BitsUnit>
                         </Bits>
                         <Bits from="48" to="45">
@@ -2541,7 +2541,7 @@
                     </Bits>
                     <Bits from="8" to="2" encode="signed">
                         <BitsShortName>ROT</BitsShortName>
-                        <BitsName>Rate of Turn in Two's Complement Form</BitsName>
+                        <BitsName>Rate of Turn in Two&apos;s Complement Form</BitsName>
                         <BitsUnit scale="0.25" min="-15" max="15">deg/s</BitsUnit>
                     </Bits>
                     <Bits bit="1">
@@ -2660,12 +2660,12 @@
                 <Fixed length="6">
                     <Bits from="48" to="25" encode="signed">
                         <BitsShortName>LAT</BitsShortName>
-                        <BitsName>Latitude in WGS.84 in Two's Complement Form</BitsName>
+                        <BitsName>Latitude in WGS.84 in Two&apos;s Complement Form</BitsName>
                         <BitsUnit scale="0.000021457672119140625" min="-90" max="90">deg</BitsUnit>
                     </Bits>
                     <Bits from="24" to="1" encode="signed">
                         <BitsShortName>LON</BitsShortName>
-                        <BitsName>Longitude in WGS.84 in Two's Complement Form</BitsName>
+                        <BitsName>Longitude in WGS.84 in Two&apos;s Complement Form</BitsName>
                         <BitsUnit scale="0.000021457672119140625" min="-180" max="180">deg</BitsUnit>
                     </Bits>
                 </Fixed>
@@ -2691,7 +2691,9 @@
                 </Fixed>
 
                 <Repetitive>
-                    <BDS/>
+                    <Fixed length="8">
+                        <BDS/>
+                    </Fixed>
                 </Repetitive>
 
                 <Fixed length="2">
