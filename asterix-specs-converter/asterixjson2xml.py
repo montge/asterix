@@ -722,6 +722,9 @@ class Fixed(Variation):
             tell('<Fixed length="{}">'.format(byteSize))
             for item in items:
                 n = getItemSize(item)
+                # Skip zero-sized items to avoid invalid bit ranges
+                if n <= 0:
+                    continue
                 bitsTo = bitsFrom - n + 1
                 with indent:
                     Bits(self, item, bitsFrom, bitsTo).render()
@@ -756,12 +759,19 @@ class Variable(Variation):
                                 break
                             continue
                         n = getItemSize(item)
+                        # Skip zero-sized items to avoid invalid bit ranges
+                        if n <= 0:
+                            continue
                         bitsTo = bitsFrom - n + 1
                         # Ensure bitsTo doesn't go negative or below FX bit position
                         # In Variable structures with FX, minimum bitsTo is 2 (bit 1 is FX)
                         if bitsTo < 2:
                             # Item size exceeds available space, clamp to minimum
                             bitsTo = 2
+                            # Ensure bitsTo doesn't exceed bitsFrom (would create invalid range)
+                            if bitsTo > bitsFrom:
+                                # No room for this item, skip it
+                                break
                             n = bitsFrom - bitsTo + 1  # Recalculate actual size used
                         Bits(self, item, bitsFrom, bitsTo).render()
                         bitsFrom -= n
@@ -820,6 +830,9 @@ class Repetitive(Variation):
                     bitsFrom = bitSize
                     for item in items:
                         n = getItemSize(item)
+                        # Skip zero-sized items to avoid invalid bit ranges
+                        if n <= 0:
+                            continue
                         bitsTo = bitsFrom - n + 1
                         with indent:
                             Bits(self, item, bitsFrom, bitsTo).render()

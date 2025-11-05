@@ -3345,10 +3345,6 @@
         <DataItemFormat desc="Variable data item.">
             <Variable>
                 <Fixed length="1">
-                    <Bits from="8" to="9">
-                        <BitsShortName>CTN</BitsShortName>
-                        <BitsName>Composed Track Number</BitsName>
-                    </Bits>
                     <Bits bit="1" fx="1">
                         <BitsShortName>FX</BitsShortName>
                         <BitsName>Extension Indicator</BitsName>
