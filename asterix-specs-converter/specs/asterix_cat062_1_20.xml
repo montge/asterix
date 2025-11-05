@@ -2656,9 +2656,7 @@
                 </Fixed>
 
                 <Repetitive>
-                    <Fixed length="8">
-                        <BDS/>
-                    </Fixed>
+                    <BDS/>
                 </Repetitive>
 
                 <Fixed length="2">
