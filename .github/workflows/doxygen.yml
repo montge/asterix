@@ -60,26 +60,47 @@ jobs:
           sed -i "s|^PROJECT_NUMBER.*|PROJECT_NUMBER         = \"${VERSION}\"|" Doxyfile
           echo "Updated Doxyfile PROJECT_NUMBER to ${VERSION}"
 
-      - name: Generate documentation
+      - name: Setup Ruby for Jekyll
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: false
+
+      - name: Generate C++ API documentation with Doxygen
         run: |
           doxygen Doxyfile
 
-      - name: Copy _config.yml to docs directory
+      - name: Build site with Jekyll
         run: |
-          cp _config.yml docs/
-          # Create .nojekyll to disable Jekyll processing (we're using GitHub Actions deploy)
-          touch docs/.nojekyll
+          cd docs
+          # _config.yml and Gemfile should be committed in docs/
+          # Install dependencies
+          bundle install
+          # Build Jekyll site (output to _site)
+          bundle exec jekyll build
+          # Move built site back to docs root (overwriting .md files with .html)
+          cp -r _site/* .
+          rm -rf _site
 
       - name: Verify generated files
         run: |
           echo "=== Contents of docs/ directory ==="
           ls -laR docs/ | head -100
-          echo "=== Checking for index.html in cpp/html/ ==="
+          echo "=== Checking for main index.html ==="
+          if [ -f "docs/index.html" ]; then
+            echo "✓ docs/index.html exists (Jekyll build successful)"
+            ls -lh docs/index.html
+          else
+            echo "✗ docs/index.html NOT FOUND (Jekyll build failed)"
+            exit 1
+          fi
+          echo "=== Checking for C++ API index.html ==="
           if [ -f "docs/cpp/html/index.html" ]; then
-            echo "✓ docs/cpp/html/index.html exists"
+            echo "✓ docs/cpp/html/index.html exists (Doxygen build successful)"
             ls -lh docs/cpp/html/index.html
           else
-            echo "✗ docs/cpp/html/index.html NOT FOUND"
+            echo "✗ docs/cpp/html/index.html NOT FOUND (Doxygen build failed)"
+            exit 1
           fi
           echo "=== File count in cpp/html/ ==="
           find docs/cpp/html -type f | wc -l
