@@ -136,7 +136,7 @@ let records = parser.parse(&data)?;
 
 - **Documentation Issues:** [File a bug](https://github.com/montge/asterix/issues)
 - **Questions:** [GitHub Discussions](https://github.com/montge/asterix/discussions)
-- **Security:** See [SECURITY.md](../SECURITY.md)
+- **Security:** See [SECURITY.md](https://github.com/montge/asterix/blob/master/SECURITY.md)
 
 ---
 
