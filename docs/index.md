@@ -75,22 +75,17 @@ let records = parser.parse(&data)?;
 ### Getting Started
 - **[Build & Installation Guide](BUILD.html)** - Multi-platform build instructions
 - **[Quick Start Examples](https://github.com/montge/asterix#quick-start)** - Get running in 5 minutes
-- **[Language Comparison](LANGUAGE_COMPARISON.html)** - Feature/performance comparison
+- **[C++ API Reference](cpp/html/)** - Complete C++ API documentation
 
-### User Guides
-- **[ASTERIX Categories](CATEGORIES.html)** - Supported categories and versions
-- **[Configuration](CONFIGURATION.html)** - XML category definitions
-- **[Performance Guide](PERFORMANCE.html)** - Optimization and benchmarking
-
-### Technical Documentation
-- **[Architecture](ARCHITECTURE.html)** - System design and components
-- **[Security](../SECURITY.md)** - Security policy and audit
-- **[Performance Optimizations](../PERFORMANCE_OPTIMIZATIONS.md)** - 55-61% speedup details
+### Technical Resources
+- **[GitHub Repository](https://github.com/montge/asterix)** - Source code and examples
+- **[Performance Optimizations](https://github.com/montge/asterix/blob/master/PERFORMANCE_OPTIMIZATIONS.md)** - 55-61% speedup details
+- **[Security Policy](https://github.com/montge/asterix/blob/master/SECURITY.md)** - Security audit and policy
 
 ### Development
-- **[Contributing Guide](../CONTRIBUTING.md)** - How to contribute
-- **[Testing Guide](TESTING.html)** - Running tests and coverage
-- **[DO-278 Compliance](../do-278/README.md)** - Aviation safety certification
+- **[Contributing Guide](https://github.com/montge/asterix/blob/master/CONTRIBUTING.md)** - How to contribute
+- **[DO-278 Compliance](https://github.com/montge/asterix/tree/master/do-278)** - Aviation safety certification
+- **[Issue Tracker](https://github.com/montge/asterix/issues)** - Report bugs or request features
 
 ---
 
