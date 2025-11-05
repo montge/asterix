@@ -1,0 +1,120 @@
+name: Bug Report
+description: Report a bug or unexpected behavior in the ASTERIX decoder
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the sections below.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of the bug
+      placeholder: What happened? What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this bug?
+      placeholder: |
+        1. Run `asterix -f sample.pcap -j`
+        2. Observe error message
+        3. Expected correct JSON output
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which component is affected?
+      options:
+        - "C++ Executable"
+        - "Python Module"
+        - "Rust Crate"
+        - "Build System (CMake)"
+        - "Documentation"
+        - "CI/CD"
+        - "Other"
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of the ASTERIX decoder are you using?
+      placeholder: "v2.8.10, commit abc123, or latest master"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: What platform are you running on?
+      options:
+        - "Linux"
+        - "Windows"
+        - "macOS"
+        - "Other"
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment Details
+      description: Compiler version, Python version, Rust version, etc.
+      placeholder: |
+        - OS: Ubuntu 24.04
+        - Compiler: GCC 13.2
+        - Python: 3.12.0
+        - Rust: 1.87.0
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error Logs / Output
+      description: Copy-paste any error messages or unexpected output
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: documentation-impact
+    attributes:
+      label: Documentation Impact
+      description: |
+        If this bug is fixed, does documentation need to be updated?
+      value: |
+        **Documentation Updates Needed (if bug is fixed):**
+        - [ ] None - bug fix doesn't affect documentation
+        - [ ] README.md (if user-facing behavior changes)
+        - [ ] docs/BUILD.md (if build process affected)
+        - [ ] CHANGELOG.md (document bug fix)
+        - [ ] Known Issues section (if workaround exists)
+        - [ ] API documentation (if API behavior changes)
+
+        **Additional Notes:**
+        *(Describe any documentation that should be updated after the fix)*
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context, screenshots, or examples
+    validations:
+      required: false
