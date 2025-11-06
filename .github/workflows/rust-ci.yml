@@ -5,6 +5,8 @@ on:
     branches: [ master, develop, 'feature/**', 'rust/**' ]
   pull_request:
     branches: [ master, develop ]
+  schedule:
+    - cron: '0 3 * * *'  # 3 AM UTC daily (after nightly-security.yml at 2 AM)
   workflow_dispatch:
 
 permissions:
@@ -367,11 +369,12 @@ jobs:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   # =============================================================================
-  # BENCHMARKS
+  # BENCHMARKS (Nightly only)
   # =============================================================================
   benchmark:
     name: Benchmarks
     runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
 
     steps:
     - name: Checkout repository
@@ -400,11 +403,12 @@ jobs:
       continue-on-error: true
 
   # =============================================================================
-  # SECURITY AUDIT
+  # SECURITY AUDIT (Nightly only)
   # =============================================================================
   security:
     name: Security Audit
     runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
 
     steps:
     - name: Checkout repository
@@ -421,7 +425,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         working-directory: asterix-rs
-      continue-on-error: true
+      continue-on-error: false
 
     - name: Run cargo-deny (advisories check)
       run: |
@@ -448,11 +452,12 @@ jobs:
       continue-on-error: true
 
   # =============================================================================
-  # MEMORY SAFETY CHECKS
+  # MEMORY SAFETY CHECKS (Nightly only)
   # =============================================================================
   memory-safety:
     name: Memory Safety (Valgrind)
     runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
 
     steps:
     - name: Checkout repository
@@ -486,9 +491,9 @@ jobs:
             --show-leak-kinds=all \
             --track-origins=yes \
             --error-exitcode=1 \
-            "$TEST_BINARY" --test-threads=1 || echo "Valgrind found issues"
+            "$TEST_BINARY" --test-threads=1
         fi
-      continue-on-error: true
+      continue-on-error: false
 
   # =============================================================================
   # BUILD DOCUMENTATION
@@ -593,11 +598,12 @@ jobs:
       continue-on-error: false
 
   # =============================================================================
-  # COMPARE PERFORMANCE WITH PYTHON
+  # COMPARE PERFORMANCE WITH PYTHON (Nightly only)
   # =============================================================================
   performance-comparison:
     name: Performance Comparison
     runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
 
     steps:
     - name: Checkout repository
