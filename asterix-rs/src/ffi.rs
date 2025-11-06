@@ -175,6 +175,25 @@ pub fn init_default() -> Result<()> {
 
 /// Initialize ASTERIX with specific config directory
 pub fn init_config_dir(config_dir: &str) -> Result<()> {
+    // MEDIUM-004 FIX: Validate directory path parameter
+    if config_dir.is_empty() {
+        return Err(AsterixError::InvalidData("Directory path cannot be empty".to_string()));
+    }
+
+    // MEDIUM-004 FIX: Check for path traversal attacks
+    if config_dir.contains("..") {
+        return Err(AsterixError::InvalidData(
+            "Invalid directory path: path traversal detected (..)".to_string(),
+        ));
+    }
+
+    // MEDIUM-004 FIX: Validate path length
+    if config_dir.len() > 4096 {
+        return Err(AsterixError::InvalidData(
+            "Directory path too long (maximum 4096 characters)".to_string(),
+        ));
+    }
+
     let c_str = std::ffi::CString::new(config_dir)?;
 
     unsafe {
@@ -190,6 +209,25 @@ pub fn init_config_dir(config_dir: &str) -> Result<()> {
 
 /// Load a category definition file
 pub fn load_category(xml_path: &str) -> Result<()> {
+    // MEDIUM-004 FIX: Validate filename parameter
+    if xml_path.is_empty() {
+        return Err(AsterixError::InvalidData("Filename cannot be empty".to_string()));
+    }
+
+    // MEDIUM-004 FIX: Check for path traversal attacks
+    if xml_path.contains("..") {
+        return Err(AsterixError::InvalidData(
+            "Invalid filename: path traversal detected (..)".to_string(),
+        ));
+    }
+
+    // MEDIUM-004 FIX: Validate filename length
+    if xml_path.len() > 4096 {
+        return Err(AsterixError::InvalidData(
+            "Filename too long (maximum 4096 characters)".to_string(),
+        ));
+    }
+
     let c_str = std::ffi::CString::new(xml_path)?;
 
     unsafe {
@@ -268,6 +306,14 @@ pub fn describe(
     field: Option<&str>,
     value: Option<&str>,
 ) -> Result<String> {
+    // MEDIUM-003 FIX: Validate category is within valid ASTERIX range
+    // Category 0 is not valid in ASTERIX (valid range: 1-255)
+    if category == 0 {
+        return Err(AsterixError::InvalidData(
+            "Invalid ASTERIX category: 0 (valid range: 1-255)".to_string(),
+        ));
+    }
+
     unsafe {
         let item_ptr = item.map(|s| s.as_ptr()).unwrap_or(std::ptr::null());
         let item_len = item.map(|s| s.len()).unwrap_or(0);

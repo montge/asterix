@@ -64,11 +64,36 @@ init(PyObject *self, PyObject *args, PyObject *kwargs) {
         PyErr_SetString(PyExc_ValueError, "Parameter must be string containing path to XML configuration file");
         return NULL;
     }
+
+    // MEDIUM-004 FIX: Validate filename parameter
+    if (ini_filename == NULL || strlen(ini_filename) == 0) {
+        PyErr_SetString(PyExc_ValueError, "Filename cannot be empty");
+        return NULL;
+    }
+
+    // MEDIUM-004 FIX: Check for path traversal attacks
+    if (strstr(ini_filename, "..") != NULL) {
+        PyErr_SetString(PyExc_ValueError,
+            "Invalid filename: path traversal detected (..)");
+        return NULL;
+    }
+
+    // MEDIUM-004 FIX: Validate filename length
+    if (strlen(ini_filename) > 4096) {
+        PyErr_SetString(PyExc_ValueError,
+            "Filename too long (maximum 4096 characters)");
+        return NULL;
+    }
+
     int ret = python_init(ini_filename);
     if (ret == 0) {
         bInitialized = 1;
         return Py_BuildValue("i", 0);
     }
+
+    // MEDIUM-004 FIX: Provide better error message on initialization failure
+    PyErr_Format(PyExc_RuntimeError,
+        "Failed to initialize ASTERIX parser with file: %s", ini_filename);
     return NULL;
 }
 
@@ -93,6 +118,14 @@ describe(PyObject *self, PyObject *args, PyObject *kwargs) {
     } else {
         if (!PyArg_ParseTuple(args, "isss", &category, &item, &field, &value))
             return NULL;
+    }
+
+    // MEDIUM-003 FIX: Validate category is within valid ASTERIX range
+    if (category < 1 || category > 255) {
+        PyErr_Format(PyExc_ValueError,
+            "Invalid ASTERIX category: %d (valid range: 1-255)",
+            category);
+        return NULL;
     }
 
     return python_describe(category, item, field, value);
