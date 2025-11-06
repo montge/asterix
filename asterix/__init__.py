@@ -10,6 +10,16 @@ Asterix application was developed by Croatia Control Ltd.
 
 This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. See COPYING file for details.
 
+**Thread Safety Warning**:
+    This module is NOT thread-safe. The ASTERIX parser uses global state to manage category
+    definitions (AsterixDefinition singleton in C++). Concurrent calls to parse(), init(), or
+    describe() from multiple threads will cause race conditions and undefined behavior.
+
+    If you need to parse ASTERIX data from multiple threads, use one of these approaches:
+    - Use a process-level lock (threading.Lock or multiprocessing.Lock) around all asterix calls
+    - Use separate processes instead of threads (multiprocessing.Process)
+    - Ensure all asterix operations happen in a single thread
+
 Example:
 
     # Import the asterix module::
