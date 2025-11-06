@@ -325,17 +325,31 @@ fn parse_items_from_json(json_str: &str) -> Result<BTreeMap<String, DataItem>> {
             return Ok(BTreeMap::new());
         }
 
-        // Try to parse JSON, but handle common failure cases gracefully
-        let value: Value = match serde_json::from_str(json_str) {
-            Ok(v) => v,
-            Err(e) => {
-                // If JSON parsing fails, it likely means C++ returned malformed data
-                // This can happen with PCAP files or other encapsulated formats
-                // Return empty items instead of propagating the error
-                eprintln!("Warning: Failed to parse JSON from C++ ({e}), returning empty items");
-                return Ok(BTreeMap::new());
+        // MEDIUM-006 FIX: Validate JSON before parsing
+        // Check for obviously malformed JSON (unbalanced braces, control characters)
+        let brace_count = json_str.chars().fold((0i32, 0i32), |(open, close), c| {
+            match c {
+                '{' => (open + 1, close),
+                '}' => (open, close + 1),
+                _ => (open, close),
             }
-        };
+        });
+
+        if brace_count.0 != brace_count.1 {
+            return Err(AsterixError::InvalidData(format!(
+                "Malformed JSON from C++: unbalanced braces ({} open, {} close)",
+                brace_count.0, brace_count.1
+            )));
+        }
+
+        // MEDIUM-006 FIX: Parse JSON and return proper error on failure
+        // Do not silently swallow JSON parsing errors
+        let value: Value = serde_json::from_str(json_str).map_err(|e| {
+            AsterixError::InvalidData(format!(
+                "Failed to parse JSON from C++: {e}\nJSON snippet: {}",
+                &json_str.chars().take(100).collect::<String>()
+            ))
+        })?;
 
         let mut items = BTreeMap::new();
 
