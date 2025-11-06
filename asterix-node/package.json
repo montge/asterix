@@ -1,0 +1,66 @@
+{
+  "name": "asterix-decoder",
+  "version": "2.8.10",
+  "description": "ASTERIX (All Purpose STructured EUROCONTROL SuRveillance Information EXchange) decoder for Node.js - Parses ASTERIX protocol data for Air Traffic Management systems",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "install": "node-gyp rebuild",
+    "build": "node-gyp rebuild",
+    "build:debug": "node-gyp rebuild --debug",
+    "test": "mocha test/**/*.test.js",
+    "test:coverage": "nyc mocha test/**/*.test.js",
+    "lint": "eslint lib/ test/",
+    "format": "prettier --write 'lib/**/*.js' 'test/**/*.js' 'examples/**/*.js'",
+    "benchmark": "node test/benchmark.js"
+  },
+  "keywords": [
+    "asterix",
+    "eurocontrol",
+    "atm",
+    "air-traffic-management",
+    "surveillance",
+    "radar",
+    "adsb",
+    "mlat",
+    "cat062",
+    "cat048",
+    "cat021",
+    "parser",
+    "decoder"
+  ],
+  "author": "ASTERIX Contributors",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/montge/asterix.git",
+    "directory": "asterix-node"
+  },
+  "homepage": "https://montge.github.io/asterix/",
+  "bugs": {
+    "url": "https://github.com/montge/asterix/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "node-addon-api": "^8.0.0",
+    "node-gyp": "^10.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^10.0.0",
+    "chai": "^4.3.0",
+    "nyc": "^15.1.0",
+    "eslint": "^8.0.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-security": "^1.7.0",
+    "prettier": "^3.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "gypfile": true,
+  "binary": {
+    "module_name": "asterix",
+    "module_path": "./build/Release",
+    "host": "https://github.com/montge/asterix/releases/download/"
+  }
+}
