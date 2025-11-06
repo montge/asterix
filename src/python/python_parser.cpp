@@ -84,7 +84,7 @@ int python_init(const char *xml_config_file) {
         XMLParser Parser;
         if (!Parser.Parse(fp, pDefinition, xml_config_file)) {
             fclose(fp);
-            PyErr_SetString(PyExc_SyntaxError, "Failed to parse XML configuration file.");
+            // XMLParser.Parse() already sets PyErr via Tracer, don't override it
             return -2;
         }
         fclose(fp);
