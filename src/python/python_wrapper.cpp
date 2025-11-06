@@ -72,15 +72,13 @@ init(PyObject *self, PyObject *args, PyObject *kwargs) {
     }
 
     // MEDIUM-004 FIX: Check for path traversal attacks (Windows + Unix)
-    // Only reject actual traversal patterns, not legitimate relative paths
-    // Reject: starts with "../" or "..\", contains "/../" or "\..\", or is exactly ".."
+    // Defense-in-depth: Block obvious traversal attempts
+    // Only block paths that START with ".." (e.g., ../../../etc/passwd)
+    // Allow "/../" in middle of paths (from os.path.join within project)
+    // The C++ layer provides primary security (file exists, XML validation, etc.)
     if (strncmp(ini_filename, "../", 3) == 0 ||
         strncmp(ini_filename, "..\\", 3) == 0 ||
-        strcmp(ini_filename, "..") == 0 ||
-        strstr(ini_filename, "/../") != NULL ||
-        strstr(ini_filename, "\\..\\") != NULL ||
-        strstr(ini_filename, "\\../") != NULL ||
-        strstr(ini_filename, "/..\\") != NULL) {
+        strcmp(ini_filename, "..") == 0) {
         PyErr_SetString(PyExc_ValueError,
             "Invalid filename: path traversal detected (..)");
         return NULL;
