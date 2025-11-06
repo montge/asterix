@@ -5,6 +5,8 @@ on:
     branches: [ master, develop, 'feature/**', 'cross-platform/**' ]
   pull_request:
     branches: [ master, develop ]
+  schedule:
+    - cron: '0 4 * * *'  # 4 AM UTC daily (after rust-ci nightly at 3 AM)
   workflow_dispatch:
     inputs:
       build_type:
@@ -735,11 +737,12 @@ jobs:
         retention-days: 14
 
   # =============================================================================
-  # PYTHON WHEELS BUILD (cibuildwheel for cross-platform wheel building)
+  # PYTHON WHEELS BUILD (Nightly only - cibuildwheel for cross-platform wheel building)
   # =============================================================================
   build-python-wheels:
     name: Python wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
 
     strategy:
       fail-fast: false

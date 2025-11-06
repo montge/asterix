@@ -25,7 +25,6 @@ jobs:
         id: miri
         working-directory: asterix-rs
         run: cargo +nightly miri test
-        continue-on-error: true
 
       - name: Create issue on failure
         if: failure() && steps.miri.outcome == 'failure'
@@ -95,7 +94,6 @@ jobs:
           valgrind --leak-check=full --show-leak-kinds=all \
             --error-exitcode=1 --suppressions=.valgrind.supp \
             python3 -m pytest asterix/test/test_ffi_security.py -v
-        continue-on-error: true
 
       - name: Create issue on failure
         if: failure() && steps.valgrind.outcome == 'failure'
@@ -165,7 +163,6 @@ jobs:
         run: |
           ASAN_OPTIONS=detect_leaks=1:symbolize=1 \
           python3 -m pytest asterix/test/test_ffi_security.py -v
-        continue-on-error: true
 
       - name: Create issue on failure
         if: failure() && steps.asan.outcome == 'failure'
