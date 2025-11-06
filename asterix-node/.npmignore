@@ -1,0 +1,37 @@
+# npm package exclusions
+# Only include necessary files for users
+
+# Source files (users will rebuild with node-gyp)
+examples/
+test/
+
+# Documentation (except README)
+IMPLEMENTATION_SUMMARY.md
+
+# Build artifacts
+build/Debug/
+build/Release/*.node.dSYM/
+
+# Development files
+.github/
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.travis.yml
+.gitlab-ci.yml
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+
+# Temporary
+*.tmp
+*.swp

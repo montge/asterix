@@ -1,0 +1,46 @@
+# Node.js bindings .gitignore
+
+# Build outputs
+build/
+*.node
+*.a
+*.so
+*.dylib
+*.dll
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Dependency locks (keep package.json, ignore locks for library)
+package-lock.json
+yarn.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.orig
+
+# Build artifacts
+*.tgz
+dist/
+
+# Local test data (use test/data/ for committed test files)
+test/local/
