@@ -37,10 +37,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022]
+        os: [windows-2022, windows-2025]
         config: [Release, Debug]
         include:
           - os: windows-2022
+            msvc_version: '2022'
+            toolset: 'v143'
+          - os: windows-2025
             msvc_version: '2022'
             toolset: 'v143'
 
@@ -152,8 +155,8 @@ jobs:
 
         Write-Host "`n=== Tests completed ===" -ForegroundColor Green
 
-    - name: Create Windows installers (Windows 2022 Release only)
-      if: matrix.os == 'windows-2022' && matrix.config == 'Release'
+    - name: Create Windows installers (Windows Release only)
+      if: startsWith(matrix.os, 'windows-') && matrix.config == 'Release'
       run: |
         cd build
 
