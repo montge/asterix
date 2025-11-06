@@ -52,7 +52,7 @@ fn main() {
                     eprintln!("  Link paths: {:?}", lib.link_paths);
                 }
                 Err(e) => {
-                    eprintln!("Warning: vcpkg could not find expat: {}", e);
+                    eprintln!("Warning: vcpkg could not find expat: {e}");
                     eprintln!("Falling back to manual linking (may fail with LNK1181 error)");
                     println!("cargo:rustc-link-lib=expat");
                 }
@@ -104,10 +104,7 @@ fn compile_cpp_with_ffi_bridge() {
                 }
             }
             Err(e) => {
-                eprintln!(
-                    "Warning: vcpkg could not find expat during compile phase: {}",
-                    e
-                );
+                eprintln!("Warning: vcpkg could not find expat during compile phase: {e}");
                 eprintln!("Attempting manual vcpkg path detection as fallback...");
 
                 // Fallback: Try manual path detection using VCPKG_DEFAULT_TRIPLET
@@ -120,8 +117,8 @@ fn compile_cpp_with_ffi_bridge() {
                             .replace("\\scripts\\buildsystems\\vcpkg.cmake", "")
                     })
                 }) {
-                    let vcpkg_include = format!("{}/installed/{}/include", vcpkg_root, triplet);
-                    eprintln!("  Trying fallback include path: {}", vcpkg_include);
+                    let vcpkg_include = format!("{vcpkg_root}/installed/{triplet}/include");
+                    eprintln!("  Trying fallback include path: {vcpkg_include}");
 
                     if std::path::Path::new(&vcpkg_include).exists() {
                         bridge.include(&vcpkg_include);
