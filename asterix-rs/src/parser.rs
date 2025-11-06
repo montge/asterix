@@ -325,9 +325,19 @@ fn parse_items_from_json(json_str: &str) -> Result<BTreeMap<String, DataItem>> {
             return Ok(BTreeMap::new());
         }
 
-        // MEDIUM-006 FIX: Validate JSON before parsing
-        // Check for obviously malformed JSON (unbalanced braces, control characters)
-        let brace_count = json_str
+        // MEDIUM-006 FIX: Handle newline-delimited JSON (NDJSON) from C++
+        // C++ may return multiple JSON objects separated by newlines
+        // Parse only the first line/object if multiple exist
+        let json_to_parse = if trimmed.contains('\n') {
+            // Multiple lines - take only the first JSON object
+            trimmed.lines().next().unwrap_or(trimmed)
+        } else {
+            trimmed
+        };
+
+        // MEDIUM-006 FIX: Validate JSON structure before parsing
+        // Check for obviously malformed JSON (unbalanced braces)
+        let brace_count = json_to_parse
             .chars()
             .fold((0i32, 0i32), |(open, close), c| match c {
                 '{' => (open + 1, close),
@@ -344,10 +354,10 @@ fn parse_items_from_json(json_str: &str) -> Result<BTreeMap<String, DataItem>> {
 
         // MEDIUM-006 FIX: Parse JSON and return proper error on failure
         // Do not silently swallow JSON parsing errors
-        let value: Value = serde_json::from_str(json_str).map_err(|e| {
+        let value: Value = serde_json::from_str(json_to_parse).map_err(|e| {
             AsterixError::InvalidData(format!(
                 "Failed to parse JSON from C++: {e}\nJSON snippet: {}",
-                &json_str.chars().take(100).collect::<String>()
+                &json_to_parse.chars().take(100).collect::<String>()
             ))
         })?;
 
