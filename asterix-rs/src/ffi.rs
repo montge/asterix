@@ -180,8 +180,16 @@ pub fn init_config_dir(config_dir: &str) -> Result<()> {
         return Err(AsterixError::InvalidData("Directory path cannot be empty".to_string()));
     }
 
-    // MEDIUM-004 FIX: Check for path traversal attacks
-    if config_dir.contains("..") {
+    // MEDIUM-004 FIX: Check for path traversal attacks (Windows + Unix)
+    // Only reject actual traversal patterns, not legitimate relative paths
+    // Reject: starts with "../" or "..\", contains "/../" or "\..\", or is exactly ".."
+    if config_dir.starts_with("../") ||
+       config_dir.starts_with("..\\") ||
+       config_dir == ".." ||
+       config_dir.contains("/../") ||
+       config_dir.contains("\\..\\") ||
+       config_dir.contains("\\../") ||
+       config_dir.contains("/..\\") {
         return Err(AsterixError::InvalidData(
             "Invalid directory path: path traversal detected (..)".to_string(),
         ));
@@ -214,8 +222,16 @@ pub fn load_category(xml_path: &str) -> Result<()> {
         return Err(AsterixError::InvalidData("Filename cannot be empty".to_string()));
     }
 
-    // MEDIUM-004 FIX: Check for path traversal attacks
-    if xml_path.contains("..") {
+    // MEDIUM-004 FIX: Check for path traversal attacks (Windows + Unix)
+    // Only reject actual traversal patterns, not legitimate relative paths
+    // Reject: starts with "../" or "..\", contains "/../" or "\..\", or is exactly ".."
+    if xml_path.starts_with("../") ||
+       xml_path.starts_with("..\\") ||
+       xml_path == ".." ||
+       xml_path.contains("/../") ||
+       xml_path.contains("\\..\\") ||
+       xml_path.contains("\\../") ||
+       xml_path.contains("/..\\") {
         return Err(AsterixError::InvalidData(
             "Invalid filename: path traversal detected (..)".to_string(),
         ));
