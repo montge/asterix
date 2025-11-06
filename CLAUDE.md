@@ -488,18 +488,6 @@ For comprehensive architecture documentation, refer to:
 4. **Comprehensive Testing** - >80% coverage, fuzz testing, memory leak testing
 5. **Performance** - Buffer reuse, string reserve, zero-copy where possible
 
-## Upstream Repository
-
-Original repository: https://github.com/CroatiaControlLtd/asterix
-
-When updating from upstream:
-```bash
-git remote add upstream https://github.com/CroatiaControlLtd/asterix.git
-git fetch upstream
-git merge upstream/master --ff-only
-git push origin master
-```
-
 ## Performance Optimizations Completed
 
 The codebase has been optimized through 6 Quick Wins achieving **55-61% cumulative speedup** (as of 2025-10-20):
