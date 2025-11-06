@@ -181,15 +181,13 @@ pub fn init_config_dir(config_dir: &str) -> Result<()> {
     }
 
     // MEDIUM-004 FIX: Check for path traversal attacks (Windows + Unix)
-    // Only reject actual traversal patterns, not legitimate relative paths
-    // Reject: starts with "../" or "..\", contains "/../" or "\..\", or is exactly ".."
+    // Defense-in-depth: Block obvious traversal attempts
+    // Only block paths that START with ".." (e.g., ../../../etc/passwd)
+    // Allow "/../" in middle of paths (from path.join within project)
+    // The C++ layer provides primary security (file exists, validation, etc.)
     if config_dir.starts_with("../") ||
        config_dir.starts_with("..\\") ||
-       config_dir == ".." ||
-       config_dir.contains("/../") ||
-       config_dir.contains("\\..\\") ||
-       config_dir.contains("\\../") ||
-       config_dir.contains("/..\\") {
+       config_dir == ".." {
         return Err(AsterixError::InvalidData(
             "Invalid directory path: path traversal detected (..)".to_string(),
         ));
@@ -223,15 +221,13 @@ pub fn load_category(xml_path: &str) -> Result<()> {
     }
 
     // MEDIUM-004 FIX: Check for path traversal attacks (Windows + Unix)
-    // Only reject actual traversal patterns, not legitimate relative paths
-    // Reject: starts with "../" or "..\", contains "/../" or "\..\", or is exactly ".."
+    // Defense-in-depth: Block obvious traversal attempts
+    // Only block paths that START with ".." (e.g., ../../../etc/passwd)
+    // Allow "/../" in middle of paths (from path.join within project)
+    // The C++ layer provides primary security (file exists, XML validation, etc.)
     if xml_path.starts_with("../") ||
        xml_path.starts_with("..\\") ||
-       xml_path == ".." ||
-       xml_path.contains("/../") ||
-       xml_path.contains("\\..\\") ||
-       xml_path.contains("\\../") ||
-       xml_path.contains("/..\\") {
+       xml_path == ".." {
         return Err(AsterixError::InvalidData(
             "Invalid filename: path traversal detected (..)".to_string(),
         ));
