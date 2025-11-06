@@ -173,8 +173,7 @@ pub fn parse_with_offset(
     // HIGH-002 equivalent: Limit blocks_count to reasonable maximum
     if blocks_count > MAX_BLOCKS_PER_CALL {
         return Err(AsterixError::InvalidData(format!(
-            "blocks_count {} exceeds maximum ({})",
-            blocks_count, MAX_BLOCKS_PER_CALL
+            "blocks_count {blocks_count} exceeds maximum ({MAX_BLOCKS_PER_CALL})"
         )));
     }
 
