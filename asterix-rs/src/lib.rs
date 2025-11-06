@@ -30,7 +30,7 @@
 //! If you need to parse ASTERIX data from multiple threads, use one of these approaches:
 //!
 //! 1. **Single-threaded parsing** (recommended):
-//!    ```no_run
+//!    ```ignore
 //!    use asterix::{parse, ParseOptions, init_default};
 //!
 //!    # fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -49,7 +49,7 @@
 //!    ```
 //!
 //! 2. **Mutex-protected access**:
-//!    ```no_run
+//!    ```ignore
 //!    use asterix::{parse, ParseOptions};
 //!    use std::sync::Mutex;
 //!
