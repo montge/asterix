@@ -327,13 +327,13 @@ fn parse_items_from_json(json_str: &str) -> Result<BTreeMap<String, DataItem>> {
 
         // MEDIUM-006 FIX: Validate JSON before parsing
         // Check for obviously malformed JSON (unbalanced braces, control characters)
-        let brace_count = json_str.chars().fold((0i32, 0i32), |(open, close), c| {
-            match c {
+        let brace_count = json_str
+            .chars()
+            .fold((0i32, 0i32), |(open, close), c| match c {
                 '{' => (open + 1, close),
                 '}' => (open, close + 1),
                 _ => (open, close),
-            }
-        });
+            });
 
         if brace_count.0 != brace_count.1 {
             return Err(AsterixError::InvalidData(format!(

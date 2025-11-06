@@ -177,7 +177,9 @@ pub fn init_default() -> Result<()> {
 pub fn init_config_dir(config_dir: &str) -> Result<()> {
     // MEDIUM-004 FIX: Validate directory path parameter
     if config_dir.is_empty() {
-        return Err(AsterixError::InvalidData("Directory path cannot be empty".to_string()));
+        return Err(AsterixError::InvalidData(
+            "Directory path cannot be empty".to_string(),
+        ));
     }
 
     // MEDIUM-004 FIX: Check for path traversal attacks (Windows + Unix)
@@ -185,9 +187,7 @@ pub fn init_config_dir(config_dir: &str) -> Result<()> {
     // Only block paths that START with ".." (e.g., ../../../etc/passwd)
     // Allow "/../" in middle of paths (from path.join within project)
     // The C++ layer provides primary security (file exists, validation, etc.)
-    if config_dir.starts_with("../") ||
-       config_dir.starts_with("..\\") ||
-       config_dir == ".." {
+    if config_dir.starts_with("../") || config_dir.starts_with("..\\") || config_dir == ".." {
         return Err(AsterixError::InvalidData(
             "Invalid directory path: path traversal detected (..)".to_string(),
         ));
@@ -217,7 +217,9 @@ pub fn init_config_dir(config_dir: &str) -> Result<()> {
 pub fn load_category(xml_path: &str) -> Result<()> {
     // MEDIUM-004 FIX: Validate filename parameter
     if xml_path.is_empty() {
-        return Err(AsterixError::InvalidData("Filename cannot be empty".to_string()));
+        return Err(AsterixError::InvalidData(
+            "Filename cannot be empty".to_string(),
+        ));
     }
 
     // MEDIUM-004 FIX: Check for path traversal attacks (Windows + Unix)
@@ -225,9 +227,7 @@ pub fn load_category(xml_path: &str) -> Result<()> {
     // Only block paths that START with ".." (e.g., ../../../etc/passwd)
     // Allow "/../" in middle of paths (from path.join within project)
     // The C++ layer provides primary security (file exists, XML validation, etc.)
-    if xml_path.starts_with("../") ||
-       xml_path.starts_with("..\\") ||
-       xml_path == ".." {
+    if xml_path.starts_with("../") || xml_path.starts_with("..\\") || xml_path == ".." {
         return Err(AsterixError::InvalidData(
             "Invalid filename: path traversal detected (..)".to_string(),
         ));
