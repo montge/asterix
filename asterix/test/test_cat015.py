@@ -82,9 +82,11 @@ class TestCAT015:
         Verification: TC-PY-CAT015-003
         """
         # Test with empty data
+        # Security fix: Empty data should raise ValueError (not return empty list)
         empty_data = bytearray([])
-        result = asterix.parse(empty_data)
-        assert isinstance(result, list), "Should return list even for empty data"
+        with pytest.raises(ValueError, match="Empty input data"):
+            asterix.parse(empty_data)
+
 
         # Test with invalid category (wrong category byte)
         invalid_packet = bytearray([
