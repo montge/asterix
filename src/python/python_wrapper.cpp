@@ -71,8 +71,16 @@ init(PyObject *self, PyObject *args, PyObject *kwargs) {
         return NULL;
     }
 
-    // MEDIUM-004 FIX: Check for path traversal attacks
-    if (strstr(ini_filename, "..") != NULL) {
+    // MEDIUM-004 FIX: Check for path traversal attacks (Windows + Unix)
+    // Only reject actual traversal patterns, not legitimate relative paths
+    // Reject: starts with "../" or "..\", contains "/../" or "\..\", or is exactly ".."
+    if (strncmp(ini_filename, "../", 3) == 0 ||
+        strncmp(ini_filename, "..\\", 3) == 0 ||
+        strcmp(ini_filename, "..") == 0 ||
+        strstr(ini_filename, "/../") != NULL ||
+        strstr(ini_filename, "\\..\\") != NULL ||
+        strstr(ini_filename, "\\../") != NULL ||
+        strstr(ini_filename, "/..\\") != NULL) {
         PyErr_SetString(PyExc_ValueError,
             "Invalid filename: path traversal detected (..)");
         return NULL;
@@ -91,9 +99,8 @@ init(PyObject *self, PyObject *args, PyObject *kwargs) {
         return Py_BuildValue("i", 0);
     }
 
-    // MEDIUM-004 FIX: Provide better error message on initialization failure
-    PyErr_Format(PyExc_RuntimeError,
-        "Failed to initialize ASTERIX parser with file: %s", ini_filename);
+    // Return NULL to let python_init's error propagate (IOError or SyntaxError)
+    // Do not override with RuntimeError
     return NULL;
 }
 
