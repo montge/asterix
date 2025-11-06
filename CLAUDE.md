@@ -444,6 +444,50 @@ Input format flags: `-P` (PCAP), `-R` (ORADIS PCAP), `-O` (ORADIS), `-F` (FINAL)
 - Configuration files are in `asterix/config/` (source), copied to `install/share/asterix/config/` during build
 - Rust uses config files from `asterix/config/` via FFI during build
 
+## Architecture & Design Guidance
+
+For comprehensive architecture documentation, refer to:
+
+### Core Documentation
+
+- **`docs/ARCHITECTURE.md`** - Complete system architecture
+  - Three-layer design (Engine/ASTERIX/Application)
+  - Multi-language binding strategy with mermaid diagrams
+  - GPL license separation strategies
+  - FFI boundary design patterns
+  - Safety-critical architecture goals
+
+- **`docs/BINDING_GUIDELINES.md`** - Creating new language bindings
+  - Required API surface (parse, init, describe)
+  - FFI boundary validation (>80% coverage required)
+  - Testing requirements (unit, integration, property-based, fuzzing)
+  - Security requirements (CodeQL, ASAN, fuzz testing)
+  - CI/CD integration patterns
+  - Reference implementations (Python, Rust)
+
+- **`docs/PROTOCOL_INTEGRATION.md`** - Adding protocol adapters
+  - Layer decision matrix (where to add code)
+  - Input format handlers (PCAP, HDLC, FINAL, GPS examples)
+  - Output formatters (JSON, XML, text)
+  - Testing requirements (unit, integration, performance, fuzz)
+  - Performance best practices (buffer reuse, string reserve)
+  - Security considerations (validation, bounds checking, overflow prevention)
+
+### Architecture Quick Reference
+
+**When to use which document:**
+- Creating a new language binding (Go, Node.js, Java)? → `BINDING_GUIDELINES.md`
+- Adding a new protocol (RTP, WebSocket, gRPC)? → `PROTOCOL_INTEGRATION.md`
+- Understanding overall system design? → `ARCHITECTURE.md`
+- Commercial/proprietary integration? → `ARCHITECTURE.md` (GPL Separation section)
+
+**Key Architectural Principles:**
+1. **Safety First** - Validate all FFI boundaries (no assumptions about callers)
+2. **Layer Separation** - Engine (transport) → ASTERIX (protocol) → Application (CLI/bindings)
+3. **Idiomatic APIs** - Each binding feels natural to its language
+4. **Comprehensive Testing** - >80% coverage, fuzz testing, memory leak testing
+5. **Performance** - Buffer reuse, string reserve, zero-copy where possible
+
 ## Upstream Repository
 
 Original repository: https://github.com/CroatiaControlLtd/asterix

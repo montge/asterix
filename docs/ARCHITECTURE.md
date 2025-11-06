@@ -856,6 +856,482 @@ The PCAP handler includes buffer reuse optimization (15-20% speedup). See `src/a
 
 ---
 
+## Multi-Language Binding Strategy
+
+### Overview
+
+The ASTERIX decoder supports multiple language bindings sharing a common C++ core. This section documents the strategy for expanding to additional languages while maintaining code quality and safety.
+
+**Current Bindings:**
+- C++ (native) - High-performance CLI
+- Python 3.10-3.14 - Simple, intuitive API
+- Rust 1.87+ - Type-safe, memory-safe bindings
+
+**Planned Bindings:**
+- Node.js (N-API/NAPI-RS)
+- Go (CGO)
+- Java (JNI)
+- C# (.NET Interop)
+
+### Binding Architecture Pattern
+
+```mermaid
+graph TB
+    subgraph "Application Layer"
+        CPP["C++ CLI<br/>(asterix executable)"]
+        PY["Python Module<br/>(asterix_decoder)"]
+        RS["Rust Crate<br/>(asterix-decoder)"]
+        NODE["Node.js Module<br/>(planned)"]
+        GO["Go Package<br/>(planned)"]
+    end
+
+    subgraph "FFI Boundary Layer"
+        FFI_PY["Python C Extension<br/>(validation)"]
+        FFI_RS["CXX Bridge<br/>(type-safe)"]
+        FFI_NODE["N-API Wrapper<br/>(planned)"]
+        FFI_GO["CGO Bridge<br/>(planned)"]
+    end
+
+    subgraph "Core Parser"
+        CORE["C++ ASTERIX Core<br/>(libasterix)"]
+    end
+
+    CPP --> CORE
+    PY --> FFI_PY
+    RS --> FFI_RS
+    NODE -.-> FFI_NODE
+    GO -.-> FFI_GO
+
+    FFI_PY --> CORE
+    FFI_RS --> CORE
+    FFI_NODE -.-> CORE
+    FFI_GO -.-> CORE
+
+    style CPP fill:#90EE90
+    style PY fill:#90EE90
+    style RS fill:#90EE90
+    style NODE fill:#FFE4B5
+    style GO fill:#FFE4B5
+    style CORE fill:#87CEEB
+```
+
+### FFI Boundary Validation
+
+All language bindings MUST implement validated FFI boundaries:
+
+```mermaid
+sequenceDiagram
+    participant User as User Code
+    participant API as Language API
+    participant FFI as FFI Boundary
+    participant Core as C++ Core
+
+    User->>API: parse(data)
+    API->>API: Basic validation<br/>(empty check)
+    API->>FFI: FFI call with data
+
+    FFI->>FFI: Input Validation<br/>• Null pointer checks<br/>• Buffer bounds<br/>• Integer overflow<br/>• Type validation
+
+    alt Validation Fails
+        FFI-->>API: Error code
+        API-->>User: Language exception
+    else Validation Passes
+        FFI->>Core: asterix_parse_safe()
+        Core->>Core: Parse ASTERIX
+
+        alt Parse Success
+            Core-->>FFI: Parsed records
+            FFI->>FFI: Convert to<br/>language types
+            FFI-->>API: Native data
+            API-->>User: Records
+        else Parse Error
+            Core-->>FFI: Error code
+            FFI-->>API: Mapped error
+            API-->>User: Exception
+        end
+    end
+```
+
+**Key Safety Principles:**
+1. Validate ALL inputs at FFI boundary
+2. No assumptions about caller behavior
+3. Comprehensive error codes (no silent failures)
+4. Memory ownership clearly defined
+5. Test all error paths
+
+### Language Binding Comparison
+
+| Feature | Python | Rust | Node.js (planned) | Go (planned) |
+|---------|--------|------|-------------------|--------------|
+| **FFI Mechanism** | C Extension | CXX crate | N-API | CGO |
+| **Type Safety** | Runtime | Compile-time | Runtime | Compile-time |
+| **Memory Safety** | GC | Ownership | GC | GC |
+| **Error Handling** | Exceptions | Result<T,E> | Error callbacks | Error values |
+| **Zero-Copy Input** | Limited | Yes | Limited | Limited |
+| **Build Complexity** | Medium | High | Medium | Low |
+| **Performance** | Good | Excellent | Good | Excellent |
+
+### Roadmap for Additional Bindings
+
+**Phase 1: Node.js (Issue #24)**
+- N-API wrapper for cross-version compatibility
+- TypeScript definitions (.d.ts)
+- npm package publication
+- Examples: Stream processing, Express.js integration
+
+**Phase 2: Go**
+- CGO bridge to C++ core
+- Idiomatic Go API (error values, channels)
+- Go module publication
+- Examples: Concurrent processing, gRPC server
+
+**Phase 3: Java**
+- JNI wrapper
+- Maven Central publication
+- Examples: Spring Boot integration, Kafka consumer
+
+**Phase 4: C#**
+- P/Invoke or C++/CLI wrapper
+- NuGet package publication
+- Examples: ASP.NET Core integration
+
+---
+
+## GPL License Separation Strategies
+
+The ASTERIX decoder is licensed under GPL-3.0-or-later. Applications using GPL code must also be GPL-licensed, unless separated properly. This section documents strategies for commercial/proprietary integration.
+
+### GPL Compliance Overview
+
+```mermaid
+graph LR
+    subgraph "GPL Code"
+        CORE["C++ Core<br/>(GPL-3.0)"]
+    end
+
+    subgraph "Separation Boundary"
+        NETWORK["Network-based<br/>Separation"]
+        DYNAMIC["Dynamic Linking<br/>(LGPL-style)"]
+        PLUGIN["Plugin Architecture"]
+    end
+
+    subgraph "Proprietary Code"
+        APP["Commercial<br/>Application"]
+    end
+
+    CORE --> NETWORK
+    CORE --> DYNAMIC
+    CORE --> PLUGIN
+
+    NETWORK --> APP
+    DYNAMIC -.-> APP
+    PLUGIN --> APP
+
+    style CORE fill:#FFB6C1
+    style APP fill:#90EE90
+```
+
+### Strategy 1: Network-Based Separation (Recommended)
+
+**Principle:** GPL does not extend across network boundaries (separate processes).
+
+```mermaid
+graph TB
+    subgraph "GPL Process"
+        SERVER["ASTERIX Server<br/>(GPL-3.0)<br/>• HTTP/REST API<br/>• gRPC server<br/>• WebSocket server"]
+    end
+
+    subgraph "Network Boundary"
+        NET["Network Protocol<br/>(JSON/Protobuf/WebSocket)"]
+    end
+
+    subgraph "Proprietary Process"
+        CLIENT["Commercial Application<br/>(Any License)<br/>• Calls network API<br/>• No GPL infection"]
+    end
+
+    SERVER -->|HTTP/gRPC/WS| NET
+    NET -->|Network call| CLIENT
+
+    style SERVER fill:#FFB6C1
+    style CLIENT fill:#90EE90
+    style NET fill:#FFE4B5
+```
+
+**Implementation Examples:**
+
+**REST API Server (Python/Flask):**
+```python
+# server.py (GPL-3.0)
+from flask import Flask, request, jsonify
+import asterix
+
+app = Flask(__name__)
+
+@app.route('/parse', methods=['POST'])
+def parse():
+    data = request.data
+    records = asterix.parse(data)
+    return jsonify(records)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+```
+
+**Client Application (Proprietary):**
+```python
+# client.py (Commercial License - NO GPL)
+import requests
+
+def parse_asterix(data: bytes) -> list:
+    """Call ASTERIX parser via network API"""
+    response = requests.post('http://localhost:5000/parse', data=data)
+    return response.json()
+
+# Use in proprietary application
+records = parse_asterix(my_asterix_data)
+```
+
+**gRPC Server (Rust):**
+```rust
+// server.rs (GPL-3.0)
+use tonic::{transport::Server, Request, Response, Status};
+use asterix::{Parser, ParseOptions};
+
+#[tonic::async_trait]
+impl AsterixService for MyAsterixService {
+    async fn parse(&self, request: Request<ParseRequest>)
+        -> Result<Response<ParseResponse>, Status>
+    {
+        let data = request.into_inner().data;
+        let parser = Parser::new().init_default()?.build()?;
+        let records = parser.parse(&data, &ParseOptions::default())?;
+
+        Ok(Response::new(ParseResponse { records }))
+    }
+}
+```
+
+**Client Application (Go - Proprietary):**
+```go
+// client.go (Commercial License - NO GPL)
+package main
+
+import (
+    "context"
+    pb "asterix/proto"
+    "google.golang.org/grpc"
+)
+
+func parseAsterix(data []byte) ([]Record, error) {
+    conn, _ := grpc.Dial("localhost:50051")
+    defer conn.Close()
+
+    client := pb.NewAsterixServiceClient(conn)
+    resp, err := client.Parse(context.Background(), &pb.ParseRequest{Data: data})
+
+    return resp.Records, err
+}
+```
+
+**Advantages:**
+- Clear GPL separation (legally safe)
+- Language-agnostic (any client language)
+- Scalable (can distribute across servers)
+- Easy deployment (Docker containers)
+
+**Disadvantages:**
+- Network overhead (latency)
+- Requires network infrastructure
+- More complex deployment
+
+### Strategy 2: Dynamic Linking (LGPL-style)
+
+**Principle:** Dynamic linking to GPL library MAY not trigger GPL infection (legal gray area, consult lawyer).
+
+**Note:** This is **controversial** and depends on jurisdiction. Some interpret GPL to apply even with dynamic linking. Use with caution.
+
+```mermaid
+graph TB
+    subgraph "GPL Shared Library"
+        LIB["libasterix.so<br/>(GPL-3.0)<br/>Dynamically loaded"]
+    end
+
+    subgraph "Proprietary Application"
+        APP["Commercial App<br/>(Proprietary)<br/>• dlopen() / LoadLibrary()<br/>• Runtime linking only"]
+    end
+
+    APP -.->|Dynamic linking<br/>at runtime| LIB
+
+    style LIB fill:#FFB6C1
+    style APP fill:#90EE90
+```
+
+**Implementation (C++):**
+```cpp
+// proprietary_app.cpp (Commercial License)
+#include <dlfcn.h>  // dlopen, dlsym
+
+// Function pointer types
+typedef void* (*asterix_init_t)(const char*);
+typedef void* (*asterix_parse_t)(const unsigned char*, size_t);
+
+int main() {
+    // Dynamically load GPL library at runtime
+    void* handle = dlopen("libasterix.so", RTLD_LAZY);
+
+    // Get function pointers
+    auto asterix_init = (asterix_init_t)dlsym(handle, "asterix_init");
+    auto asterix_parse = (asterix_parse_t)dlsym(handle, "asterix_parse");
+
+    // Use library
+    asterix_init("config/");
+    void* result = asterix_parse(data, size);
+
+    dlclose(handle);
+}
+```
+
+**Advantages:**
+- Lower overhead than network
+- Single process
+- Simpler deployment
+
+**Disadvantages:**
+- **LEGAL RISK** - GPL may still apply
+- Not portable (platform-specific dlopen/LoadLibrary)
+- Requires C ABI compatibility
+
+**Recommendation:** Consult legal counsel before using this approach.
+
+### Strategy 3: Plugin Architecture
+
+**Principle:** GPL core loads proprietary plugins (reverse of normal linking).
+
+```mermaid
+graph TB
+    subgraph "GPL Core"
+        CORE["ASTERIX Decoder Core<br/>(GPL-3.0)<br/>Plugin Host"]
+    end
+
+    subgraph "Plugin Interface"
+        IFACE["Plugin API<br/>(defined by core)<br/>• Process callbacks<br/>• Data hooks"]
+    end
+
+    subgraph "Proprietary Plugin"
+        PLUGIN["Custom Plugin<br/>(Proprietary)<br/>Implements interface"]
+    end
+
+    CORE -->|Loads via dlopen| IFACE
+    IFACE -->|Implemented by| PLUGIN
+
+    style CORE fill:#FFB6C1
+    style PLUGIN fill:#90EE90
+    style IFACE fill:#FFE4B5
+```
+
+**Implementation:**
+
+**Plugin Interface (GPL):**
+```cpp
+// plugin_interface.h (GPL-3.0)
+struct AsterixPlugin {
+    virtual void onRecordParsed(const AsterixRecord& record) = 0;
+    virtual void onParseComplete() = 0;
+};
+
+// Core loads plugins dynamically
+class PluginManager {
+public:
+    void loadPlugin(const std::string& path) {
+        void* handle = dlopen(path.c_str(), RTLD_LAZY);
+        auto create_fn = (AsterixPlugin* (*)())dlsym(handle, "create_plugin");
+        m_plugins.push_back(create_fn());
+    }
+
+    void notifyRecordParsed(const AsterixRecord& record) {
+        for (auto* plugin : m_plugins) {
+            plugin->onRecordParsed(record);
+        }
+    }
+};
+```
+
+**Proprietary Plugin:**
+```cpp
+// my_plugin.cpp (Commercial License)
+#include "plugin_interface.h"
+
+class MyPlugin : public AsterixPlugin {
+public:
+    void onRecordParsed(const AsterixRecord& record) override {
+        // Proprietary processing logic
+        sendToDatabase(record);
+    }
+};
+
+extern "C" AsterixPlugin* create_plugin() {
+    return new MyPlugin();
+}
+```
+
+**Advantages:**
+- Clear separation (plugin is separate work)
+- Flexible architecture
+- Core can remain GPL
+
+**Disadvantages:**
+- More complex architecture
+- Plugin API must be stable
+- Still may have legal questions
+
+### Strategy 4: Dual Licensing (Future)
+
+**Principle:** Offer both GPL and commercial licenses.
+
+```mermaid
+graph LR
+    subgraph "ASTERIX Code"
+        CODE["Same Codebase"]
+    end
+
+    subgraph "License Options"
+        GPL["GPL-3.0<br/>(Free, open source)"]
+        COMM["Commercial License<br/>(Paid, proprietary use)"]
+    end
+
+    CODE --> GPL
+    CODE --> COMM
+
+    GPL --> USERS_GPL["Open Source Users<br/>(free)"]
+    COMM --> USERS_COMM["Commercial Users<br/>(fee)"]
+
+    style CODE fill:#87CEEB
+    style GPL fill:#FFB6C1
+    style COMM fill:#90EE90
+```
+
+**Requires:**
+- Copyright assignment or CLA from all contributors
+- Legal framework for dual licensing
+- Commercial support infrastructure
+
+**Not currently available** - would require project governance change.
+
+### Recommendation Summary
+
+| Use Case | Recommended Strategy | Complexity | Legal Risk |
+|----------|---------------------|------------|------------|
+| **SaaS/Cloud Service** | Network-based (REST/gRPC) | Medium | Low |
+| **Microservices** | Network-based (Docker) | Medium | Low |
+| **Desktop App (GPL-compatible)** | Direct linking (GPL) | Low | None |
+| **Desktop App (Proprietary)** | Network-based (local server) | Medium | Low |
+| **Embedded System** | Consult lawyer | High | High |
+| **Mobile App** | Network-based (backend API) | Medium | Low |
+
+**General Advice:** When in doubt, use **network-based separation** (Strategy 1). It's legally safe, technically sound, and scales well.
+
+---
+
 ## Migration Path
 
 ### Phase 1: Documentation & Validation (Current)
@@ -933,9 +1409,12 @@ The PCAP handler includes buffer reuse optimization (15-20% speedup). See `src/a
 - **CLAUDE.md:** Technical architecture for Claude Code
 - **PERFORMANCE_OPTIMIZATIONS.md:** Performance optimization history
 - **LANGUAGE_BINDINGS_COMPARISON.md:** Python vs. Rust bindings comparison
+- **BINDING_GUIDELINES.md:** Guidelines for creating new language bindings
+- **PROTOCOL_INTEGRATION.md:** Guidelines for adding protocol adapters
 
 ### Issues
 
+- **#23:** Architecture: Multi-language bindings and protocol integration roadmap
 - **#26:** Safety-critical design patterns and guidelines
 - **#29:** Audit Python/Rust bindings for safety boundary compliance
 - **#47:** Documentation overhaul
