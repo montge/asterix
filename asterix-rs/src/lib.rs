@@ -13,6 +13,62 @@
 //! - Optional serde support for JSON serialization
 //! - Memory-safe FFI layer using the `cxx` crate
 //!
+//! # Thread Safety
+//!
+//! **WARNING: This library is NOT thread-safe.**
+//!
+//! The underlying C++ ASTERIX decoder uses a global singleton (`AsterixDefinition`)
+//! to manage category definitions. This means:
+//!
+//! - Concurrent calls to `parse()`, `init_default()`, `load_category()`, or `describe()`
+//!   from multiple threads will cause race conditions and undefined behavior
+//! - The library does not use internal locking or synchronization
+//! - Rust's memory safety guarantees do NOT extend to C++ global state
+//!
+//! ## Safe Usage Patterns
+//!
+//! If you need to parse ASTERIX data from multiple threads, use one of these approaches:
+//!
+//! 1. **Single-threaded parsing** (recommended):
+//!    ```no_run
+//!    use asterix::{parse, ParseOptions, init_default};
+//!
+//!    # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//!    init_default()?;
+//!    let data = std::fs::read("sample.asterix")?;
+//!    let records = parse(&data, ParseOptions::default())?;
+//!
+//!    // Process records in parallel AFTER parsing completes
+//!    use rayon::prelude::*;
+//!    records.par_iter().for_each(|record| {
+//!        // Safe: only reading parsed data
+//!        println!("Category: {}", record.category);
+//!    });
+//!    # Ok(())
+//!    # }
+//!    ```
+//!
+//! 2. **Mutex-protected access**:
+//!    ```no_run
+//!    use asterix::{parse, ParseOptions};
+//!    use std::sync::Mutex;
+//!
+//!    lazy_static::lazy_static! {
+//!        static ref ASTERIX_LOCK: Mutex<()> = Mutex::new(());
+//!    }
+//!
+//!    # fn parse_data(data: &[u8]) -> Result<(), Box<dyn std::error::Error>> {
+//!    let _guard = ASTERIX_LOCK.lock().unwrap();
+//!    let records = parse(data, ParseOptions::default())?;
+//!    // Process records while holding lock
+//!    # Ok(())
+//!    # }
+//!    ```
+//!
+//! 3. **Process-based parallelism**:
+//!    Use separate processes instead of threads (e.g., with `rayon`'s process pool
+//!    or manual process spawning).
+//!
 //! # Quick Start
 //!
 //! ```no_run
