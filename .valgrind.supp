@@ -1,0 +1,59 @@
+# Valgrind suppressions for Python C extension
+# Common Python interpreter allocations that aren't actually leaks
+
+{
+   python_pymalloc
+   Memcheck:Leak
+   ...
+   fun:PyMalloc_*
+}
+
+{
+   python_object_alloc
+   Memcheck:Leak
+   ...
+   fun:PyObject_*
+}
+
+{
+   python_unicode_alloc
+   Memcheck:Leak
+   ...
+   fun:PyUnicode_*
+}
+
+{
+   python_dict_alloc
+   Memcheck:Leak
+   ...
+   fun:PyDict_*
+}
+
+{
+   python_list_alloc
+   Memcheck:Leak
+   ...
+   fun:PyList_*
+}
+
+{
+   python_module_alloc
+   Memcheck:Leak
+   ...
+   fun:PyModule_*
+}
+
+# Suppress Python interpreter startup allocations
+{
+   python_startup
+   Memcheck:Leak
+   ...
+   fun:Py_Initialize*
+}
+
+{
+   python_import
+   Memcheck:Leak
+   ...
+   fun:PyImport_*
+}

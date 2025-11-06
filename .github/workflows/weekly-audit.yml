@@ -1,0 +1,212 @@
+name: Weekly Security Audit
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # 9 AM UTC every Monday
+  workflow_dispatch:  # Allow manual trigger
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  dependency-audit:
+    name: Dependency Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install audit tools
+        run: |
+          cargo install cargo-audit
+          pip install pip-audit
+
+      - name: Rust cargo-audit
+        id: rust_audit
+        working-directory: asterix-rs
+        run: cargo audit
+        continue-on-error: true
+
+      - name: Python pip-audit
+        id: python_audit
+        run: |
+          pip install -r requirements.txt || true
+          pip-audit
+        continue-on-error: true
+
+      - name: Create issue on vulnerabilities
+        if: steps.rust_audit.outcome == 'failure' || steps.python_audit.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const rustFailed = '${{ steps.rust_audit.outcome }}' === 'failure';
+            const pythonFailed = '${{ steps.python_audit.outcome }}' === 'failure';
+
+            const title = '[Weekly] Dependency vulnerabilities found';
+            let body = `Dependency security audit found vulnerabilities on ${new Date().toISOString().split('T')[0]}.\n\n`;
+            body += `**Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\n`;
+
+            if (rustFailed && pythonFailed) {
+              body += 'Both Rust and Python dependencies have vulnerabilities.\n\n';
+            } else if (rustFailed) {
+              body += 'Rust dependencies have vulnerabilities.\n\n';
+            } else {
+              body += 'Python dependencies have vulnerabilities.\n\n';
+            }
+
+            body += '**Action Required:** Review the workflow logs and update vulnerable dependencies.\n\n';
+            body += '**Priority:** Varies by vulnerability - check logs for CVSS scores.';
+
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'automated,dependencies'
+            });
+
+            const existingIssue = issues.data.find(i => i.title === title);
+
+            if (!existingIssue) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['security', 'dependencies', 'automated']
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: `Vulnerabilities still present as of ${new Date().toISOString().split('T')[0]}.\n\n**Latest run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+              });
+            }
+
+  license-compliance:
+    name: License Compliance Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-license
+        run: cargo install cargo-license
+
+      - name: Check Rust licenses
+        working-directory: asterix-rs
+        run: |
+          cargo license --json > licenses.json
+          cargo license --tsv > licenses.tsv
+
+      - name: Check for problematic licenses
+        id: check_licenses
+        working-directory: asterix-rs
+        run: |
+          # List of licenses to flag (GPL variants that might conflict with project goals)
+          problematic=$(cargo license | grep -E 'GPL-3.0|AGPL-3.0|SSPL' || true)
+
+          if [ -n "$problematic" ]; then
+            echo "problematic_found=true" >> $GITHUB_OUTPUT
+            echo "Found problematic licenses:"
+            echo "$problematic"
+          else
+            echo "problematic_found=false" >> $GITHUB_OUTPUT
+            echo "All licenses appear compatible"
+          fi
+
+      - name: Upload license report
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-report
+          path: |
+            asterix-rs/licenses.json
+            asterix-rs/licenses.tsv
+
+      - name: Create issue on problematic licenses
+        if: steps.check_licenses.outputs.problematic_found == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '[Weekly] Problematic dependency licenses found';
+            const body = `License compliance scan found potentially problematic licenses on ${new Date().toISOString().split('T')[0]}.
+
+            **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Licenses like GPL-3.0/AGPL-3.0 were found in dependencies. These may have copyleft requirements that conflict with the project's licensing goals.
+
+            Download the full license report from the workflow artifacts.
+
+            **Action Required:** Review the licenses and consider alternatives for affected dependencies.
+
+            **Priority:** Low - informational, but should be reviewed before next release.`;
+
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'automated,licensing'
+            });
+
+            const existingIssue = issues.data.find(i => i.title === title);
+
+            if (!existingIssue) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['legal', 'dependencies', 'licensing', 'automated']
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: `Still present as of ${new Date().toISOString().split('T')[0]}.\n\n**Latest run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+              });
+            }
+
+  outdated-dependencies:
+    name: Outdated Dependency Report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-outdated
+        run: cargo install cargo-outdated
+
+      - name: Check for outdated Rust dependencies
+        working-directory: asterix-rs
+        run: |
+          cargo outdated --format json > outdated.json
+          cargo outdated
+
+      - name: Upload outdated report
+        uses: actions/upload-artifact@v4
+        with:
+          name: outdated-dependencies-report
+          path: asterix-rs/outdated.json
+
+      - name: Summary
+        run: |
+          echo "### Weekly Dependency Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Date:** $(date -I)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Outdated dependency report has been generated and uploaded as an artifact." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Review the artifacts to see which dependencies can be updated." >> $GITHUB_STEP_SUMMARY

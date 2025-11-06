@@ -1,0 +1,301 @@
+name: Nightly Security Scans
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 2 AM UTC daily
+  workflow_dispatch:  # Allow manual trigger
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  rust-miri:
+    name: Miri (Undefined Behavior Detection)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust nightly
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: miri
+
+      - name: Run Miri
+        id: miri
+        working-directory: asterix-rs
+        run: cargo +nightly miri test
+        continue-on-error: true
+
+      - name: Create issue on failure
+        if: failure() && steps.miri.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '[Nightly] Miri detected undefined behavior';
+            const body = `Miri scan failed on ${new Date().toISOString().split('T')[0]}.
+
+            **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            This indicates potential undefined behavior in the Rust FFI layer. Please review the workflow logs for details.
+
+            **Priority:** High - undefined behavior can cause crashes or security vulnerabilities.`;
+
+            // Check if issue already exists
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'automated,miri'
+            });
+
+            const existingIssue = issues.data.find(i => i.title === title);
+
+            if (!existingIssue) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['security', 'rust', 'miri', 'automated']
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: `Still failing as of ${new Date().toISOString().split('T')[0]}.\n\n**Latest run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+              });
+            }
+
+  python-valgrind:
+    name: Valgrind (Memory Leak Detection)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind libexpat1-dev cmake
+
+      - name: Build Python module
+        run: |
+          pip install --upgrade pip setuptools wheel
+          python3 setup.py build_ext --inplace
+
+      - name: Run Valgrind tests
+        id: valgrind
+        run: |
+          valgrind --leak-check=full --show-leak-kinds=all \
+            --error-exitcode=1 --suppressions=.valgrind.supp \
+            python3 -m pytest asterix/test/test_ffi_security.py -v
+        continue-on-error: true
+
+      - name: Create issue on failure
+        if: failure() && steps.valgrind.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '[Nightly] Valgrind detected memory leaks';
+            const body = `Valgrind scan failed on ${new Date().toISOString().split('T')[0]}.
+
+            **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Memory leaks detected in the Python FFI layer. Please review the workflow logs for details.
+
+            **Priority:** Medium - memory leaks can cause resource exhaustion over time.`;
+
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'automated,valgrind'
+            });
+
+            const existingIssue = issues.data.find(i => i.title === title);
+
+            if (!existingIssue) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['security', 'python', 'memory-leak', 'valgrind', 'automated']
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: `Still failing as of ${new Date().toISOString().split('T')[0]}.\n\n**Latest run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+              });
+            }
+
+  python-asan:
+    name: ASAN (Address Sanitizer)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libexpat1-dev cmake clang
+
+      - name: Build with ASAN
+        run: |
+          pip install --upgrade pip setuptools wheel
+          CC=clang CFLAGS="-fsanitize=address -fno-omit-frame-pointer -g" \
+          LDFLAGS="-fsanitize=address" \
+          python3 setup.py build_ext --inplace
+
+      - name: Run tests with ASAN
+        id: asan
+        run: |
+          ASAN_OPTIONS=detect_leaks=1:symbolize=1 \
+          python3 -m pytest asterix/test/test_ffi_security.py -v
+        continue-on-error: true
+
+      - name: Create issue on failure
+        if: failure() && steps.asan.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '[Nightly] ASAN detected memory errors';
+            const body = `ASAN scan failed on ${new Date().toISOString().split('T')[0]}.
+
+            **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            AddressSanitizer detected memory errors (use-after-free, buffer overflows, etc.) in the Python FFI layer.
+
+            **Priority:** Critical - memory errors can lead to crashes or security vulnerabilities.`;
+
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'automated,asan'
+            });
+
+            const existingIssue = issues.data.find(i => i.title === title);
+
+            if (!existingIssue) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['security', 'python', 'memory-safety', 'asan', 'automated']
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: `Still failing as of ${new Date().toISOString().split('T')[0]}.\n\n**Latest run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+              });
+            }
+
+  rust-fuzzing:
+    name: Cargo Fuzz (1 hour)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust nightly
+        uses: dtolnay/rust-toolchain@nightly
+
+      - name: Install cargo-fuzz
+        run: cargo install cargo-fuzz
+
+      - name: Initialize fuzz target if needed
+        working-directory: asterix-rs
+        run: |
+          if [ ! -d fuzz ]; then
+            cargo fuzz init
+            echo "Initialized fuzzing infrastructure"
+          fi
+
+      - name: Run fuzzing for 1 hour
+        working-directory: asterix-rs
+        run: |
+          # List available fuzz targets
+          targets=$(cargo fuzz list 2>/dev/null || echo "")
+          if [ -z "$targets" ]; then
+            echo "No fuzz targets found, skipping"
+            exit 0
+          fi
+
+          # Run first target for 1 hour
+          target=$(echo "$targets" | head -1)
+          timeout 3600 cargo fuzz run $target -- -max_total_time=3600 || true
+
+      - name: Check for crashes
+        id: check_crashes
+        working-directory: asterix-rs
+        run: |
+          if [ -d fuzz/artifacts ]; then
+            echo "crashes_found=true" >> $GITHUB_OUTPUT
+            echo "Found crash artifacts:"
+            ls -la fuzz/artifacts/
+          else
+            echo "crashes_found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload crash artifacts
+        if: steps.check_crashes.outputs.crashes_found == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-crashes
+          path: asterix-rs/fuzz/artifacts/
+
+      - name: Create issue on crashes
+        if: steps.check_crashes.outputs.crashes_found == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '[Nightly] Fuzzing found crashes';
+            const body = `Fuzzer discovered crashes on ${new Date().toISOString().split('T')[0]}.
+
+            **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Crash artifacts have been uploaded. Download them from the workflow run artifacts section.
+
+            **Priority:** High - fuzzer-found crashes indicate edge cases that could be exploited.`;
+
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'automated,fuzzing'
+            });
+
+            const existingIssue = issues.data.find(i => i.title === title);
+
+            if (!existingIssue) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['security', 'rust', 'fuzzing', 'automated']
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: `New crashes found on ${new Date().toISOString().split('T')[0]}.\n\n**Latest run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+              });
+            }
