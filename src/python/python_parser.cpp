@@ -65,44 +65,73 @@ static void debug_trace(char const *format, ...) {
  * Initialize Asterix Python with XML configuration file
  */
 int python_init(const char *xml_config_file) {
-    Tracer::Configure(debug_trace);
+    // MEDIUM-005 FIX: Add exception handling to prevent crashes
+    try {
+        Tracer::Configure(debug_trace);
 
-    if (!pDefinition)
-        pDefinition = new AsterixDefinition();
+        if (!pDefinition)
+            pDefinition = new AsterixDefinition();
 
-    if (!inputParser)
-        inputParser = new InputParser(pDefinition);
+        if (!inputParser)
+            inputParser = new InputParser(pDefinition);
 
-    FILE *fp = fopen(xml_config_file, "rt");
-    if (!fp) {
-        PyErr_SetString(PyExc_IOError, "Input file not found.");
-        return -1;
-    }
-    // parse format file
-    XMLParser Parser;
-    if (!Parser.Parse(fp, pDefinition, xml_config_file)) {
+        FILE *fp = fopen(xml_config_file, "rt");
+        if (!fp) {
+            PyErr_SetString(PyExc_IOError, "Input file not found.");
+            return -1;
+        }
+        // parse format file
+        XMLParser Parser;
+        if (!Parser.Parse(fp, pDefinition, xml_config_file)) {
+            fclose(fp);
+            PyErr_SetString(PyExc_SyntaxError, "Failed to parse XML configuration file.");
+            return -2;
+        }
         fclose(fp);
-        return -2;
+        return 0;
+
+    } catch (const std::bad_alloc& e) {
+        PyErr_SetString(PyExc_MemoryError, "Out of memory during initialization.");
+        return -3;
+    } catch (const std::exception& e) {
+        std::string error_msg = std::string("C++ exception during initialization: ") + e.what();
+        PyErr_SetString(PyExc_RuntimeError, error_msg.c_str());
+        return -4;
+    } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError, "Unknown C++ exception during initialization.");
+        return -5;
     }
-    fclose(fp);
-    return 0;
 }
 
 PyObject *python_parse(const unsigned char *pBuf, Py_ssize_t len, int verbose) {
-    // get current timstamp in ms since epoch
-    struct timeval tp;
-    gettimeofday(&tp, NULL);
-    unsigned long nTimestamp = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    // MEDIUM-005 FIX: Add exception handling to prevent crashes
+    try {
+        // get current timstamp in ms since epoch
+        struct timeval tp;
+        gettimeofday(&tp, NULL);
+        unsigned long nTimestamp = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
-    if (inputParser) {
-        AsterixData *pData = inputParser->parsePacket(pBuf, len, nTimestamp);
-        if (pData) { // convert to Python format
-            PyObject *lst = pData->getData(verbose);
-            delete pData;
-            return lst;
+        if (inputParser) {
+            AsterixData *pData = inputParser->parsePacket(pBuf, len, nTimestamp);
+            if (pData) { // convert to Python format
+                PyObject *lst = pData->getData(verbose);
+                delete pData;
+                return lst;
+            }
         }
+        return NULL;
+
+    } catch (const std::bad_alloc& e) {
+        PyErr_SetString(PyExc_MemoryError, "Out of memory during parsing.");
+        return NULL;
+    } catch (const std::exception& e) {
+        std::string error_msg = std::string("C++ exception during parsing: ") + e.what();
+        PyErr_SetString(PyExc_RuntimeError, error_msg.c_str());
+        return NULL;
+    } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError, "Unknown C++ exception during parsing.");
+        return NULL;
     }
-    return NULL;
 }
 
 PyObject *
@@ -111,67 +140,92 @@ python_parse_with_offset(const unsigned char *pBuf, Py_ssize_t len, unsigned int
 /* AUTHOR: Krzysztof Rutkowski, ICM UW, krutk@icm.edu.pl
 */
 {
-    // CRITICAL-002 FIX: Additional bounds checking at parser level
-    // Note: Validation already done in python_wrapper.cpp, but defense-in-depth
-    if (offset >= len) {
-        return NULL;  // Return empty result for out-of-bounds offset
-    }
+    // MEDIUM-005 FIX: Add exception handling to prevent crashes
+    try {
+        // CRITICAL-002 FIX: Additional bounds checking at parser level
+        // Note: Validation already done in python_wrapper.cpp, but defense-in-depth
+        if (offset >= len) {
+            return NULL;  // Return empty result for out-of-bounds offset
+        }
 
-    // get current timstamp in ms since epoch
-    struct timeval tp;
-    gettimeofday(&tp, NULL);
-    unsigned long nTimestamp = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+        // get current timstamp in ms since epoch
+        struct timeval tp;
+        gettimeofday(&tp, NULL);
+        unsigned long nTimestamp = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
-    if (inputParser) {
-        AsterixData *pData = new AsterixData();
-        unsigned int m_nPos = offset;
-        unsigned int current_blocks_count = 0;
-        while (m_nPos < len && current_blocks_count < blocks_count) {
-            // CRITICAL-002 FIX: Explicit bounds check before subtraction
-            if (m_nPos >= len) {
-                break;  // Prevent underflow
-            }
-
-            unsigned int m_nDataLength = len - m_nPos;
-
-            // Ensure we have minimum data to parse (at least 3 bytes for ASTERIX header)
-            while (m_nDataLength > 3 && current_blocks_count < blocks_count) {
-                // CRITICAL-002 FIX: Validate pointer arithmetic before use
+        if (inputParser) {
+            AsterixData *pData = new AsterixData();
+            unsigned int m_nPos = offset;
+            unsigned int current_blocks_count = 0;
+            while (m_nPos < len && current_blocks_count < blocks_count) {
+                // CRITICAL-002 FIX: Explicit bounds check before subtraction
                 if (m_nPos >= len) {
-                    break;  // Prevent buffer overflow
+                    break;  // Prevent underflow
                 }
 
-                const unsigned char *pBuf_offset = (pBuf + m_nPos);
-                DataBlock *block = inputParser->parse_next_data_block(
-                        pBuf_offset, m_nPos, len, nTimestamp, m_nDataLength);
-                if (block) {
-                    pData->m_lDataBlocks.push_back(block);
-                    current_blocks_count++;
+                unsigned int m_nDataLength = len - m_nPos;
+
+                // Ensure we have minimum data to parse (at least 3 bytes for ASTERIX header)
+                while (m_nDataLength > 3 && current_blocks_count < blocks_count) {
+                    // CRITICAL-002 FIX: Validate pointer arithmetic before use
+                    if (m_nPos >= len) {
+                        break;  // Prevent buffer overflow
+                    }
+
+                    const unsigned char *pBuf_offset = (pBuf + m_nPos);
+                    DataBlock *block = inputParser->parse_next_data_block(
+                            pBuf_offset, m_nPos, len, nTimestamp, m_nDataLength);
+                    if (block) {
+                        pData->m_lDataBlocks.push_back(block);
+                        current_blocks_count++;
+                    }
                 }
             }
+            if (pData) { // convert to Python format
+                PyObject *lst = pData->getData(verbose);
+                delete pData;
+                PyObject *py_m_nPos = Py_BuildValue("l", m_nPos);
+                PyObject *py_output = PyTuple_Pack(2, lst, py_m_nPos);
+                // Decrease references since the tuple holds references to them now
+                Py_DECREF(lst);
+                Py_DECREF(py_m_nPos);
+                return py_output;
+            }
         }
-        if (pData) { // convert to Python format
-            PyObject *lst = pData->getData(verbose);
-            delete pData;
-            PyObject *py_m_nPos = Py_BuildValue("l", m_nPos);
-            PyObject *py_output = PyTuple_Pack(2, lst, py_m_nPos);
-            // Decrease references since the tuple holds references to them now
-            Py_DECREF(lst);
-            Py_DECREF(py_m_nPos);
-            return py_output;
-        }
+        return NULL;
+
+    } catch (const std::bad_alloc& e) {
+        PyErr_SetString(PyExc_MemoryError, "Out of memory during parsing with offset.");
+        return NULL;
+    } catch (const std::exception& e) {
+        std::string error_msg = std::string("C++ exception during parsing with offset: ") + e.what();
+        PyErr_SetString(PyExc_RuntimeError, error_msg.c_str());
+        return NULL;
+    } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError, "Unknown C++ exception during parsing with offset.");
+        return NULL;
     }
-    return NULL;
 }
 
 PyObject *python_describe(int category, const char *item = NULL, const char *field = NULL, const char *value = NULL) {
-    if (!pDefinition)
-        return Py_BuildValue("s", "Not initialized");
+    // MEDIUM-005 FIX: Add exception handling to prevent crashes
+    try {
+        if (!pDefinition)
+            return Py_BuildValue("s", "Not initialized");
 
-    const char *description = pDefinition->getDescription(category, item, field, value);
-    if (description == NULL)
-        return Py_BuildValue("s", "");
-    return Py_BuildValue("s", description);
+        const char *description = pDefinition->getDescription(category, item, field, value);
+        if (description == NULL)
+            return Py_BuildValue("s", "");
+        return Py_BuildValue("s", description);
+
+    } catch (const std::exception& e) {
+        std::string error_msg = std::string("C++ exception in describe: ") + e.what();
+        PyErr_SetString(PyExc_RuntimeError, error_msg.c_str());
+        return NULL;
+    } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError, "Unknown C++ exception in describe.");
+        return NULL;
+    }
 
 /*
     Category* cat = pDefinition->getCategory(category);
