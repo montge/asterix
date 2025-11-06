@@ -280,7 +280,7 @@ jobs:
         files: ./asterix-rs/coverage/cobertura.xml
         flags: rust,tarpaulin
         name: rust-coverage-tarpaulin
-        fail_ci_if_error: true
+        fail_ci_if_error: false  # External service - don't fail CI on upload issues
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
