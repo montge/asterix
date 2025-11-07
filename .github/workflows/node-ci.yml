@@ -52,11 +52,26 @@ jobs:
       run: |
         brew install expat
 
-    - name: Install system dependencies (Windows)
+    - name: Install CMake (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        choco install cmake expat --installargs 'ADD_CMAKE_TO_PATH=System' -y
+        choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
       shell: powershell
+
+    - name: Install vcpkg and EXPAT (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        $VCPKG_ROOT = "${{ github.workspace }}/vcpkg"
+        if (-not (Test-Path $VCPKG_ROOT)) {
+          git clone https://github.com/Microsoft/vcpkg.git $VCPKG_ROOT
+        }
+        Push-Location $VCPKG_ROOT
+        & .\bootstrap-vcpkg.bat
+        Pop-Location
+        $env:VCPKG_DEFAULT_TRIPLET = "x64-windows-static-md"
+        & "$VCPKG_ROOT/vcpkg.exe" install expat:x64-windows-static-md
+        & "$VCPKG_ROOT/vcpkg.exe" integrate install
 
     # Build C++ core library
     - name: Build C++ core (Ubuntu/macOS)
@@ -69,7 +84,8 @@ jobs:
     - name: Build C++ core (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/install"
+        $VCPKG_ROOT = "${{ github.workspace }}/vcpkg"
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/install" -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
         cmake --build build --config Release
         cmake --install build --config Release
       shell: powershell
