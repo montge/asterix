@@ -158,6 +158,9 @@ jobs:
           LDFLAGS="-fsanitize=address" \
           python3 setup.py build_ext --inplace
 
+      - name: Install pytest
+        run: pip install pytest
+
       - name: Run tests with ASAN
         id: asan
         run: |
