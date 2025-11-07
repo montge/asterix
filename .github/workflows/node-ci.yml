@@ -113,9 +113,10 @@ jobs:
           exit 1
         }
         Write-Host "Success: Required libraries installed successfully"
-        # Copy EXPAT headers to install/include for Node.js binding
+        # Copy EXPAT headers and library to install/ for Node.js binding
         Copy-Item -Path "$VCPKG_ROOT\installed\x64-windows-static-md\include\expat*.h" -Destination install\include\ -Force
-        Write-Host "Copied EXPAT headers to install/include"
+        Copy-Item -Path "$VCPKG_ROOT\installed\x64-windows-static-md\lib\libexpatMD.lib" -Destination install\lib\expat.lib -Force
+        Write-Host "Copied EXPAT headers and library to install/"
       shell: powershell
 
     # Build and test Node.js addon
