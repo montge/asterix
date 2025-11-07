@@ -85,7 +85,8 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         $VCPKG_ROOT = "${{ github.workspace }}/vcpkg"
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/install" -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+        $env:VCPKG_DEFAULT_TRIPLET = "x64-windows-static-md"
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/install" -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static-md
         cmake --build build --config Release
         cmake --install build --config Release
       shell: powershell
