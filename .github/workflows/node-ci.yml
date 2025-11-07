@@ -55,23 +55,23 @@ jobs:
     - name: Install system dependencies (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+        choco install cmake expat --installargs 'ADD_CMAKE_TO_PATH=System' -y
       shell: powershell
 
     # Build C++ core library
     - name: Build C++ core (Ubuntu/macOS)
       if: matrix.os != 'windows-latest'
       run: |
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PWD}/install"
         cmake --build build --config Release
-        cmake --install build --config Release --prefix install
+        cmake --install build --config Release
 
     - name: Build C++ core (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/install"
         cmake --build build --config Release
-        cmake --install build --config Release --prefix install
+        cmake --install build --config Release
       shell: powershell
 
     # Build and test Node.js addon
@@ -116,9 +116,9 @@ jobs:
 
     - name: Build C++ core
       run: |
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="${PWD}/install"
         cmake --build build --config Debug
-        cmake --install build --config Debug --prefix install
+        cmake --install build --config Debug
 
     - name: Build Node.js addon
       run: |
@@ -181,9 +181,9 @@ jobs:
 
     - name: Build C++ core
       run: |
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PWD}/install"
         cmake --build build --config Release
-        cmake --install build --config Release --prefix install
+        cmake --install build --config Release
 
     - name: Install and test
       run: |
@@ -216,9 +216,9 @@ jobs:
 
     - name: Build C++ core
       run: |
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PWD}/install"
         cmake --build build --config Release
-        cmake --install build --config Release --prefix install
+        cmake --install build --config Release
 
     - name: Build addon
       run: |
