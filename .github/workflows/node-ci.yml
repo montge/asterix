@@ -88,7 +88,13 @@ jobs:
         $env:VCPKG_DEFAULT_TRIPLET = "x64-windows-static-md"
         cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/install" -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static-md
         cmake --build build --config Release
-        cmake --install build --config Release
+        # Install may fail on asterix.exe (not needed for Node.js bindings), but continue
+        cmake --install build --config Release; if ($LASTEXITCODE -ne 0) { Write-Host "Install had errors but continuing..." }
+        # Verify required libraries were installed
+        if (-not (Test-Path install/lib/asterix.lib) -or -not (Test-Path install/bin/asterix.dll)) {
+          Write-Error "Required libraries not found in install directory"
+          exit 1
+        }
       shell: powershell
 
     # Build and test Node.js addon
