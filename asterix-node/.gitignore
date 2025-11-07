@@ -18,6 +18,9 @@ yarn-error.log*
 coverage/
 .nyc_output/
 
+# Generated documentation
+docs/
+
 # Dependency locks (keep package.json and package-lock.json for CI/CD caching)
 # package-lock.json is now tracked for npm cache optimization in GitHub Actions
 yarn.lock

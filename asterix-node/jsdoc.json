@@ -1,0 +1,22 @@
+{
+  "source": {
+    "include": ["lib/"],
+    "includePattern": ".+\\.js(doc|x)?$",
+    "excludePattern": "(node_modules|build)"
+  },
+  "opts": {
+    "destination": "./docs",
+    "recurse": true,
+    "readme": "./README.md"
+  },
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "templates": {
+    "cleverLinks": true,
+    "monospaceLinks": false
+  },
+  "metadata": {
+    "title": "ASTERIX Decoder for Node.js - API Documentation"
+  }
+}
