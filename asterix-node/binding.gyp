@@ -31,8 +31,6 @@
         "NAPI_DISABLE_CPP_EXCEPTIONS"
       ],
       "libraries": [
-        "-L../install/lib",
-        "-lasterix",
         "-lexpat"
       ],
       "conditions": [
@@ -42,6 +40,13 @@
           ],
           "defines": [
             "_GLIBCXX_USE_CXX11_ABI=1"
+          ],
+          "libraries": [
+            "<!@(node -p \"require('path').resolve(__dirname, '../install/lib/libasterix.so')\")",
+            "-lexpat"
+          ],
+          "ldflags": [
+            "-Wl,-rpath,<!@(node -p \"require('path').resolve(__dirname, '../install/lib')\")"
           ]
         }],
         ["OS=='mac'", {

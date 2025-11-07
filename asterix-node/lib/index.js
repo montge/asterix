@@ -24,10 +24,14 @@ let initialized = false;
  */
 function init(configDir) {
     if (arguments.length === 0) {
-        // Default: use config from parent directory
-        const defaultConfig = path.join(__dirname, '..', '..', 'asterix', 'config');
+        // Default: use config from install directory
+        const defaultConfig = path.join(__dirname, '..', '..', 'install', 'share', 'asterix', 'config');
         native.init(defaultConfig);
     } else {
+        // Type validation: must be string
+        if (typeof configDir !== 'string') {
+            throw new TypeError('Config directory must be a string');
+        }
         native.init(configDir);
     }
     initialized = true;

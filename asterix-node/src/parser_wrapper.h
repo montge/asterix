@@ -143,6 +143,13 @@ void asterix_wrapper_free_records(AsterixRecords* records);
  */
 void asterix_wrapper_free_string(char* str);
 
+/**
+ * Get last error message
+ *
+ * @return Last error message (internal buffer, do not free)
+ */
+const char* asterix_wrapper_get_last_error();
+
 #ifdef __cplusplus
 }
 #endif

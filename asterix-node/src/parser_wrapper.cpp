@@ -39,8 +39,12 @@
 
 #ifdef _WIN32
   #include <time.h>
+  #include <direct.h>  // for _getcwd, _chdir
+  #define getcwd _getcwd
+  #define chdir _chdir
 #else
   #include <sys/time.h>
+  #include <unistd.h>  // for getcwd, chdir
 #endif
 
 // Global state (singleton pattern, matches Python implementation)
@@ -201,9 +205,25 @@ bool asterix_wrapper_init(const char* config_dir) {
             return false;
         }
 
+        // Save current working directory and change to config directory
+        // This is needed because XML files reference asterix.dtd as a relative path
+        char old_cwd[4096];
+        if (!getcwd(old_cwd, sizeof(old_cwd))) {
+            fclose(fpini);
+            snprintf(last_error_buffer, sizeof(last_error_buffer),
+                    "Failed to get current working directory");
+            return false;
+        }
+
+        if (chdir(config_path.c_str()) != 0) {
+            fclose(fpini);
+            snprintf(last_error_buffer, sizeof(last_error_buffer),
+                    "Failed to change to config directory: %s", config_path.c_str());
+            return false;
+        }
+
         // Read and parse each XML file listed in asterix.ini
         char xml_file[256];
-        XMLParser Parser;
         bool parse_success = true;
 
         while (fgets(xml_file, sizeof(xml_file), fpini)) {
@@ -219,22 +239,25 @@ bool asterix_wrapper_init(const char* config_dir) {
                 continue;
             }
 
-            // Construct full path to XML file
-            std::string xml_path = config_path + xml_file;
+            // Create fresh parser for each XML file (prevents state accumulation)
+            XMLParser Parser;
 
-            // Open and parse XML file
-            FILE *fp = fopen(xml_path.c_str(), "rt");
+            // Open with just filename (since we're in config directory)
+            // But pass full path to Parser for proper error reporting
+            std::string xml_full_path = config_path + xml_file;
+
+            FILE *fp = fopen(xml_file, "rt");
             if (!fp) {
                 snprintf(last_error_buffer, sizeof(last_error_buffer),
-                        "Failed to open XML file: %s", xml_path.c_str());
+                        "Failed to open XML file: %s", xml_file);
                 parse_success = false;
                 break;
             }
 
-            if (!Parser.Parse(fp, pDefinition, xml_path.c_str())) {
+            if (!Parser.Parse(fp, pDefinition, xml_full_path.c_str())) {
                 fclose(fp);
                 snprintf(last_error_buffer, sizeof(last_error_buffer),
-                        "Failed to parse XML file: %s", xml_path.c_str());
+                        "Failed to parse XML file: %s", xml_file);
                 parse_success = false;
                 break;
             }
@@ -243,6 +266,13 @@ bool asterix_wrapper_init(const char* config_dir) {
         }
 
         fclose(fpini);
+
+        // Restore original working directory
+        if (chdir(old_cwd) != 0) {
+            snprintf(last_error_buffer, sizeof(last_error_buffer),
+                    "Warning: Failed to restore working directory to: %s", old_cwd);
+            // Continue anyway - parser is initialized
+        }
 
         return parse_success;
 
@@ -640,4 +670,9 @@ void asterix_wrapper_free_string(char* str) {
     if (str) {
         free(str);
     }
+}
+
+// Get last error message
+const char* asterix_wrapper_get_last_error() {
+    return last_error_buffer;
 }
