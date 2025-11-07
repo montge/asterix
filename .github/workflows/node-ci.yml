@@ -266,6 +266,17 @@ jobs:
         cache: 'npm'
         cache-dependency-path: asterix-node/package-lock.json
 
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev build-essential
+
+    - name: Build C++ core
+      run: |
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PWD}/install"
+        cmake --build build --config Release
+        cmake --install build --config Release
+
     - name: Install dependencies
       run: |
         cd asterix-node
@@ -274,7 +285,7 @@ jobs:
     - name: Generate JSDoc
       run: |
         cd asterix-node
-        npm run docs || echo "JSDoc not configured - skipping"
+        npm run docs
 
   # =============================================================================
   # SUMMARY
