@@ -90,6 +90,10 @@ install/share/
 install-test/
 # Build script creates install-Release and install-Debug directories
 install-*/
+# Test artifacts and build files in install/ root
+install/test_direct
+install/test_direct.cpp
+install/*.json
 
 # Rust build artifacts
 asterix-rs/target/
