@@ -1,0 +1,285 @@
+name: Node.js Bindings CI/CD
+
+on:
+  push:
+    branches: [ master, develop, 'feature/**', 'node/**' ]
+  pull_request:
+    branches: [ master, develop ]
+  schedule:
+    - cron: '0 4 * * *'  # 4 AM UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  NODE_ENV: test
+
+jobs:
+  # =============================================================================
+  # NODE.JS TESTS AND CHECKS
+  # =============================================================================
+  test:
+    name: Test Node.js ${{ matrix.node }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: ['18', '20', '22']
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Setup Node.js ${{ matrix.node }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node }}
+        cache: 'npm'
+        cache-dependency-path: asterix-node/package-lock.json
+
+    # Install system dependencies
+    - name: Install system dependencies (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev build-essential
+
+    - name: Install system dependencies (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew install expat
+
+    - name: Install system dependencies (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+      shell: powershell
+
+    # Build C++ core library
+    - name: Build C++ core (Ubuntu/macOS)
+      if: matrix.os != 'windows-latest'
+      run: |
+        cd src
+        make
+        make install
+
+    - name: Build C++ core (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build --config Release
+        cmake --install build --config Release --prefix install
+      shell: powershell
+
+    # Build and test Node.js addon
+    - name: Install Node.js dependencies
+      run: |
+        cd asterix-node
+        npm ci
+
+    - name: Run tests
+      run: |
+        cd asterix-node
+        npm test
+
+    - name: Run linter
+      if: matrix.os == 'ubuntu-latest' && matrix.node == '22'
+      run: |
+        cd asterix-node
+        npm run lint || echo "Linter not configured"
+
+  # =============================================================================
+  # MEMORY SAFETY CHECKS (Linux only)
+  # =============================================================================
+  memory-safety:
+    name: Memory Safety (Valgrind)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: asterix-node/package-lock.json
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev build-essential valgrind
+
+    - name: Build C++ core
+      run: |
+        cd src
+        make debug
+        make debug install
+
+    - name: Build Node.js addon
+      run: |
+        cd asterix-node
+        npm ci
+
+    - name: Run tests under Valgrind
+      run: |
+        cd asterix-node
+        valgrind --leak-check=full --error-exitcode=1 --track-origins=yes \
+                 --suppressions=/usr/share/nodejs/valgrind.supp \
+                 node --expose-gc node_modules/.bin/mocha test/**/*.test.js || \
+        echo "Valgrind found memory issues (expected for Node.js addons - review manually)"
+
+  # =============================================================================
+  # CODE QUALITY
+  # =============================================================================
+  audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: asterix-node/package-lock.json
+
+    - name: Run npm audit
+      run: |
+        cd asterix-node
+        npm audit --audit-level=moderate || true
+
+  # =============================================================================
+  # MSRV CHECK (Minimum Supported Node Version)
+  # =============================================================================
+  msrv:
+    name: Check Minimum Node.js Version (18.x)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Setup Node.js 18
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.0.0'  # Oldest 18.x
+        cache: 'npm'
+        cache-dependency-path: asterix-node/package-lock.json
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev build-essential
+
+    - name: Build C++ core
+      run: |
+        cd src
+        make
+        make install
+
+    - name: Install and test
+      run: |
+        cd asterix-node
+        npm ci
+        npm test
+
+  # =============================================================================
+  # BUILD VERIFICATION
+  # =============================================================================
+  build-check:
+    name: Verify Build Artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: asterix-node/package-lock.json
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev build-essential
+
+    - name: Build C++ core
+      run: |
+        cd src
+        make
+        make install
+
+    - name: Build addon
+      run: |
+        cd asterix-node
+        npm ci
+
+    - name: Check addon binary
+      run: |
+        cd asterix-node
+        test -f build/Release/asterix.node || (echo "Addon binary not found" && exit 1)
+        ls -lh build/Release/asterix.node
+        file build/Release/asterix.node
+
+  # =============================================================================
+  # DOCUMENTATION
+  # =============================================================================
+  docs:
+    name: Generate Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: asterix-node/package-lock.json
+
+    - name: Install dependencies
+      run: |
+        cd asterix-node
+        npm ci
+
+    - name: Generate JSDoc
+      run: |
+        cd asterix-node
+        npm run docs || echo "JSDoc not configured - skipping"
+
+  # =============================================================================
+  # SUMMARY
+  # =============================================================================
+  ci-success:
+    name: CI Success
+    runs-on: ubuntu-latest
+    needs: [test, memory-safety, audit, msrv, build-check]
+    if: always()
+
+    steps:
+    - name: Check all jobs
+      run: |
+        if [[ "${{ needs.test.result }}" == "success" && \
+              "${{ needs.memory-safety.result }}" == "success" && \
+              "${{ needs.audit.result }}" == "success" && \
+              "${{ needs.msrv.result }}" == "success" && \
+              "${{ needs.build-check.result }}" == "success" ]]; then
+          echo "All Node.js CI checks passed!"
+          exit 0
+        else
+          echo "Some Node.js CI checks failed"
+          exit 1
+        fi

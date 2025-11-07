@@ -56,10 +56,12 @@ Napi::Value Init(const Napi::CallbackInfo& info) {
 
     try {
         const char* config_dir = nullptr;
+        std::string path_storage;  // Keep string alive for c_str()
 
         // Optional first argument: config directory path
         if (info.Length() > 0 && info[0].IsString()) {
-            std::string path = info[0].As<Napi::String>().Utf8Value();
+            path_storage = info[0].As<Napi::String>().Utf8Value();
+            const std::string& path = path_storage;
 
             // MEDIUM-004: Validate config path (defense-in-depth)
             if (path.empty()) {
@@ -82,11 +84,17 @@ Napi::Value Init(const Napi::CallbackInfo& info) {
                 return env.Undefined();
             }
 
-            config_dir = path.c_str();
+            config_dir = path_storage.c_str();
         }
 
         if (!asterix_wrapper_init(config_dir)) {
-            Napi::Error::New(env, "Failed to initialize ASTERIX parser")
+            const char* error = asterix_wrapper_get_last_error();
+            std::string msg = "Failed to initialize ASTERIX parser";
+            if (error && error[0] != '\0') {
+                msg += ": ";
+                msg += error;
+            }
+            Napi::Error::New(env, msg)
                 .ThrowAsJavaScriptException();
             return env.Undefined();
         }
