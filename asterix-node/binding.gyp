@@ -84,19 +84,8 @@
           "libraries": [
             "-LIBPATH:../install/lib",
             "asterix.lib",
+            "expat.lib",
             "ws2_32.lib"
-          ],
-          "conditions": [
-            ["\"<!@(echo %VCPKG_ROOT%)\"!=\"%VCPKG_ROOT%\"", {
-              "libraries": [
-                "-LIBPATH:<!@(echo %VCPKG_ROOT%)/installed/x64-windows-static-md/lib",
-                "libexpatMD.lib"
-              ]
-            }, {
-              "libraries": [
-                "expat.lib"
-              ]
-            }]
           ]
         }]
       ]
