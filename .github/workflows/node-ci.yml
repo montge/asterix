@@ -84,18 +84,24 @@ jobs:
     - name: Build C++ core (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        $ErrorActionPreference = "Continue"
+        $ErrorActionPreference = "Stop"
         $VCPKG_ROOT = "${{ github.workspace }}/vcpkg"
         $env:VCPKG_DEFAULT_TRIPLET = "x64-windows-static-md"
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/install" -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static-md
-        if ($LASTEXITCODE -ne 0) { exit 1 }
+        # Disable executable build - Node.js only needs the libraries
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/install" -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static-md -DBUILD_EXECUTABLE=OFF
+        if ($LASTEXITCODE -ne 0) {
+          Write-Host "CMake configuration failed"
+          exit 1
+        }
         cmake --build build --config Release
-        if ($LASTEXITCODE -ne 0) { exit 1 }
-        # Install may fail on asterix.exe (not needed for Node.js bindings), but continue
+        if ($LASTEXITCODE -ne 0) {
+          Write-Host "Build failed"
+          exit 1
+        }
         cmake --install build --config Release
-        $installExitCode = $LASTEXITCODE
-        if ($installExitCode -ne 0) {
-          Write-Host "Install had errors (exit code: $installExitCode), but continuing if libraries were built..."
+        if ($LASTEXITCODE -ne 0) {
+          Write-Host "Install failed"
+          exit 1
         }
         # Verify required libraries were installed
         if (-not (Test-Path install/lib/asterix.lib)) {
@@ -107,7 +113,6 @@ jobs:
           exit 1
         }
         Write-Host "Success: Required libraries installed successfully"
-        exit 0
       shell: powershell
 
     # Build and test Node.js addon
