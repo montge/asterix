@@ -53,10 +53,18 @@
           "cflags_cc": [
             "-std=c++23"
           ],
+          "libraries": [
+            "<!@(node -p \"require('path').resolve(__dirname, '../install/lib/libasterix.dylib')\")",
+            "-lexpat"
+          ],
           "xcode_settings": {
             "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
             "CLANG_CXX_LANGUAGE_STANDARD": "c++23",
-            "MACOSX_DEPLOYMENT_TARGET": "11.0"
+            "MACOSX_DEPLOYMENT_TARGET": "11.0",
+            "LD_RUNPATH_SEARCH_PATHS": [
+              "@loader_path/../../install/lib",
+              "<!@(node -p \"require('path').resolve(__dirname, '../install/lib')\")"
+            ]
           }
         }],
         ["OS=='win'", {
