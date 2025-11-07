@@ -68,6 +68,10 @@
           }
         }],
         ["OS=='win'", {
+          "include_dirs": [
+            "../install/include",
+            "<!@(node -p \"process.env.VCPKG_ROOT ? process.env.VCPKG_ROOT + '/installed/x64-windows-static-md/include' : '../install/include'\")"
+          ],
           "msvs_settings": {
             "VCCLCompilerTool": {
               "ExceptionHandling": 1,
@@ -80,7 +84,8 @@
           "libraries": [
             "-LIBPATH:../install/lib",
             "asterix.lib",
-            "expat.lib"
+            "<!@(node -p \"process.env.VCPKG_ROOT ? '-LIBPATH:' + process.env.VCPKG_ROOT + '/installed/x64-windows-static-md/lib' : ''\")",
+            "<!@(node -p \"process.env.VCPKG_ROOT ? 'libexpatMD.lib' : 'expat.lib'\")"
           ]
         }]
       ]

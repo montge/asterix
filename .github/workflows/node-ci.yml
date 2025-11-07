@@ -120,6 +120,8 @@ jobs:
       run: |
         cd asterix-node
         npm ci
+      env:
+        VCPKG_ROOT: ${{ matrix.os == 'windows-latest' && format('{0}/vcpkg', github.workspace) || '' }}
 
     - name: Run tests
       run: |
