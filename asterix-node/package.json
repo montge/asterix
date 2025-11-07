@@ -41,7 +41,7 @@
     "url": "https://github.com/montge/asterix/issues"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "dependencies": {
     "node-addon-api": "^8.0.0",
