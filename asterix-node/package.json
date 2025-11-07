@@ -12,7 +12,8 @@
     "test:coverage": "nyc mocha test/**/*.test.js",
     "lint": "eslint lib/ test/",
     "format": "prettier --write 'lib/**/*.js' 'test/**/*.js' 'examples/**/*.js'",
-    "benchmark": "node test/benchmark.js"
+    "benchmark": "node test/benchmark.js",
+    "docs": "jsdoc -c jsdoc.json"
   },
   "keywords": [
     "asterix",
@@ -55,7 +56,8 @@
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-security": "^1.7.0",
     "prettier": "^3.0.0",
-    "@types/node": "^20.0.0"
+    "@types/node": "^20.0.0",
+    "jsdoc": "^4.0.0"
   },
   "gypfile": true,
   "binary": {
