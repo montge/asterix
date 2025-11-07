@@ -62,9 +62,9 @@ jobs:
     - name: Build C++ core (Ubuntu/macOS)
       if: matrix.os != 'windows-latest'
       run: |
-        cd src
-        make
-        make install
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build --config Release
+        cmake --install build --config Release --prefix install
 
     - name: Build C++ core (Windows)
       if: matrix.os == 'windows-latest'
@@ -116,9 +116,9 @@ jobs:
 
     - name: Build C++ core
       run: |
-        cd src
-        make debug
-        make debug install
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+        cmake --build build --config Debug
+        cmake --install build --config Debug --prefix install
 
     - name: Build Node.js addon
       run: |
@@ -181,9 +181,9 @@ jobs:
 
     - name: Build C++ core
       run: |
-        cd src
-        make
-        make install
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build --config Release
+        cmake --install build --config Release --prefix install
 
     - name: Install and test
       run: |
@@ -216,9 +216,9 @@ jobs:
 
     - name: Build C++ core
       run: |
-        cd src
-        make
-        make install
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build --config Release
+        cmake --install build --config Release --prefix install
 
     - name: Build addon
       run: |
