@@ -82,9 +82,8 @@
             "XML_STATIC"
           ],
           "libraries": [
-            "-LIBPATH:../install/lib",
-            "asterix.lib",
-            "expat.lib",
+            "<!@(node -p \"require('path').resolve(__dirname, '../install/lib/asterix.lib')\")",
+            "<!@(node -p \"require('path').resolve(__dirname, '../install/lib/expat.lib')\")",
             "ws2_32.lib"
           ]
         }]
