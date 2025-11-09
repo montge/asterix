@@ -106,16 +106,16 @@
             "XML_STATIC"
           ],
           "libraries": [
-            "ws2_32.lib",
-            "advapi32.lib",
-            "bcrypt.lib"
+            "ws2_32",
+            "advapi32",
+            "bcrypt"
           ],
           "link_settings": {
             "library_dirs": [
               "../install/lib"
             ],
             "libraries": [
-              "expat.lib"
+              "expat"
             ]
           }
         }]
