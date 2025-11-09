@@ -116,12 +116,35 @@ jobs:
       shell: powershell
 
     # Build and test Node.js addon
+    - name: Debug - Verify install directory before Node.js build (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        Write-Host "=== Contents of install/lib: ==="
+        Get-ChildItem -Path install/lib -ErrorAction SilentlyContinue | Format-Table Name, Length -AutoSize
+        Write-Host "`n=== Contents of install/include (first 10): ==="
+        Get-ChildItem -Path install/include -ErrorAction SilentlyContinue | Select-Object -First 10 | Format-Table Name -AutoSize
+        Write-Host "`n=== Absolute path to install/lib: ==="
+        Resolve-Path install/lib
+      shell: powershell
+
     - name: Install Node.js dependencies
       run: |
         cd asterix-node
         npm ci
       env:
         VCPKG_ROOT: ${{ matrix.os == 'windows-latest' && format('{0}/vcpkg', github.workspace) || '' }}
+
+    - name: Debug - List install directory (Windows)
+      if: matrix.os == 'windows-latest' && failure()
+      run: |
+        Write-Host "Contents of install/lib:"
+        Get-ChildItem -Path ../install/lib -ErrorAction SilentlyContinue | Format-Table Name, Length
+        Write-Host "`nContents of install/include:"
+        Get-ChildItem -Path ../install/include -ErrorAction SilentlyContinue | Format-Table Name
+        Write-Host "`nCurrent directory:"
+        Get-Location
+      shell: powershell
+      working-directory: asterix-node
 
     - name: Run tests
       run: |
