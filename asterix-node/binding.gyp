@@ -30,9 +30,7 @@
         "NAPI_VERSION=8",
         "NAPI_DISABLE_CPP_EXCEPTIONS"
       ],
-      "libraries": [
-        "-lexpat"
-      ],
+      "libraries": [],
       "conditions": [
         ["OS=='linux'", {
           "cflags_cc": [
@@ -107,15 +105,17 @@
             "_HAS_EXCEPTIONS=1",
             "XML_STATIC"
           ],
+          "libraries": [
+            "ws2_32.lib",
+            "advapi32.lib",
+            "bcrypt.lib"
+          ],
           "link_settings": {
             "library_dirs": [
               "../install/lib"
             ],
             "libraries": [
-              "expat.lib",
-              "ws2_32.lib",
-              "advapi32.lib",
-              "bcrypt.lib"
+              "expat.lib"
             ]
           }
         }]
