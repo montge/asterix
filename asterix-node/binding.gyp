@@ -112,9 +112,10 @@
               "../install/lib"
             ],
             "libraries": [
-              "-lexpat",
-              "-lws2_32",
-              "-lbcrypt"
+              "expat.lib",
+              "ws2_32.lib",
+              "advapi32.lib",
+              "bcrypt.lib"
             ]
           }
         }]
