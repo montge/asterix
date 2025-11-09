@@ -75,6 +75,11 @@
             "VCCLCompilerTool": {
               "ExceptionHandling": 1,
               "AdditionalOptions": ["/std:c++20"]
+            },
+            "VCLinkerTool": {
+              "AdditionalLibraryDirectories": [
+                "<!@(node -p \"require('path').resolve(__dirname, '../install/lib')\")"
+              ]
             }
           },
           "defines": [
@@ -82,8 +87,8 @@
             "XML_STATIC"
           ],
           "libraries": [
-            "<!@(node -p \"require('path').resolve(__dirname, '../install/lib/asterix.lib')\")",
-            "<!@(node -p \"require('path').resolve(__dirname, '../install/lib/expat.lib')\")",
+            "asterix.lib",
+            "expat.lib",
             "ws2_32.lib"
           ]
         }]
