@@ -68,8 +68,30 @@
           }
         }],
         ["OS=='win'", {
+          "sources": [
+            "../src/asterix/AsterixData.cpp",
+            "../src/asterix/AsterixDefinition.cpp",
+            "../src/asterix/Category.cpp",
+            "../src/asterix/DataBlock.cpp",
+            "../src/asterix/DataItem.cpp",
+            "../src/asterix/DataItemBits.cpp",
+            "../src/asterix/DataItemDescription.cpp",
+            "../src/asterix/DataItemFormat.cpp",
+            "../src/asterix/DataItemFormatBDS.cpp",
+            "../src/asterix/DataItemFormatCompound.cpp",
+            "../src/asterix/DataItemFormatExplicit.cpp",
+            "../src/asterix/DataItemFormatFixed.cpp",
+            "../src/asterix/DataItemFormatRepetitive.cpp",
+            "../src/asterix/DataItemFormatVariable.cpp",
+            "../src/asterix/InputParser.cpp",
+            "../src/asterix/Tracer.cpp",
+            "../src/asterix/UAP.cpp",
+            "../src/asterix/UAPItem.cpp",
+            "../src/asterix/Utils.cpp",
+            "../src/asterix/XMLParser.cpp"
+          ],
           "include_dirs": [
-            "../install/include"
+            "<!@(node -p \"require('path').resolve(__dirname, '../install/include')\")"
           ],
           "msvs_settings": {
             "VCCLCompilerTool": {
@@ -82,8 +104,7 @@
             "XML_STATIC"
           ],
           "libraries": [
-            "<!@(node -p \"require('path').resolve(__dirname, '../install/lib').replace(/\\\\/g, '/')+'/asterix.lib'\")",
-            "<!@(node -p \"require('path').resolve(__dirname, '../install/lib').replace(/\\\\/g, '/')+'/expat.lib'\")",
+            "<!@(node -p \"require('path').resolve(__dirname, '../install/lib/expat.lib')\")",
             "ws2_32.lib"
           ]
         }]
