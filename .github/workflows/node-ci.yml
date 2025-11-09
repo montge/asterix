@@ -109,12 +109,23 @@ jobs:
           exit 1
         }
         Write-Host "Success: Static library installed successfully"
+        # Debug: List what's in vcpkg EXPAT directory
+        Write-Host "`n=== vcpkg EXPAT lib files: ==="
+        Get-ChildItem -Path "$VCPKG_ROOT\installed\x64-windows\lib" -Filter *expat* -ErrorAction SilentlyContinue | Format-Table Name
         # Copy EXPAT headers and library to install/ for Node.js binding
         Copy-Item -Path "$VCPKG_ROOT\installed\x64-windows\include\expat*.h" -Destination install\include\ -Force
-        Copy-Item -Path "$VCPKG_ROOT\installed\x64-windows\lib\expat.lib" -Destination install\lib\expat.lib -Force
-        # Also copy expat DLL for runtime (dynamic linking)
-        Copy-Item -Path "$VCPKG_ROOT\installed\x64-windows\bin\expat.dll" -Destination install\lib\ -Force
-        Write-Host "Copied EXPAT headers, library, and DLL to install/"
+        # Find the actual expat library file (might be libexpat.lib, expat.lib, etc.)
+        $expatLib = Get-ChildItem -Path "$VCPKG_ROOT\installed\x64-windows\lib" -Filter "*expat*.lib" | Select-Object -First 1
+        if ($expatLib) {
+          Copy-Item -Path $expatLib.FullName -Destination install\lib\expat.lib -Force
+          Write-Host "Copied $($expatLib.Name) to install/lib/expat.lib"
+        }
+        # Copy expat DLL for runtime
+        $expatDll = Get-ChildItem -Path "$VCPKG_ROOT\installed\x64-windows\bin" -Filter "*expat*.dll" | Select-Object -First 1
+        if ($expatDll) {
+          Copy-Item -Path $expatDll.FullName -Destination install\lib\ -Force
+          Write-Host "Copied $($expatDll.Name) to install/lib/"
+        }
       shell: powershell
 
     # Build and test Node.js addon
