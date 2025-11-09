@@ -87,8 +87,8 @@ jobs:
         $ErrorActionPreference = "Stop"
         $VCPKG_ROOT = "${{ github.workspace }}/vcpkg"
         $env:VCPKG_DEFAULT_TRIPLET = "x64-windows-static-md"
-        # Disable executable build - Node.js only needs the libraries
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/install" -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static-md -DBUILD_EXECUTABLE=OFF
+        # Build only static library for Node.js (shared lib has naming conflict with static lib)
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/install" -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static-md -DBUILD_EXECUTABLE=OFF -DBUILD_SHARED_LIBS=OFF
         if ($LASTEXITCODE -ne 0) {
           Write-Host "CMake configuration failed"
           exit 1
@@ -103,16 +103,12 @@ jobs:
           Write-Host "Install failed"
           exit 1
         }
-        # Verify required libraries were installed
+        # Verify required static library was installed
         if (-not (Test-Path install/lib/asterix.lib)) {
-          Write-Host "ERROR: asterix.lib not found in install/lib/"
+          Write-Host "ERROR: asterix.lib (static) not found in install/lib/"
           exit 1
         }
-        if (-not (Test-Path install/bin/asterix.dll)) {
-          Write-Host "ERROR: asterix.dll not found in install/bin/"
-          exit 1
-        }
-        Write-Host "Success: Required libraries installed successfully"
+        Write-Host "Success: Static library installed successfully"
         # Copy EXPAT headers and library to install/ for Node.js binding
         Copy-Item -Path "$VCPKG_ROOT\installed\x64-windows-static-md\include\expat*.h" -Destination install\include\ -Force
         Copy-Item -Path "$VCPKG_ROOT\installed\x64-windows-static-md\lib\libexpatMD.lib" -Destination install\lib\expat.lib -Force
