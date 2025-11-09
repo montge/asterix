@@ -91,7 +91,9 @@
             "../src/asterix/XMLParser.cpp"
           ],
           "include_dirs": [
-            "../install/include"
+            "../install/include",
+            "../src/asterix",
+            "../src/engine"
           ],
           "msvs_settings": {
             "VCCLCompilerTool": {
