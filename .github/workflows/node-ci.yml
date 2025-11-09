@@ -133,8 +133,6 @@ jobs:
         npm ci
       env:
         VCPKG_ROOT: ${{ matrix.os == 'windows-latest' && format('{0}/vcpkg', github.workspace) || '' }}
-        # Windows: Set library path for node-gyp linker
-        LIB: ${{ matrix.os == 'windows-latest' && format('{0}/install/lib;%LIB%', github.workspace) || '' }}
 
     - name: Debug - List install directory (Windows)
       if: matrix.os == 'windows-latest' && failure()
