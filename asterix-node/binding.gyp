@@ -91,7 +91,7 @@
             "../src/asterix/XMLParser.cpp"
           ],
           "include_dirs": [
-            "<!@(node -p \"require('path').resolve(__dirname, '../install/include')\")"
+            "../install/include"
           ],
           "msvs_settings": {
             "VCCLCompilerTool": {
