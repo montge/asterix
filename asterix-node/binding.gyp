@@ -105,10 +105,15 @@
             "_HAS_EXCEPTIONS=1",
             "XML_STATIC"
           ],
-          "libraries": [
-            "<!@(node -p \"require('path').resolve(__dirname, '../install/lib/expat.lib')\")",
-            "ws2_32.lib"
-          ]
+          "link_settings": {
+            "library_dirs": [
+              "../install/lib"
+            ],
+            "libraries": [
+              "-lexpat",
+              "-lws2_32"
+            ]
+          }
         }]
       ]
     }
