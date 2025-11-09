@@ -103,7 +103,8 @@
           },
           "defines": [
             "_HAS_EXCEPTIONS=1",
-            "XML_STATIC"
+            "XML_STATIC",
+            "XML_POOR_ENTROPY"
           ],
           "libraries": [
             "ws2_32",
