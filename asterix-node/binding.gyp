@@ -73,6 +73,7 @@
             "../src/asterix/AsterixDefinition.cpp",
             "../src/asterix/Category.cpp",
             "../src/asterix/DataBlock.cpp",
+            "../src/asterix/DataRecord.cpp",
             "../src/asterix/DataItem.cpp",
             "../src/asterix/DataItemBits.cpp",
             "../src/asterix/DataItemDescription.cpp",
@@ -88,7 +89,8 @@
             "../src/asterix/UAP.cpp",
             "../src/asterix/UAPItem.cpp",
             "../src/asterix/Utils.cpp",
-            "../src/asterix/XMLParser.cpp"
+            "../src/asterix/XMLParser.cpp",
+            "../src/engine/globals.cpp"
           ],
           "include_dirs": [
             "../install/include",
@@ -111,7 +113,8 @@
             ],
             "libraries": [
               "-lexpat",
-              "-lws2_32"
+              "-lws2_32",
+              "-ladvapi32"
             ]
           }
         }]
