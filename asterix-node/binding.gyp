@@ -114,7 +114,7 @@
             "libraries": [
               "-lexpat",
               "-lws2_32",
-              "-ladvapi32"
+              "-lbcrypt"
             ]
           }
         }]
