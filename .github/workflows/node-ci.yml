@@ -69,8 +69,8 @@ jobs:
         Push-Location $VCPKG_ROOT
         & .\bootstrap-vcpkg.bat
         Pop-Location
-        $env:VCPKG_DEFAULT_TRIPLET = "x64-windows-static-md"
-        & "$VCPKG_ROOT/vcpkg.exe" install expat:x64-windows-static-md
+        # Use dynamic expat to avoid rand_s linkage issues with static lib
+        & "$VCPKG_ROOT/vcpkg.exe" install expat:x64-windows
         & "$VCPKG_ROOT/vcpkg.exe" integrate install
 
     # Build C++ core library
@@ -86,9 +86,9 @@ jobs:
       run: |
         $ErrorActionPreference = "Stop"
         $VCPKG_ROOT = "${{ github.workspace }}/vcpkg"
-        $env:VCPKG_DEFAULT_TRIPLET = "x64-windows-static-md"
+        $env:VCPKG_DEFAULT_TRIPLET = "x64-windows"
         # Build only static library for Node.js (shared lib has naming conflict with static lib)
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/install" -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static-md -DBUILD_EXECUTABLE=OFF -DBUILD_SHARED_LIBS=OFF
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PWD/install" -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DBUILD_EXECUTABLE=OFF -DBUILD_SHARED_LIBS=OFF
         if ($LASTEXITCODE -ne 0) {
           Write-Host "CMake configuration failed"
           exit 1
@@ -110,9 +110,11 @@ jobs:
         }
         Write-Host "Success: Static library installed successfully"
         # Copy EXPAT headers and library to install/ for Node.js binding
-        Copy-Item -Path "$VCPKG_ROOT\installed\x64-windows-static-md\include\expat*.h" -Destination install\include\ -Force
-        Copy-Item -Path "$VCPKG_ROOT\installed\x64-windows-static-md\lib\libexpatMD.lib" -Destination install\lib\expat.lib -Force
-        Write-Host "Copied EXPAT headers and library to install/"
+        Copy-Item -Path "$VCPKG_ROOT\installed\x64-windows\include\expat*.h" -Destination install\include\ -Force
+        Copy-Item -Path "$VCPKG_ROOT\installed\x64-windows\lib\expat.lib" -Destination install\lib\expat.lib -Force
+        # Also copy expat DLL for runtime (dynamic linking)
+        Copy-Item -Path "$VCPKG_ROOT\installed\x64-windows\bin\expat.dll" -Destination install\lib\ -Force
+        Write-Host "Copied EXPAT headers, library, and DLL to install/"
       shell: powershell
 
     # Build and test Node.js addon
