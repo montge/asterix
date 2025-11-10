@@ -75,27 +75,42 @@ Relates to #24
 
 ### Local Development Directory
 
-Use the `local/` directory for development files that should never be committed to git:
+Use the `.local/` directory (hidden) for development files that should never be committed to git:
 - **Testing scripts** - PowerShell, Bash, Python scripts for local testing
 - **Build experiments** - Custom build configurations and outputs
 - **Draft documentation** - Work-in-progress markdown files
 - **Personal notes** - Development notes, TODO lists, debugging logs
 - **Temporary data** - Test data, output files, logs
+- **AI-generated content** - Code analysis reports, security findings, performance metrics
+- **Coverage reports** - HTML/JSON coverage outputs, benchmark results
+- **Experimental work** - Prototypes, temporary scripts, visualizations
 
-The `local/` directory is ignored by git (except for `local/README.md`).
+The `.local/` directory is hidden and ignored by git (except for `.local/README.md`).
 
 **Example:**
 ```bash
 # Create your local testing script
-cat > local/my_test.sh <<'EOF'
+cat > .local/my_test.sh <<'EOF'
 #!/bin/bash
-./install/asterix -f local/test_data.pcap -j
+./install/asterix -f .local/test_data.pcap -j
 EOF
-chmod +x local/my_test.sh
+chmod +x .local/my_test.sh
 
 # Run it (won't be committed to git)
-./local/my_test.sh
+./.local/my_test.sh
+
+# Store AI-generated analysis in .local/
+# Example: Claude Code analysis reports, security findings, etc.
 ```
+
+**AI-Assisted Development:**
+When using Claude Code or other AI tools, store all generated reports and analysis in `.local/`:
+- Code quality reports → `.local/analysis/`
+- Security findings → `.local/security/`
+- Performance benchmarks → `.local/benchmarks/`
+- Coverage reports → `.local/coverage/`
+
+The `.claude/` directory is also gitignored for Claude Code-specific configuration.
 
 ### Repository Hygiene - No Hardcoded Paths
 
@@ -128,7 +143,7 @@ ASTERIX_PATH = os.getenv("ASTERIX_PATH", ".")
 1. Search for your username: `git grep -i "$(whoami)"` or `git grep -i "your-username"`
 2. Search for home directory patterns: `git grep -E "(C:\\\\Users|/home/|/Users/)"`
 3. Review changes: `git diff` before `git add`
-4. Use the `local/` directory for user-specific files
+4. Use the `.local/` directory for user-specific files
 
 **Allowed path references:**
 - Relative paths (e.g., `./install/asterix`, `../config/`)
@@ -136,6 +151,52 @@ ASTERIX_PATH = os.getenv("ASTERIX_PATH", ".")
 - Environment variables (e.g., `$ASTERIX_HOME`, `${PWD}`)
 - Example paths that are clearly generic (e.g., `/opt/asterix`, `C:\Program Files\asterix`)
 - Public repository URLs (e.g., `github.com/montge/asterix`)
+
+### Code Quality & Testing Standards
+
+**For comprehensive code quality guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).**
+
+**Quick Reference - Testing Requirements:**
+- **C++ Integration Tests**: All changes must pass `install/test/test.sh` (11 test cases)
+- **Python Tests**: Run `python -m unittest` from repository root
+- **Rust Tests**: Run `cargo test --all-features` from `asterix-rs/`
+- **Memory Safety**: Run `install/test/valgrind_test.sh` for memory leak detection (must show 0 leaks)
+- **Coverage Target**: Aim for >80% test coverage on new code (current: 92.2%)
+
+**Quality Checks:**
+```bash
+# C++ - Build and test
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+cmake --install build
+cd install/test && ./test.sh
+
+# Python - Run tests
+python -m unittest
+
+# Rust - Comprehensive testing
+cd asterix-rs
+cargo test --all-features  # Unit + integration tests
+cargo clippy               # Linter (strict mode)
+cargo fmt --check          # Format verification
+cargo bench                # Performance benchmarks
+
+# Memory leak testing (requires valgrind)
+cd install/test && ./valgrind_test.sh
+```
+
+**Pre-Commit Best Practices:**
+1. Run relevant test suites before committing
+2. Check for memory leaks on FFI boundary changes
+3. Verify no hardcoded paths: `git grep -E "(C:\\\\Users|/home/|/Users/)"`
+4. Review diff: `git diff` before staging
+5. Keep commits atomic and well-described
+
+**Dependency Updates:**
+- Dependabot PRs (GitHub Actions, dependencies) should be reviewed and merged regularly
+- Check CI/CD status before merging: all platforms must pass
+- Use `gh pr list --repo montge/asterix` to view open PRs
+- Merge dependency updates to keep security posture strong
 
 ## Build System & Commands
 
@@ -509,3 +570,297 @@ The codebase has been optimized through 6 Quick Wins achieving **55-61% cumulati
 **⚠️ WARNING:** Do NOT optimize FSPEC parsing (`DataRecord::parse()` FSPEC loop) - causes memory corruption and segfaults.
 
 See `PERFORMANCE_OPTIMIZATIONS.md` for detailed analysis and measurements.
+
+## Documentation Standards
+
+**IMPORTANT:** All code must be documented using language-appropriate self-documenting formats.
+
+### C++ Documentation (Doxygen)
+
+**Required for all public APIs:**
+- Class declarations must have `/** @class */` comments
+- Functions must document `@param`, `@return`, `@throws`
+- Include usage examples for complex APIs with `@code` blocks
+- Use `@brief` for short descriptions
+
+**Current Status:** C++ headers lack comprehensive Doxygen documentation. See [GitHub Issue #72](https://github.com/montge/asterix/issues/72) for improvement tasks.
+
+**Example:**
+```cpp
+/**
+ * @class DataItem
+ * @brief Represents a single ASTERIX data item
+ *
+ * DataItem encapsulates a single data field within an ASTERIX record,
+ * including its description, binary data, and parsed values.
+ *
+ * @note The caller is responsible for memory management
+ */
+class DataItem {
+public:
+    /**
+     * @brief Parse binary data according to item format
+     * @param pData Pointer to binary data buffer
+     * @param nLength Length of data buffer in bytes
+     * @return true if parsing successful, false otherwise
+     * @throws std::invalid_argument if pData is null
+     */
+    bool parse(const unsigned char* pData, size_t nLength);
+};
+```
+
+### Python Documentation (Docstrings)
+
+**Required for all public APIs:**
+- Module-level docstrings
+- Class docstrings with `Attributes:` section
+- Function/method docstrings with `Args:`, `Returns:`, `Raises:`, `Example:`
+- Use Google-style docstrings (consistent with existing code)
+
+**Current Status:** Partial docstring coverage (~70% estimated). See [GitHub Issue #72](https://github.com/montge/asterix/issues/72) for improvement tasks.
+
+**Example:**
+```python
+"""Module for parsing ASTERIX data blocks.
+
+This module provides functionality for parsing ASTERIX data blocks
+from various input sources including files, stdin, and network streams.
+"""
+
+def parse_asterix_record(data: bytes, category: int, verbose: bool = True) -> Dict:
+    """Parse an ASTERIX record from raw binary data.
+
+    Args:
+        data: Raw ASTERIX binary data as bytes.
+        category: ASTERIX category number (e.g., 48, 62).
+        verbose: If True, include descriptions in output.
+
+    Returns:
+        Dictionary containing parsed ASTERIX fields and values.
+
+    Raises:
+        ValueError: If data is invalid or category is unsupported.
+        RuntimeError: If internal parsing error occurs.
+
+    Example:
+        >>> data = b'\x30\x00\x30...'
+        >>> result = parse_asterix_record(data, 48)
+        >>> print(result['I010'])
+    """
+    if not data:
+        raise ValueError("Data cannot be empty")
+    return {}
+```
+
+### Rust Documentation (Doc Comments)
+
+**Required for all public APIs:**
+- Crate-level documentation with `//!` (module docs)
+- Public items documented with `///` (doc comments)
+- Include safety warnings, examples, and panic conditions
+- Use `# Safety`, `# Examples`, `# Errors`, `# Panics` sections
+
+**Current Status:** Excellent documentation in `asterix-rs/` crate (exemplary standard).
+
+**Example:**
+```rust
+//! Rust bindings for the ASTERIX ATM surveillance protocol decoder
+//!
+//! # Examples
+//!
+//! ```no_run
+//! use asterix::{parse, ParseOptions, init_default};
+//!
+//! init_default()?;
+//! let data = std::fs::read("sample.asterix")?;
+//! let records = parse(&data, ParseOptions::default())?;
+//! ```
+
+/// Parse ASTERIX data from raw bytes
+///
+/// # Arguments
+///
+/// * `data` - Raw ASTERIX binary data
+/// * `options` - Parsing configuration options
+///
+/// # Errors
+///
+/// Returns `AsterixError` if parsing fails due to invalid data
+///
+/// # Examples
+///
+/// ```
+/// let records = parse(&data, ParseOptions::default())?;
+/// ```
+pub fn parse(data: &[u8], options: ParseOptions) -> Result<Vec<AsterixRecord>, AsterixError> {
+    // Implementation
+}
+```
+
+### Documentation Best Practices
+
+**When adding new code:**
+1. Write documentation BEFORE or alongside the code (TDD for docs)
+2. Include examples for non-trivial functions
+3. Document edge cases, error conditions, and safety concerns
+4. Update docs when changing function signatures or behavior
+
+**When using AI tools:**
+- AI-generated documentation must be reviewed for accuracy
+- Verify examples compile and run correctly
+- Check that safety warnings are appropriate for the code
+- Ensure consistency with existing documentation style
+
+**Generating documentation:**
+```bash
+# C++ - Generate Doxygen documentation
+doxygen Doxyfile
+# View: docs/cpp/html/index.html
+
+# Python - Generate Sphinx documentation (if configured)
+cd docs && make html
+
+# Rust - Generate rustdoc documentation
+cd asterix-rs && cargo doc --open
+```
+
+**See [CONTRIBUTING.md](CONTRIBUTING.md) for comprehensive documentation requirements and examples.**
+
+## AI-Assisted Development Best Practices
+
+When working with Claude Code or other AI development tools on this codebase:
+
+### 1. Use `.local/` for All AI-Generated Artifacts
+
+**Store analysis outputs in `.local/`:**
+- Code analysis reports → `.local/analysis/`
+- Security findings → `.local/security/`
+- Performance benchmarks → `.local/benchmarks/`
+- Coverage reports → `.local/coverage/`
+- Experimental prototypes → `.local/experiments/`
+- Testing logs → `.local/logs/`
+
+**Never commit AI-generated temporary files:**
+- Analysis reports with patterns: `*_REPORT.md`, `*_ANALYSIS.md`, `*_FINDINGS.md`
+- Agent outputs: `*AGENT*.md`, `*PHASE*.md`
+- Work products: `*_SUMMARY.md`, `*_CHECKLIST.md`
+
+These patterns are already gitignored (see `.gitignore` lines 136-147).
+
+### 2. Maintain Test Coverage
+
+**When AI suggests code changes:**
+- Run full test suite before and after changes
+- Verify 0 memory leaks with valgrind
+- Check FFI boundaries with sanitizers (ASAN/MSAN/UBSAN)
+- Maintain >80% coverage on modified components
+- Add new tests for new functionality
+
+**Test execution workflow:**
+```bash
+# 1. Baseline - Run tests before changes
+cd install/test && ./test.sh        # C++ integration tests
+python -m unittest                   # Python tests
+cd asterix-rs && cargo test          # Rust tests
+
+# 2. Make AI-suggested changes
+
+# 3. Verification - Run tests after changes
+cd install/test && ./test.sh
+cd install/test && ./valgrind_test.sh  # Memory leak check
+python -m unittest
+cd asterix-rs && cargo test --all-features
+```
+
+### 3. Follow Pre-Commit Standards
+
+**Before committing AI-generated code:**
+1. **Review the diff carefully** - AI can introduce subtle bugs
+2. **Check for hardcoded paths** - Run: `git grep -E "(C:\\\\Users|/home/|/Users/)"`
+3. **Verify no secrets** - No API keys, tokens, credentials
+4. **Run code formatters** - C++: clang-format, Rust: `cargo fmt`, Python: black/ruff
+5. **Test on all platforms** - Linux, Windows (MSVC), macOS (if available)
+6. **Document decisions** - Add comments explaining non-obvious changes
+
+### 4. Document AI-Generated Analysis
+
+**When AI produces useful insights:**
+- Store full reports in `.local/analysis/` for your reference
+- Extract key decisions and add to code comments or commit messages
+- Do NOT commit raw AI analysis - synthesize and summarize
+- Reference issue numbers in commits: `Relates to #<issue>`
+
+**Example:**
+```bash
+# AI generates analysis report
+mv code_analysis.md .local/analysis/$(date +%Y%m%d)_code_analysis.md
+
+# Extract key decisions for commit message
+git commit -m "Optimize PCAP buffer reuse
+
+Relates to #42
+
+- Reuse 65KB buffer across parse iterations
+- Reduces allocations by 95% in multicast scenarios
+- Verified with valgrind: 0 memory leaks
+- Based on analysis in .local/analysis/20251110_code_analysis.md"
+```
+
+### 5. Preserve Git History & Attribution
+
+**Commit message quality:**
+- Use issue-first workflow (see "Issue-First Workflow" section)
+- Write clear, descriptive commit messages
+- Include testing verification in commit body
+- Maintain clean git history (avoid "fix typo" commits)
+
+**When AI suggests large refactorings:**
+- Break into multiple atomic commits
+- Each commit should pass all tests
+- Document reasoning in commit messages
+- Create GitHub issue first for tracking
+
+### 6. Safety-Critical Considerations
+
+**This is a safety-critical aviation project (ATM/ATC data):**
+- AI-generated code requires extra scrutiny
+- Never skip memory leak testing on FFI changes
+- Validate all boundary conditions and edge cases
+- Fuzz test parser changes (especially ASTERIX category updates)
+- Security scan with CodeQL on significant changes
+
+**Verification checklist for AI changes:**
+- [ ] All tests pass (C++, Python, Rust)
+- [ ] Valgrind shows 0 memory leaks
+- [ ] No new compiler warnings
+- [ ] FFI boundaries validated with sanitizers
+- [ ] Performance impact measured (if applicable)
+- [ ] Security implications reviewed
+- [ ] Cross-platform compatibility verified
+
+### 7. Handling Dependency Updates
+
+**Current open PRs (as of 2025-11-10):**
+- 7 Dependabot PRs for GitHub Actions updates (see `gh pr list --repo montge/asterix`)
+
+**When AI or Dependabot suggests updates:**
+1. Review the changelog/release notes
+2. Check for breaking changes
+3. Verify CI/CD passes on all platforms
+4. Merge promptly to maintain security posture
+5. Monitor for CI failures after merge
+
+**Quick review workflow:**
+```bash
+# List open dependency PRs
+gh pr list --repo montge/asterix --label dependencies
+
+# View specific PR details
+gh pr view <pr-number> --repo montge/asterix
+
+# Check CI status
+gh pr checks <pr-number> --repo montge/asterix
+
+# Merge when CI passes (after review)
+gh pr merge <pr-number> --repo montge/asterix --squash
+```
