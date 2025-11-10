@@ -41,6 +41,23 @@ npm install
 npm run build
 ```
 
+### Platform-Specific Build Notes
+
+The Node.js bindings use different build strategies per platform:
+
+**Linux/macOS:**
+- Links against pre-built shared library (`libasterix.so` / `libasterix.dylib`)
+- Fast builds, small binary size
+- Shared library must be built first: `cmake -B build && cmake --build build && cmake --install build`
+
+**Windows:**
+- Compiles ASTERIX C++ sources directly into the addon (22 source files)
+- Self-contained build - no separate library build required
+- Uses dynamic EXPAT library (`expat:x64-windows` via vcpkg)
+- Pattern matches Python bindings approach for cross-platform consistency
+
+Both approaches are fully supported and tested in CI across all Node.js versions (20, 22, 24).
+
 ## Quick Start
 
 ```javascript
