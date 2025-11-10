@@ -3,6 +3,9 @@
 /bin
 /build
 /build-*
+/build_*
+/test_*
+/*_test/
 *.bak
 *~
 /cmake-build-debug/
@@ -129,8 +132,8 @@ build_rust*.ps1
 test_rust*.ps1
 
 # Local development directory (user-specific files only, keep README.md)
-local/*
-!local/README.md
+.local/*
+!.local/README.md
 
 # Interim work products and agent reports
 *_REPORT.md

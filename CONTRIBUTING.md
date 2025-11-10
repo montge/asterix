@@ -86,13 +86,13 @@ Have an idea for a new feature? Open an issue describing:
 
 **System Requirements:**
 - Linux, macOS, or Windows (with Cygwin)
-- Python 3.8 or higher
-- **C++17 compatible compiler**:
-  - GCC 7.0+ (recommended: GCC 9+)
-  - Clang 5.0+ (recommended: Clang 9+)
-  - MSVC 2017 15.3+ (Visual Studio 2017+)
-  - AppleClang 9.1+ (Xcode 9.3+)
-- CMake 3.12 or higher
+- Python 3.10 or higher (3.10-3.14 supported)
+- **C++ compiler** (platform-specific):
+  - GCC 13.0+ (recommended for full C++23 support on Linux)
+  - Clang 16.0+ (recommended for full C++23 support on Linux)
+  - MSVC 2019 v16.0+ or later (Visual Studio 2019/2022, uses C++20)
+  - AppleClang 15.0+ (Xcode 15 or later, uses C++23)
+- CMake 3.20 or higher
 - Git
 
 **Required Libraries:**
@@ -239,18 +239,28 @@ pylint asterix/*.py
 
 ### C++ Code Style
 
-**Language Standard:** C++17
+**Language Standard:** C++23 (Linux/macOS), C++20 (Windows/MSVC)
 
-The project requires C++17 and developers can use modern C++17 features including:
-- **Structured bindings**: `auto [key, value] = map.insert(...)`
-- **std::optional**: For optional return values and nullable types
-- **std::string_view**: For efficient string parameter passing
-- **if constexpr**: For compile-time conditionals
-- **Inline variables**: For header-only constants
-- **Nested namespaces**: `namespace A::B::C { }`
-- **std::variant**: For type-safe unions
-- **std::any**: For type-erased values
-- **Fold expressions**: For variadic template expansion
+The project uses modern C++ features with platform-specific standards:
+- **Linux/macOS:** C++23 (set in CMakeLists.txt)
+- **Windows/MSVC:** C++20 (MSVC doesn't fully support C++23 yet)
+- Automatic fallback to C++17/20 on older compilers (see `src/asterix/cxx23_features.h`)
+
+**Modern C++ features in use:**
+- **C++23 features** (when available):
+  - Deduced this (explicit object parameters) - for better polymorphic performance
+  - Ranges algorithms - for cleaner container operations
+  - `std::format` - for type-safe formatting
+- **C++17 features** (baseline, always available):
+  - Structured bindings: `auto [key, value] = map.insert(...)`
+  - `std::optional`: For optional return values and nullable types
+  - `std::string_view`: For efficient string parameter passing
+  - `if constexpr`: For compile-time conditionals
+  - Inline variables: For header-only constants
+  - Nested namespaces: `namespace A::B::C { }`
+  - `std::variant`: For type-safe unions
+  - `std::any`: For type-erased values
+  - Fold expressions: For variadic template expansion
 
 **General Guidelines:**
 - Follow the existing code style in the repository
@@ -310,12 +320,22 @@ DataItem* parseDataItem(const unsigned char* pData, size_t nLength, int category
 - Delete allocated memory in destructors (for legacy code)
 - Check for null pointers before use
 
-**C++17 Best Practices:**
-- Use `std::string_view` for read-only string parameters instead of `const std::string&`
-- Use structured bindings for clearer tuple/pair unpacking
-- Prefer `if constexpr` over SFINAE for template metaprogramming
-- Use inline variables for constants in headers
-- Leverage `[[nodiscard]]` attribute for important return values
+**Modern C++ Best Practices:**
+- **C++23 (when available):**
+  - Use deduced this for polymorphic member functions
+  - Use ranges algorithms for cleaner, more composable operations
+  - Use `std::format` for type-safe string formatting
+- **C++17 (baseline):**
+  - Use `std::string_view` for read-only string parameters instead of `const std::string&`
+  - Use structured bindings for clearer tuple/pair unpacking
+  - Prefer `if constexpr` over SFINAE for template metaprogramming
+  - Use inline variables for constants in headers
+  - Leverage `[[nodiscard]]` attribute for important return values
+
+**Backward Compatibility:**
+- Code includes feature detection macros in `src/asterix/cxx23_features.h`
+- Automatic fallback to C++17/20 when C++23 features unavailable
+- Performance optimizations from newer standards gracefully degrade
 
 ## Testing Requirements
 
