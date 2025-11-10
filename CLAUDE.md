@@ -23,6 +23,25 @@ All three bindings share the same C++ core for parsing ASTERIX data from various
 4. **Keep issues open** - Issues remain open until ALL CI/CD pipelines pass across all platforms
 5. **Close verification** - Only close issues when all acceptance criteria are met and verified in CI
 
+**⚠️ IMPORTANT: Set Your Fork as Default Repository**
+
+If you've forked this repository, configure `gh` CLI to default to YOUR fork, not upstream:
+
+```bash
+# Set default to your fork (replace YOUR_USERNAME with your GitHub username)
+gh repo set-default YOUR_USERNAME/asterix
+
+# Verify the default is set correctly
+gh repo set-default --view
+
+# Example: If you forked to johndoe/asterix
+gh repo set-default johndoe/asterix
+```
+
+**Why this matters:** Without setting the default, `gh issue create` and other commands will create issues in the upstream repository (`montge/asterix` or `CroatiaControlLtd/asterix`) instead of your fork. This causes confusion and pollutes the upstream issue tracker with your development work.
+
+**When to use upstream:** Only create issues in upstream when reporting bugs or requesting features that affect all users, not for your personal development tasks.
+
 **Issue Creation Guidelines:**
 - **Enhancement**: New features, language bindings, protocol integrations
 - **Bug**: Defects, incorrect behavior, crashes
