@@ -586,9 +586,7 @@ jobs:
       uses: actions/checkout@v5
 
     - name: Install Rust 1.87
-      uses: dtolnay/rust-toolchain@1.100
-      with:
-        toolchain: "1.87"
+      uses: dtolnay/rust-toolchain@1.87
 
     - name: Install dependencies
       run: |
