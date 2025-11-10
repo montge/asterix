@@ -69,7 +69,9 @@ jobs:
         Push-Location $VCPKG_ROOT
         & .\bootstrap-vcpkg.bat
         Pop-Location
-        # Use dynamic expat to avoid rand_s linkage issues with static lib
+        # Use x64-windows (dynamic EXPAT) - node-gyp cannot link system libs (advapi32/bcrypt)
+        # required by static EXPAT's rand_s. Rust uses x64-windows-static-md because CMake
+        # handles CRT linkage properly. Different triplets are intentional.
         & "$VCPKG_ROOT/vcpkg.exe" install expat:x64-windows
         & "$VCPKG_ROOT/vcpkg.exe" integrate install
 
