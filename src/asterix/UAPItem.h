@@ -65,7 +65,7 @@ public:
         Tracer::Error("Function should not be called!");
         return false;
     }; // mark item for filtering
-    const char *getDescription(const char *field, const char *value) {
+    const char *getDescription(const char * /*field*/, const char * /*value*/) {
         Tracer::Error("Function should not be called!");
         return NULL;
     }; // return description ef element
