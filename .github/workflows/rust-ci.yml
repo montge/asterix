@@ -99,8 +99,10 @@ jobs:
       shell: pwsh
       run: |
         $VCPKG_ROOT = "${{ github.workspace }}/vcpkg"
-        # Use x64-windows-static-md triplet (Rust's default) to match vcpkg-rs expectations
-        # This creates libexpatMD.lib which vcpkg-rs correctly detects
+        # Use x64-windows-static-md (static EXPAT) - CMake (via build.rs) properly links
+        # all CRT dependencies including advapi32/bcrypt for rand_s symbol.
+        # Node.js uses x64-windows (dynamic) because node-gyp cannot link system libs.
+        # Different triplets are intentional - each binding uses what works best.
         $env:VCPKG_DEFAULT_TRIPLET = "x64-windows-static-md"
         & "$VCPKG_ROOT/vcpkg.exe" install expat:x64-windows-static-md
         & "$VCPKG_ROOT/vcpkg.exe" integrate install
