@@ -55,7 +55,7 @@ public:
      */
     virtual std::string printDescriptor() { return "Not available"; }
 
-    virtual bool filterOutItem(int cat, std::string item, const char *name) { return false; }
+    virtual bool filterOutItem(int /*cat*/, std::string /*item*/, const char * /*name*/) { return false; }
 
 };
 
