@@ -66,32 +66,8 @@
           }
         }],
         ["OS=='win'", {
-          "sources": [
-            "../src/asterix/AsterixData.cpp",
-            "../src/asterix/AsterixDefinition.cpp",
-            "../src/asterix/Category.cpp",
-            "../src/asterix/DataBlock.cpp",
-            "../src/asterix/DataRecord.cpp",
-            "../src/asterix/DataItem.cpp",
-            "../src/asterix/DataItemBits.cpp",
-            "../src/asterix/DataItemDescription.cpp",
-            "../src/asterix/DataItemFormat.cpp",
-            "../src/asterix/DataItemFormatBDS.cpp",
-            "../src/asterix/DataItemFormatCompound.cpp",
-            "../src/asterix/DataItemFormatExplicit.cpp",
-            "../src/asterix/DataItemFormatFixed.cpp",
-            "../src/asterix/DataItemFormatRepetitive.cpp",
-            "../src/asterix/DataItemFormatVariable.cpp",
-            "../src/asterix/InputParser.cpp",
-            "../src/asterix/Tracer.cpp",
-            "../src/asterix/UAP.cpp",
-            "../src/asterix/UAPItem.cpp",
-            "../src/asterix/Utils.cpp",
-            "../src/asterix/XMLParser.cpp",
-            "../src/engine/globals.cpp"
-          ],
           "include_dirs": [
-            "../install/include",
+            "<!@(node -p \"require('path').resolve(__dirname, '../install/include')\")",
             "../src/asterix",
             "../src/engine"
           ],
@@ -99,24 +75,23 @@
             "VCCLCompilerTool": {
               "ExceptionHandling": 1,
               "AdditionalOptions": ["/std:c++20"]
+            },
+            "VCLinkerTool": {
+              "AdditionalLibraryDirectories": [
+                "<!@(node -p \"require('path').resolve(__dirname, '../install/lib')\")"
+              ]
             }
           },
           "defines": [
             "_HAS_EXCEPTIONS=1"
           ],
           "libraries": [
-            "ws2_32",
-            "advapi32",
-            "bcrypt"
-          ],
-          "link_settings": {
-            "library_dirs": [
-              "../install/lib"
-            ],
-            "libraries": [
-              "expat"
-            ]
-          }
+            "asterix.lib",
+            "expat.lib",
+            "ws2_32.lib",
+            "advapi32.lib",
+            "bcrypt.lib"
+          ]
         }]
       ]
     }
