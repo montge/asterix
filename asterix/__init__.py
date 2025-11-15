@@ -82,32 +82,91 @@ from .version import __version__
 #    return _asterix.hello(world)
 
 
-def init(filename):
-    """ Initializes asterix with XML category definition
+def init(filename: str) -> int:
+    """Initializes asterix with XML category definition.
+
+    This function loads a custom ASTERIX category definition from an XML file.
+    Use this when you need to add support for custom ASTERIX categories or
+    modify existing category definitions. All default categories are automatically
+    loaded on module import.
+
+    Warning:
+        This function modifies global state and is NOT thread-safe. Do not call
+        from multiple threads concurrently.
+
     Args:
-        filename: Path to XML definition file
+        filename (str): Absolute or relative path to XML definition file. The file
+            must conform to the ASTERIX DTD specification (see asterix.dtd).
+
     Returns:
-        0: if OK
+        int: 0 if initialization successful.
+
     Raises:
-        SyntaxError: if there is a syntax error in XMl file
-        RuntimeError: if there is some internal problem
-        IOError: if XML file is not found or can't be read
-        ValueError: if parameter is not string
-        TypeError: if there is more or less than 1 parameter
+        SyntaxError: If there is a syntax error in XML file.
+        RuntimeError: If there is an internal parsing problem.
+        IOError: If XML file is not found or cannot be read.
+        ValueError: If parameter is not a string.
+        TypeError: If incorrect number of parameters provided.
+
     Example:
-        >>> asterix.init(path_to_your_config_file)
+        >>> import asterix
+        >>> # Get DTD file for reference
+        >>> dtd_file = asterix.get_configuration_file('dtd')
+        >>> # Initialize with custom category definition
+        >>> asterix.init('/path/to/custom_cat999_1_0.xml')
+        0
+        >>> # Now you can parse CAT999 data
+        >>> data = b'\\x99\\x00\\x10...'  # CAT999 data
+        >>> records = asterix.parse(data)
     """
     return _asterix.init(filename)
 
 
-def parse(data, **kwargs):
-    """ Parse raw asterix data
+def parse(data: bytes, verbose: bool = True) -> list:
+    """Parse raw ASTERIX data from bytes.
+
+    Parses ASTERIX binary data and returns a list of decoded records. Each record
+    contains the category, timestamp, data items, and their decoded values. This
+    is the primary parsing function for processing ASTERIX surveillance data.
+
+    Warning:
+        This function uses global state and is NOT thread-safe. Do not call from
+        multiple threads concurrently.
+
     Args:
-        data: Bytes to be parsed
-    Kwargs:
-        verbose=True: Show description, meaning, max and min values of item (default: True)
+        data (bytes): Raw ASTERIX binary data to parse. Can contain one or more
+            ASTERIX data blocks. Supports CAT001-CAT255 if category definitions
+            are loaded.
+        verbose (bool, optional): If True, include descriptions, meanings, and
+            min/max values for each data item. If False, return only raw values.
+            Defaults to True.
+
     Returns:
-        list of asterix records
+        list: List of dictionaries, one per ASTERIX record. Each dictionary contains:
+            - 'category' (int): ASTERIX category number (e.g., 48, 62)
+            - 'len' (int): Record length in bytes
+            - 'crc' (str): CRC checksum
+            - 'ts' (int): Timestamp in milliseconds since epoch
+            - 'hexdata' (str): Hexadecimal representation of raw data
+            - 'I...' (dict/list): Data items (e.g., 'I010', 'I040') with parsed values
+
+    Example:
+        >>> import asterix
+        >>> # CAT048 sample data (Monoradar Target Reports)
+        >>> data = bytes([0x30, 0x00, 0x30, 0xfd, 0xf7, 0x02, 0x19, 0xc9,
+        ...               0x35, 0x6d, 0x4d, 0xa0, 0xc5, 0xaf, 0xf1, 0xe0,
+        ...               0x02, 0x00, 0x05, 0x28, 0x3c, 0x66, 0x0c, 0x10,
+        ...               0xc2, 0x36, 0xd4, 0x18, 0x20, 0x01, 0xc0, 0x78,
+        ...               0x00, 0x31, 0xbc, 0x00, 0x00, 0x40, 0x0d, 0xeb,
+        ...               0x07, 0xb9, 0x58, 0x2e, 0x41, 0x00, 0x20, 0xf5])
+        >>> # Parse with descriptions
+        >>> records = asterix.parse(data)
+        >>> print(f"Category: {records[0]['category']}")
+        Category: 48
+        >>> print(f"Items: {[k for k in records[0].keys() if k.startswith('I')]}")
+        Items: ['I010', 'I040', 'I070', 'I220', ...]
+        >>> # Parse without descriptions (faster, less memory)
+        >>> records_compact = asterix.parse(data, verbose=False)
     """
     if 'verbose' in kwargs and not kwargs['verbose']:
         verbose = 0
@@ -117,19 +176,56 @@ def parse(data, **kwargs):
     return _asterix.parse(bytes(data), verbose)
 
 
-def parse_with_offset(data, offset=0, blocks_count=1000, **kwargs):
-    """ Parse raw asterix data with bytes offset with returning number of blocks of data
-    passed with arguments
+def parse_with_offset(data: bytes, offset: int = 0, blocks_count: int = 1000,
+                      verbose: bool = True) -> tuple:
+    """Parse raw ASTERIX data with incremental offset tracking.
+
+    This function enables incremental/streaming parsing of large ASTERIX data streams.
+    It parses a specified number of data blocks starting from a given offset and
+    returns the new offset for the next parsing iteration. Useful for processing
+    continuous network streams or large files without loading all data into memory.
+
+    Warning:
+        This function uses global state and is NOT thread-safe. Do not call from
+        multiple threads concurrently.
+
     Args:
-        data: Bytes to be parsed
-        offset: bytes offset
-        blocks_count: number of blocks data to be returned
-    Kwargs:
-        verbose=True: Show description, meaning, max and min values of item (default: True)
+        data (bytes): Raw ASTERIX binary data buffer to parse. Can contain multiple
+            ASTERIX data blocks.
+        offset (int, optional): Byte offset in data buffer to start parsing from.
+            Use 0 for first call, then use returned offset for subsequent calls.
+            Defaults to 0.
+        blocks_count (int, optional): Maximum number of ASTERIX data blocks to parse
+            in this call. Limits memory usage for large streams. Defaults to 1000.
+        verbose (bool, optional): If True, include descriptions and metadata for
+            each data item. If False, return only raw values. Defaults to True.
+
     Returns:
-        tuple of two elements:
-            list of asterix records
-            bytes offset at ending of computation
+        tuple: A 2-element tuple containing:
+            - records (list): List of parsed ASTERIX records (same format as parse())
+            - new_offset (int): Byte offset where parsing stopped. Use this value
+              as offset parameter in next call for incremental parsing.
+
+    Example:
+        >>> import asterix
+        >>> # Read large PCAP file
+        >>> with open('multicast_stream.pcap', 'rb') as f:
+        ...     data = f.read()
+        >>> # Incremental parsing: process 100 blocks at a time
+        >>> offset = 0
+        >>> all_records = []
+        >>> while offset < len(data):
+        ...     records, offset = asterix.parse_with_offset(
+        ...         data, offset=offset, blocks_count=100, verbose=False
+        ...     )
+        ...     if not records:
+        ...         break  # No more data
+        ...     all_records.extend(records)
+        ...     print(f"Parsed {len(records)} records, offset now at {offset}")
+        Parsed 100 records, offset now at 15234
+        Parsed 100 records, offset now at 30891
+        ...
+        >>> print(f"Total records parsed: {len(all_records)}")
     """
     if 'verbose' in kwargs and not kwargs['verbose']:
         verbose = 0
