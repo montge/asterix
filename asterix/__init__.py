@@ -176,8 +176,7 @@ def parse(data: bytes, verbose: bool = True) -> list:
     return _asterix.parse(bytes(data), verbose)
 
 
-def parse_with_offset(data: bytes, offset: int = 0, blocks_count: int = 1000,
-                      verbose: bool = True) -> tuple:
+def parse_with_offset(data: bytes, offset: int = 0, blocks_count: int = 1000, verbose: bool = True) -> tuple:
     """Parse raw ASTERIX data with incremental offset tracking.
 
     This function enables incremental/streaming parsing of large ASTERIX data streams.
@@ -227,12 +226,8 @@ def parse_with_offset(data: bytes, offset: int = 0, blocks_count: int = 1000,
         ...
         >>> print(f"Total records parsed: {len(all_records)}")
     """
-    if 'verbose' in kwargs and not kwargs['verbose']:
-        verbose = 0
-    else:
-        verbose = 1
-
-    return _asterix.parse_with_offset(bytes(data), offset, blocks_count, verbose)
+    verbose_flag = 0 if not verbose else 1
+    return _asterix.parse_with_offset(bytes(data), offset, blocks_count, verbose_flag)
 
 
 def describeXML(parsed, descriptions=False):
