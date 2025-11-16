@@ -28,15 +28,71 @@
 #include "DataItemFormatVariable.h"
 #include "cxx23_features.h"
 
+/**
+ * @class DataItemFormatCompound
+ * @brief Parser for ASTERIX Compound data items
+ *
+ * Compound format represents data items composed of multiple sub-items where:
+ * - The first byte(s) contain presence flags (Primary Field Presence Bitmap)
+ * - Each flag bit indicates if a corresponding secondary sub-item is present
+ * - Secondary sub-items appear in order only if their flag bit is set
+ *
+ * This format allows efficient encoding of optional fields commonly used in
+ * ASTERIX categories for track data, flight plans, and service messages.
+ *
+ * ## Structure
+ *
+ * ```
+ * +------------------+
+ * | Primary Field    | (Variable length - contains presence flags)
+ * | (Presence Bitmap)|
+ * +------------------+
+ * | Secondary Field 1| (Optional - present if bit 1 set)
+ * +------------------+
+ * | Secondary Field 2| (Optional - present if bit 2 set)
+ * +------------------+
+ * | ...              |
+ * +------------------+
+ * ```
+ *
+ * ## Example Usage
+ *
+ * CAT062 I062/380 (Aircraft Derived Data) uses compound format:
+ * - Primary field: 1+ bytes indicating which data types are present
+ * - Secondary fields: ADR (Address), ID (Aircraft ID), MHG (Magnetic Heading), etc.
+ *
+ * @note The primary field is always a DataItemFormatVariable (FSPEC-like structure)
+ * @note Memory management: Caller owns the DataItemFormatCompound object
+ *
+ * @see DataItemFormat
+ * @see DataItemFormatVariable
+ */
 class DataItemFormatCompound : public DataItemFormat {
 public:
+    /**
+     * @brief Construct a new Compound format parser
+     * @param id Unique identifier for this format instance (default: 0)
+     */
     DataItemFormatCompound(int id = 0);
 
+    /**
+     * @brief Copy constructor - performs deep copy of all sub-items
+     * @param obj Source Compound format object to copy
+     * @note Uses C++23 ranges if available for improved performance
+     */
     DataItemFormatCompound(const DataItemFormatCompound &obj);
 
+    /**
+     * @brief Destructor - cleans up sub-item list
+     */
     virtual
     ~DataItemFormatCompound();
 
+    /**
+     * @brief Create a deep copy of this Compound format object
+     * @return Pointer to newly allocated clone (caller must delete)
+     * @note C++23: Uses deduced this for better devirtualization
+     */
     // C++23 Quick Win: Deduced this allows better devirtualization
 #if HAS_DEDUCED_THIS
     DataItemFormatCompound *clone(this const auto& self) const { return new DataItemFormatCompound(self); }
@@ -44,15 +100,61 @@ public:
     DataItemFormatCompound *clone() const { return new DataItemFormatCompound(*this); } // Return clone of object
 #endif
 
+    /**
+     * @brief Calculate total length of compound item from binary data
+     * @param pData Pointer to start of compound item data
+     * @return Total length in bytes (primary field + active secondary fields)
+     * @note Returns 0 on error (missing primary/secondary fields)
+     */
     long getLength(const unsigned char *pData);
 
+    /**
+     * @brief Extract and format compound item value as text
+     * @param strResult Output string to append formatted value
+     * @param strHeader Header string for formatting context
+     * @param formatType Output format type (text, JSON, XML, etc.)
+     * @param pData Pointer to raw binary data
+     * @param nLength Length of data buffer in bytes
+     * @return true if parsing successful, false on error
+     * @note Iterates through primary field to determine which secondary fields to parse
+     */
     bool getText(std::string &strResult, std::string &strHeader, const unsigned int formatType, unsigned char *pData,
                  long nLength); // appends value description to strResult
+
+    /**
+     * @brief Generate human-readable format descriptor string
+     * @param header Prefix string for hierarchical formatting
+     * @return String describing the compound structure and sub-items
+     */
     std::string printDescriptors(std::string header); // print items format descriptors
+
+    /**
+     * @brief Mark a sub-item field for filtering (exclusion from output)
+     * @param name Name/ID of field to filter out
+     * @return true if filter applied, false if field not found
+     */
     bool filterOutItem(const char *name); // mark item for filtering
+
+    /**
+     * @brief Check if a sub-item field is currently filtered
+     * @param name Name/ID of field to check
+     * @return true if field is filtered (hidden), false otherwise
+     */
     bool isFiltered(const char *name);
 
+    /**
+     * @brief Type identification - returns true for Compound format
+     * @return Always returns true
+     * @note Used for runtime type checking in parsing pipeline
+     */
     bool isCompound() { return true; }; // true if this is Compound format
+
+    /**
+     * @brief Get human-readable description for a field value
+     * @param field Name of field within compound item
+     * @param value String representation of value
+     * @return Description string, or nullptr if not found
+     */
     const char *getDescription(const char *field, const char *value); // return description ef element
 
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
