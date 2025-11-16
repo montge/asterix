@@ -199,14 +199,26 @@ cargo test
 
 ## Documentation
 
+### User Guides
+
+- **Python Module Guide**: [asterix/README.md](asterix/README.md) - Complete Python API reference, examples, and best practices
+- **C++ Executable Guide**: [docs/CPP_USER_GUIDE.md](docs/CPP_USER_GUIDE.md) - Command-line reference, input/output formats, enterprise integrations
+- **Troubleshooting Guide**: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Comprehensive solutions for build, runtime, memory, network, and platform-specific issues
+- **FAQ**: [FAQ.md](FAQ.md) - Frequently asked questions about installation, usage, performance, language bindings, and licensing
+
+### Technical Documentation
+
 - **Build & Installation Guide**: [docs/BUILD.md](https://montge.github.io/asterix/BUILD.html) - Multi-platform build instructions
-- **Complete Documentation**: [montge.github.io/asterix](https://montge.github.io/asterix/) - Full documentation site
 - **Language Bindings Comparison**: [LANGUAGE_BINDINGS_COMPARISON.md](LANGUAGE_BINDINGS_COMPARISON.md) - Feature comparison, performance, use cases
 - **Rust Bindings**: [RUST_BINDINGS_INDEX.md](RUST_BINDINGS_INDEX.md) - Complete Rust documentation
-- **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md)
-- **Architecture Overview**: [CLAUDE.md](CLAUDE.md) - Technical architecture
-- **Packaging Status**: [PACKAGING_AND_CI_STATUS.md](PACKAGING_AND_CI_STATUS.md)
-- **ASTERIX Specifications**: [asterix-specs-converter/](asterix-specs-converter/README.md)
+- **Architecture Overview**: [CLAUDE.md](CLAUDE.md) - Technical architecture and design patterns
+- **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md) - Code quality standards, testing requirements, development workflow
+
+### Reference
+
+- **Complete Documentation**: [montge.github.io/asterix](https://montge.github.io/asterix/) - Full documentation site
+- **Packaging Status**: [PACKAGING_AND_CI_STATUS.md](PACKAGING_AND_CI_STATUS.md) - CI/CD pipeline and package availability
+- **ASTERIX Specifications**: [asterix-specs-converter/](asterix-specs-converter/README.md) - Category definitions and conversion tools
 - **API Documentation**: [ReadTheDocs](https://asterix.readthedocs.io/) (placeholder - setup pending)
 
 ## Supported ASTERIX Categories
