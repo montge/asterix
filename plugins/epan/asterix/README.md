@@ -173,17 +173,38 @@ ASTERIX CAT 048 - Monoradar Target Reports
 
 ---
 
-## Current Limitations (Phase 1 MVP)
+## Current Status (Phase 2 - Data Item Parsing)
 
-**⚠️ This is Phase 1 MVP:**
+**Phase 1 MVP (Complete):**
 - ✅ Data block parsing (category, length)
 - ✅ FSPEC parsing (field specification)
-- ❌ Data item parsing (Phase 2)
-- ❌ Value decoding (Phase 2)
-- ❌ Color coding (Phase 4)
-- ❌ Statistics (Phase 4)
+- ✅ Heuristic dissection
+- ✅ UDP port registration (8600, 21112)
 
-**Workaround:** Use the standalone ASTERIX decoder for detailed parsing:
+**Phase 2 - Data Item Parsing (In Progress):**
+- ✅ C/C++ FFI wrapper (`asterix_wrapper.h/cpp`)
+- ✅ Integration with ASTERIX core library
+- ✅ Conditional compilation support
+- ⏳ Build testing (requires Wireshark dev packages)
+- ⏳ Verification with real ASTERIX data
+
+**Phase 3-4 (Planned):**
+- ❌ Support all 24 categories
+- ❌ Color coding
+- ❌ Statistics integration
+
+### Using Phase 2 Features
+
+If built with ASTERIX core library support, the plugin will parse and display data items:
+
+**Enable data item parsing:**
+1. Build ASTERIX core library: `cmake -B build && cmake --build build && cmake --install build`
+2. Build plugin with ASTERIX core: `cd plugins/epan/asterix && cmake -B build && cmake --build build`
+3. In Wireshark: Edit → Preferences → Protocols → ASTERIX → "Use ASTERIX core library"
+
+**Without ASTERIX core:** Plugin still works in Phase 1 mode (header parsing only).
+
+**Alternative:** Use the standalone ASTERIX decoder for full parsing:
 ```bash
 # Extract ASTERIX from PCAP and parse
 tshark -r capture.pcap -Y "asterix" -T fields -e data | \
@@ -303,16 +324,19 @@ valgrind tshark -r sample.pcap -Y "asterix" > /dev/null
 
 ## Roadmap
 
-### Phase 1: MVP (Current)
+### Phase 1: MVP (Complete ✅)
 - [x] Basic data block dissection
 - [x] FSPEC parsing
 - [x] Heuristic dissection
 - [x] CMake build system
 
-### Phase 2: Data Items (Next)
-- [ ] Parse all CAT048 data items
-- [ ] Integrate with ASTERIX core library
-- [ ] Value decoding and display
+### Phase 2: Data Items (In Progress ⏳)
+- [x] C/C++ FFI wrapper for ASTERIX core
+- [x] Conditional compilation support
+- [x] Integration with ASTERIX core library
+- [ ] Build testing with Wireshark dev packages
+- [ ] Verification with real ASTERIX data
+- [ ] Parse all data items for all categories
 - [ ] Filtering by data item
 
 ### Phase 3: Multi-Category

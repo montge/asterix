@@ -51,6 +51,23 @@ if(NOT GLIB2_FOUND)
     message(FATAL_ERROR "GLib 2.50+ not found")
 endif()
 
+# Find ASTERIX core library (optional for Phase 2+)
+find_library(ASTERIX_LIBRARY
+    NAMES asterix libasterix
+    PATHS ${CMAKE_SOURCE_DIR}/../../install/lib
+          ${CMAKE_SOURCE_DIR}/../../../install/lib
+          /usr/local/lib
+    NO_DEFAULT_PATH
+)
+
+find_path(ASTERIX_INCLUDE_DIR
+    NAMES AsterixDefinition.h
+    PATHS ${CMAKE_SOURCE_DIR}/../../../install/include/asterix
+          ${CMAKE_SOURCE_DIR}/../../install/include/asterix
+          /usr/local/include/asterix
+    NO_DEFAULT_PATH
+)
+
 # Plugin source files
 set(PLUGIN_SOURCES
     packet-asterix.c
@@ -59,6 +76,17 @@ set(PLUGIN_SOURCES
 set(PLUGIN_HEADERS
     packet-asterix.h
 )
+
+# Add wrapper if ASTERIX core is available (Phase 2+)
+if(ASTERIX_LIBRARY AND ASTERIX_INCLUDE_DIR)
+    message(STATUS "ASTERIX core library found - enabling data item parsing")
+    list(APPEND PLUGIN_SOURCES asterix_wrapper.cpp)
+    list(APPEND PLUGIN_HEADERS asterix_wrapper.h)
+    set(HAVE_ASTERIX_CORE 1)
+else()
+    message(STATUS "ASTERIX core library not found - Phase 1 MVP only (header parsing)")
+    set(HAVE_ASTERIX_CORE 0)
+endif()
 
 # Generate moduleinfo.h from template
 configure_file(
@@ -81,11 +109,28 @@ target_include_directories(${PLUGIN_NAME} PRIVATE
     ${GLIB2_INCLUDE_DIRS}
 )
 
+# Add ASTERIX core includes if available
+if(HAVE_ASTERIX_CORE)
+    target_include_directories(${PLUGIN_NAME} PRIVATE
+        ${ASTERIX_INCLUDE_DIR}
+    )
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE
+        HAVE_ASTERIX_CORE=1
+    )
+endif()
+
 # Link libraries
 target_link_libraries(${PLUGIN_NAME}
     ${Wireshark_LIBRARIES}
     ${GLIB2_LIBRARIES}
 )
+
+# Link ASTERIX core if available
+if(HAVE_ASTERIX_CORE)
+    target_link_libraries(${PLUGIN_NAME}
+        ${ASTERIX_LIBRARY}
+    )
+endif()
 
 # Compiler flags
 target_compile_options(${PLUGIN_NAME} PRIVATE
@@ -95,11 +140,18 @@ target_compile_options(${PLUGIN_NAME} PRIVATE
     -Wno-unused-parameter
 )
 
-# C standard
+# C/C++ standards
 set_target_properties(${PLUGIN_NAME} PROPERTIES
     C_STANDARD 11
     C_STANDARD_REQUIRED ON
 )
+
+# C++ standard for wrapper (if used)
+if(HAVE_ASTERIX_CORE)
+    set_source_files_properties(asterix_wrapper.cpp PROPERTIES
+        COMPILE_FLAGS "-std=c++17"
+    )
+endif()
 
 # Remove 'lib' prefix from output filename (plugin should be asterix.so, not libasterix.so)
 set_target_properties(${PLUGIN_NAME} PROPERTIES

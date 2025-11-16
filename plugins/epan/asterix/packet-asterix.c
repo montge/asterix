@@ -22,6 +22,13 @@
 
 #include "packet-asterix.h"
 
+#ifdef HAVE_ASTERIX_CORE
+#include "asterix_wrapper.h"
+
+/* Global ASTERIX parser handle */
+static asterix_parser_t* g_asterix_parser = NULL;
+#endif
+
 /* Plugin version */
 #define ASTERIX_PLUGIN_VERSION "1.0.0"
 
@@ -51,6 +58,7 @@ static expert_field ei_asterix_truncated = EI_INIT;
 /* Preferences */
 static gboolean pref_heuristic_enabled = TRUE;
 static gboolean pref_verbose_info = TRUE;
+static gboolean pref_use_asterix_core = TRUE;  /* Use ASTERIX core for parsing (if available) */
 
 /* ASTERIX category value_string */
 static const value_string asterix_category_vals[] = {
@@ -223,15 +231,66 @@ dissect_asterix_datablock(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, g
         fspec_len = parse_fspec(tvb, offset, record_tree);
         offset += fspec_len;
 
-        /* TODO: Parse data items based on FSPEC */
-        /* For MVP, we just skip to the next record boundary */
-        /* This will be implemented in Phase 2 */
+        /* Parse data items based on FSPEC */
+#ifdef HAVE_ASTERIX_CORE
+        if (pref_use_asterix_core && g_asterix_parser) {
+            /* Extract FSPEC bytes */
+            guint8* fspec_bytes = (guint8*)tvb_memdup(wmem_packet_scope(), tvb, record_start, fspec_len);
 
-        /* For now, consume remaining bytes in this data block as "Data Items" */
-        guint remaining = block_end - offset;
-        if (remaining > 0) {
-            proto_tree_add_item(record_tree, hf_asterix_record, tvb, offset, remaining, ENC_NA);
-            offset += remaining;
+            /* Get remaining data after FSPEC */
+            guint data_remaining = block_end - offset;
+            const guint8* data_ptr = tvb_get_ptr(tvb, offset, data_remaining);
+
+            /* Parse record using ASTERIX core */
+            asterix_record_t* parsed_record = NULL;
+            int result = asterix_parse_record(g_asterix_parser, category,
+                                             data_ptr, data_remaining,
+                                             fspec_bytes, fspec_len,
+                                             &parsed_record);
+
+            if (result == 0 && parsed_record) {
+                /* Add parsed data items to tree */
+                for (size_t i = 0; i < parsed_record->item_count; i++) {
+                    asterix_data_item_t* item = &parsed_record->items[i];
+
+                    proto_item* item_ti = proto_tree_add_none_format(record_tree, hf_asterix_record,
+                                                                     tvb, offset, item->raw_length,
+                                                                     "I%03u/%03u - %s: %s",
+                                                                     category, item->item_number,
+                                                                     item->item_name ? item->item_name : "Unknown",
+                                                                     item->formatted_value ? item->formatted_value : "");
+
+                    if (item->description) {
+                        proto_item_append_text(item_ti, " [%s]", item->description);
+                    }
+
+                    offset += item->raw_length;
+                }
+
+                asterix_free_record(parsed_record);
+            } else {
+                /* Fallback: show raw data */
+                const char* error = asterix_get_last_error(g_asterix_parser);
+                if (error) {
+                    proto_tree_add_expert_format(record_tree, pinfo, &ei_asterix_truncated,
+                                               tvb, offset, data_remaining,
+                                               "Failed to parse data items: %s", error);
+                }
+
+                if (data_remaining > 0) {
+                    proto_tree_add_item(record_tree, hf_asterix_record, tvb, offset, data_remaining, ENC_NA);
+                    offset += data_remaining;
+                }
+            }
+        } else
+#endif
+        {
+            /* Phase 1 MVP: Just show raw data */
+            guint remaining = block_end - offset;
+            if (remaining > 0) {
+                proto_tree_add_item(record_tree, hf_asterix_record, tvb, offset, remaining, ENC_NA);
+                offset += remaining;
+            }
         }
 
         proto_item_set_len(ti, offset - record_start);
@@ -412,8 +471,24 @@ proto_register_asterix(void)
         "Display detailed information in the Info column",
         &pref_verbose_info);
 
+#ifdef HAVE_ASTERIX_CORE
+    prefs_register_bool_preference(asterix_module, "use_asterix_core",
+        "Use ASTERIX core library for data item parsing",
+        "Parse data items using ASTERIX core library (requires library to be built)",
+        &pref_use_asterix_core);
+#endif
+
     /* Register dissector */
     asterix_handle = register_dissector("asterix", dissect_asterix, proto_asterix);
+
+#ifdef HAVE_ASTERIX_CORE
+    /* Initialize ASTERIX core parser */
+    g_asterix_parser = asterix_init(NULL);
+    if (!g_asterix_parser) {
+        /* Log warning but continue - plugin will work in Phase 1 mode */
+        ws_warning("Failed to initialize ASTERIX core library - data item parsing disabled");
+    }
+#endif
 }
 
 /**
