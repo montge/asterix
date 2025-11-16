@@ -1,24 +1,88 @@
-/*
- *  Copyright (c) 2013 Croatia Control Ltd. (www.crocontrol.hr)
+/**
+ * @file WiresharkWrapper.h
+ * @brief C API for legacy Wireshark plugin integration
  *
- *  This file is part of Asterix.
+ * This header defines the FFI (Foreign Function Interface) boundary between
+ * the C++ ASTERIX parser and legacy Wireshark dissector plugins. It provides
+ * C-compatible structures and functions for dissecting ASTERIX data in Wireshark.
  *
- *  Asterix is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * ## Status: Legacy API
  *
- *  Asterix is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * **IMPORTANT:** This interface is for legacy Wireshark plugins that were
+ * removed in Issue #22. A modern Wireshark 4.x dissector will use a different
+ * API and architecture. This header remains for reference and potential
+ * future Wireshark 4.x integration.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with Asterix.  If not, see <http://www.gnu.org/licenses/>.
+ * ## Architecture
  *
+ * The wrapper provides two main components:
+ * 1. **fulliautomatix_definitions**: Field definitions for Wireshark dissector tree
+ * 2. **fulliautomatix_data**: Parsed ASTERIX data in Wireshark-compatible format
  *
- * AUTHORS: Damir Salantic, Croatia Control Ltd.
+ * ## Usage Pattern (Legacy)
  *
+ * ```c
+ * // Initialize ASTERIX parser with configuration
+ * fulliautomatix_start(logger_func, "/path/to/asterix.ini");
+ *
+ * // Get field definitions for Wireshark registration
+ * fulliautomatix_definitions* defs = fulliautomatix_get_definitions();
+ *
+ * // Parse ASTERIX packet
+ * fulliautomatix_data* data = fulliautomatix_parse(buffer, length);
+ *
+ * // Traverse tree to populate Wireshark dissector
+ * for (fulliautomatix_data* node = data; node != NULL; node = node->next) {
+ *     if (node->tree) {
+ *         // Add subtree
+ *     } else {
+ *         // Add field item
+ *     }
+ * }
+ *
+ * // Cleanup
+ * fulliautomatix_data_destroy(data);
+ * fulliautomatix_destroy_definitions(defs);
+ * ```
+ *
+ * ## Data Structures
+ *
+ * - **fulliautomatix_definitions**: Field registry (name, type, display format)
+ * - **fulliautomatix_data**: Tree-structured parsed data (values, byte offsets)
+ * - **fulliautomatix_value_string**: Enumerated value descriptions
+ *
+ * ## Field Types
+ *
+ * Matches Wireshark's ftypes.h:
+ * - FA_FT_UINT8, FA_FT_UINT16, FA_FT_UINT32, FA_FT_UINT64: Unsigned integers
+ * - FA_FT_STRING: Text strings
+ * - FA_FT_BYTES: Byte arrays
+ * - FA_FT_BOOLEAN: True/false values
+ * - FA_FT_PROTOCOL: Protocol tree nodes
+ *
+ * ## Display Formats
+ *
+ * - FA_BASE_DEC: Decimal notation
+ * - FA_BASE_HEX: Hexadecimal notation
+ * - FA_BASE_DEC_HEX: Decimal with hex in parentheses
+ *
+ * ## Memory Management
+ *
+ * - Caller must free definitions with fulliautomatix_destroy_definitions()
+ * - Caller must free data with fulliautomatix_data_destroy()
+ * - All string pointers are owned by the wrapper and freed automatically
+ *
+ * ## Future Migration
+ *
+ * For Wireshark 4.x dissector development, this API will likely be replaced
+ * with modern Wireshark 4.x plugin architecture. See Issue #22 for details.
+ *
+ * @note C-compatible API (extern "C" linkage)
+ * @note Not thread-safe - uses global ASTERIX parser state
+ * @note Deprecated - legacy plugin support only
+ *
+ * @see Issue #22 (Wireshark 4.x modernization)
+ * @see BREAKING_CHANGES.md (legacy plugin removal)
  */
 
 #ifndef WIRESHARKWRAPPER_H_
