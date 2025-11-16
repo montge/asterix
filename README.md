@@ -202,6 +202,7 @@ cargo test
 ### User Guides
 
 - **Python Module Guide**: [asterix/README.md](asterix/README.md) - Complete Python API reference, examples, and best practices
+- **Rust Crate Guide**: [asterix-rs/README.md](asterix-rs/README.md) - Complete Rust API reference, examples, thread safety, and performance optimization
 - **C++ Executable Guide**: [docs/CPP_USER_GUIDE.md](docs/CPP_USER_GUIDE.md) - Command-line reference, input/output formats, enterprise integrations
 - **Troubleshooting Guide**: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Comprehensive solutions for build, runtime, memory, network, and platform-specific issues
 - **FAQ**: [FAQ.md](FAQ.md) - Frequently asked questions about installation, usage, performance, language bindings, and licensing
@@ -210,7 +211,6 @@ cargo test
 
 - **Build & Installation Guide**: [docs/BUILD.md](https://montge.github.io/asterix/BUILD.html) - Multi-platform build instructions
 - **Language Bindings Comparison**: [LANGUAGE_BINDINGS_COMPARISON.md](LANGUAGE_BINDINGS_COMPARISON.md) - Feature comparison, performance, use cases
-- **Rust Bindings**: [RUST_BINDINGS_INDEX.md](RUST_BINDINGS_INDEX.md) - Complete Rust documentation
 - **Architecture Overview**: [CLAUDE.md](CLAUDE.md) - Technical architecture and design patterns
 - **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md) - Code quality standards, testing requirements, development workflow
 
