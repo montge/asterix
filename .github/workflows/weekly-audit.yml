@@ -114,15 +114,16 @@ jobs:
         working-directory: asterix-rs
         run: |
           # List of licenses to flag (GPL variants that might conflict with project goals)
-          problematic=$(cargo license | grep -E 'GPL-3.0|AGPL-3.0|SSPL' || true)
+          # Exclude the project's own GPL-3.0-or-later license (asterix package)
+          problematic=$(cargo license | grep -E 'GPL-3.0|AGPL-3.0|SSPL' | grep -v '^GPL-3.0-or-later (1): asterix$' || true)
 
           if [ -n "$problematic" ]; then
             echo "problematic_found=true" >> $GITHUB_OUTPUT
-            echo "Found problematic licenses:"
+            echo "Found problematic licenses in dependencies:"
             echo "$problematic"
           else
             echo "problematic_found=false" >> $GITHUB_OUTPUT
-            echo "All licenses appear compatible"
+            echo "All dependency licenses are compatible (Apache-2.0, MIT, etc.)"
           fi
 
       - name: Upload license report
