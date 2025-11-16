@@ -25,6 +25,14 @@ Visit **https://montge.github.io/asterix/** for the complete documentation site 
 
 ### 📖 Key Documentation Files
 
+#### User Guides
+- **[Python Module Guide](asterix/README.md)** - Complete Python API reference, examples, thread safety, and best practices
+- **[Rust Crate Guide](asterix-rs/README.md)** - Complete Rust API reference, examples, thread safety, and performance optimization
+- **[C++ Executable Guide](docs/CPP_USER_GUIDE.md)** - Command-line reference, input/output formats, and enterprise integrations
+- **[Troubleshooting Guide](TROUBLESHOOTING.md)** - Comprehensive solutions for build, runtime, memory, network, and platform-specific issues
+- **[FAQ](FAQ.md)** - Frequently asked questions about installation, usage, performance, language bindings, and licensing
+
+#### Technical Documentation
 - **[Build Guide](https://montge.github.io/asterix/BUILD.html)** - Multi-platform build instructions
 - **[README.md](README.md)** - Project overview and quick start
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** - How to contribute
