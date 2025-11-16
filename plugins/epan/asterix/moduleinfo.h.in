@@ -1,0 +1,16 @@
+/* moduleinfo.h.in
+ *
+ * Wireshark ASTERIX Dissector Plugin
+ * Module metadata
+ */
+
+#ifndef __MODULEINFO_H__
+#define __MODULEINFO_H__
+
+#define PLUGIN_VERSION "1.0.0"
+
+#define VERSION_MAJOR 1
+#define VERSION_MINOR 0
+#define VERSION_MICRO 0
+
+#endif /* __MODULEINFO_H__ */
