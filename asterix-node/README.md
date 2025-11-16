@@ -1,146 +1,161 @@
-# ASTERIX Decoder for Node.js
+# ASTERIX Decoder - Node.js Bindings
 
 [![npm version](https://img.shields.io/npm/v/asterix-decoder.svg)](https://www.npmjs.com/package/asterix-decoder)
-[![Node.js Version](https://img.shields.io/node/v/asterix-decoder.svg)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](../LICENSE)
+[![Node.js >= 20](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)](https://nodejs.org/)
 
-Node.js bindings for the ASTERIX decoder - a high-performance parser for EUROCONTROL ASTERIX (All Purpose STructured EUROCONTROL SuRveillance Information EXchange) protocol data used in Air Traffic Management systems.
+**High-performance Node.js bindings for the ASTERIX protocol decoder.**
+
+ASTERIX (All Purpose STructured EUROCONTROL SuRveillance Information EXchange) is a binary protocol used worldwide for Air Traffic Management (ATM) surveillance data exchange. This package provides native Node.js bindings to the high-performance C++ ASTERIX decoder core.
+
+---
 
 ## Features
 
-- **High Performance**: Native C++ core with N-API bindings
-- **Safety-Critical Design**: Validated FFI boundary with comprehensive error handling
-- **Multiple Formats**: Supports raw ASTERIX, PCAP, HDLC, FINAL, GPS encapsulation
-- **67 Categories**: Complete support for ASTERIX categories (CAT001-CAT255)
-- **TypeScript Support**: Full type definitions included
-- **Cross-Platform**: Linux, macOS, Windows (Node.js 18.x, 20.x, 22.x)
-- **Stream Processing**: Incremental parsing for large files
-- **Memory Safe**: Zero memory leaks, comprehensive bounds checking
+- **Native Performance** - C++ core with N-API bindings for maximum throughput
+- **Comprehensive Category Support** - 24 ASTERIX categories (CAT001-CAT252)
+- **Memory Safe** - Automatic memory management, no leaks
+- **TypeScript Support** - Full TypeScript definitions included
+- **Incremental Parsing** - Memory-efficient streaming for large datasets
+- **Flexible API** - Parse from files, buffers, streams, or network
+- **Production Ready** - >80% test coverage, fuzz tested, memory checked
+
+---
 
 ## Installation
 
-### Prerequisites
-
-- Node.js 18.x, 20.x, or 22.x (LTS versions)
-- C++20 compiler (GCC 10+, Clang 12+, MSVC 2019+)
-- libexpat-devel (for XML parsing)
-- CMake 3.20+ or GNU Make
-
-### Install from npm
+### From npm (Recommended)
 
 ```bash
 npm install asterix-decoder
 ```
 
-### Build from source
+### From Source
 
 ```bash
+# Clone repository
 git clone https://github.com/montge/asterix.git
 cd asterix/asterix-node
+
+# Install dependencies and build
 npm install
-npm run build
+
+# Run tests
+npm test
 ```
 
-### Platform-Specific Build Notes
+**Requirements:**
+- Node.js >= 20.0.0
+- C++ compiler (GCC 7+, Clang 5+, MSVC 2019+)
+- CMake 3.20+ (for building C++ core)
+- libexpat-devel (XML parsing)
 
-The Node.js bindings use different build strategies per platform:
-
-**Linux/macOS:**
-- Links against pre-built shared library (`libasterix.so` / `libasterix.dylib`)
-- Fast builds, small binary size
-- Shared library must be built first: `cmake -B build && cmake --build build && cmake --install build`
-
-**Windows:**
-- Compiles ASTERIX C++ sources directly into the addon (22 source files)
-- Self-contained build - no separate library build required
-- Uses dynamic EXPAT library (`expat:x64-windows` via vcpkg)
-- Pattern matches Python bindings approach for cross-platform consistency
-
-Both approaches are fully supported and tested in CI across all Node.js versions (20, 22, 24).
+---
 
 ## Quick Start
+
+### Basic Parsing
 
 ```javascript
 const asterix = require('asterix-decoder');
 const fs = require('fs');
 
-// Initialize parser (auto-loads all default categories)
+// Initialize parser (optional - auto-initializes on first use)
 asterix.init();
 
-// Parse ASTERIX data
-const data = fs.readFileSync('sample.asterix');
-const records = asterix.parse(data);
+// Parse ASTERIX data from file
+const data = fs.readFileSync('capture.asterix');
+const records = asterix.parse(data, { verbose: true });
 
 // Process records
 for (const record of records) {
-  console.log(`Category ${record.category}: ${Object.keys(record.items).length} items`);
-  console.log(`Timestamp: ${new Date(record.timestamp_ms)}`);
+  console.log(`Category: ${record.category}`);
+  console.log(`Items: ${JSON.stringify(record.items, null, 2)}`);
+}
+```
 
-  // Access data items
-  for (const [itemId, itemData] of Object.entries(record.items)) {
-    console.log(`  ${itemId}:`, itemData);
+### Incremental Parsing (Large Files)
+
+```javascript
+const asterix = require('asterix-decoder');
+const fs = require('fs');
+
+const data = fs.readFileSync('large_file.asterix');
+let offset = 0;
+const chunkSize = 100; // Process 100 blocks at a time
+
+while (offset < data.length) {
+  const result = asterix.parseWithOffset(data, offset, chunkSize);
+
+  // Process records
+  for (const record of result.records) {
+    console.log(`CAT${record.category}: ${Object.keys(record.items).length} items`);
+  }
+
+  // Update offset
+  offset = result.bytesConsumed;
+
+  // Check if done
+  if (result.remainingBlocks === 0) {
+    break;
   }
 }
 ```
 
+### TypeScript
+
+```typescript
+import * as asterix from 'asterix-decoder';
+import { ParseOptions, AsterixRecord, ParseResult } from 'asterix-decoder';
+
+// Parse with options
+const options: ParseOptions = {
+  verbose: true,
+  filterCategory: 48,
+  maxRecords: 100
+};
+
+const records: AsterixRecord[] = asterix.parse(buffer, options);
+
+// Incremental parsing
+const result: ParseResult = asterix.parseWithOffset(buffer, 0, 10);
+```
+
+---
+
 ## API Reference
 
-### Initialization
+### `init(configDir?: string): void`
 
-#### `init([configDir])`
-
-Initialize the ASTERIX parser with optional custom configuration directory.
+Initialize the ASTERIX parser with category definitions.
 
 **Parameters:**
-- `configDir` (string, optional): Path to ASTERIX XML configuration directory
-
-**Throws:**
-- `TypeError`: If config directory is invalid
-- `Error`: If initialization fails
+- `configDir` (optional): Path to ASTERIX category XML configuration directory. If not provided, uses default bundled configurations.
 
 **Example:**
 ```javascript
-// Use default config
-asterix.init();
-
-// Use custom config directory
-asterix.init('/path/to/asterix/config');
+asterix.init(); // Use default config
+asterix.init('/path/to/asterix/config'); // Custom config
 ```
-
-#### `loadCategory(xmlPath)`
-
-Load a specific ASTERIX category definition file.
-
-**Parameters:**
-- `xmlPath` (string, required): Path to XML category definition file
 
 **Throws:**
-- `TypeError`: If XML path is invalid
-- `Error`: If loading fails
+- `TypeError` - Invalid config directory path
+- `Error` - Failed to initialize (missing/invalid config files)
 
-**Example:**
-```javascript
-asterix.loadCategory('./config/asterix_cat062_1_19.xml');
-```
+---
 
-### Parsing
+### `parse(data: Buffer, options?: ParseOptions): AsterixRecord[]`
 
-#### `parse(data, [options])`
-
-Parse ASTERIX data from a Buffer.
+Parse ASTERIX data from a buffer.
 
 **Parameters:**
-- `data` (Buffer, required): Buffer containing ASTERIX data
-- `options` (Object, optional):
-  - `verbose` (boolean): Enable verbose output (default: false)
-  - `filterCategory` (number): Filter to specific category
-  - `maxRecords` (number): Maximum records to parse
+- `data`: Buffer containing ASTERIX binary data
+- `options` (optional): Parsing configuration
+  - `verbose` (boolean): Include descriptions in output (default: `false`)
+  - `filterCategory` (number): Only parse records of this category (1-255)
+  - `maxRecords` (number): Limit number of records parsed
 
 **Returns:** Array of `AsterixRecord` objects
-
-**Throws:**
-- `TypeError`: If input is not a Buffer or is empty
-- `Error`: If parsing fails
 
 **Example:**
 ```javascript
@@ -151,387 +166,512 @@ const records = asterix.parse(buffer, {
 });
 ```
 
-#### `parseWithOffset(data, offset, blocksCount, [options])`
+**Throws:**
+- `TypeError` - Invalid input (not a Buffer, empty, or too large)
+- `Error` - Parsing failed (invalid ASTERIX data)
 
-Parse ASTERIX data incrementally for large files or streams.
+---
+
+### `parseWithOffset(data: Buffer, offset: number, blocksCount: number, options?: ParseOptions): ParseResult`
+
+Parse ASTERIX data incrementally from a specific offset.
 
 **Parameters:**
-- `data` (Buffer, required): Buffer containing ASTERIX data
-- `offset` (number, required): Byte offset to start parsing from
-- `blocksCount` (number, required): Maximum blocks to parse (0 = all)
-- `options` (Object, optional): Same as `parse()`
+- `data`: Buffer containing ASTERIX binary data
+- `offset`: Starting byte offset (0-indexed)
+- `blocksCount`: Maximum number of data blocks to parse
+- `options` (optional): Same as `parse()`
 
-**Returns:** `ParseResult` object:
-```javascript
-{
-  records: Array<AsterixRecord>,    // Parsed records
-  bytesConsumed: number,             // Bytes consumed from input
-  remainingBlocks: number            // Estimated remaining blocks
-}
-```
+**Returns:** `ParseResult` object
+- `records`: Array of parsed records
+- `bytesConsumed`: Total bytes read (new offset)
+- `remainingBlocks`: Number of unparsed blocks remaining
 
 **Example:**
 ```javascript
-const data = fs.readFileSync('large_file.asterix');
 let offset = 0;
-const allRecords = [];
-
 while (offset < data.length) {
-  const result = asterix.parseWithOffset(data, offset, 100);
-  allRecords.push(...result.records);
-  offset = result.bytesConsumed;
+  const result = asterix.parseWithOffset(data, offset, 10);
 
-  if (result.remainingBlocks === 0) {
-    break;
-  }
+  processRecords(result.records);
+
+  offset = result.bytesConsumed;
+  if (result.remainingBlocks === 0) break;
 }
 ```
 
-### Metadata
+**Throws:**
+- `TypeError` - Invalid parameters (offset exceeds data length, negative values)
+- `Error` - Parsing failed
 
-#### `describe(category, [item], [field], [value])`
+---
 
-Get human-readable description for ASTERIX elements.
+### `describe(category: number, item?: string, field?: string, value?: string): string`
+
+Get human-readable descriptions for ASTERIX categories, data items, fields, or values.
 
 **Parameters:**
-- `category` (number, required): ASTERIX category (1-255)
-- `item` (string, optional): Item ID (e.g., '010')
-- `field` (string, optional): Field name (e.g., 'SAC')
-- `value` (string, optional): Value
+- `category`: ASTERIX category number (1-255)
+- `item` (optional): Data item number (e.g., "010" for I048/010)
+- `field` (optional): Field name within the item
+- `value` (optional): Value to describe
 
-**Returns:** String description
+**Returns:** Description string
 
-**Example:**
+**Examples:**
 ```javascript
 // Category description
-asterix.describe(48);
+const catDesc = asterix.describe(48);
 // "Monoradar Target Reports"
 
 // Item description
-asterix.describe(48, '010');
+const itemDesc = asterix.describe(48, '010');
 // "Data Source Identifier"
 
 // Field value description
-asterix.describe(48, '010', 'SAC', '7');
-// "System Area Code: 7"
+const valueDesc = asterix.describe(48, '020', 'TYP', '0');
+// "Plot"
 ```
 
-#### `isCategoryDefined(category)`
+**Throws:**
+- `TypeError` - Invalid category (not in range 1-255)
+- `Error` - Category/item not defined
 
-Check if an ASTERIX category is loaded.
+---
+
+### `isCategoryDefined(category: number): boolean`
+
+Check if an ASTERIX category is loaded and available.
 
 **Parameters:**
-- `category` (number, required): ASTERIX category (1-255)
+- `category`: ASTERIX category number (1-255)
 
-**Returns:** boolean (true if loaded, false otherwise)
+**Returns:** `true` if category is defined, `false` otherwise
 
 **Example:**
 ```javascript
-if (asterix.isCategoryDefined(62)) {
-  console.log('CAT062 is available');
+if (asterix.isCategoryDefined(48)) {
+  console.log('CAT048 is available');
 }
 ```
 
-## TypeScript Support
+---
 
-Full TypeScript definitions are included:
+### `loadCategory(xmlPath: string): void`
 
-```typescript
-import * as asterix from 'asterix-decoder';
+Load a custom ASTERIX category definition from an XML file.
 
-asterix.init();
+**Parameters:**
+- `xmlPath`: Path to category XML definition file
 
-const data: Buffer = fs.readFileSync('sample.asterix');
-const records: asterix.AsterixRecord[] = asterix.parse(data, {
-  verbose: true,
-  filterCategory: 62
-});
-
-for (const record of records) {
-  console.log(`Category ${record.category}`);
-  // Full type safety for record properties
-}
+**Example:**
+```javascript
+asterix.loadCategory('/path/to/asterix_cat048_custom.xml');
 ```
+
+**Throws:**
+- `TypeError` - Invalid path (path traversal, too long)
+- `Error` - Failed to load (file not found, invalid XML)
+
+---
+
+### `version: string`
+
+Package version string (e.g., "2.8.10")
+
+**Example:**
+```javascript
+console.log(`ASTERIX Decoder v${asterix.version}`);
+```
+
+---
 
 ## Data Types
 
-### AsterixRecord
+### `AsterixRecord`
 
 ```typescript
 interface AsterixRecord {
   category: number;           // ASTERIX category (1-255)
-  length: number;             // Data block length in bytes
-  timestamp_ms: number;       // Timestamp in milliseconds
-  crc: number;                // CRC checksum
-  hex_data?: string;          // Hex representation of raw data
-  items: Record<string, any>; // Parsed data items
+  length: number;             // Record length in bytes
+  timestamp?: string;         // Timestamp (if present)
+  items: {
+    [key: string]: any;       // Data items (e.g., "I048/010")
+  };
 }
 ```
 
-### ParseResult
+### `ParseOptions`
+
+```typescript
+interface ParseOptions {
+  verbose?: boolean;          // Include descriptions (default: false)
+  filterCategory?: number;    // Filter by category (1-255)
+  maxRecords?: number;        // Limit number of records
+}
+```
+
+### `ParseResult`
 
 ```typescript
 interface ParseResult {
   records: AsterixRecord[];   // Parsed records
-  bytesConsumed: number;      // Bytes consumed from input
-  remainingBlocks: number;    // Estimated remaining blocks
+  bytesConsumed: number;      // Total bytes read
+  remainingBlocks: number;    // Unparsed blocks remaining
 }
 ```
 
+---
+
 ## Examples
 
-### Basic Parsing
+The `examples/` directory contains comprehensive examples:
 
+### 1. **parse_pcap.js** - Parse PCAP files
 ```javascript
 const asterix = require('asterix-decoder');
 const fs = require('fs');
 
-asterix.init();
-
-const data = fs.readFileSync('sample.asterix');
-const records = asterix.parse(data);
+const pcapData = fs.readFileSync('capture.pcap');
+const records = asterix.parse(pcapData, { verbose: true });
 
 console.log(`Parsed ${records.length} records`);
 ```
 
-### Stream Processing
-
+### 2. **incremental_parsing.js** - Memory-efficient chunked parsing
 ```javascript
-const asterix = require('asterix-decoder');
-const fs = require('fs');
+// Process large files in chunks
+let offset = 0;
+while (offset < data.length) {
+  const result = asterix.parseWithOffset(data, offset, 100);
+  processChunk(result.records);
+  offset = result.bytesConsumed;
+}
+```
+
+### 3. **stream_processing.js** - Node.js streams
+```javascript
 const { Transform } = require('stream');
 
-asterix.init();
-
 class AsterixParser extends Transform {
-  constructor() {
-    super({ objectMode: true });
-    this.buffer = Buffer.alloc(0);
-  }
-
   _transform(chunk, encoding, callback) {
     this.buffer = Buffer.concat([this.buffer, chunk]);
+    const result = asterix.parseWithOffset(this.buffer, 0, 10);
 
-    try {
-      const result = asterix.parseWithOffset(this.buffer, 0, 100);
-
-      for (const record of result.records) {
-        this.push(record);
-      }
-
-      // Keep unparsed data
-      if (result.bytesConsumed > 0) {
-        this.buffer = this.buffer.slice(result.bytesConsumed);
-      }
-
-      callback();
-    } catch (err) {
-      callback(err);
+    for (const record of result.records) {
+      this.push(JSON.stringify(record) + '\n');
     }
+
+    this.buffer = this.buffer.subarray(result.bytesConsumed);
+    callback();
   }
 }
 
-// Usage
-fs.createReadStream('large_file.asterix')
+fs.createReadStream('data.asterix')
   .pipe(new AsterixParser())
-  .on('data', (record) => {
-    console.log(`Category ${record.category}:`, record.items);
-  })
-  .on('end', () => {
-    console.log('Parsing complete');
-  });
+  .pipe(fs.createWriteStream('output.jsonl'));
 ```
 
-### Express.js REST API
-
+### 4. **express_api.js** - REST API server
 ```javascript
 const express = require('express');
-const asterix = require('asterix-decoder');
-const multer = require('multer');
-
-asterix.init();
-
 const app = express();
-const upload = multer();
 
-app.post('/parse', upload.single('file'), (req, res) => {
-  try {
-    const records = asterix.parse(req.file.buffer, {
-      filterCategory: parseInt(req.query.category) || undefined,
-      maxRecords: parseInt(req.query.limit) || undefined
-    });
-
-    res.json({
-      success: true,
-      count: records.length,
-      records: records
-    });
-  } catch (err) {
-    res.status(400).json({
-      success: false,
-      error: err.message
-    });
-  }
+app.post('/parse', (req, res) => {
+  const records = asterix.parse(req.body, { verbose: true });
+  res.json({ count: records.length, records });
 });
 
-app.get('/categories/:category/describe', (req, res) => {
-  try {
-    const description = asterix.describe(
-      parseInt(req.params.category),
-      req.query.item,
-      req.query.field,
-      req.query.value
-    );
-
-    res.json({
-      success: true,
-      description: description
-    });
-  } catch (err) {
-    res.status(400).json({
-      success: false,
-      error: err.message
-    });
-  }
-});
-
-app.listen(3000, () => {
-  console.log('ASTERIX API listening on port 3000');
-});
+app.listen(3000);
 ```
 
-### File Watcher
-
+### 5. **file_watcher.js** - Real-time directory monitoring
 ```javascript
-const asterix = require('asterix-decoder');
 const chokidar = require('chokidar');
-const fs = require('fs');
 
-asterix.init();
+const watcher = chokidar.watch('./data/*.asterix');
 
-chokidar.watch('*.asterix').on('add', (path) => {
-  console.log(`Processing new file: ${path}`);
-
-  const data = fs.readFileSync(path);
+watcher.on('add', (filePath) => {
+  const data = fs.readFileSync(filePath);
   const records = asterix.parse(data);
-
-  console.log(`Parsed ${records.length} records`);
-
-  // Process records...
-  for (const record of records) {
-    // Store in database, send to API, etc.
-  }
+  console.log(`Processed ${filePath}: ${records.length} records`);
 });
 ```
 
-## Supported ASTERIX Categories
-
-The decoder supports 67 ASTERIX categories, including:
-
-- **CAT001**: Monoradar Target Reports
-- **CAT002**: Monoradar Target Reports (secondary)
-- **CAT008**: Monoradar Network Reports
-- **CAT010**: Transmission of Monoradar Service Messages
-- **CAT019**: Multilateration System Status
-- **CAT020**: Multilateration Target Reports
-- **CAT021**: ADS-B Target Reports
-- **CAT023**: CNS/ATM Ground Station Reports
-- **CAT025**: CNS/ATM System Status
-- **CAT034**: Monopulse Radar Messages
-- **CAT048**: Transmission of Monoradar Data
-- **CAT062**: System Track Data
-- **CAT063**: Sensor Status Messages
-- **CAT065**: SDPS Service Status Messages
-- And many more...
-
-Full list: https://www.eurocontrol.int/asterix
-
-## Error Handling
-
-All functions throw errors for invalid inputs or parsing failures:
-
-```javascript
-try {
-  const records = asterix.parse(data);
-} catch (err) {
-  if (err instanceof TypeError) {
-    console.error('Invalid input:', err.message);
-  } else {
-    console.error('Parsing error:', err.message);
-  }
-}
+**Run examples:**
+```bash
+cd examples
+node parse_pcap.js
+node incremental_parsing.js
+node stream_processing.js
+node express_api.js
+node file_watcher.js
 ```
 
-## Performance
-
-The Node.js bindings use a high-performance C++ core with:
-
-- **55-61% cumulative speedup** from recent optimizations
-- Zero-copy buffer passing for input data
-- Efficient N-API bindings (stable ABI)
-- Memory-safe with comprehensive bounds checking
-- Optimized for large file processing
-
-**Typical Performance:**
-- Parse 1 MB of ASTERIX data: ~5-10ms
-- Parse 10,000 records: ~50-100ms
-- Memory usage: ~50 MB peak
+---
 
 ## Testing
 
-Run the test suite:
+### Run Tests
 
 ```bash
+# All tests (unit + integration)
 npm test
-```
 
-Generate coverage report:
+# Unit tests only
+npm run test:unit
 
-```bash
+# Integration tests only
+npm run test:integration
+
+# Coverage report
 npm run test:coverage
 ```
 
-Run benchmarks:
+### Benchmarks
 
 ```bash
+# Run performance benchmarks
 npm run benchmark
+
+# Run with memory profiling
+npm run benchmark:memory
 ```
 
-## License
+**Expected Performance:**
+- Parse throughput: 5-50 MB/s (depends on data complexity)
+- Incremental parsing overhead: <10%
+- Memory usage: Stable, no leaks
 
-GPL-3.0-or-later
+---
 
-See [LICENSE](../LICENSE) for details.
+## Supported ASTERIX Categories
 
-## Related Projects
+**24 Categories:**
+- CAT001 - Monoradar Target Reports
+- CAT002 - Monoradar Target Reports
+- CAT004 - Safety Nets
+- CAT008 - Monoradar Derived Weather Information
+- CAT010 - Transmission of Monosensor Surface Movement Data
+- CAT011 - A-SMGCS Messages
+- CAT015 - Surveillance Data Exchange
+- CAT019 - Multilateration System Status
+- CAT020 - Multilateration Target Reports
+- CAT021 - ADS-B Target Reports
+- CAT023 - CNS/ATM Ground Station Status
+- CAT025 - CNS/ATM Ground Station Service Status
+- CAT030 - ARTAS Messages
+- CAT031 - ARTAS Messages
+- CAT032 - Miniplan Messages
+- CAT034 - Transmission of Monosensor Service Messages
+- CAT048 - Monoradar Target Reports
+- CAT062 - System Track Data
+- CAT063 - Sensor Status Messages
+- CAT065 - SDPS Service Status Messages
+- CAT205 - Unknown
+- CAT240 - Radar Video Transmission
+- CAT247 - Asterix Category 247
+- CAT252 - Unknown
 
-- **Python Bindings**: `pip install asterix_decoder`
-- **Rust Bindings**: `cargo add asterix-decoder`
-- **C++ CLI**: Build from source in `install/bin/asterix`
+---
+
+## Performance Tips
+
+### 1. Use Incremental Parsing for Large Files
+
+```javascript
+// ❌ BAD - Loads entire file into memory
+const records = asterix.parse(fs.readFileSync('huge_file.asterix'));
+
+// ✅ GOOD - Process in chunks
+const fd = fs.openSync('huge_file.asterix', 'r');
+const chunkSize = 65536; // 64 KB
+const buffer = Buffer.alloc(chunkSize);
+
+let offset = 0;
+while (true) {
+  const bytesRead = fs.readSync(fd, buffer, 0, chunkSize, offset);
+  if (bytesRead === 0) break;
+
+  const result = asterix.parseWithOffset(buffer.subarray(0, bytesRead), 0, 100);
+  processRecords(result.records);
+
+  offset += result.bytesConsumed;
+}
+fs.closeSync(fd);
+```
+
+### 2. Disable Verbose Mode for Production
+
+```javascript
+// ❌ BAD - Adds 20-30% overhead
+const records = asterix.parse(data, { verbose: true });
+
+// ✅ GOOD - Fast parsing without descriptions
+const records = asterix.parse(data);
+```
+
+### 3. Use Category Filtering
+
+```javascript
+// ❌ BAD - Parses all categories then filters
+const records = asterix.parse(data).filter(r => r.category === 48);
+
+// ✅ GOOD - Filters during parsing
+const records = asterix.parse(data, { filterCategory: 48 });
+```
+
+### 4. Use maxRecords for Pagination
+
+```javascript
+// ❌ BAD - Loads all records then slices
+const page1 = asterix.parse(data).slice(0, 100);
+
+// ✅ GOOD - Stops parsing after limit
+const page1 = asterix.parse(data, { maxRecords: 100 });
+```
+
+---
+
+## Thread Safety
+
+**The ASTERIX decoder is thread-safe** with the following considerations:
+
+### Safe Operations (Concurrent)
+- `parse()` - Safe to call from multiple worker threads
+- `parseWithOffset()` - Safe to call concurrently
+- `isCategoryDefined()` - Safe
+- `describe()` - Safe
+- `version` - Safe
+
+### Unsafe Operations (Sequential Only)
+- `init()` - Call once at startup before worker threads
+- `loadCategory()` - Call during initialization only
+
+### Worker Threads Example
+
+```javascript
+const { Worker } = require('worker_threads');
+const asterix = require('asterix-decoder');
+
+// Initialize in main thread
+asterix.init();
+
+// Spawn workers
+const workers = [];
+for (let i = 0; i < 4; i++) {
+  workers.push(new Worker('./worker.js'));
+}
+
+// worker.js - Each worker can safely parse
+const { parentPort } = require('worker_threads');
+const asterix = require('asterix-decoder');
+
+parentPort.on('message', (data) => {
+  const records = asterix.parse(data);
+  parentPort.postMessage(records);
+});
+```
+
+---
+
+## Troubleshooting
+
+### Build Errors
+
+**"node-gyp not found":**
+```bash
+npm install -g node-gyp
+npm install
+```
+
+**"ASTERIX core library not found":**
+```bash
+# Build C++ core first
+cd ..
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+cmake --install build
+
+# Then build Node.js bindings
+cd asterix-node
+npm install
+```
+
+**"Cannot find module 'asterix-decoder'":**
+```bash
+# Rebuild native addon
+npm run build
+```
+
+### Runtime Errors
+
+**TypeError: data must be a Buffer:**
+```javascript
+// ❌ BAD
+asterix.parse("not a buffer");
+
+// ✅ GOOD
+asterix.parse(Buffer.from([0x30, 0x00, 0x06]));
+```
+
+**Error: Parser not initialized:**
+```javascript
+// ✅ Initialize explicitly
+asterix.init();
+const records = asterix.parse(data);
+```
+
+**Error: Data too large (max 64KB):**
+```javascript
+// ✅ Use incremental parsing
+const result = asterix.parseWithOffset(largeData, 0, 100);
+```
+
+---
 
 ## Contributing
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
+**Development Workflow:**
+```bash
+# Build in debug mode
+npm run build:debug
+
+# Run linter
+npm run lint
+
+# Format code
+npm run format
+
+# Run all tests
+npm test
+
+# Run benchmarks
+npm run benchmark
+```
+
+---
+
+## License
+
+GPL-3.0-or-later - Same as the main ASTERIX decoder project.
+
+See [LICENSE](../LICENSE) for details.
+
+---
+
 ## Support
 
 - **Issues**: https://github.com/montge/asterix/issues
 - **Documentation**: https://montge.github.io/asterix/
-- **Source**: https://github.com/montge/asterix
+- **npm**: https://www.npmjs.com/package/asterix-decoder
+
+---
 
 ## Acknowledgments
 
 Based on the ASTERIX decoder by Croatia Control Ltd.
 
-## Safety-Critical Use
-
-This library follows safety-critical design patterns aligned with DO-278A guidelines for CNS/ATM systems:
-
-- Validated FFI boundary with comprehensive input checking
-- Integer overflow prevention
-- Buffer bounds checking
-- Memory safety (zero leaks)
-- >80% test coverage
-- Static analysis clean (ESLint, security audits)
-
-See [SAFETY_CRITICAL.md](../docs/SAFETY_CRITICAL.md) for details.
+ASTERIX specifications maintained by EUROCONTROL.
