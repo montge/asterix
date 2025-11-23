@@ -71,7 +71,7 @@ graph LR
 ### Data Flow
 
 1. **Radar Simulation Layer**
-   - Mock radar generator (`.local/integration/mock_radar.py`)
+   - Mock radar generator (`asterix/radar_integration/mock_radar.py`)
    - Or RadarSimPy (commercial, licensed)
    - Or GNU Radio + gr-radar (FOSS alternative)
 
@@ -107,7 +107,7 @@ The encoder currently implements **CAT048** (Transmission of Monoradar Target Re
 
 The mock radar generator (`mock_radar.py`) creates synthetic radar detection data compatible with real radar simulators. No licensing required.
 
-**Location:** `.local/integration/mock_radar.py` (580 lines)
+**Location:** `asterix/radar_integration/mock_radar.py` (580 lines)
 
 ### Core Data Structures
 
@@ -149,7 +149,7 @@ class RadarPosition:
 #### Initialization
 
 ```python
-from mock_radar import MockRadar
+from asterix.radar_integration import MockRadar
 
 radar = MockRadar(
     lat=52.5,              # Berlin, Germany
@@ -203,7 +203,7 @@ print(f"Generated {len(track)} plot updates")
 #### Multi-Aircraft Scenario
 
 ```python
-from mock_radar import generate_aircraft_scenario
+from asterix.radar_integration import generate_aircraft_scenario
 
 plots = generate_aircraft_scenario(
     num_aircraft=5,
@@ -222,7 +222,7 @@ plots = generate_aircraft_scenario(
 Simulate aircraft approaching an airport:
 
 ```python
-from mock_radar import generate_approach_scenario
+from asterix.radar_integration import generate_approach_scenario
 
 plots = generate_approach_scenario(
     num_aircraft=3,
@@ -272,7 +272,7 @@ The encoder converts radar plots to ASTERIX CAT048 binary format (EUROCONTROL st
 #### Single Record
 
 ```python
-from asterix_encoder.cat048 import encode_cat048_record
+from asterix.radar_integration.encoder import encode_cat048_record
 
 record_bytes = encode_cat048_record(
     range_m=50000.0,       # 50 km
@@ -291,8 +291,8 @@ record_bytes = encode_cat048_record(
 #### Complete Data Block
 
 ```python
-from asterix_encoder.cat048 import encode_cat048
-from mock_radar import MockRadar
+from asterix.radar_integration.encoder import encode_cat048
+from asterix.radar_integration import MockRadar
 
 # Generate plots
 radar = MockRadar(lat=52.5, lon=13.4, alt=100.0)
@@ -370,8 +370,8 @@ Radar-to-ASTERIX Integration - Complete Example
 import sys
 sys.path.insert(0, '/home/e/Development/asterix')
 
-from mock_radar import MockRadar, generate_aircraft_scenario
-from asterix_encoder.cat048 import encode_cat048
+from asterix.radar_integration import MockRadar, generate_aircraft_scenario
+from asterix.radar_integration.encoder import encode_cat048
 import asterix
 
 def main():
@@ -559,7 +559,7 @@ for det in detections:
     plots.append(plot)
 
 # Step 4: Encode to ASTERIX CAT048
-from asterix_encoder.cat048 import encode_cat048
+from asterix.radar_integration.encoder import encode_cat048
 
 asterix_data = encode_cat048(
     plots,
@@ -625,7 +625,7 @@ def test_mock_radar():
 
 # Test ASTERIX encoder
 def test_cat048_encoder():
-    from asterix_encoder.cat048 import encode_cat048_record
+    from asterix.radar_integration.encoder import encode_cat048_record
 
     record = encode_cat048_record(
         range_m=50000,
