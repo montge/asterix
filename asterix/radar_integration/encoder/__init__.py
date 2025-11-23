@@ -7,9 +7,10 @@ This package provides encoding functionality to convert radar detection data
 Supported categories:
 - CAT048: Transmission of Monoradar Target Reports
 - CAT062: Transmission of System Track Data (fused radar tracks)
+- CAT021: ADS-B Target Reports
 
 Usage:
-    from asterix.radar_integration.encoder import encode_cat048, encode_cat062
+    from asterix.radar_integration.encoder import encode_cat048, encode_cat062, encode_cat021
     from asterix.radar_integration import MockRadar
 
     # CAT048: Monoradar target reports
@@ -24,6 +25,13 @@ Usage:
     ]
     asterix_data = encode_cat062(tracks, sac=0, sic=1)
 
+    # CAT021: ADS-B reports
+    adsb = [
+        {'lat': 48.8584, 'lon': 2.2945, 'aircraft_address': 0x3950A1,
+         'callsign': 'AFR123', 'flight_level': 350}
+    ]
+    asterix_data = encode_cat021(adsb, sac=0, sic=1)
+
 ---
 
 License: GPL-3.0
@@ -36,13 +44,8 @@ from .cat062 import (
     encode_cat062,
     encode_cat062_datablock,
     encode_cat062_record,
-    encode_i010,
-    encode_i070,
-    encode_i105,
-    encode_i135,
-    encode_i185,
-    encode_i390,
 )
+from .cat021 import encode_cat021, encode_cat021_datablock, encode_cat021_record
 
 __all__ = [
     # CAT048
@@ -52,11 +55,9 @@ __all__ = [
     'encode_cat062',
     'encode_cat062_datablock',
     'encode_cat062_record',
-    'encode_i010',
-    'encode_i070',
-    'encode_i105',
-    'encode_i135',
-    'encode_i185',
-    'encode_i390',
+    # CAT021
+    'encode_cat021',
+    'encode_cat021_datablock',
+    'encode_cat021_record',
 ]
-__version__ = '0.2.0'
+__version__ = '0.3.0'
