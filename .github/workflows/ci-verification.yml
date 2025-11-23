@@ -135,7 +135,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libexpat1-dev
         python -m pip install --upgrade pip
-        pip install setuptools wheel coverage pytest pytest-cov memory-profiler
+        pip install setuptools wheel coverage pytest pytest-cov memory-profiler numpy scipy
 
     - name: Build Python module
       run: |
@@ -196,6 +196,25 @@ jobs:
         echo "Running unittest tests..."
         python -m unittest discover -s asterix/test -p 'test_*.py' -v
         echo "✅ unittest tests passed"
+
+    - name: Run radar integration tests
+      run: |
+        set -e
+
+        # Check if radar integration tests exist
+        if [ ! -d "asterix/radar_integration/test" ]; then
+          echo "::notice::asterix/radar_integration/test directory not found, skipping radar integration tests"
+          exit 0
+        fi
+
+        if ! find asterix/radar_integration/test -name "test_*.py" -type f | grep -q .; then
+          echo "::notice::No radar integration test files found, skipping"
+          exit 0
+        fi
+
+        echo "Running radar integration tests..."
+        python -m pytest asterix/radar_integration/test/ -v --cov=asterix.radar_integration --cov-report=xml --cov-report=html
+        echo "✅ radar integration tests passed"
 
     - name: Upload Python coverage
       uses: codecov/codecov-action@v5.5.1

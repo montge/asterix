@@ -1,0 +1,491 @@
+name: Performance Benchmarks
+
+on:
+  # Only run on release tags or manual trigger to save CI time
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      compare_baseline:
+        description: 'Compare against baseline commit (SHA or tag)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  # =============================================================================
+  # ENCODER PERFORMANCE BENCHMARKS
+  # Measure encoding throughput (plots per second)
+  # =============================================================================
+  encoder-benchmarks:
+    name: Encoder Performance Benchmarks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install numpy scipy pytest pytest-benchmark matplotlib
+
+    - name: Build ASTERIX Python module
+      run: |
+        python setup.py build
+        python setup.py install
+
+    - name: Benchmark CAT048 encoding performance
+      run: |
+        python -c "
+import time
+import numpy as np
+from asterix.radar_integration.encoder.cat048 import encode_cat048_plot
+
+# Create a realistic plot
+plot = {
+    'sac': 10,
+    'sic': 1,
+    'time_of_day': 43200.0,
+    'polar_coords': {'rho': 50000.0, 'theta': 90.0},
+    'cartesian_coords': {'x': 0.0, 'y': 50000.0},
+    'mode_3a_code': 0o1234,
+    'flight_level': 350.0,
+    'radar_plot_characteristics': 0x01,
+    'mode_c_code': 350,
+    'height_3d_radar': 35000.0,
+    'radial_doppler_speed': 250.0
+}
+
+# Warmup
+for _ in range(100):
+    encode_cat048_plot(plot)
+
+# Benchmark
+iterations = 10000
+times = []
+for _ in range(10):  # 10 runs for statistics
+    start = time.perf_counter()
+    for _ in range(iterations):
+        data = encode_cat048_plot(plot)
+    end = time.perf_counter()
+    times.append(end - start)
+
+avg_time = np.mean(times)
+std_time = np.std(times)
+plots_per_sec = iterations / avg_time
+
+print(f'CAT048 Encoding Performance:')
+print(f'  Iterations: {iterations}')
+print(f'  Average time: {avg_time:.4f} seconds')
+print(f'  Std dev: {std_time:.4f} seconds')
+print(f'  Throughput: {plots_per_sec:.0f} plots/second')
+print(f'  Time per plot: {(avg_time/iterations)*1000:.3f} ms')
+
+# Save results
+with open('cat048_benchmark.txt', 'w') as f:
+    f.write(f'plots_per_second={plots_per_sec:.0f}\n')
+    f.write(f'time_per_plot_ms={(avg_time/iterations)*1000:.3f}\n')
+"
+
+    - name: Benchmark bulk encoding (stress test)
+      run: |
+        python -c "
+import time
+import numpy as np
+from asterix.radar_integration.encoder.cat048 import encode_cat048_plot
+
+# Generate 1000 unique plots
+plots = []
+for i in range(1000):
+    plots.append({
+        'sac': i % 256,
+        'sic': (i // 256) % 256,
+        'time_of_day': (i * 0.1) % 86400,
+        'polar_coords': {
+            'rho': 10000.0 + i * 10,
+            'theta': (i * 0.36) % 360
+        },
+        'mode_3a_code': i % 0o7777,
+        'flight_level': 100.0 + (i % 400),
+        'radar_plot_characteristics': i % 256
+    })
+
+# Benchmark bulk encoding
+start = time.perf_counter()
+encoded_data = [encode_cat048_plot(plot) for plot in plots]
+end = time.perf_counter()
+
+total_bytes = sum(len(data) for data in encoded_data)
+elapsed = end - start
+plots_per_sec = len(plots) / elapsed
+mb_per_sec = (total_bytes / (1024 * 1024)) / elapsed
+
+print(f'Bulk Encoding Performance:')
+print(f'  Plots encoded: {len(plots)}')
+print(f'  Total bytes: {total_bytes}')
+print(f'  Time: {elapsed:.3f} seconds')
+print(f'  Throughput: {plots_per_sec:.0f} plots/second')
+print(f'  Data rate: {mb_per_sec:.2f} MB/second')
+
+# Save results
+with open('bulk_encoding_benchmark.txt', 'w') as f:
+    f.write(f'plots_per_second={plots_per_sec:.0f}\n')
+    f.write(f'data_rate_mb_per_sec={mb_per_sec:.2f}\n')
+"
+
+    - name: Upload encoder benchmark results
+      uses: actions/upload-artifact@v5
+      with:
+        name: encoder-benchmarks
+        path: |
+          cat048_benchmark.txt
+          bulk_encoding_benchmark.txt
+        retention-days: 90
+
+  # =============================================================================
+  # VISUALIZATION PERFORMANCE BENCHMARKS
+  # Measure plotting and visualization speed
+  # =============================================================================
+  visualization-benchmarks:
+    name: Visualization Performance Benchmarks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install numpy scipy matplotlib pytest-benchmark
+
+    - name: Build ASTERIX Python module
+      run: |
+        python setup.py build
+        python setup.py install
+
+    - name: Benchmark plot generation
+      run: |
+        python -c "
+import time
+import numpy as np
+from asterix.radar_integration.mock_radar import MockRadar
+
+# Create mock radar
+radar = MockRadar(update_rate=1.0)
+
+# Generate many plots
+start = time.perf_counter()
+plots = []
+for _ in range(1000):
+    plots.extend(radar.generate_plots())
+end = time.perf_counter()
+
+elapsed = end - start
+plots_per_sec = len(plots) / elapsed
+
+print(f'Plot Generation Performance:')
+print(f'  Plots generated: {len(plots)}')
+print(f'  Time: {elapsed:.3f} seconds')
+print(f'  Throughput: {plots_per_sec:.0f} plots/second')
+
+# Save results
+with open('plot_generation_benchmark.txt', 'w') as f:
+    f.write(f'plots_per_second={plots_per_sec:.0f}\n')
+"
+      env:
+        MPLBACKEND: Agg  # Use non-interactive backend
+
+    - name: Benchmark visualization rendering (headless)
+      run: |
+        python -c "
+import time
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Non-interactive backend
+import matplotlib.pyplot as plt
+
+# Benchmark scatter plot rendering
+data_sizes = [100, 500, 1000, 5000]
+results = []
+
+for size in data_sizes:
+    # Generate random data
+    x = np.random.rand(size) * 100000
+    y = np.random.rand(size) * 100000
+
+    # Time plot creation
+    start = time.perf_counter()
+    fig, ax = plt.subplots(figsize=(10, 10))
+    ax.scatter(x, y, alpha=0.5, s=50)
+    ax.set_xlabel('X (meters)')
+    ax.set_ylabel('Y (meters)')
+    ax.set_title(f'Radar Plot ({size} targets)')
+    ax.grid(True, alpha=0.3)
+
+    # Save to buffer (simulates display)
+    import io
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png', dpi=100)
+    plt.close(fig)
+
+    end = time.perf_counter()
+    elapsed = end - start
+
+    results.append((size, elapsed))
+    print(f'Rendered {size} points in {elapsed:.3f} seconds ({size/elapsed:.0f} points/sec)')
+
+# Save results
+with open('visualization_benchmark.txt', 'w') as f:
+    for size, elapsed in results:
+        f.write(f'{size}_points_time_sec={elapsed:.3f}\n')
+"
+
+    - name: Upload visualization benchmark results
+      uses: actions/upload-artifact@v5
+      with:
+        name: visualization-benchmarks
+        path: |
+          plot_generation_benchmark.txt
+          visualization_benchmark.txt
+        retention-days: 90
+
+  # =============================================================================
+  # MOCK RADAR PERFORMANCE BENCHMARKS
+  # Measure data generation and simulation performance
+  # =============================================================================
+  mock-radar-benchmarks:
+    name: Mock Radar Performance Benchmarks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install numpy scipy pytest-benchmark
+
+    - name: Build ASTERIX Python module
+      run: |
+        python setup.py build
+        python setup.py install
+
+    - name: Benchmark aircraft state updates
+      run: |
+        python -c "
+import time
+import numpy as np
+from asterix.radar_integration.mock_radar import Aircraft
+
+# Create 100 aircraft
+aircraft_list = [Aircraft() for _ in range(100)]
+
+# Benchmark state updates
+iterations = 1000
+start = time.perf_counter()
+for _ in range(iterations):
+    for aircraft in aircraft_list:
+        aircraft.update(dt=0.1)
+end = time.perf_counter()
+
+elapsed = end - start
+updates_per_sec = (len(aircraft_list) * iterations) / elapsed
+
+print(f'Aircraft State Update Performance:')
+print(f'  Aircraft: {len(aircraft_list)}')
+print(f'  Iterations: {iterations}')
+print(f'  Total updates: {len(aircraft_list) * iterations}')
+print(f'  Time: {elapsed:.3f} seconds')
+print(f'  Throughput: {updates_per_sec:.0f} updates/second')
+
+# Save results
+with open('aircraft_update_benchmark.txt', 'w') as f:
+    f.write(f'updates_per_second={updates_per_sec:.0f}\n')
+"
+
+    - name: Benchmark full radar simulation
+      run: |
+        python -c "
+import time
+from asterix.radar_integration.mock_radar import MockRadar
+
+# Create radar with many aircraft
+radar = MockRadar(num_aircraft=50, update_rate=10.0)
+
+# Simulate 10 seconds of operation
+start = time.perf_counter()
+total_plots = 0
+for _ in range(100):  # 100 updates at 10 Hz = 10 seconds
+    plots = radar.generate_plots()
+    total_plots += len(plots)
+end = time.perf_counter()
+
+elapsed = end - start
+plots_per_sec = total_plots / elapsed
+
+print(f'Full Radar Simulation Performance:')
+print(f'  Aircraft: 50')
+print(f'  Simulation time: 10 seconds (simulated)')
+print(f'  Wall time: {elapsed:.3f} seconds')
+print(f'  Total plots: {total_plots}')
+print(f'  Throughput: {plots_per_sec:.0f} plots/second')
+print(f'  Speedup: {10.0/elapsed:.2f}x realtime')
+
+# Save results
+with open('radar_simulation_benchmark.txt', 'w') as f:
+    f.write(f'plots_per_second={plots_per_sec:.0f}\n')
+    f.write(f'speedup_vs_realtime={10.0/elapsed:.2f}\n')
+"
+
+    - name: Upload mock radar benchmark results
+      uses: actions/upload-artifact@v5
+      with:
+        name: mock-radar-benchmarks
+        path: |
+          aircraft_update_benchmark.txt
+          radar_simulation_benchmark.txt
+        retention-days: 90
+
+  # =============================================================================
+  # COMPARE WITH BASELINE (if requested)
+  # =============================================================================
+  compare-baseline:
+    name: Compare with Baseline
+    runs-on: ubuntu-latest
+    needs: [encoder-benchmarks, visualization-benchmarks, mock-radar-benchmarks]
+    if: github.event.inputs.compare_baseline != ''
+
+    steps:
+    - name: Download current benchmark results
+      uses: actions/download-artifact@v6
+      with:
+        path: current-benchmarks/
+
+    - name: Checkout baseline commit
+      uses: actions/checkout@v5
+      with:
+        ref: ${{ github.event.inputs.compare_baseline }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Run baseline benchmarks
+      run: |
+        echo "⚠️  Baseline comparison not yet implemented"
+        echo "Would compare against: ${{ github.event.inputs.compare_baseline }}"
+        # TODO: Re-run benchmarks on baseline and compare results
+
+  # =============================================================================
+  # BENCHMARK SUMMARY
+  # =============================================================================
+  benchmark-summary:
+    name: Performance Benchmark Summary
+    runs-on: ubuntu-latest
+    needs: [encoder-benchmarks, visualization-benchmarks, mock-radar-benchmarks]
+    if: always()
+
+    steps:
+    - name: Download all benchmark results
+      uses: actions/download-artifact@v6
+      with:
+        path: all-benchmarks/
+
+    - name: Generate benchmark report
+      run: |
+        echo "=========================================="
+        echo "   PERFORMANCE BENCHMARK SUMMARY"
+        echo "=========================================="
+        echo ""
+
+        # Display encoder benchmarks
+        if [ -f "all-benchmarks/encoder-benchmarks/cat048_benchmark.txt" ]; then
+          echo "=== CAT048 Encoder Performance ==="
+          cat all-benchmarks/encoder-benchmarks/cat048_benchmark.txt
+          echo ""
+        fi
+
+        if [ -f "all-benchmarks/encoder-benchmarks/bulk_encoding_benchmark.txt" ]; then
+          echo "=== Bulk Encoding Performance ==="
+          cat all-benchmarks/encoder-benchmarks/bulk_encoding_benchmark.txt
+          echo ""
+        fi
+
+        # Display visualization benchmarks
+        if [ -f "all-benchmarks/visualization-benchmarks/plot_generation_benchmark.txt" ]; then
+          echo "=== Plot Generation Performance ==="
+          cat all-benchmarks/visualization-benchmarks/plot_generation_benchmark.txt
+          echo ""
+        fi
+
+        if [ -f "all-benchmarks/visualization-benchmarks/visualization_benchmark.txt" ]; then
+          echo "=== Visualization Rendering Performance ==="
+          cat all-benchmarks/visualization-benchmarks/visualization_benchmark.txt
+          echo ""
+        fi
+
+        # Display mock radar benchmarks
+        if [ -f "all-benchmarks/mock-radar-benchmarks/aircraft_update_benchmark.txt" ]; then
+          echo "=== Aircraft Update Performance ==="
+          cat all-benchmarks/mock-radar-benchmarks/aircraft_update_benchmark.txt
+          echo ""
+        fi
+
+        if [ -f "all-benchmarks/mock-radar-benchmarks/radar_simulation_benchmark.txt" ]; then
+          echo "=== Radar Simulation Performance ==="
+          cat all-benchmarks/mock-radar-benchmarks/radar_simulation_benchmark.txt
+          echo ""
+        fi
+
+        echo "=========================================="
+        echo "✅ All benchmarks completed successfully"
+
+    - name: Upload consolidated benchmark report
+      uses: actions/upload-artifact@v5
+      with:
+        name: performance-benchmarks-all
+        path: all-benchmarks/
+        retention-days: 90

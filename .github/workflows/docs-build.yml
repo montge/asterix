@@ -1,0 +1,375 @@
+name: Documentation Build & Validation
+
+on:
+  push:
+    branches: [ master, develop ]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - 'examples/**'
+      - 'asterix/radar_integration/**'
+      - '.github/workflows/docs-build.yml'
+  pull_request:
+    branches: [ master, develop ]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - 'examples/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write  # Required for GitHub Pages deployment
+
+env:
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  # =============================================================================
+  # VALIDATE EXAMPLE CODE
+  # Ensure all Python code in docs/examples is syntactically valid
+  # =============================================================================
+  validate-examples:
+    name: Validate Example Code
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Check all Python examples are valid
+      run: |
+        echo "=== Validating Python examples ==="
+
+        # Compile all example files to check syntax
+        find examples/ -name "*.py" -type f | while read -r file; do
+          echo "Checking: $file"
+          python -m py_compile "$file" || {
+            echo "::error file=$file::Syntax error in $file"
+            exit 1
+          }
+        done
+
+        echo "✅ All example files are syntactically valid"
+
+    - name: Validate radar integration examples specifically
+      run: |
+        echo "=== Validating radar integration examples ==="
+
+        if [ -d "examples/radar_integration" ]; then
+          for file in examples/radar_integration/*.py; do
+            if [ -f "$file" ]; then
+              echo "Validating: $file"
+              python -m py_compile "$file"
+            fi
+          done
+          echo "✅ All radar integration examples validated"
+        else
+          echo "⚠️  No radar integration examples found"
+        fi
+
+    - name: Check for common code issues in examples
+      run: |
+        echo "=== Checking for common issues ==="
+
+        # Check for hardcoded paths
+        if grep -rn "/home/" examples/ 2>/dev/null; then
+          echo "::warning::Found hardcoded home directory paths in examples"
+        fi
+
+        # Check for TODO/FIXME comments
+        if grep -rn "TODO\|FIXME" examples/ 2>/dev/null; then
+          echo "::notice::Found TODO/FIXME comments in examples"
+        fi
+
+        echo "✅ Example code quality check complete"
+
+  # =============================================================================
+  # BUILD DOCUMENTATION (if Sphinx/MkDocs configured)
+  # =============================================================================
+  build-docs:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+
+    - name: Check for documentation framework
+      id: check-docs
+      run: |
+        if [ -f "docs/conf.py" ]; then
+          echo "framework=sphinx" >> $GITHUB_OUTPUT
+          echo "✓ Sphinx documentation found"
+        elif [ -f "mkdocs.yml" ]; then
+          echo "framework=mkdocs" >> $GITHUB_OUTPUT
+          echo "✓ MkDocs documentation found"
+        elif [ -f "docs/requirements.txt" ]; then
+          echo "framework=generic" >> $GITHUB_OUTPUT
+          echo "✓ Generic documentation found"
+        else
+          echo "framework=none" >> $GITHUB_OUTPUT
+          echo "⚠️  No documentation framework detected"
+        fi
+
+    - name: Install Sphinx dependencies
+      if: steps.check-docs.outputs.framework == 'sphinx'
+      run: |
+        pip install sphinx sphinx-rtd-theme sphinx-autodoc-typehints myst-parser
+
+    - name: Install MkDocs dependencies
+      if: steps.check-docs.outputs.framework == 'mkdocs'
+      run: |
+        pip install mkdocs mkdocs-material pymdown-extensions
+
+    - name: Install generic documentation dependencies
+      if: steps.check-docs.outputs.framework == 'generic'
+      run: |
+        if [ -f "docs/requirements.txt" ]; then
+          pip install -r docs/requirements.txt
+        fi
+
+    - name: Build Sphinx documentation
+      if: steps.check-docs.outputs.framework == 'sphinx'
+      run: |
+        cd docs
+        make html
+        echo "✅ Sphinx documentation built successfully"
+
+    - name: Build MkDocs documentation
+      if: steps.check-docs.outputs.framework == 'mkdocs'
+      run: |
+        mkdocs build
+        echo "✅ MkDocs documentation built successfully"
+
+    - name: Upload documentation artifacts
+      if: steps.check-docs.outputs.framework != 'none'
+      uses: actions/upload-artifact@v5
+      with:
+        name: documentation-html
+        path: |
+          docs/_build/html/
+          site/
+        retention-days: 14
+
+  # =============================================================================
+  # CHECK BROKEN LINKS IN DOCUMENTATION
+  # =============================================================================
+  check-links:
+    name: Check Documentation Links
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Check for broken links in markdown files
+      run: |
+        echo "=== Checking markdown files for broken links ==="
+
+        # Find all markdown files
+        md_files=$(find . -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" -not -path "./build/*")
+
+        # Check for common broken link patterns
+        for file in $md_files; do
+          echo "Checking: $file"
+
+          # Check for empty link text
+          if grep -n '\[\](' "$file" 2>/dev/null; then
+            echo "::warning file=$file::Found empty link text in $file"
+          fi
+
+          # Check for malformed relative links (../../../)
+          if grep -n '\.\./\.\./\.\./\.\.' "$file" 2>/dev/null; then
+            echo "::warning file=$file::Suspicious relative path in $file"
+          fi
+        done
+
+        echo "✅ Link check complete"
+
+    - name: Validate README.md structure
+      run: |
+        echo "=== Validating README.md ==="
+
+        if [ ! -f "README.md" ]; then
+          echo "::error::README.md not found"
+          exit 1
+        fi
+
+        # Check for required sections
+        for section in "Installation" "Usage" "License"; do
+          if ! grep -q "##.*$section" README.md; then
+            echo "::warning::README.md missing '$section' section"
+          fi
+        done
+
+        echo "✅ README.md validated"
+
+  # =============================================================================
+  # VALIDATE INLINE CODE EXAMPLES IN DOCS
+  # =============================================================================
+  validate-inline-code:
+    name: Validate Inline Code Examples
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install numpy scipy
+
+    - name: Build ASTERIX Python module
+      run: |
+        python setup.py build
+        python setup.py install
+
+    - name: Extract and test Python code from README.md
+      run: |
+        echo "=== Extracting Python code from README.md ==="
+
+        # Extract Python code blocks (```python ... ```)
+        awk '/```python/,/```/' README.md | grep -v '```' > /tmp/readme_code.py || {
+          echo "⚠️  No Python code blocks found in README.md"
+          exit 0
+        }
+
+        # Check if extracted code is valid Python
+        if [ -s /tmp/readme_code.py ]; then
+          echo "Validating extracted Python code..."
+          python -m py_compile /tmp/readme_code.py || {
+            echo "::warning::Python code in README.md has syntax errors"
+            cat /tmp/readme_code.py
+          }
+        fi
+
+    - name: Validate radar integration examples in docs
+      run: |
+        echo "=== Checking for radar integration documentation ==="
+
+        # Check if radar integration is documented
+        if [ -f "examples/radar_integration/README.md" ]; then
+          echo "✓ Radar integration README found"
+
+          # Validate Python code in radar integration README
+          awk '/```python/,/```/' examples/radar_integration/README.md | \
+            grep -v '```' > /tmp/radar_readme_code.py || {
+            echo "⚠️  No Python code blocks in radar integration README"
+            exit 0
+          }
+
+          if [ -s /tmp/radar_readme_code.py ]; then
+            python -m py_compile /tmp/radar_readme_code.py || {
+              echo "::warning::Radar integration README has invalid Python code"
+            }
+          fi
+        else
+          echo "⚠️  No radar integration README found at examples/radar_integration/README.md"
+        fi
+
+  # =============================================================================
+  # DEPLOY TO GITHUB PAGES (only on main branch)
+  # =============================================================================
+  deploy-pages:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: [validate-examples, build-docs, check-links, validate-inline-code]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Check for documentation framework
+      id: check-docs
+      run: |
+        if [ -f "docs/conf.py" ]; then
+          echo "framework=sphinx" >> $GITHUB_OUTPUT
+        elif [ -f "mkdocs.yml" ]; then
+          echo "framework=mkdocs" >> $GITHUB_OUTPUT
+        else
+          echo "framework=none" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Install and build documentation
+      if: steps.check-docs.outputs.framework != 'none'
+      run: |
+        if [ "${{ steps.check-docs.outputs.framework }}" == "sphinx" ]; then
+          pip install sphinx sphinx-rtd-theme
+          cd docs && make html
+          mkdir -p ../public
+          cp -r _build/html/* ../public/
+        elif [ "${{ steps.check-docs.outputs.framework }}" == "mkdocs" ]; then
+          pip install mkdocs mkdocs-material
+          mkdocs build
+          mkdir -p public
+          cp -r site/* public/
+        fi
+
+    - name: Deploy to GitHub Pages
+      if: steps.check-docs.outputs.framework != 'none'
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
+        publish_branch: gh-pages
+        commit_message: "Deploy documentation"
+
+  # =============================================================================
+  # DOCUMENTATION SUMMARY
+  # =============================================================================
+  docs-summary:
+    name: Documentation Build Summary
+    runs-on: ubuntu-latest
+    needs: [validate-examples, build-docs, check-links, validate-inline-code]
+    if: always()
+
+    steps:
+    - name: Check documentation build results
+      run: |
+        echo "=========================================="
+        echo "   DOCUMENTATION BUILD SUMMARY"
+        echo "=========================================="
+        echo ""
+        echo "Example validation:    ${{ needs.validate-examples.result }}"
+        echo "Documentation build:   ${{ needs.build-docs.result }}"
+        echo "Link checking:         ${{ needs.check-links.result }}"
+        echo "Inline code validation: ${{ needs.validate-inline-code.result }}"
+        echo ""
+
+        if [[ "${{ needs.validate-examples.result }}" == "success" ]] && \
+           [[ "${{ needs.check-links.result }}" == "success" ]]; then
+          echo "✅ Documentation validation passed!"
+          exit 0
+        else
+          echo "⚠️  Some documentation checks failed"
+          exit 1
+        fi
