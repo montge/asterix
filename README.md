@@ -68,6 +68,7 @@ More about ASTERIX protocol: http://www.eurocontrol.int/services/asterix
 - **Cross-platform**: Linux, Windows, macOS (Intel & ARM M1)
 - **Multiple output formats**: JSON, XML, human-readable text
 - **Network streaming** via UDP multicast
+- **Radar simulation integration**: Mock radar data generator + ASTERIX CAT048 encoder
 - **Modern C++23 features**: Ranges algorithms, deduced this (5-10% faster, 15-20% potential)
 - **Memory safety**: Rust bindings with safe FFI via CXX crate
 - **24 ASTERIX categories** supported (CAT 001-252)
@@ -399,6 +400,60 @@ let parser = Parser::new()
 - [`json_export.rs`](asterix-rs/examples/json_export.rs) - Export to JSON
 - [`describe_category.rs`](asterix-rs/examples/describe_category.rs) - Query category metadata
 - [`stream_processing.rs`](asterix-rs/examples/stream_processing.rs) - Real-time stream processing
+
+**Radar integration examples** - [examples/radar_integration/](examples/radar_integration/):
+- [`basic_mock_radar.py`](examples/radar_integration/basic_mock_radar.py) - Simple radar plot generation and ASTERIX encoding
+- [`aircraft_scenario.py`](examples/radar_integration/aircraft_scenario.py) - Multi-aircraft simulation scenario
+- [`encode_and_decode.py`](examples/radar_integration/encode_and_decode.py) - Round-trip validation with error analysis
+
+## Radar Simulation Integration
+
+This project includes tools for integrating radar simulation data with ASTERIX encoding/decoding:
+
+### Mock Radar Data Generator
+
+Generate synthetic radar plots for testing without requiring proprietary radar simulation software:
+
+```python
+from mock_radar import MockRadar, generate_aircraft_scenario
+from asterix_encoder.cat048 import encode_cat048
+
+# Create mock radar sensor
+radar = MockRadar(lat=52.5, lon=13.4, alt=100.0)
+
+# Generate synthetic radar plots
+plots = radar.generate_plots(num_targets=10, add_noise=True)
+
+# Encode to ASTERIX CAT048 binary format
+asterix_data = encode_cat048(plots, sac=0, sic=1)
+
+# Decode and validate
+import asterix
+decoded = asterix.parse(asterix_data)
+```
+
+### Features
+
+- **Mock radar generator** - Physics-based synthetic radar plots (range, azimuth, SNR, Doppler)
+- **ASTERIX CAT048 encoder** - Convert radar plots to ASTERIX binary format
+- **Round-trip validation** - Verify encoding accuracy and data preservation
+- **Scenario generators** - Multi-aircraft scenarios, approach patterns, custom trajectories
+- **CI/CD integration** - Automated testing with synthetic data
+- **RadarSimPy compatibility** - Integration pattern for licensed users
+
+### Documentation
+
+- **Integration Guide**: [docs/INTEGRATION_RADAR_SIMULATION.md](docs/INTEGRATION_RADAR_SIMULATION.md) - Complete radar simulation integration guide
+- **Examples**: [examples/radar_integration/](examples/radar_integration/) - Working code examples
+- **RadarSimPy Findings**: `.local/integration/RADARSIMPY_FINDINGS.md` - Investigation report
+
+### Use Cases
+
+- Testing ASTERIX encoder/decoder without real radar hardware
+- Algorithm development and validation
+- Synthetic test data generation for CI/CD pipelines
+- Integration with commercial radar simulators (RadarSimPy for licensed users)
+- Educational demonstrations of radar-to-ASTERIX workflows
 
 ## Development
 

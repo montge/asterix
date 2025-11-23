@@ -168,12 +168,8 @@ def parse(data: bytes, verbose: bool = True) -> list:
         >>> # Parse without descriptions (faster, less memory)
         >>> records_compact = asterix.parse(data, verbose=False)
     """
-    if 'verbose' in kwargs and not kwargs['verbose']:
-        verbose = 0
-    else:
-        verbose = 1
-
-    return _asterix.parse(bytes(data), verbose)
+    verbose_flag = 1 if verbose else 0
+    return _asterix.parse(bytes(data), verbose_flag)
 
 
 def parse_with_offset(data: bytes, offset: int = 0, blocks_count: int = 1000, verbose: bool = True) -> tuple:
