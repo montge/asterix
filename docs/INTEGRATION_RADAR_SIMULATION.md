@@ -253,7 +253,7 @@ The mock radar includes:
 
 The encoder converts radar plots to ASTERIX CAT048 binary format (EUROCONTROL standard).
 
-**Location:** `.local/integration/asterix_encoder/cat048.py` (650 lines)
+**Location:** `asterix/radar_integration/encoder/cat048.py` (650 lines)
 
 ### Supported Data Items
 
@@ -360,7 +360,7 @@ fspec = encode_fspec(items)
 
 ### End-to-End Workflow
 
-**Location:** `.local/integration/radar_asterix_poc.py` (350 lines)
+**Location:** `examples/radar_integration/full_pipeline.py` (350 lines)
 
 ```python
 #!/usr/bin/env python3
@@ -419,7 +419,7 @@ if __name__ == "__main__":
 ### Running the Example
 
 ```bash
-cd /home/e/Development/asterix/.local/integration
+cd /home/e/Development/asterix
 python3 radar_asterix_poc.py
 ```
 
@@ -540,7 +540,7 @@ range_doppler = rs.processing.range_doppler_fft(baseband)
 detections = rs.processing.cfar_ca_1d(range_doppler, guard=4, train=16)
 
 # Step 3: Convert detections to RadarPlot format
-from mock_radar import RadarPlot
+from asterix.radar_integration import RadarPlot
 import time
 
 plots = []
@@ -644,7 +644,7 @@ def test_cat048_encoder():
 Test complete pipeline:
 
 ```bash
-cd .local/integration
+cd examples/radar_integration
 python3 -m pytest test_radar_asterix_integration.py -v
 ```
 
