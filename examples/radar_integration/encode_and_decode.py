@@ -19,11 +19,11 @@ import os
 import struct
 import math
 
-# Add path to mock radar generator
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../.local/integration'))
+# Add parent directory to path for asterix import
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from mock_radar import MockRadar
-from asterix_encoder.cat048 import encode_cat048
+from asterix.radar_integration import MockRadar
+from asterix.radar_integration.encoder import encode_cat048
 
 
 def validate_round_trip(original_plots, decoded_records):

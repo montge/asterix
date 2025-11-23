@@ -18,11 +18,11 @@ import sys
 import os
 import time
 
-# Add path to mock radar generator
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../.local/integration'))
+# Add parent directory to path for asterix import
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from mock_radar import MockRadar, generate_aircraft_scenario
-from asterix_encoder.cat048 import encode_cat048
+from asterix.radar_integration import MockRadar, generate_aircraft_scenario
+from asterix.radar_integration.encoder import encode_cat048
 
 
 def print_scenario_stats(plots):
