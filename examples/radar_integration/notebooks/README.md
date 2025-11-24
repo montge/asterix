@@ -31,15 +31,17 @@ Explore all 7 ASTERIX categories:
 
 ---
 
-### 03_Flight_Simulator_Integration.ipynb (Coming Soon)
+### 03_Flight_Simulator_Integration.ipynb
 **Difficulty:** Advanced
 **Duration:** 45-60 minutes
 
 Flight simulator integration:
-- ArduPilot SITL setup
-- MAVLink telemetry
-- JSBSim aircraft models
-- Flight → ASTERIX pipeline
+- ArduPilot SITL setup and MAVLink telemetry
+- JSBSim aircraft simulation
+- Real-time vs batch processing
+- Flight trajectory → ASTERIX CAT021
+- Field mapping tables
+- Comparison and use cases
 
 ---
 
