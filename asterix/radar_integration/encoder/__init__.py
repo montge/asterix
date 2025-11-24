@@ -6,6 +6,7 @@ This package provides encoding functionality to convert radar detection data
 
 Supported categories:
 - CAT001: Monoradar Target Reports (older specification)
+- CAT019: Multilateration System Status Messages
 - CAT020: Multilateration Target Reports (MLAT)
 - CAT021: ADS-B Target Reports (high precision)
 - CAT034: Monoradar Service Messages (North Marker, Sector Crossing)
@@ -50,6 +51,7 @@ Date: 2025-11-23
 """
 
 from .cat001 import encode_cat001, encode_cat001_datablock, encode_cat001_record
+from .cat019 import encode_cat019_status, encode_cat019_update_cycle
 from .cat020 import encode_cat020, encode_cat020_datablock, encode_cat020_record
 from .cat021 import encode_cat021, encode_cat021_datablock, encode_cat021_record
 from .cat034 import encode_cat034_north_marker, encode_cat034_sector_crossing
@@ -65,6 +67,9 @@ __all__ = [
     'encode_cat001',
     'encode_cat001_datablock',
     'encode_cat001_record',
+    # CAT019
+    'encode_cat019_status',
+    'encode_cat019_update_cycle',
     # CAT020
     'encode_cat020',
     'encode_cat020_datablock',
@@ -84,5 +89,5 @@ __all__ = [
     'encode_cat062_datablock',
     'encode_cat062_record',
 ]
-__version__ = '0.5.0'
+__version__ = '0.6.0'
 
