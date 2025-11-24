@@ -24,7 +24,10 @@ jobs:
       - name: Run Miri
         id: miri
         working-directory: asterix-rs
-        run: cargo +nightly miri test
+        run: |
+          # Miri cannot test FFI-calling code, so we skip integration tests
+          # Run unit tests only (--lib) which are pure Rust without FFI
+          cargo +nightly miri test --lib
 
       - name: Create issue on failure
         if: failure() && steps.miri.outcome == 'failure'
@@ -87,6 +90,9 @@ jobs:
         run: |
           pip install --upgrade pip setuptools wheel
           python3 setup.py build_ext --inplace
+
+      - name: Install pytest
+        run: pip install pytest pytest-cov
 
       - name: Run Valgrind tests
         id: valgrind
@@ -159,7 +165,7 @@ jobs:
           python3 setup.py build_ext --inplace
 
       - name: Install pytest
-        run: pip install pytest
+        run: pip install pytest pytest-cov
 
       - name: Run tests with ASAN
         id: asan
