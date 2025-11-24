@@ -1,0 +1,137 @@
+# Docker build context exclusions for ASTERIX project
+# Reduces build context size and improves build performance
+
+# Git and version control
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# Build artifacts (will be rebuilt in container)
+build/
+build-debug/
+install/bin/
+install/lib/
+install/share/
+*.o
+*.so
+*.a
+*.dylib
+*.dll
+*.exe
+
+# Python build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.local/venv/
+
+# Local development files (.local/ is for user-specific files)
+.local/
+!.local/integration/mock_radar.py
+!.local/integration/asterix_encoder/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.code-workspace
+
+# Testing and coverage
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# Documentation build artifacts
+docs/_build/
+docs/_static/
+docs/_templates/
+*.pdf
+*.html
+
+# Rust build artifacts (asterix-rs/)
+asterix-rs/target/
+asterix-rs/Cargo.lock
+asterix-rs/**/*.rs.bk
+
+# Node.js (asterix-node/)
+asterix-node/node_modules/
+asterix-node/package-lock.json
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.bak
+*.orig
+
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Large sample data files (keep only small test files)
+*.pcap
+!asterix/sample_data/*.pcap
+!install/sample_data/*.pcap
+*.raw
+!asterix/sample_data/*.raw
+!install/sample_data/*.raw
+
+# CI/CD artifacts
+.github/workflows/
+
+# Docker files (avoid recursive Docker builds)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# README and docs (will be added selectively)
+# Keep README.md and LICENSE for CMake
+# *.md
+# !README.md
+# !CONTRIBUTING.md
+# !LICENSE
+
+# Converter tools (not needed in container)
+asterix-specs-converter/
+
+# Test outputs
+install/test/output/
+install/sample_output/

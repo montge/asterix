@@ -1,0 +1,109 @@
+# Docker Compose configuration for ASTERIX radar integration suite
+#
+# Usage:
+#   docker-compose up -d        # Start all services
+#   docker-compose down         # Stop all services
+#   docker-compose logs -f      # View logs
+#
+# Services:
+#   - asterix: Main ASTERIX decoder/encoder CLI
+#   - notebook: Jupyter notebook for interactive exploration (optional)
+#
+# Volumes:
+#   - ./data: Shared data directory for ASTERIX files
+#   - ./config: Custom ASTERIX category definitions
+
+version: '3.8'
+
+services:
+  # Main ASTERIX decoder/encoder service
+  asterix:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: asterix:latest
+    container_name: asterix-decoder
+    restart: unless-stopped
+
+    # Mount volumes for data persistence
+    volumes:
+      - ./data:/home/asterix/data
+      - ./config:/home/asterix/config:ro
+      - ./examples:/home/asterix/examples:ro
+
+    # Environment variables
+    environment:
+      - PYTHONPATH=/home/asterix/lib
+      - ASTERIX_CONFIG=/home/asterix/config
+
+    # Network mode for UDP multicast support
+    network_mode: host
+
+    # Keep container running for exec commands
+    command: tail -f /dev/null
+
+    # Resource limits (optional - adjust as needed)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+  # Jupyter notebook service for interactive exploration (optional)
+  notebook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: asterix:latest
+    container_name: asterix-notebook
+    restart: unless-stopped
+
+    # Install Jupyter in runtime
+    entrypoint: >
+      bash -c "
+      pip3 install --quiet jupyter matplotlib pymavlink &&
+      jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+      "
+
+    # Expose Jupyter port
+    ports:
+      - "8888:8888"
+
+    # Mount volumes
+    volumes:
+      - ./data:/home/asterix/data
+      - ./examples:/home/asterix/examples:ro
+      - ./notebooks:/home/asterix/notebooks
+
+    # Environment variables
+    environment:
+      - PYTHONPATH=/home/asterix/lib
+      - JUPYTER_ENABLE_LAB=yes
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 512M
+
+# Named volumes for persistence (optional - currently using bind mounts)
+volumes:
+  asterix-data:
+    driver: local
+  asterix-config:
+    driver: local
+
+# Networks (optional - using host network for multicast)
+networks:
+  asterix-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
