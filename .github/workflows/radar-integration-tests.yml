@@ -244,18 +244,25 @@ jobs:
     - name: Quick encoder functionality test
       run: |
         python3 << 'PYTHON_SCRIPT'
-        from asterix.radar_integration.encoder.cat048 import encode_cat048
+        from asterix.radar_integration.encoder.cat048 import encode_cat048_record, encode_cat048_datablock
 
-        # Create a minimal valid plot using encode_cat048 function
-        data = encode_cat048(
-            sac=1,
-            sic=2,
+        # Create a single CAT048 record
+        record = encode_cat048_record(
             range_m=10000.0,
             azimuth_deg=45.0,
-            mode3a_code=0o1234
+            sac=1,
+            sic=2,
+            mode3a=0o1234
         )
-        print(f'Encoded CAT048 datablock: {len(data)} bytes')
-        assert len(data) > 0, 'Encoding failed'
+        print(f'Encoded CAT048 record: {len(record)} bytes')
+        assert len(record) > 0, 'Record encoding failed'
+
+        # Create a complete data block with the record
+        datablock = encode_cat048_datablock([record])
+        print(f'Encoded CAT048 datablock: {len(datablock)} bytes')
+        assert len(datablock) > 0, 'Datablock encoding failed'
+        assert datablock[0] == 48, 'Category must be 48'
+
         print('CAT048 encoder smoke test passed')
         PYTHON_SCRIPT
 
