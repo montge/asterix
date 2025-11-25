@@ -251,12 +251,22 @@ jobs:
         id: check_crashes
         working-directory: asterix-rs
         run: |
+          # Only look for actual crash files, not slow-units (performance concerns)
+          # Crash files typically start with 'crash-', 'oom-', 'timeout-'
+          # Slow-units start with 'slow-unit-' and are NOT security issues
+          crash_count=0
           if [ -d fuzz/artifacts ]; then
-            echo "crashes_found=true" >> $GITHUB_OUTPUT
+            crash_count=$(find fuzz/artifacts -type f \( -name 'crash-*' -o -name 'oom-*' -o -name 'timeout-*' \) 2>/dev/null | wc -l)
             echo "Found crash artifacts:"
-            ls -la fuzz/artifacts/
+            ls -laR fuzz/artifacts/ || true
+          fi
+
+          if [ "$crash_count" -gt 0 ]; then
+            echo "crashes_found=true" >> $GITHUB_OUTPUT
+            echo "Found $crash_count actual crash artifacts"
           else
             echo "crashes_found=false" >> $GITHUB_OUTPUT
+            echo "No crash artifacts found (slow-units are informational only)"
           fi
 
       - name: Upload crash artifacts
