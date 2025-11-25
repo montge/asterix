@@ -32,7 +32,8 @@ fn ensure_asterix_initialized() {
 fn sample_data_path(filename: &str) -> PathBuf {
     let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     path.pop(); // Go up from asterix-rs/
-    path.push("install/sample_data");
+    // Primary location: asterix/sample_data/ (source)
+    path.push("asterix/sample_data");
     path.push(filename);
     path
 }
