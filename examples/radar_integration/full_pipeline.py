@@ -61,13 +61,20 @@ def validate_round_trip(original_plots, decoded_records):
             i040 = record['I040']
 
             # RHO: Range in NM (1/256 NM resolution)
-            rho_nm = i040.get('RHO', 0)
+            # Handle nested dict format: {'RHO': {'desc': '...', 'val': X}}
+            rho_raw = i040.get('RHO', 0)
+            rho_nm = rho_raw.get('val') if isinstance(rho_raw, dict) else rho_raw
+            if rho_nm is None:
+                rho_nm = 0
             rho_m = rho_nm * 1852.0  # Convert NM to meters
             range_error = abs(rho_m - plot.range)
             max_range_error = max(max_range_error, range_error)
 
             # THETA: Azimuth in degrees (360/65536 resolution)
-            theta_deg = i040.get('THETA', 0)
+            theta_raw = i040.get('THETA', 0)
+            theta_deg = theta_raw.get('val') if isinstance(theta_raw, dict) else theta_raw
+            if theta_deg is None:
+                theta_deg = 0
             azimuth_error = abs(theta_deg - plot.azimuth)
             if azimuth_error > 180:  # Handle wrap-around
                 azimuth_error = 360 - azimuth_error
@@ -265,8 +272,15 @@ def main():
             if 'I040' in rec:
                 i040 = rec['I040']
                 print(f"  I040 (Position):")
-                print(f"    RHO (range): {i040.get('RHO')} NM = {i040.get('RHO') * 1852:.0f} m")
-                print(f"    THETA (azimuth): {i040.get('THETA')}°")
+                # Extract 'val' field if nested dict, otherwise use value directly
+                rho = i040.get('RHO', {})
+                rho_val = rho.get('val') if isinstance(rho, dict) else rho
+                theta = i040.get('THETA', {})
+                theta_val = theta.get('val') if isinstance(theta, dict) else theta
+                if rho_val is not None:
+                    print(f"    RHO (range): {rho_val} NM = {rho_val * 1852:.0f} m")
+                if theta_val is not None:
+                    print(f"    THETA (azimuth): {theta_val}°")
 
         print()
 
