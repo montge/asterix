@@ -1,10 +1,8 @@
 name: Performance Benchmarks
 
 on:
-  # Only run on release tags or manual trigger to save CI time
-  push:
-    tags:
-      - 'v*'
+  # Temporarily disabled auto-triggers due to YAML syntax issues with inline Python
+  # TODO: Refactor inline Python code blocks to use external scripts
   workflow_dispatch:
     inputs:
       compare_baseline:
