@@ -243,28 +243,28 @@ jobs:
 
     - name: Quick encoder functionality test
       run: |
-        python -c "
-from asterix.radar_integration.encoder.cat048 import encode_cat048_plot
+        python3 << 'PYTHON_SCRIPT'
+        from asterix.radar_integration.encoder.cat048 import encode_cat048_plot
 
-# Create a minimal valid plot
-plot = {
-    'sac': 1,
-    'sic': 2,
-    'time_of_day': 3600.5,
-    'polar_coords': {
-        'rho': 10000.0,
-        'theta': 45.0
-    },
-    'mode_3a_code': 0o1234,
-    'flight_level': 350.0,
-    'radar_plot_characteristics': 0x01
-}
+        # Create a minimal valid plot
+        plot = {
+            'sac': 1,
+            'sic': 2,
+            'time_of_day': 3600.5,
+            'polar_coords': {
+                'rho': 10000.0,
+                'theta': 45.0
+            },
+            'mode_3a_code': 0o1234,
+            'flight_level': 350.0,
+            'radar_plot_characteristics': 0x01
+        }
 
-data = encode_cat048_plot(plot)
-print(f'Encoded CAT048 plot: {len(data)} bytes')
-assert len(data) > 0, 'Encoding failed'
-print('✅ CAT048 encoder smoke test passed')
-"
+        data = encode_cat048_plot(plot)
+        print(f'Encoded CAT048 plot: {len(data)} bytes')
+        assert len(data) > 0, 'Encoding failed'
+        print('CAT048 encoder smoke test passed')
+        PYTHON_SCRIPT
 
   # =============================================================================
   # TEST SUMMARY
