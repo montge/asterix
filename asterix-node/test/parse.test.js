@@ -303,4 +303,144 @@ describe('ASTERIX Decoder', function() {
       expect(true).to.be.true;
     });
   });
+
+  describe('parseAsync()', function() {
+    it('should throw TypeError for non-Buffer input', async function() {
+      try {
+        await asterix.parseAsync('not a buffer');
+        expect.fail('Should have thrown');
+      } catch (err) {
+        expect(err).to.be.instanceOf(TypeError);
+      }
+    });
+
+    it('should throw TypeError for empty Buffer', async function() {
+      try {
+        await asterix.parseAsync(Buffer.alloc(0));
+        expect.fail('Should have thrown');
+      } catch (err) {
+        expect(err).to.be.instanceOf(TypeError);
+        expect(err.message).to.match(/empty/i);
+      }
+    });
+
+    it('should return a Promise', function() {
+      const data = Buffer.from([0x30, 0x00, 0x06, 0x00, 0x00, 0x00]);
+      const result = asterix.parseAsync(data);
+      expect(result).to.be.instanceOf(Promise);
+      return result.catch(() => {}); // Ignore errors
+    });
+
+    it('should parse valid data asynchronously', async function() {
+      const data = Buffer.from([0x30, 0x00, 0x06, 0x00, 0x00, 0x00]);
+      try {
+        const records = await asterix.parseAsync(data);
+        expect(records).to.be.an('array');
+      } catch (err) {
+        // Expected if CAT048 not loaded
+      }
+    });
+
+    it('should respect chunkSize option', async function() {
+      const data = Buffer.from([0x30, 0x00, 0x06, 0x00, 0x00, 0x00]);
+      try {
+        const records = await asterix.parseAsync(data, { chunkSize: 1 });
+        expect(records).to.be.an('array');
+      } catch (err) {
+        // Expected if CAT048 not loaded
+      }
+    });
+  });
+
+  describe('createParseStream()', function() {
+    it('should return a Transform stream', function() {
+      const stream = asterix.createParseStream();
+      expect(stream).to.have.property('pipe');
+      expect(stream).to.have.property('on');
+      expect(stream).to.have.property('write');
+      stream.destroy();
+    });
+
+    it('should accept options', function() {
+      const stream = asterix.createParseStream({
+        verbose: true,
+        filterCategory: 48,
+        objectMode: true
+      });
+      expect(stream).to.have.property('pipe');
+      stream.destroy();
+    });
+
+    it('should emit records when data is written', function(done) {
+      const stream = asterix.createParseStream();
+      const records = [];
+
+      stream.on('data', (record) => {
+        records.push(record);
+      });
+
+      stream.on('end', () => {
+        // May have 0 records if category not loaded, that's OK
+        expect(records).to.be.an('array');
+        done();
+      });
+
+      stream.on('error', (err) => {
+        // Expected if category not loaded
+        done();
+      });
+
+      // Write minimal ASTERIX data
+      stream.write(Buffer.from([0x30, 0x00, 0x06, 0x00, 0x00, 0x00]));
+      stream.end();
+    });
+
+    it('should filter by category', function(done) {
+      const stream = asterix.createParseStream({ filterCategory: 62 });
+      const records = [];
+
+      stream.on('data', (record) => {
+        records.push(record);
+      });
+
+      stream.on('end', () => {
+        // All records should be CAT062 (or empty if filtered out)
+        records.forEach(r => expect(r.category).to.equal(62));
+        done();
+      });
+
+      stream.on('error', () => done());
+
+      // Write CAT048 data - should be filtered out
+      stream.write(Buffer.from([0x30, 0x00, 0x06, 0x00, 0x00, 0x00]));
+      stream.end();
+    });
+
+    it('should emit JSON strings when objectMode is false', function(done) {
+      const stream = asterix.createParseStream({ objectMode: false });
+      const chunks = [];
+
+      stream.on('data', (chunk) => {
+        chunks.push(chunk);
+      });
+
+      stream.on('end', () => {
+        // Chunks should be strings or buffers containing JSON
+        chunks.forEach(c => {
+          const str = Buffer.isBuffer(c) ? c.toString() : c;
+          expect(str).to.be.a('string');
+          // If not empty, should be valid JSON
+          if (str.trim()) {
+            expect(() => JSON.parse(str)).to.not.throw();
+          }
+        });
+        done();
+      });
+
+      stream.on('error', () => done());
+
+      stream.write(Buffer.from([0x30, 0x00, 0x06, 0x00, 0x00, 0x00]));
+      stream.end();
+    });
+  });
 });

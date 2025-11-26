@@ -10,6 +10,7 @@
 'use strict';
 
 const path = require('path');
+const { Transform } = require('stream');
 const native = require('../build/Release/asterix.node');
 
 // Auto-initialize on module load with default config
@@ -162,6 +163,194 @@ function isCategoryDefined(category) {
 }
 
 /**
+ * Asynchronously parse ASTERIX data from a Buffer
+ *
+ * Recommended for large files to avoid blocking the event loop.
+ * Uses setImmediate to yield to the event loop between parsing chunks.
+ *
+ * @param {Buffer} data - Buffer containing ASTERIX data
+ * @param {Object} [options] - Optional parsing configuration
+ * @param {boolean} [options.verbose=false] - Enable verbose output
+ * @param {number} [options.filterCategory] - Filter to specific category
+ * @param {number} [options.maxRecords] - Maximum records to parse
+ * @param {number} [options.chunkSize=100] - Records to parse per iteration
+ * @returns {Promise<Array<Object>>} Promise resolving to array of parsed records
+ * @throws {TypeError} If input is not a Buffer or is empty
+ * @throws {Error} If parsing fails
+ */
+async function parseAsync(data, options = {}) {
+    ensureInitialized();
+
+    if (!Buffer.isBuffer(data)) {
+        throw new TypeError('First argument must be a Buffer');
+    }
+
+    if (data.length === 0) {
+        throw new TypeError('Empty input data');
+    }
+
+    const chunkSize = options.chunkSize || 100;
+    const allRecords = [];
+    let offset = 0;
+
+    return new Promise((resolve, reject) => {
+        const parseChunk = () => {
+            try {
+                if (offset >= data.length) {
+                    // Apply filters
+                    let filtered = allRecords;
+                    if (options.filterCategory !== undefined) {
+                        filtered = filtered.filter(r => r.category === options.filterCategory);
+                    }
+                    if (options.maxRecords !== undefined) {
+                        filtered = filtered.slice(0, options.maxRecords);
+                    }
+                    resolve(filtered);
+                    return;
+                }
+
+                const result = native.parseWithOffset(data, offset, chunkSize, {
+                    verbose: options.verbose || false
+                });
+
+                allRecords.push(...result.records);
+
+                if (result.bytesConsumed <= offset || result.remainingBlocks === 0) {
+                    // No progress or done
+                    let filtered = allRecords;
+                    if (options.filterCategory !== undefined) {
+                        filtered = filtered.filter(r => r.category === options.filterCategory);
+                    }
+                    if (options.maxRecords !== undefined) {
+                        filtered = filtered.slice(0, options.maxRecords);
+                    }
+                    resolve(filtered);
+                    return;
+                }
+
+                offset = result.bytesConsumed;
+
+                // Yield to event loop
+                setImmediate(parseChunk);
+            } catch (err) {
+                reject(err);
+            }
+        };
+
+        setImmediate(parseChunk);
+    });
+}
+
+/**
+ * Create a Transform stream for parsing ASTERIX data
+ *
+ * Processes ASTERIX data as a Node.js stream, emitting parsed records.
+ * Useful for processing large files or network streams.
+ *
+ * @param {Object} [options] - Stream options
+ * @param {boolean} [options.verbose=false] - Enable verbose output
+ * @param {number} [options.filterCategory] - Filter to specific category
+ * @param {boolean} [options.objectMode=true] - Emit objects (default) or JSON strings
+ * @returns {Transform} Transform stream that emits parsed ASTERIX records
+ *
+ * @example
+ * const fs = require('fs');
+ * const asterix = require('asterix-decoder');
+ *
+ * fs.createReadStream('data.asterix')
+ *   .pipe(asterix.createParseStream({ verbose: true }))
+ *   .on('data', (record) => console.log(record))
+ *   .on('error', (err) => console.error(err));
+ */
+function createParseStream(options = {}) {
+    ensureInitialized();
+
+    const verbose = options.verbose || false;
+    const filterCategory = options.filterCategory;
+    const objectMode = options.objectMode !== false; // Default true
+
+    let buffer = Buffer.alloc(0);
+
+    return new Transform({
+        objectMode: objectMode,
+        transform(chunk, encoding, callback) {
+            try {
+                // Accumulate data
+                buffer = Buffer.concat([buffer, chunk]);
+
+                // Try to parse accumulated data
+                if (buffer.length >= 3) { // Minimum ASTERIX block: CAT(1) + LEN(2)
+                    let offset = 0;
+
+                    while (offset < buffer.length - 2) {
+                        // Check if we have enough data for the next block
+                        const blockLen = (buffer[offset + 1] << 8) | buffer[offset + 2];
+
+                        if (blockLen < 3 || offset + blockLen > buffer.length) {
+                            // Incomplete block, wait for more data
+                            break;
+                        }
+
+                        // Extract and parse the block
+                        const blockData = buffer.slice(offset, offset + blockLen);
+
+                        try {
+                            const records = native.parse(blockData, { verbose });
+
+                            for (const record of records) {
+                                // Apply filter
+                                if (filterCategory !== undefined && record.category !== filterCategory) {
+                                    continue;
+                                }
+
+                                if (objectMode) {
+                                    this.push(record);
+                                } else {
+                                    this.push(JSON.stringify(record) + '\n');
+                                }
+                            }
+                        } catch (parseErr) {
+                            // Skip malformed block but continue
+                            this.emit('warning', `Parse error at offset ${offset}: ${parseErr.message}`);
+                        }
+
+                        offset += blockLen;
+                    }
+
+                    // Keep unparsed data for next chunk
+                    buffer = buffer.slice(offset);
+                }
+
+                callback();
+            } catch (err) {
+                callback(err);
+            }
+        },
+        flush(callback) {
+            // Try to parse any remaining data
+            if (buffer.length > 0) {
+                try {
+                    const records = native.parse(buffer, { verbose });
+                    for (const record of records) {
+                        if (filterCategory !== undefined && record.category !== filterCategory) {
+                            continue;
+                        }
+                        if (objectMode) {
+                            this.push(record);
+                        } else {
+                            this.push(JSON.stringify(record) + '\n');
+                        }
+                    }
+                } catch (err) {
+                    this.emit('warning', `Final parse error: ${err.message}`);
+                }
+            }
+            callback();
+        }
+    });
+}
+
+/**
  * Ensure parser is initialized before use
  *
  * @private
@@ -192,7 +381,9 @@ module.exports = {
     init,
     loadCategory,
     parse,
+    parseAsync,
     parseWithOffset,
+    createParseStream,
     describe,
     isCategoryDefined,
     version: native.version
