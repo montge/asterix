@@ -59,6 +59,28 @@ export interface ParseOptions {
 }
 
 /**
+ * Options for async parsing
+ */
+export interface AsyncParseOptions extends ParseOptions {
+    /** Number of records to parse per iteration (default: 100) */
+    chunkSize?: number;
+}
+
+/**
+ * Options for the parse stream
+ */
+export interface StreamOptions {
+    /** Enable verbose output (default: false) */
+    verbose?: boolean;
+
+    /** Filter results to specific category (optional) */
+    filterCategory?: number;
+
+    /** Emit objects (true) or JSON strings (false). Default: true */
+    objectMode?: boolean;
+}
+
+/**
  * Initialize the ASTERIX parser with default or custom configuration
  *
  * This function must be called before any parsing operations.
@@ -123,6 +145,33 @@ export function loadCategory(xmlPath: string): void;
  * ```
  */
 export function parse(data: Buffer, options?: ParseOptions): AsterixRecord[];
+
+/**
+ * Asynchronously parse ASTERIX data from a Buffer
+ *
+ * Recommended for large files to avoid blocking the event loop.
+ * Uses setImmediate to yield to the event loop between parsing chunks.
+ *
+ * @param data - Buffer containing ASTERIX data
+ * @param options - Optional parsing configuration with async-specific options
+ * @returns Promise resolving to array of parsed ASTERIX records
+ * @throws {TypeError} If input is not a Buffer or is empty
+ * @throws {Error} If parsing fails
+ *
+ * @example
+ * ```typescript
+ * import * as fs from 'fs/promises';
+ * import * as asterix from 'asterix-decoder';
+ *
+ * asterix.init();
+ *
+ * const data = await fs.readFile('large_file.asterix');
+ * const records = await asterix.parseAsync(data, { verbose: true });
+ *
+ * console.log(`Parsed ${records.length} records`);
+ * ```
+ */
+export function parseAsync(data: Buffer, options?: AsyncParseOptions): Promise<AsterixRecord[]>;
 
 /**
  * Parse ASTERIX data incrementally with offset and block count
@@ -222,6 +271,32 @@ export function describe(
  * ```
  */
 export function isCategoryDefined(category: number): boolean;
+
+/**
+ * Create a Transform stream for parsing ASTERIX data
+ *
+ * Processes ASTERIX data as a Node.js stream, emitting parsed records.
+ * Useful for processing large files or network streams.
+ *
+ * @param options - Stream options
+ * @returns Transform stream that emits parsed ASTERIX records
+ *
+ * @example
+ * ```typescript
+ * import * as fs from 'fs';
+ * import * as asterix from 'asterix-decoder';
+ *
+ * asterix.init();
+ *
+ * fs.createReadStream('data.asterix')
+ *   .pipe(asterix.createParseStream({ verbose: true }))
+ *   .on('data', (record: asterix.AsterixRecord) => {
+ *     console.log(`Category ${record.category}`);
+ *   })
+ *   .on('error', (err) => console.error(err));
+ * ```
+ */
+export function createParseStream(options?: StreamOptions): import('stream').Transform;
 
 /**
  * Version of the asterix-decoder package
