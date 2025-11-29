@@ -30,8 +30,10 @@
 package asterix
 
 /*
-#cgo CFLAGS: -I${SRCDIR}/../src/asterix -I${SRCDIR}/../src/engine
+#cgo CFLAGS: -I${SRCDIR} -I${SRCDIR}/../src/asterix -I${SRCDIR}/../src/engine -I${SRCDIR}/../install/include
 #cgo LDFLAGS: -L${SRCDIR}/../install/lib -lasterix -lexpat -lstdc++
+#cgo linux LDFLAGS: -Wl,-rpath,${SRCDIR}/../install/lib
+#cgo darwin LDFLAGS: -Wl,-rpath,@loader_path/../install/lib
 
 #include "asterix.h"
 #include <stdlib.h>
