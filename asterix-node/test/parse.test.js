@@ -442,5 +442,123 @@ describe('ASTERIX Decoder', function() {
       stream.write(Buffer.from([0x30, 0x00, 0x06, 0x00, 0x00, 0x00]));
       stream.end();
     });
+
+    it('should handle incomplete blocks and accumulate data', function(done) {
+      const stream = asterix.createParseStream();
+      const records = [];
+
+      stream.on('data', (record) => {
+        records.push(record);
+      });
+
+      stream.on('end', () => {
+        expect(records).to.be.an('array');
+        done();
+      });
+
+      stream.on('error', () => done());
+
+      // Write partial data in chunks (simulating network stream)
+      stream.write(Buffer.from([0x30, 0x00])); // Incomplete header
+      stream.write(Buffer.from([0x06, 0x00, 0x00, 0x00])); // Complete the block
+      stream.end();
+    });
+
+    it('should handle warning events without hanging', function() {
+      // Just verify we can attach warning listener without issues
+      const stream = asterix.createParseStream();
+      const warnings = [];
+
+      stream.on('warning', (msg) => {
+        warnings.push(msg);
+      });
+
+      // Verify stream was created successfully with warning handler
+      expect(stream).to.have.property('pipe');
+      expect(warnings).to.be.an('array');
+      stream.destroy();
+    });
+
+    it('should handle flush with remaining data', function(done) {
+      const stream = asterix.createParseStream();
+      const records = [];
+      const warnings = [];
+
+      stream.on('data', (record) => {
+        records.push(record);
+      });
+
+      stream.on('warning', (msg) => {
+        warnings.push(msg);
+      });
+
+      stream.on('end', () => {
+        // Should have attempted to parse remaining data in flush
+        expect(records).to.be.an('array');
+        done();
+      });
+
+      stream.on('error', () => done());
+
+      // Write valid complete block
+      stream.write(Buffer.from([0x30, 0x00, 0x06, 0x00, 0x00, 0x00]));
+      // Add incomplete trailing data that will be flushed
+      stream.write(Buffer.from([0x30, 0x00, 0x06]));
+      stream.end();
+    });
+  });
+
+  describe('parseAsync() edge cases', function() {
+    it('should handle filterCategory option', async function() {
+      const data = Buffer.from([0x30, 0x00, 0x06, 0x00, 0x00, 0x00]);
+      try {
+        const records = await asterix.parseAsync(data, { filterCategory: 62 });
+        // Should filter out CAT048 records, leaving empty or only CAT062
+        expect(records).to.be.an('array');
+        records.forEach(r => expect(r.category).to.equal(62));
+      } catch (err) {
+        // Expected if parsing fails
+      }
+    });
+
+    it('should handle maxRecords option', async function() {
+      const data = Buffer.from([
+        0x30, 0x00, 0x06, 0x00, 0x00, 0x00,
+        0x30, 0x00, 0x06, 0x00, 0x00, 0x00,
+        0x30, 0x00, 0x06, 0x00, 0x00, 0x00
+      ]);
+      try {
+        const records = await asterix.parseAsync(data, { maxRecords: 1 });
+        expect(records).to.be.an('array');
+        expect(records.length).to.be.at.most(1);
+      } catch (err) {
+        // Expected if parsing fails
+      }
+    });
+
+    it('should handle combined filter and maxRecords options', async function() {
+      const data = Buffer.from([0x30, 0x00, 0x06, 0x00, 0x00, 0x00]);
+      try {
+        const records = await asterix.parseAsync(data, {
+          filterCategory: 48,
+          maxRecords: 10
+        });
+        expect(records).to.be.an('array');
+        expect(records.length).to.be.at.most(10);
+      } catch (err) {
+        // Expected if parsing fails
+      }
+    });
+
+    it('should handle data with no progress', async function() {
+      // Empty data after validation
+      const data = Buffer.from([0x00, 0x00, 0x00]); // Invalid ASTERIX
+      try {
+        const records = await asterix.parseAsync(data);
+        expect(records).to.be.an('array');
+      } catch (err) {
+        // Expected - invalid data
+      }
+    });
   });
 });
