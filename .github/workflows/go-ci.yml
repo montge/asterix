@@ -238,9 +238,11 @@ jobs:
         for dir in examples/*/; do
           if [ -f "${dir}main.go" ]; then
             echo "Building example: $dir"
-            go build -v "$dir"
+            go build -v "./$dir"
           fi
         done
+      env:
+        CGO_LDFLAGS_ALLOW: "-Wl,-rpath.*"
 
   # =============================================================================
   # BUILD SUMMARY
