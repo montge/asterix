@@ -101,7 +101,9 @@ static uint32_t crc32(const uint8_t* data, size_t length) {
     for (size_t i = 0; i < length; i++) {
         crc ^= data[i];
         for (int j = 0; j < 8; j++) {
-            crc = (crc >> 1) ^ (0xEDB88320 & -(crc & 1));
+            // Use conditional instead of branchless trick to avoid MSVC C4146 warning
+            uint32_t mask = (crc & 1) ? 0xEDB88320 : 0;
+            crc = (crc >> 1) ^ mask;
         }
     }
     return ~crc;
