@@ -405,7 +405,12 @@ class TestDataIntegrity(unittest.TestCase):
     """Test data integrity across parse operations."""
 
     def test_idempotent_parsing(self):
-        """Test that parsing is idempotent."""
+        """Test that parsing is idempotent.
+
+        Note: The 'ts' field is excluded from comparison because it represents
+        the parse timestamp (when parsing occurred), not data from the ASTERIX
+        record itself. Consecutive parses may have different timestamps.
+        """
         raw_path = get_raw_file('cat048.raw')
         if not os.path.exists(raw_path):
             self.skipTest(f"Raw file not found: {raw_path}")
@@ -413,13 +418,22 @@ class TestDataIntegrity(unittest.TestCase):
         with open(raw_path, 'rb') as f:
             data = f.read()
 
+        def strip_timestamps(records):
+            """Remove timestamp fields that vary between parse calls."""
+            stripped = []
+            for record in records:
+                record_copy = dict(record)
+                record_copy.pop('ts', None)  # Remove parse timestamp
+                stripped.append(record_copy)
+            return stripped
+
         # Parse multiple times
         results = [asterix.parse(data) for _ in range(5)]
 
-        # All results should be identical
-        first = json.dumps(results[0], sort_keys=True)
+        # All results should be identical (excluding timestamps)
+        first = json.dumps(strip_timestamps(results[0]), sort_keys=True)
         for result in results[1:]:
-            self.assertEqual(json.dumps(result, sort_keys=True), first)
+            self.assertEqual(json.dumps(strip_timestamps(result), sort_keys=True), first)
 
     def test_no_data_modification(self):
         """Test that input data is not modified."""
