@@ -249,7 +249,7 @@ if(NOT WIN32)
 endif()
 
 # Go bindings C wrapper (included in library for cgo)
-list(APPEND ASTERIX_LIB_SOURCES asterix-go/asterix_wrapper.cpp)
+list(APPEND ASTERIX_LIB_SOURCES src/go/asterix_wrapper.cpp)
 
 set(ASTERIX_LIB_HEADERS
     src/asterix/AsterixData.h
@@ -273,7 +273,7 @@ set(ASTERIX_LIB_HEADERS
     src/asterix/UAPItem.h
     src/asterix/Utils.h
     src/asterix/XMLParser.h
-    asterix-go/asterix.h
+    src/go/asterix.h
 )
 
 # Build shared library
