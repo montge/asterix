@@ -160,8 +160,13 @@ jobs:
       - name: Build with ASAN
         run: |
           pip install --upgrade pip setuptools wheel
-          CC=clang CFLAGS="-fsanitize=address -fno-omit-frame-pointer -g" \
-          LDFLAGS="-fsanitize=address" \
+          # Set both CC and CXX to clang/clang++ for ASAN instrumentation
+          # ASAN flags must be applied to both C/C++ compilation and linking
+          CC=clang \
+          CXX=clang++ \
+          CFLAGS="-fsanitize=address -fno-omit-frame-pointer -g -shared-libasan" \
+          CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer -g -shared-libasan" \
+          LDFLAGS="-fsanitize=address -shared-libasan" \
           python3 setup.py build_ext --inplace
 
       - name: Install pytest
@@ -170,7 +175,20 @@ jobs:
       - name: Run tests with ASAN
         id: asan
         run: |
-          ASAN_OPTIONS=detect_leaks=1:symbolize=1 \
+          # Find the ASAN runtime library for LD_PRELOAD
+          # This is required because the Python binary itself is not ASAN-instrumented
+          ASAN_LIB=$(clang -print-file-name=libclang_rt.asan-x86_64.so)
+
+          # If not found with clang, try the shared library path
+          if [ ! -f "$ASAN_LIB" ]; then
+            ASAN_LIB=$(find /usr -name "libasan.so*" 2>/dev/null | head -1)
+          fi
+
+          echo "Using ASAN library: $ASAN_LIB"
+
+          # Run with LD_PRELOAD to load ASAN runtime before Python
+          LD_PRELOAD="$ASAN_LIB" \
+          ASAN_OPTIONS=detect_leaks=1:symbolize=1:verify_asan_link_order=0 \
           python3 -m pytest asterix/test/test_ffi_security.py -v
 
       - name: Create issue on failure
