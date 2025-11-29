@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:cbd86f17-ff7e-4beb-9f20-35b5a4691768",
+  "serialNumber": "urn:uuid:53299ccd-e76e-42a3-80d8-abb00a9547a5",
   "version": 1,
   "metadata": {
-    "timestamp": "2025-11-25T15:12:03Z",
+    "timestamp": "2025-11-29T22:57:46Z",
     "tools": {
       "components": [
         {
@@ -25,7 +25,7 @@
     "properties": [
       {
         "name": "commit",
-        "value": "c035e0fbc3a73bf6396be45c4f568c515fdcfc27"
+        "value": "bac85c02f047535f83ee7dc951c671023e7f6c8f"
       },
       {
         "name": "repository",
@@ -33,7 +33,7 @@
       },
       {
         "name": "generated",
-        "value": "2025-11-25T15:12:03Z"
+        "value": "2025-11-29T22:57:46Z"
       },
       {
         "name": "tool",
@@ -388,6 +388,58 @@
       ]
     },
     {
+      "bom-ref": "pkg:github/actions/checkout@v5?package-id=d2b7c7301cd3d263",
+      "type": "library",
+      "name": "actions/checkout",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:actions\\/checkout:actions\\/checkout:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/checkout@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/encoder-validation.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/checkout@v5?package-id=b3f490e7eb0821ae",
+      "type": "library",
+      "name": "actions/checkout",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:actions\\/checkout:actions\\/checkout:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/checkout@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/go-ci.yml"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:github/actions/checkout@v5?package-id=dbb9e9051c212ed1",
       "type": "library",
       "name": "actions/checkout",
@@ -466,6 +518,32 @@
       ]
     },
     {
+      "bom-ref": "pkg:github/actions/checkout@v5?package-id=b413d5be39d05bcc",
+      "type": "library",
+      "name": "actions/checkout",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:actions\\/checkout:actions\\/checkout:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/checkout@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/performance-benchmarks.yml"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:github/actions/checkout@v5?package-id=0a97aa3132f972d7",
       "type": "library",
       "name": "actions/checkout",
@@ -488,6 +566,32 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/python-publish.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/checkout@v5?package-id=8f6e8970ac1753bc",
+      "type": "library",
+      "name": "actions/checkout",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:actions\\/checkout:actions\\/checkout:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/checkout@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/radar-integration-tests.yml"
         }
       ]
     },
@@ -540,6 +644,32 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/sbom-generation.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/checkout@v5?package-id=7a0c2c75cfad3c1d",
+      "type": "library",
+      "name": "actions/checkout",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:actions\\/checkout:actions\\/checkout:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/checkout@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/security-scan.yml"
         }
       ]
     },
@@ -612,6 +742,52 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/doxygen.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/download-artifact@v4?package-id=1383a603c03556f4",
+      "type": "library",
+      "name": "actions/download-artifact",
+      "version": "v4",
+      "cpe": "cpe:2.3:a:actions\\/download-artifact:actions\\/download-artifact:v4:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/download-artifact@v4",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/download-artifact:actions\\/download_artifact:v4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/download_artifact:actions\\/download-artifact:v4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/download_artifact:actions\\/download_artifact:v4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/download:actions\\/download-artifact:v4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/download:actions\\/download_artifact:v4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/performance-benchmarks.yml"
         }
       ]
     },
@@ -846,6 +1022,52 @@
       ]
     },
     {
+      "bom-ref": "pkg:github/actions/setup-go@v5?package-id=daa223d72618e37d",
+      "type": "library",
+      "name": "actions/setup-go",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:actions\\/setup-go:actions\\/setup-go:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/setup-go@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup-go:actions\\/setup_go:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup_go:actions\\/setup-go:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup_go:actions\\/setup_go:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup:actions\\/setup-go:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup:actions\\/setup_go:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/go-ci.yml"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:github/actions/setup-node@v6?package-id=17ac140bee1c9f56",
       "type": "library",
       "name": "actions/setup-node",
@@ -1030,6 +1252,52 @@
       ]
     },
     {
+      "bom-ref": "pkg:github/actions/setup-python@v6?package-id=80a160c5884f776c",
+      "type": "library",
+      "name": "actions/setup-python",
+      "version": "v6",
+      "cpe": "cpe:2.3:a:actions\\/setup-python:actions\\/setup-python:v6:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/setup-python@v6",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup-python:actions\\/setup_python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup_python:actions\\/setup-python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup_python:actions\\/setup_python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup:actions\\/setup-python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup:actions\\/setup_python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/encoder-validation.yml"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:github/actions/setup-python@v6?package-id=7f43dc39131a8e88",
       "type": "library",
       "name": "actions/setup-python",
@@ -1072,6 +1340,52 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/nightly-security.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/setup-python@v6?package-id=da054bc53d2614ec",
+      "type": "library",
+      "name": "actions/setup-python",
+      "version": "v6",
+      "cpe": "cpe:2.3:a:actions\\/setup-python:actions\\/setup-python:v6:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/setup-python@v6",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup-python:actions\\/setup_python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup_python:actions\\/setup-python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup_python:actions\\/setup_python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup:actions\\/setup-python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup:actions\\/setup_python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/performance-benchmarks.yml"
         }
       ]
     },
@@ -1122,6 +1436,52 @@
       ]
     },
     {
+      "bom-ref": "pkg:github/actions/setup-python@v6?package-id=fa8ea6ede832ec90",
+      "type": "library",
+      "name": "actions/setup-python",
+      "version": "v6",
+      "cpe": "cpe:2.3:a:actions\\/setup-python:actions\\/setup-python:v6:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/setup-python@v6",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup-python:actions\\/setup_python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup_python:actions\\/setup-python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup_python:actions\\/setup_python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup:actions\\/setup-python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup:actions\\/setup_python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/radar-integration-tests.yml"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:github/actions/setup-python@v6?package-id=9203baa424f900ea",
       "type": "library",
       "name": "actions/setup-python",
@@ -1164,6 +1524,52 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/rust-ci.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/setup-python@v6?package-id=61eb34cbd644bc45",
+      "type": "library",
+      "name": "actions/setup-python",
+      "version": "v6",
+      "cpe": "cpe:2.3:a:actions\\/setup-python:actions\\/setup-python:v6:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/setup-python@v6",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup-python:actions\\/setup_python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup_python:actions\\/setup-python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup_python:actions\\/setup_python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup:actions\\/setup-python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/setup:actions\\/setup_python:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/security-scan.yml"
         }
       ]
     },
@@ -1398,6 +1804,52 @@
       ]
     },
     {
+      "bom-ref": "pkg:github/actions/upload-artifact@v5?package-id=3c5ff28cdb0efebe",
+      "type": "library",
+      "name": "actions/upload-artifact",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload-artifact:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/upload-artifact@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload_artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload-artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload_artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload-artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload_artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/go-ci.yml"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:github/actions/upload-artifact@v5?package-id=05ee7ef32ffd52d6",
       "type": "library",
       "name": "actions/upload-artifact",
@@ -1490,6 +1942,98 @@
       ]
     },
     {
+      "bom-ref": "pkg:github/actions/upload-artifact@v5?package-id=b8a820ae9be76b85",
+      "type": "library",
+      "name": "actions/upload-artifact",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload-artifact:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/upload-artifact@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload_artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload-artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload_artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload-artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload_artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/performance-benchmarks.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/upload-artifact@v5?package-id=9216267168fbaccb",
+      "type": "library",
+      "name": "actions/upload-artifact",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload-artifact:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/upload-artifact@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload_artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload-artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload_artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload-artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload_artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/radar-integration-tests.yml"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:github/actions/upload-artifact@v5?package-id=2d7991983e7785ad",
       "type": "library",
       "name": "actions/upload-artifact",
@@ -1578,6 +2122,52 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/sbom-generation.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/upload-artifact@v5?package-id=03318deb08ef199e",
+      "type": "library",
+      "name": "actions/upload-artifact",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload-artifact:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/upload-artifact@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload_artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload-artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload_artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload-artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload_artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/security-scan.yml"
         }
       ]
     },
@@ -2248,7 +2838,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/anstyle-query@1.1.5?package-id=15e72e1f548128f3",
+      "bom-ref": "pkg:cargo/anstyle-query@1.1.5?package-id=428b054327a3a4d5",
       "type": "library",
       "name": "anstyle-query",
       "version": "1.1.5",
@@ -2304,7 +2894,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/anstyle-wincon@3.0.11?package-id=c84394e899978eb6",
+      "bom-ref": "pkg:cargo/anstyle-wincon@3.0.11?package-id=99e1542b92449594",
       "type": "library",
       "name": "anstyle-wincon",
       "version": "3.0.11",
@@ -2858,12 +3448,12 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/cc@1.2.46?package-id=69e988d86fc5f8dc",
+      "bom-ref": "pkg:cargo/cc@1.2.47?package-id=91350c22edec1b8e",
       "type": "library",
       "name": "cc",
-      "version": "1.2.46",
-      "cpe": "cpe:2.3:a:cc:cc:1.2.46:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/cc@1.2.46",
+      "version": "1.2.47",
+      "cpe": "cpe:2.3:a:cc:cc:1.2.47:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/cc@1.2.47",
       "externalReferences": [
         {
           "url": "registry+https://github.com/rust-lang/crates.io-index",
@@ -3227,12 +3817,12 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/clap@4.5.52?package-id=f2b64cd6fbd0823a",
+      "bom-ref": "pkg:cargo/clap@4.5.53?package-id=688f976d97607562",
       "type": "library",
       "name": "clap",
-      "version": "4.5.52",
-      "cpe": "cpe:2.3:a:clap:clap:4.5.52:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/clap@4.5.52",
+      "version": "4.5.53",
+      "cpe": "cpe:2.3:a:clap:clap:4.5.53:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/clap@4.5.53",
       "externalReferences": [
         {
           "url": "registry+https://github.com/rust-lang/crates.io-index",
@@ -3319,12 +3909,12 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/clap_builder@4.5.52?package-id=63ee0991a71783c6",
+      "bom-ref": "pkg:cargo/clap_builder@4.5.53?package-id=fc721cbad839dba5",
       "type": "library",
       "name": "clap_builder",
-      "version": "4.5.52",
-      "cpe": "cpe:2.3:a:clap-builder:clap-builder:4.5.52:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/clap_builder@4.5.52",
+      "version": "4.5.53",
+      "cpe": "cpe:2.3:a:clap-builder:clap-builder:4.5.53:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/clap_builder@4.5.53",
       "externalReferences": [
         {
           "url": "registry+https://github.com/rust-lang/crates.io-index",
@@ -3350,23 +3940,23 @@
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:clap-builder:clap_builder:4.5.52:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:clap-builder:clap_builder:4.5.53:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:clap_builder:clap-builder:4.5.52:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:clap_builder:clap-builder:4.5.53:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:clap_builder:clap_builder:4.5.52:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:clap_builder:clap_builder:4.5.53:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:clap:clap-builder:4.5.52:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:clap:clap-builder:4.5.53:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:clap:clap_builder:4.5.52:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:clap:clap_builder:4.5.53:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -3632,6 +4222,52 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/ci-verification.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/codecov/codecov-action@v5.5.1?package-id=145ebb83d8026575",
+      "type": "library",
+      "name": "codecov/codecov-action",
+      "version": "v5.5.1",
+      "cpe": "cpe:2.3:a:codecov\\/codecov-action:codecov\\/codecov-action:v5.5.1:*:*:*:*:*:*:*",
+      "purl": "pkg:github/codecov/codecov-action@v5.5.1",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov-action:codecov\\/codecov_action:v5.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov_action:codecov\\/codecov-action:v5.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov_action:codecov\\/codecov_action:v5.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov:codecov\\/codecov-action:v5.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov:codecov\\/codecov_action:v5.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/radar-integration-tests.yml"
         }
       ]
     },
@@ -4287,12 +4923,12 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/cxx@1.0.188?package-id=79dcdd8165706f7d",
+      "bom-ref": "pkg:cargo/cxx@1.0.189?package-id=b4f78d46bcdeece2",
       "type": "library",
       "name": "cxx",
-      "version": "1.0.188",
-      "cpe": "cpe:2.3:a:cxx:cxx:1.0.188:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/cxx@1.0.188",
+      "version": "1.0.189",
+      "cpe": "cpe:2.3:a:cxx:cxx:1.0.189:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/cxx@1.0.189",
       "externalReferences": [
         {
           "url": "registry+https://github.com/rust-lang/crates.io-index",
@@ -4379,12 +5015,12 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/cxx-build@1.0.188?package-id=a8182f4e2e1c43a1",
+      "bom-ref": "pkg:cargo/cxx-build@1.0.189?package-id=5eb4f615748569f1",
       "type": "library",
       "name": "cxx-build",
-      "version": "1.0.188",
-      "cpe": "cpe:2.3:a:cxx-build:cxx-build:1.0.188:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/cxx-build@1.0.188",
+      "version": "1.0.189",
+      "cpe": "cpe:2.3:a:cxx-build:cxx-build:1.0.189:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/cxx-build@1.0.189",
       "externalReferences": [
         {
           "url": "registry+https://github.com/rust-lang/crates.io-index",
@@ -4410,23 +5046,23 @@
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxx-build:cxx_build:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxx-build:cxx_build:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxx_build:cxx-build:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxx_build:cxx-build:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxx_build:cxx_build:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxx_build:cxx_build:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxx:cxx-build:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxx:cxx-build:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxx:cxx_build:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxx:cxx_build:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -4491,12 +5127,12 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/cxxbridge-cmd@1.0.188?package-id=ecc237b990024949",
+      "bom-ref": "pkg:cargo/cxxbridge-cmd@1.0.189?package-id=07e01548d447e5a2",
       "type": "library",
       "name": "cxxbridge-cmd",
-      "version": "1.0.188",
-      "cpe": "cpe:2.3:a:cxxbridge-cmd:cxxbridge-cmd:1.0.188:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/cxxbridge-cmd@1.0.188",
+      "version": "1.0.189",
+      "cpe": "cpe:2.3:a:cxxbridge-cmd:cxxbridge-cmd:1.0.189:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/cxxbridge-cmd@1.0.189",
       "externalReferences": [
         {
           "url": "registry+https://github.com/rust-lang/crates.io-index",
@@ -4522,23 +5158,23 @@
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxxbridge-cmd:cxxbridge_cmd:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxxbridge-cmd:cxxbridge_cmd:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxxbridge_cmd:cxxbridge-cmd:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxxbridge_cmd:cxxbridge-cmd:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxxbridge_cmd:cxxbridge_cmd:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxxbridge_cmd:cxxbridge_cmd:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxxbridge:cxxbridge-cmd:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxxbridge:cxxbridge-cmd:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxxbridge:cxxbridge_cmd:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxxbridge:cxxbridge_cmd:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -4603,12 +5239,12 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/cxxbridge-flags@1.0.188?package-id=676219d792c6f8c7",
+      "bom-ref": "pkg:cargo/cxxbridge-flags@1.0.189?package-id=faa572217568d796",
       "type": "library",
       "name": "cxxbridge-flags",
-      "version": "1.0.188",
-      "cpe": "cpe:2.3:a:cxxbridge-flags:cxxbridge-flags:1.0.188:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/cxxbridge-flags@1.0.188",
+      "version": "1.0.189",
+      "cpe": "cpe:2.3:a:cxxbridge-flags:cxxbridge-flags:1.0.189:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/cxxbridge-flags@1.0.189",
       "externalReferences": [
         {
           "url": "registry+https://github.com/rust-lang/crates.io-index",
@@ -4634,23 +5270,23 @@
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxxbridge-flags:cxxbridge_flags:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxxbridge-flags:cxxbridge_flags:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxxbridge_flags:cxxbridge-flags:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxxbridge_flags:cxxbridge-flags:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxxbridge_flags:cxxbridge_flags:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxxbridge_flags:cxxbridge_flags:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxxbridge:cxxbridge-flags:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxxbridge:cxxbridge-flags:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxxbridge:cxxbridge_flags:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxxbridge:cxxbridge_flags:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -4715,12 +5351,12 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/cxxbridge-macro@1.0.188?package-id=48c1d126bfa2480e",
+      "bom-ref": "pkg:cargo/cxxbridge-macro@1.0.189?package-id=dfd9deffcc8fdfee",
       "type": "library",
       "name": "cxxbridge-macro",
-      "version": "1.0.188",
-      "cpe": "cpe:2.3:a:cxxbridge-macro:cxxbridge-macro:1.0.188:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/cxxbridge-macro@1.0.188",
+      "version": "1.0.189",
+      "cpe": "cpe:2.3:a:cxxbridge-macro:cxxbridge-macro:1.0.189:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/cxxbridge-macro@1.0.189",
       "externalReferences": [
         {
           "url": "registry+https://github.com/rust-lang/crates.io-index",
@@ -4746,23 +5382,23 @@
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxxbridge-macro:cxxbridge_macro:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxxbridge-macro:cxxbridge_macro:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxxbridge_macro:cxxbridge-macro:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxxbridge_macro:cxxbridge-macro:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxxbridge_macro:cxxbridge_macro:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxxbridge_macro:cxxbridge_macro:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxxbridge:cxxbridge-macro:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxxbridge:cxxbridge-macro:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:cxxbridge:cxxbridge_macro:1.0.188:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:cxxbridge:cxxbridge_macro:1.0.189:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -6164,10 +6800,118 @@
       ]
     },
     {
-      "bom-ref": "pkg:npm/glob@10.4.5?package-id=a502525366fd75d3",
+      "bom-ref": "pkg:golang/github.com/montge/asterix?package-id=a1a16f9764d3927c#asterix-go",
+      "type": "library",
+      "name": "github.com/montge/asterix/asterix-go",
+      "version": "UNKNOWN",
+      "cpe": "cpe:2.3:a:montge:asterix\\/asterix-go:*:*:*:*:*:*:*:*",
+      "purl": "pkg:golang/github.com/montge/asterix#asterix-go",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "go-module-file-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "go"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "go-module"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "go-source-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:montge:asterix\\/asterix_go:*:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/asterix-go/go.mod"
+        },
+        {
+          "name": "syft:metadata:architecture",
+          "value": "amd64"
+        },
+        {
+          "name": "syft:metadata:cgoEnabled",
+          "value": "true"
+        },
+        {
+          "name": "syft:metadata:os",
+          "value": "linux"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/github/codeql-action@v3?package-id=7b1ba69cb0695dd9#upload-sarif",
+      "type": "library",
+      "name": "github/codeql-action/upload-sarif",
+      "version": "v3",
+      "cpe": "cpe:2.3:a:github\\/codeql-action\\/upload-sarif:github\\/codeql-action\\/upload-sarif:v3:*:*:*:*:*:*:*",
+      "purl": "pkg:github/github/codeql-action@v3#upload-sarif",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:github\\/codeql-action\\/upload-sarif:github\\/codeql_action\\/upload_sarif:v3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:github\\/codeql_action\\/upload_sarif:github\\/codeql-action\\/upload-sarif:v3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:github\\/codeql_action\\/upload_sarif:github\\/codeql_action\\/upload_sarif:v3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:github\\/codeql-action\\/upload:github\\/codeql-action\\/upload-sarif:v3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:github\\/codeql-action\\/upload:github\\/codeql_action\\/upload_sarif:v3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:github\\/codeql_action\\/upload:github\\/codeql-action\\/upload-sarif:v3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:github\\/codeql_action\\/upload:github\\/codeql_action\\/upload_sarif:v3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:github\\/codeql:github\\/codeql-action\\/upload-sarif:v3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:github\\/codeql:github\\/codeql_action\\/upload_sarif:v3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/security-scan.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/glob@10.5.0?package-id=4b6e5cb27d8d295f",
       "type": "library",
       "name": "glob",
-      "version": "10.4.5",
+      "version": "10.5.0",
       "licenses": [
         {
           "license": {
@@ -6175,8 +6919,8 @@
           }
         }
       ],
-      "cpe": "cpe:2.3:a:glob:glob:10.4.5:*:*:*:*:*:*:*",
-      "purl": "pkg:npm/glob@10.4.5",
+      "cpe": "cpe:2.3:a:glob:glob:10.5.0:*:*:*:*:*:*:*",
+      "purl": "pkg:npm/glob@10.5.0",
       "properties": [
         {
           "name": "syft:package:foundBy",
@@ -6294,42 +7038,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/hashbrown@0.16.0?package-id=748bbc03047b9749",
-      "type": "library",
-      "name": "hashbrown",
-      "version": "0.16.0",
-      "cpe": "cpe:2.3:a:hashbrown:hashbrown:0.16.0:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/hashbrown@0.16.0",
-      "externalReferences": [
-        {
-          "url": "registry+https://github.com/rust-lang/crates.io-index",
-          "type": "distribution"
-        }
-      ],
-      "properties": [
-        {
-          "name": "syft:package:foundBy",
-          "value": "rust-cargo-lock-cataloger"
-        },
-        {
-          "name": "syft:package:language",
-          "value": "rust"
-        },
-        {
-          "name": "syft:package:type",
-          "value": "rust-crate"
-        },
-        {
-          "name": "syft:package:metadataType",
-          "value": "rust-cargo-lock-entry"
-        },
-        {
-          "name": "syft:location:0:path",
-          "value": "/asterix-rs/Cargo.lock"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:cargo/hashbrown@0.16.0?package-id=25b62223bebc9456",
       "type": "library",
       "name": "hashbrown",
@@ -6362,6 +7070,42 @@
         {
           "name": "syft:location:0:path",
           "value": "/asterix-rs/fuzz/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/hashbrown@0.16.1?package-id=82f10eb1bad48f1d",
+      "type": "library",
+      "name": "hashbrown",
+      "version": "0.16.1",
+      "cpe": "cpe:2.3:a:hashbrown:hashbrown:0.16.1:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/hashbrown@0.16.1",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/asterix-rs/Cargo.lock"
         }
       ]
     },
@@ -6664,42 +7408,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/indexmap@2.12.0?package-id=d5b98337a4297332",
-      "type": "library",
-      "name": "indexmap",
-      "version": "2.12.0",
-      "cpe": "cpe:2.3:a:indexmap:indexmap:2.12.0:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/indexmap@2.12.0",
-      "externalReferences": [
-        {
-          "url": "registry+https://github.com/rust-lang/crates.io-index",
-          "type": "distribution"
-        }
-      ],
-      "properties": [
-        {
-          "name": "syft:package:foundBy",
-          "value": "rust-cargo-lock-cataloger"
-        },
-        {
-          "name": "syft:package:language",
-          "value": "rust"
-        },
-        {
-          "name": "syft:package:type",
-          "value": "rust-crate"
-        },
-        {
-          "name": "syft:package:metadataType",
-          "value": "rust-cargo-lock-entry"
-        },
-        {
-          "name": "syft:location:0:path",
-          "value": "/asterix-rs/Cargo.lock"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:cargo/indexmap@2.12.0?package-id=f00f03fb0824e66f",
       "type": "library",
       "name": "indexmap",
@@ -6732,6 +7440,42 @@
         {
           "name": "syft:location:0:path",
           "value": "/asterix-rs/fuzz/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/indexmap@2.12.1?package-id=dcaab8b5a028c96c",
+      "type": "library",
+      "name": "indexmap",
+      "version": "2.12.1",
+      "cpe": "cpe:2.3:a:indexmap:indexmap:2.12.1:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/indexmap@2.12.1",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/asterix-rs/Cargo.lock"
         }
       ]
     },
@@ -11984,12 +12728,12 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/syn@2.0.110?package-id=d3fae24c63c92677",
+      "bom-ref": "pkg:cargo/syn@2.0.111?package-id=57317ca08882acbb",
       "type": "library",
       "name": "syn",
-      "version": "2.0.110",
-      "cpe": "cpe:2.3:a:syn:syn:2.0.110:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/syn@2.0.110",
+      "version": "2.0.111",
+      "cpe": "cpe:2.3:a:syn:syn:2.0.111:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/syn@2.0.111",
       "externalReferences": [
         {
           "url": "registry+https://github.com/rust-lang/crates.io-index",
@@ -13225,7 +13969,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/winapi-util@0.1.11?package-id=edddfc54efa0d8bc",
+      "bom-ref": "pkg:cargo/winapi-util@0.1.11?package-id=7fee7b177df19cfe",
       "type": "library",
       "name": "winapi-util",
       "version": "0.1.11",
@@ -13449,62 +14193,6 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/windows-sys@0.60.2?package-id=4d6d7f6fe0ca0f01",
-      "type": "library",
-      "name": "windows-sys",
-      "version": "0.60.2",
-      "cpe": "cpe:2.3:a:windows-sys:windows-sys:0.60.2:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/windows-sys@0.60.2",
-      "externalReferences": [
-        {
-          "url": "registry+https://github.com/rust-lang/crates.io-index",
-          "type": "distribution"
-        }
-      ],
-      "properties": [
-        {
-          "name": "syft:package:foundBy",
-          "value": "rust-cargo-lock-cataloger"
-        },
-        {
-          "name": "syft:package:language",
-          "value": "rust"
-        },
-        {
-          "name": "syft:package:type",
-          "value": "rust-crate"
-        },
-        {
-          "name": "syft:package:metadataType",
-          "value": "rust-cargo-lock-entry"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-sys:windows_sys:0.60.2:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_sys:windows-sys:0.60.2:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_sys:windows_sys:0.60.2:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows-sys:0.60.2:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows_sys:0.60.2:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:location:0:path",
-          "value": "/asterix-rs/Cargo.lock"
-        }
-      ]
-    },
-    {
       "bom-ref": "pkg:cargo/windows-sys@0.61.2?package-id=6b3b54342bb72941",
       "type": "library",
       "name": "windows-sys",
@@ -13613,686 +14301,6 @@
         {
           "name": "syft:location:0:path",
           "value": "/asterix-rs/fuzz/Cargo.lock"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:cargo/windows-targets@0.53.5?package-id=2e2d2444b9107fa4",
-      "type": "library",
-      "name": "windows-targets",
-      "version": "0.53.5",
-      "cpe": "cpe:2.3:a:windows-targets:windows-targets:0.53.5:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/windows-targets@0.53.5",
-      "externalReferences": [
-        {
-          "url": "registry+https://github.com/rust-lang/crates.io-index",
-          "type": "distribution"
-        }
-      ],
-      "properties": [
-        {
-          "name": "syft:package:foundBy",
-          "value": "rust-cargo-lock-cataloger"
-        },
-        {
-          "name": "syft:package:language",
-          "value": "rust"
-        },
-        {
-          "name": "syft:package:type",
-          "value": "rust-crate"
-        },
-        {
-          "name": "syft:package:metadataType",
-          "value": "rust-cargo-lock-entry"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-targets:windows_targets:0.53.5:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_targets:windows-targets:0.53.5:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_targets:windows_targets:0.53.5:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows-targets:0.53.5:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows_targets:0.53.5:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:location:0:path",
-          "value": "/asterix-rs/Cargo.lock"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:cargo/windows_aarch64_gnullvm@0.53.1?package-id=95c6ede0fe7d5648",
-      "type": "library",
-      "name": "windows_aarch64_gnullvm",
-      "version": "0.53.1",
-      "cpe": "cpe:2.3:a:windows-aarch64-gnullvm:windows-aarch64-gnullvm:0.53.1:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/windows_aarch64_gnullvm@0.53.1",
-      "externalReferences": [
-        {
-          "url": "registry+https://github.com/rust-lang/crates.io-index",
-          "type": "distribution"
-        }
-      ],
-      "properties": [
-        {
-          "name": "syft:package:foundBy",
-          "value": "rust-cargo-lock-cataloger"
-        },
-        {
-          "name": "syft:package:language",
-          "value": "rust"
-        },
-        {
-          "name": "syft:package:type",
-          "value": "rust-crate"
-        },
-        {
-          "name": "syft:package:metadataType",
-          "value": "rust-cargo-lock-entry"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-aarch64-gnullvm:windows_aarch64_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_aarch64_gnullvm:windows-aarch64-gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_aarch64_gnullvm:windows_aarch64_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-aarch64:windows-aarch64-gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-aarch64:windows_aarch64_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_aarch64:windows-aarch64-gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_aarch64:windows_aarch64_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows-aarch64-gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows_aarch64_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:location:0:path",
-          "value": "/asterix-rs/Cargo.lock"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:cargo/windows_aarch64_msvc@0.53.1?package-id=55a4411316a7f83c",
-      "type": "library",
-      "name": "windows_aarch64_msvc",
-      "version": "0.53.1",
-      "cpe": "cpe:2.3:a:windows-aarch64-msvc:windows-aarch64-msvc:0.53.1:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/windows_aarch64_msvc@0.53.1",
-      "externalReferences": [
-        {
-          "url": "registry+https://github.com/rust-lang/crates.io-index",
-          "type": "distribution"
-        }
-      ],
-      "properties": [
-        {
-          "name": "syft:package:foundBy",
-          "value": "rust-cargo-lock-cataloger"
-        },
-        {
-          "name": "syft:package:language",
-          "value": "rust"
-        },
-        {
-          "name": "syft:package:type",
-          "value": "rust-crate"
-        },
-        {
-          "name": "syft:package:metadataType",
-          "value": "rust-cargo-lock-entry"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-aarch64-msvc:windows_aarch64_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_aarch64_msvc:windows-aarch64-msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_aarch64_msvc:windows_aarch64_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-aarch64:windows-aarch64-msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-aarch64:windows_aarch64_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_aarch64:windows-aarch64-msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_aarch64:windows_aarch64_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows-aarch64-msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows_aarch64_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:location:0:path",
-          "value": "/asterix-rs/Cargo.lock"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:cargo/windows_i686_gnu@0.53.1?package-id=7b4b36d7ad8d71b4",
-      "type": "library",
-      "name": "windows_i686_gnu",
-      "version": "0.53.1",
-      "cpe": "cpe:2.3:a:windows-i686-gnu:windows-i686-gnu:0.53.1:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/windows_i686_gnu@0.53.1",
-      "externalReferences": [
-        {
-          "url": "registry+https://github.com/rust-lang/crates.io-index",
-          "type": "distribution"
-        }
-      ],
-      "properties": [
-        {
-          "name": "syft:package:foundBy",
-          "value": "rust-cargo-lock-cataloger"
-        },
-        {
-          "name": "syft:package:language",
-          "value": "rust"
-        },
-        {
-          "name": "syft:package:type",
-          "value": "rust-crate"
-        },
-        {
-          "name": "syft:package:metadataType",
-          "value": "rust-cargo-lock-entry"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-i686-gnu:windows_i686_gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_i686_gnu:windows-i686-gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_i686_gnu:windows_i686_gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-i686:windows-i686-gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-i686:windows_i686_gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_i686:windows-i686-gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_i686:windows_i686_gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows-i686-gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows_i686_gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:location:0:path",
-          "value": "/asterix-rs/Cargo.lock"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:cargo/windows_i686_gnullvm@0.53.1?package-id=ffafff4b5e01a0f8",
-      "type": "library",
-      "name": "windows_i686_gnullvm",
-      "version": "0.53.1",
-      "cpe": "cpe:2.3:a:windows-i686-gnullvm:windows-i686-gnullvm:0.53.1:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/windows_i686_gnullvm@0.53.1",
-      "externalReferences": [
-        {
-          "url": "registry+https://github.com/rust-lang/crates.io-index",
-          "type": "distribution"
-        }
-      ],
-      "properties": [
-        {
-          "name": "syft:package:foundBy",
-          "value": "rust-cargo-lock-cataloger"
-        },
-        {
-          "name": "syft:package:language",
-          "value": "rust"
-        },
-        {
-          "name": "syft:package:type",
-          "value": "rust-crate"
-        },
-        {
-          "name": "syft:package:metadataType",
-          "value": "rust-cargo-lock-entry"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-i686-gnullvm:windows_i686_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_i686_gnullvm:windows-i686-gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_i686_gnullvm:windows_i686_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-i686:windows-i686-gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-i686:windows_i686_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_i686:windows-i686-gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_i686:windows_i686_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows-i686-gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows_i686_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:location:0:path",
-          "value": "/asterix-rs/Cargo.lock"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:cargo/windows_i686_msvc@0.53.1?package-id=e703ea296ee4c8d3",
-      "type": "library",
-      "name": "windows_i686_msvc",
-      "version": "0.53.1",
-      "cpe": "cpe:2.3:a:windows-i686-msvc:windows-i686-msvc:0.53.1:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/windows_i686_msvc@0.53.1",
-      "externalReferences": [
-        {
-          "url": "registry+https://github.com/rust-lang/crates.io-index",
-          "type": "distribution"
-        }
-      ],
-      "properties": [
-        {
-          "name": "syft:package:foundBy",
-          "value": "rust-cargo-lock-cataloger"
-        },
-        {
-          "name": "syft:package:language",
-          "value": "rust"
-        },
-        {
-          "name": "syft:package:type",
-          "value": "rust-crate"
-        },
-        {
-          "name": "syft:package:metadataType",
-          "value": "rust-cargo-lock-entry"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-i686-msvc:windows_i686_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_i686_msvc:windows-i686-msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_i686_msvc:windows_i686_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-i686:windows-i686-msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-i686:windows_i686_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_i686:windows-i686-msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_i686:windows_i686_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows-i686-msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows_i686_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:location:0:path",
-          "value": "/asterix-rs/Cargo.lock"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:cargo/windows_x86_64_gnu@0.53.1?package-id=d2cd9a328190233e",
-      "type": "library",
-      "name": "windows_x86_64_gnu",
-      "version": "0.53.1",
-      "cpe": "cpe:2.3:a:windows-x86-64-gnu:windows-x86-64-gnu:0.53.1:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/windows_x86_64_gnu@0.53.1",
-      "externalReferences": [
-        {
-          "url": "registry+https://github.com/rust-lang/crates.io-index",
-          "type": "distribution"
-        }
-      ],
-      "properties": [
-        {
-          "name": "syft:package:foundBy",
-          "value": "rust-cargo-lock-cataloger"
-        },
-        {
-          "name": "syft:package:language",
-          "value": "rust"
-        },
-        {
-          "name": "syft:package:type",
-          "value": "rust-crate"
-        },
-        {
-          "name": "syft:package:metadataType",
-          "value": "rust-cargo-lock-entry"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-x86-64-gnu:windows_x86_64_gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86_64_gnu:windows-x86-64-gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86_64_gnu:windows_x86_64_gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-x86-64:windows-x86-64-gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-x86-64:windows_x86_64_gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86_64:windows-x86-64-gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86_64:windows_x86_64_gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-x86:windows-x86-64-gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-x86:windows_x86_64_gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86:windows-x86-64-gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86:windows_x86_64_gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows-x86-64-gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows_x86_64_gnu:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:location:0:path",
-          "value": "/asterix-rs/Cargo.lock"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:cargo/windows_x86_64_gnullvm@0.53.1?package-id=8476311a1602b383",
-      "type": "library",
-      "name": "windows_x86_64_gnullvm",
-      "version": "0.53.1",
-      "cpe": "cpe:2.3:a:windows-x86-64-gnullvm:windows-x86-64-gnullvm:0.53.1:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/windows_x86_64_gnullvm@0.53.1",
-      "externalReferences": [
-        {
-          "url": "registry+https://github.com/rust-lang/crates.io-index",
-          "type": "distribution"
-        }
-      ],
-      "properties": [
-        {
-          "name": "syft:package:foundBy",
-          "value": "rust-cargo-lock-cataloger"
-        },
-        {
-          "name": "syft:package:language",
-          "value": "rust"
-        },
-        {
-          "name": "syft:package:type",
-          "value": "rust-crate"
-        },
-        {
-          "name": "syft:package:metadataType",
-          "value": "rust-cargo-lock-entry"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-x86-64-gnullvm:windows_x86_64_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86_64_gnullvm:windows-x86-64-gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86_64_gnullvm:windows_x86_64_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-x86-64:windows-x86-64-gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-x86-64:windows_x86_64_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86_64:windows-x86-64-gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86_64:windows_x86_64_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-x86:windows-x86-64-gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-x86:windows_x86_64_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86:windows-x86-64-gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86:windows_x86_64_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows-x86-64-gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows_x86_64_gnullvm:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:location:0:path",
-          "value": "/asterix-rs/Cargo.lock"
-        }
-      ]
-    },
-    {
-      "bom-ref": "pkg:cargo/windows_x86_64_msvc@0.53.1?package-id=6d824283af9c0004",
-      "type": "library",
-      "name": "windows_x86_64_msvc",
-      "version": "0.53.1",
-      "cpe": "cpe:2.3:a:windows-x86-64-msvc:windows-x86-64-msvc:0.53.1:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/windows_x86_64_msvc@0.53.1",
-      "externalReferences": [
-        {
-          "url": "registry+https://github.com/rust-lang/crates.io-index",
-          "type": "distribution"
-        }
-      ],
-      "properties": [
-        {
-          "name": "syft:package:foundBy",
-          "value": "rust-cargo-lock-cataloger"
-        },
-        {
-          "name": "syft:package:language",
-          "value": "rust"
-        },
-        {
-          "name": "syft:package:type",
-          "value": "rust-crate"
-        },
-        {
-          "name": "syft:package:metadataType",
-          "value": "rust-cargo-lock-entry"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-x86-64-msvc:windows_x86_64_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86_64_msvc:windows-x86-64-msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86_64_msvc:windows_x86_64_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-x86-64:windows-x86-64-msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-x86-64:windows_x86_64_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86_64:windows-x86-64-msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86_64:windows_x86_64_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-x86:windows-x86-64-msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows-x86:windows_x86_64_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86:windows-x86-64-msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows_x86:windows_x86_64_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows-x86-64-msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:cpe23",
-          "value": "cpe:2.3:a:windows:windows_x86_64_msvc:0.53.1:*:*:*:*:*:*:*"
-        },
-        {
-          "name": "syft:location:0:path",
-          "value": "/asterix-rs/Cargo.lock"
         }
       ]
     },
@@ -14504,12 +14512,12 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/zerocopy@0.8.27?package-id=fe449fb8f1c8f0c9",
+      "bom-ref": "pkg:cargo/zerocopy@0.8.30?package-id=89d99378318fa81c",
       "type": "library",
       "name": "zerocopy",
-      "version": "0.8.27",
-      "cpe": "cpe:2.3:a:zerocopy:zerocopy:0.8.27:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/zerocopy@0.8.27",
+      "version": "0.8.30",
+      "cpe": "cpe:2.3:a:zerocopy:zerocopy:0.8.30:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/zerocopy@0.8.30",
       "externalReferences": [
         {
           "url": "registry+https://github.com/rust-lang/crates.io-index",
@@ -14540,12 +14548,12 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/zerocopy-derive@0.8.27?package-id=7da9a8a146ea09f1",
+      "bom-ref": "pkg:cargo/zerocopy-derive@0.8.30?package-id=af859b2c7c4d8529",
       "type": "library",
       "name": "zerocopy-derive",
-      "version": "0.8.27",
-      "cpe": "cpe:2.3:a:zerocopy-derive:zerocopy-derive:0.8.27:*:*:*:*:*:*:*",
-      "purl": "pkg:cargo/zerocopy-derive@0.8.27",
+      "version": "0.8.30",
+      "cpe": "cpe:2.3:a:zerocopy-derive:zerocopy-derive:0.8.30:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/zerocopy-derive@0.8.30",
       "externalReferences": [
         {
           "url": "registry+https://github.com/rust-lang/crates.io-index",
@@ -14571,23 +14579,23 @@
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:zerocopy-derive:zerocopy_derive:0.8.27:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:zerocopy-derive:zerocopy_derive:0.8.30:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:zerocopy_derive:zerocopy-derive:0.8.27:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:zerocopy_derive:zerocopy-derive:0.8.30:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:zerocopy_derive:zerocopy_derive:0.8.27:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:zerocopy_derive:zerocopy_derive:0.8.30:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:zerocopy:zerocopy-derive:0.8.27:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:zerocopy:zerocopy-derive:0.8.30:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:zerocopy:zerocopy_derive:0.8.27:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:zerocopy:zerocopy_derive:0.8.30:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -14671,6 +14679,36 @@
       ]
     },
     {
+      "bom-ref": "40c4b799c75762ac",
+      "type": "file",
+      "name": "/home/runner/work/asterix/asterix/.github/workflows/encoder-validation.yml",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "b38487215eb0c68ce7cf354a62290a2654ad76e1"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "bee4d2830427a95acf314f5bd32cc4c761a82ec2dd2299310fdb989b85efcf77"
+        }
+      ]
+    },
+    {
+      "bom-ref": "dccc8643f3b216bc",
+      "type": "file",
+      "name": "/home/runner/work/asterix/asterix/.github/workflows/go-ci.yml",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "134fbab33ed82af10e6669f236bb7ff35136be02"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "058d35007fb736e9ac0a1659dd1ca58fa7af26812f72002449f8272d996d0c7f"
+        }
+      ]
+    },
+    {
       "bom-ref": "78ed6663215e2556",
       "type": "file",
       "name": "/home/runner/work/asterix/asterix/.github/workflows/nightly-builds.yml",
@@ -14692,11 +14730,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "83f9cf8d3a91ace5e2a372acf3a5405b480b53ee"
+          "content": "246dbea3ae446aa790a653051b5a7ec766aa5c51"
         },
         {
           "alg": "SHA-256",
-          "content": "309b27efc0e787f32a6c91e2fba7522b2e365b9d0e9aa3dee3ff53657a7172af"
+          "content": "07224128dc705d3911103673a093f68fa89f7afa9f0435057c8a1774d45c4499"
         }
       ]
     },
@@ -14716,6 +14754,21 @@
       ]
     },
     {
+      "bom-ref": "eb662ab3f69ac51b",
+      "type": "file",
+      "name": "/home/runner/work/asterix/asterix/.github/workflows/performance-benchmarks.yml",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "f1bce71725b194429e6a61c7f41ebcd23df1199e"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "6cfd419fbe4ec7e6190c775fc404558902faa5d555b87fdb6c710fea03149afb"
+        }
+      ]
+    },
+    {
       "bom-ref": "a925985a926d0a36",
       "type": "file",
       "name": "/home/runner/work/asterix/asterix/.github/workflows/python-publish.yml",
@@ -14727,6 +14780,21 @@
         {
           "alg": "SHA-256",
           "content": "ae17660dd49b5b23615ee9283ae37d0c57a7659eef1c87f21b9a9554432664fb"
+        }
+      ]
+    },
+    {
+      "bom-ref": "7c1df6816cb88c74",
+      "type": "file",
+      "name": "/home/runner/work/asterix/asterix/.github/workflows/radar-integration-tests.yml",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "218b190946463c8e54608e45a599c712906d8538"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "b867337c57b149e19057adf65cd53550a31611b6f6340989098f8dae79ed0b06"
         }
       ]
     },
@@ -14761,6 +14829,21 @@
       ]
     },
     {
+      "bom-ref": "ce9223fb805b3666",
+      "type": "file",
+      "name": "/home/runner/work/asterix/asterix/.github/workflows/security-scan.yml",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "6a00f5beae2ba9ec9ce07c91289803dbffd1edd6"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "cdcef3c091c3257757b75f6e67ac6630e7eb6619051c6b6bc064582018e944d2"
+        }
+      ]
+    },
+    {
       "bom-ref": "950b34491af210a5",
       "type": "file",
       "name": "/home/runner/work/asterix/asterix/.github/workflows/weekly-audit.yml",
@@ -14776,17 +14859,32 @@
       ]
     },
     {
+      "bom-ref": "e0d936dda7fa042c",
+      "type": "file",
+      "name": "/home/runner/work/asterix/asterix/asterix-go/go.mod",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "3eede6cc10e4146f4667cac5f9e65fb1c44fb660"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "3c45f8bdeed75d1704b891aab6e55c2606b827b17bf9fa115dc0c80d671ce087"
+        }
+      ]
+    },
+    {
       "bom-ref": "0f1569530d42fd83",
       "type": "file",
       "name": "/home/runner/work/asterix/asterix/asterix-node/package-lock.json",
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "b1de3e939958fe0fde96b06a8075485871a0adde"
+          "content": "59c5ee1d0fbe4493bcf366b03a264a77323b7e43"
         },
         {
           "alg": "SHA-256",
-          "content": "7e975ff963a9e91ab4dd5487a12d446a3785a0290de4e8af19ac52b335bd5d5c"
+          "content": "eed81df9d17d0751671c8ad41eab394ec9b01205d9f6a11c4db354274d5edfa4"
         }
       ]
     },
@@ -14797,11 +14895,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "8ba8473b520757b49fbf72512b3f59c6dea14e81"
+          "content": "9df2d9273d0236fc58a72a23f32a149bc5575152"
         },
         {
           "alg": "SHA-256",
-          "content": "c5a985284f9db934ca7d3d5ecd964169f8421b2bd4f5760631a4af481b4b0fe5"
+          "content": "49798ab851d325442a150e9a9e77a8cfcfc60cc6d0ba5f9436748104a8978e6f"
         }
       ]
     },
@@ -14832,8 +14930,8 @@
       "ref": "pkg:cargo/anstream@0.6.21?package-id=193f7e0af598b310",
       "dependsOn": [
         "pkg:cargo/anstyle-parse@0.2.7?package-id=01d2b89e68e05de5",
-        "pkg:cargo/anstyle-query@1.1.5?package-id=15e72e1f548128f3",
-        "pkg:cargo/anstyle-wincon@3.0.11?package-id=c84394e899978eb6",
+        "pkg:cargo/anstyle-query@1.1.5?package-id=428b054327a3a4d5",
+        "pkg:cargo/anstyle-wincon@3.0.11?package-id=99e1542b92449594",
         "pkg:cargo/anstyle@1.0.13?package-id=e264ea2f791e77cf",
         "pkg:cargo/colorchoice@1.0.4?package-id=25311ba6c1e02a15",
         "pkg:cargo/is_terminal_polyfill@1.70.2?package-id=01ced8c18a928b28",
@@ -14847,13 +14945,13 @@
       ]
     },
     {
-      "ref": "pkg:cargo/anstyle-query@1.1.5?package-id=15e72e1f548128f3",
+      "ref": "pkg:cargo/anstyle-query@1.1.5?package-id=428b054327a3a4d5",
       "dependsOn": [
         "pkg:cargo/windows-sys@0.61.2?package-id=6b3b54342bb72941"
       ]
     },
     {
-      "ref": "pkg:cargo/anstyle-wincon@3.0.11?package-id=c84394e899978eb6",
+      "ref": "pkg:cargo/anstyle-wincon@3.0.11?package-id=99e1542b92449594",
       "dependsOn": [
         "pkg:cargo/anstyle@1.0.13?package-id=e264ea2f791e77cf",
         "pkg:cargo/once_cell_polyfill@1.70.2?package-id=8f60800e7405d727",
@@ -14883,10 +14981,10 @@
     {
       "ref": "pkg:cargo/asterix@0.1.0?package-id=65d3dfc36d3763c2",
       "dependsOn": [
-        "pkg:cargo/cc@1.2.46?package-id=69e988d86fc5f8dc",
+        "pkg:cargo/cc@1.2.47?package-id=91350c22edec1b8e",
         "pkg:cargo/criterion@0.7.0?package-id=0f9e5c3ba10e00ac",
-        "pkg:cargo/cxx-build@1.0.188?package-id=a8182f4e2e1c43a1",
-        "pkg:cargo/cxx@1.0.188?package-id=79dcdd8165706f7d",
+        "pkg:cargo/cxx-build@1.0.189?package-id=5eb4f615748569f1",
+        "pkg:cargo/cxx@1.0.189?package-id=b4f78d46bcdeece2",
         "pkg:cargo/env_logger@0.11.8?package-id=9c253cbe57a1598c",
         "pkg:cargo/log@0.4.28?package-id=752fbc6df1cd3e16",
         "pkg:cargo/pkg-config@0.3.32?package-id=a9e782a9cf118390",
@@ -14905,7 +15003,7 @@
       ]
     },
     {
-      "ref": "pkg:cargo/cc@1.2.46?package-id=69e988d86fc5f8dc",
+      "ref": "pkg:cargo/cc@1.2.47?package-id=91350c22edec1b8e",
       "dependsOn": [
         "pkg:cargo/find-msvc-tools@0.1.5?package-id=cab7d3e9e78248c9",
         "pkg:cargo/shlex@1.3.0?package-id=81797e804c877ebf"
@@ -14933,9 +15031,9 @@
       ]
     },
     {
-      "ref": "pkg:cargo/clap@4.5.52?package-id=f2b64cd6fbd0823a",
+      "ref": "pkg:cargo/clap@4.5.53?package-id=688f976d97607562",
       "dependsOn": [
-        "pkg:cargo/clap_builder@4.5.52?package-id=63ee0991a71783c6"
+        "pkg:cargo/clap_builder@4.5.53?package-id=fc721cbad839dba5"
       ]
     },
     {
@@ -14947,7 +15045,7 @@
       ]
     },
     {
-      "ref": "pkg:cargo/clap_builder@4.5.52?package-id=63ee0991a71783c6",
+      "ref": "pkg:cargo/clap_builder@4.5.53?package-id=fc721cbad839dba5",
       "dependsOn": [
         "pkg:cargo/anstyle@1.0.13?package-id=e264ea2f791e77cf",
         "pkg:cargo/clap_lex@0.7.6?package-id=046f3f635051eb74",
@@ -14983,7 +15081,7 @@
         "pkg:cargo/anes@0.1.6?package-id=fffa91752ddac43f",
         "pkg:cargo/cast@0.3.0?package-id=6e18e026d74ffa04",
         "pkg:cargo/ciborium@0.2.2?package-id=7233e4c6a31052ec",
-        "pkg:cargo/clap@4.5.52?package-id=f2b64cd6fbd0823a",
+        "pkg:cargo/clap@4.5.53?package-id=688f976d97607562",
         "pkg:cargo/criterion-plot@0.6.0?package-id=72871dc3cbd114f9",
         "pkg:cargo/itertools@0.13.0?package-id=091880089412dfb8",
         "pkg:cargo/num-traits@0.2.19?package-id=cce428724e46b4da",
@@ -15023,15 +15121,15 @@
       ]
     },
     {
-      "ref": "pkg:cargo/cxx-build@1.0.188?package-id=a8182f4e2e1c43a1",
+      "ref": "pkg:cargo/cxx-build@1.0.189?package-id=5eb4f615748569f1",
       "dependsOn": [
-        "pkg:cargo/cc@1.2.46?package-id=69e988d86fc5f8dc",
+        "pkg:cargo/cc@1.2.47?package-id=91350c22edec1b8e",
         "pkg:cargo/codespan-reporting@0.13.1?package-id=96f4fe7865e6aee0",
-        "pkg:cargo/indexmap@2.12.0?package-id=d5b98337a4297332",
+        "pkg:cargo/indexmap@2.12.1?package-id=dcaab8b5a028c96c",
         "pkg:cargo/proc-macro2@1.0.103?package-id=d2ca1cca25a47712",
         "pkg:cargo/quote@1.0.42?package-id=a2fff45aa12ba69d",
         "pkg:cargo/scratch@1.0.9?package-id=f96636d4eb9fcc62",
-        "pkg:cargo/syn@2.0.110?package-id=d3fae24c63c92677"
+        "pkg:cargo/syn@2.0.111?package-id=57317ca08882acbb"
       ]
     },
     {
@@ -15047,13 +15145,13 @@
       ]
     },
     {
-      "ref": "pkg:cargo/cxx@1.0.188?package-id=79dcdd8165706f7d",
+      "ref": "pkg:cargo/cxx@1.0.189?package-id=b4f78d46bcdeece2",
       "dependsOn": [
-        "pkg:cargo/cc@1.2.46?package-id=69e988d86fc5f8dc",
-        "pkg:cargo/cxx-build@1.0.188?package-id=a8182f4e2e1c43a1",
-        "pkg:cargo/cxxbridge-cmd@1.0.188?package-id=ecc237b990024949",
-        "pkg:cargo/cxxbridge-flags@1.0.188?package-id=676219d792c6f8c7",
-        "pkg:cargo/cxxbridge-macro@1.0.188?package-id=48c1d126bfa2480e",
+        "pkg:cargo/cc@1.2.47?package-id=91350c22edec1b8e",
+        "pkg:cargo/cxx-build@1.0.189?package-id=5eb4f615748569f1",
+        "pkg:cargo/cxxbridge-cmd@1.0.189?package-id=07e01548d447e5a2",
+        "pkg:cargo/cxxbridge-flags@1.0.189?package-id=faa572217568d796",
+        "pkg:cargo/cxxbridge-macro@1.0.189?package-id=dfd9deffcc8fdfee",
         "pkg:cargo/foldhash@0.2.0?package-id=0dd1cd1bdfc92194",
         "pkg:cargo/link-cplusplus@1.0.12?package-id=788ce79e814f2cab"
       ]
@@ -15070,14 +15168,14 @@
       ]
     },
     {
-      "ref": "pkg:cargo/cxxbridge-cmd@1.0.188?package-id=ecc237b990024949",
+      "ref": "pkg:cargo/cxxbridge-cmd@1.0.189?package-id=07e01548d447e5a2",
       "dependsOn": [
-        "pkg:cargo/clap@4.5.52?package-id=f2b64cd6fbd0823a",
+        "pkg:cargo/clap@4.5.53?package-id=688f976d97607562",
         "pkg:cargo/codespan-reporting@0.13.1?package-id=96f4fe7865e6aee0",
-        "pkg:cargo/indexmap@2.12.0?package-id=d5b98337a4297332",
+        "pkg:cargo/indexmap@2.12.1?package-id=dcaab8b5a028c96c",
         "pkg:cargo/proc-macro2@1.0.103?package-id=d2ca1cca25a47712",
         "pkg:cargo/quote@1.0.42?package-id=a2fff45aa12ba69d",
-        "pkg:cargo/syn@2.0.110?package-id=d3fae24c63c92677"
+        "pkg:cargo/syn@2.0.111?package-id=57317ca08882acbb"
       ]
     },
     {
@@ -15090,12 +15188,12 @@
       ]
     },
     {
-      "ref": "pkg:cargo/cxxbridge-macro@1.0.188?package-id=48c1d126bfa2480e",
+      "ref": "pkg:cargo/cxxbridge-macro@1.0.189?package-id=dfd9deffcc8fdfee",
       "dependsOn": [
-        "pkg:cargo/indexmap@2.12.0?package-id=d5b98337a4297332",
+        "pkg:cargo/indexmap@2.12.1?package-id=dcaab8b5a028c96c",
         "pkg:cargo/proc-macro2@1.0.103?package-id=d2ca1cca25a47712",
         "pkg:cargo/quote@1.0.42?package-id=a2fff45aa12ba69d",
-        "pkg:cargo/syn@2.0.110?package-id=d3fae24c63c92677"
+        "pkg:cargo/syn@2.0.111?package-id=57317ca08882acbb"
       ]
     },
     {
@@ -15129,14 +15227,7 @@
       "dependsOn": [
         "pkg:cargo/cfg-if@1.0.4?package-id=997c1787b76c9bbe",
         "pkg:cargo/crunchy@0.2.4?package-id=54d464beec8b7a7a",
-        "pkg:cargo/zerocopy@0.8.27?package-id=fe449fb8f1c8f0c9"
-      ]
-    },
-    {
-      "ref": "pkg:cargo/indexmap@2.12.0?package-id=d5b98337a4297332",
-      "dependsOn": [
-        "pkg:cargo/equivalent@1.0.2?package-id=2608edc45f385025",
-        "pkg:cargo/hashbrown@0.16.0?package-id=748bbc03047b9749"
+        "pkg:cargo/zerocopy@0.8.30?package-id=89d99378318fa81c"
       ]
     },
     {
@@ -15144,6 +15235,13 @@
       "dependsOn": [
         "pkg:cargo/equivalent@1.0.2?package-id=1949749d66ad7784",
         "pkg:cargo/hashbrown@0.16.0?package-id=25b62223bebc9456"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/indexmap@2.12.1?package-id=dcaab8b5a028c96c",
+      "dependsOn": [
+        "pkg:cargo/equivalent@1.0.2?package-id=2608edc45f385025",
+        "pkg:cargo/hashbrown@0.16.1?package-id=82f10eb1bad48f1d"
       ]
     },
     {
@@ -15157,7 +15255,7 @@
       "dependsOn": [
         "pkg:cargo/proc-macro2@1.0.103?package-id=d2ca1cca25a47712",
         "pkg:cargo/quote@1.0.42?package-id=a2fff45aa12ba69d",
-        "pkg:cargo/syn@2.0.110?package-id=d3fae24c63c92677"
+        "pkg:cargo/syn@2.0.111?package-id=57317ca08882acbb"
       ]
     },
     {
@@ -15200,7 +15298,7 @@
     {
       "ref": "pkg:cargo/link-cplusplus@1.0.12?package-id=788ce79e814f2cab",
       "dependsOn": [
-        "pkg:cargo/cc@1.2.46?package-id=69e988d86fc5f8dc"
+        "pkg:cargo/cc@1.2.47?package-id=91350c22edec1b8e"
       ]
     },
     {
@@ -15289,7 +15387,7 @@
     {
       "ref": "pkg:cargo/same-file@1.0.6?package-id=21fd114621275392",
       "dependsOn": [
-        "pkg:cargo/winapi-util@0.1.11?package-id=edddfc54efa0d8bc"
+        "pkg:cargo/winapi-util@0.1.11?package-id=7fee7b177df19cfe"
       ]
     },
     {
@@ -15331,7 +15429,7 @@
       "dependsOn": [
         "pkg:cargo/proc-macro2@1.0.103?package-id=d2ca1cca25a47712",
         "pkg:cargo/quote@1.0.42?package-id=a2fff45aa12ba69d",
-        "pkg:cargo/syn@2.0.110?package-id=d3fae24c63c92677"
+        "pkg:cargo/syn@2.0.111?package-id=57317ca08882acbb"
       ]
     },
     {
@@ -15363,7 +15461,7 @@
       ]
     },
     {
-      "ref": "pkg:cargo/syn@2.0.110?package-id=d3fae24c63c92677",
+      "ref": "pkg:cargo/syn@2.0.111?package-id=57317ca08882acbb",
       "dependsOn": [
         "pkg:cargo/proc-macro2@1.0.103?package-id=d2ca1cca25a47712",
         "pkg:cargo/quote@1.0.42?package-id=a2fff45aa12ba69d",
@@ -15379,7 +15477,7 @@
     {
       "ref": "pkg:cargo/termcolor@1.4.1?package-id=6d59b21fb7bf5e93",
       "dependsOn": [
-        "pkg:cargo/winapi-util@0.1.11?package-id=edddfc54efa0d8bc"
+        "pkg:cargo/winapi-util@0.1.11?package-id=7fee7b177df19cfe"
       ]
     },
     {
@@ -15393,7 +15491,7 @@
       "ref": "pkg:cargo/walkdir@2.5.0?package-id=a775cd9d1aa04103",
       "dependsOn": [
         "pkg:cargo/same-file@1.0.6?package-id=21fd114621275392",
-        "pkg:cargo/winapi-util@0.1.11?package-id=edddfc54efa0d8bc"
+        "pkg:cargo/winapi-util@0.1.11?package-id=7fee7b177df19cfe"
       ]
     },
     {
@@ -15408,7 +15506,7 @@
         "pkg:cargo/bumpalo@3.19.0?package-id=965ebc8bac1477d0",
         "pkg:cargo/proc-macro2@1.0.103?package-id=d2ca1cca25a47712",
         "pkg:cargo/quote@1.0.42?package-id=a2fff45aa12ba69d",
-        "pkg:cargo/syn@2.0.110?package-id=d3fae24c63c92677",
+        "pkg:cargo/syn@2.0.111?package-id=57317ca08882acbb",
         "pkg:cargo/wasm-bindgen-shared@0.2.105?package-id=b0ae9ab0f6cd93a9"
       ]
     },
@@ -15443,21 +15541,15 @@
       ]
     },
     {
-      "ref": "pkg:cargo/winapi-util@0.1.11?package-id=c0cbc283cc368eba",
-      "dependsOn": [
-        "pkg:cargo/windows-sys@0.61.2?package-id=5329862c46309d52"
-      ]
-    },
-    {
-      "ref": "pkg:cargo/winapi-util@0.1.11?package-id=edddfc54efa0d8bc",
+      "ref": "pkg:cargo/winapi-util@0.1.11?package-id=7fee7b177df19cfe",
       "dependsOn": [
         "pkg:cargo/windows-sys@0.61.2?package-id=6b3b54342bb72941"
       ]
     },
     {
-      "ref": "pkg:cargo/windows-sys@0.60.2?package-id=4d6d7f6fe0ca0f01",
+      "ref": "pkg:cargo/winapi-util@0.1.11?package-id=c0cbc283cc368eba",
       "dependsOn": [
-        "pkg:cargo/windows-targets@0.53.5?package-id=2e2d2444b9107fa4"
+        "pkg:cargo/windows-sys@0.61.2?package-id=5329862c46309d52"
       ]
     },
     {
@@ -15473,31 +15565,17 @@
       ]
     },
     {
-      "ref": "pkg:cargo/windows-targets@0.53.5?package-id=2e2d2444b9107fa4",
-      "dependsOn": [
-        "pkg:cargo/windows-link@0.2.1?package-id=d17da1f96ebeb489",
-        "pkg:cargo/windows_aarch64_gnullvm@0.53.1?package-id=95c6ede0fe7d5648",
-        "pkg:cargo/windows_aarch64_msvc@0.53.1?package-id=55a4411316a7f83c",
-        "pkg:cargo/windows_i686_gnu@0.53.1?package-id=7b4b36d7ad8d71b4",
-        "pkg:cargo/windows_i686_gnullvm@0.53.1?package-id=ffafff4b5e01a0f8",
-        "pkg:cargo/windows_i686_msvc@0.53.1?package-id=e703ea296ee4c8d3",
-        "pkg:cargo/windows_x86_64_gnu@0.53.1?package-id=d2cd9a328190233e",
-        "pkg:cargo/windows_x86_64_gnullvm@0.53.1?package-id=8476311a1602b383",
-        "pkg:cargo/windows_x86_64_msvc@0.53.1?package-id=6d824283af9c0004"
-      ]
-    },
-    {
-      "ref": "pkg:cargo/zerocopy-derive@0.8.27?package-id=7da9a8a146ea09f1",
+      "ref": "pkg:cargo/zerocopy-derive@0.8.30?package-id=af859b2c7c4d8529",
       "dependsOn": [
         "pkg:cargo/proc-macro2@1.0.103?package-id=d2ca1cca25a47712",
         "pkg:cargo/quote@1.0.42?package-id=a2fff45aa12ba69d",
-        "pkg:cargo/syn@2.0.110?package-id=d3fae24c63c92677"
+        "pkg:cargo/syn@2.0.111?package-id=57317ca08882acbb"
       ]
     },
     {
-      "ref": "pkg:cargo/zerocopy@0.8.27?package-id=fe449fb8f1c8f0c9",
+      "ref": "pkg:cargo/zerocopy@0.8.30?package-id=89d99378318fa81c",
       "dependsOn": [
-        "pkg:cargo/zerocopy-derive@0.8.27?package-id=7da9a8a146ea09f1"
+        "pkg:cargo/zerocopy-derive@0.8.30?package-id=af859b2c7c4d8529"
       ]
     },
     {
@@ -15559,7 +15637,7 @@
         "pkg:npm/%40npmcli/fs@3.1.1?package-id=0a62774fe8eb320e",
         "pkg:npm/fs-minipass@2.1.0?package-id=8bc2b81f80e9d140",
         "pkg:npm/fs-minipass@3.0.3?package-id=d0d60853d8a6af6c",
-        "pkg:npm/glob@10.4.5?package-id=a502525366fd75d3",
+        "pkg:npm/glob@10.5.0?package-id=4b6e5cb27d8d295f",
         "pkg:npm/lru-cache@10.4.3?package-id=cd6a8e70efdd4e49",
         "pkg:npm/minipass-collect@2.0.1?package-id=f3b3b8916316289a",
         "pkg:npm/minipass-flush@1.0.5?package-id=6d587bc49e7f7afa",
@@ -15624,7 +15702,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/glob@10.4.5?package-id=a502525366fd75d3",
+      "ref": "pkg:npm/glob@10.5.0?package-id=4b6e5cb27d8d295f",
       "dependsOn": [
         "pkg:npm/foreground-child@3.3.1?package-id=579f750cf20de99a",
         "pkg:npm/jackspeak@3.4.3?package-id=eb80ebf9c7399954",
@@ -15749,7 +15827,7 @@
       "dependsOn": [
         "pkg:npm/env-paths@2.2.1?package-id=360ff5957e0fda3e",
         "pkg:npm/exponential-backoff@3.1.3?package-id=ffc19dff33ec90c4",
-        "pkg:npm/glob@10.4.5?package-id=a502525366fd75d3",
+        "pkg:npm/glob@10.5.0?package-id=4b6e5cb27d8d295f",
         "pkg:npm/graceful-fs@4.2.11?package-id=b87a2d08650ae594",
         "pkg:npm/make-fetch-happen@13.0.1?package-id=c0adf66d2b93a679",
         "pkg:npm/nopt@7.2.1?package-id=23a1fedc670d84c0",
