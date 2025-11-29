@@ -1,0 +1,268 @@
+name: Go Bindings CI/CD
+
+on:
+  push:
+    branches: [ master, develop, 'feature/**', 'go/**' ]
+    paths:
+      - 'asterix-go/**'
+      - 'src/**'
+      - '.github/workflows/go-ci.yml'
+  pull_request:
+    branches: [ master, develop ]
+    paths:
+      - 'asterix-go/**'
+      - 'src/**'
+      - '.github/workflows/go-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # =============================================================================
+  # BUILD AND TEST
+  # =============================================================================
+  test:
+    name: Test Go ${{ matrix.go }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        go: ['1.21', '1.22', '1.23']
+        exclude:
+          # Only test latest Go on macOS to reduce matrix
+          - os: macos-latest
+            go: '1.21'
+          - os: macos-latest
+            go: '1.22'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ matrix.go }}
+
+    - name: Install dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev cmake build-essential
+
+    - name: Install dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew update
+        brew install expat cmake
+
+    - name: Build C++ library
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build --parallel
+        cmake --install build
+
+    - name: Build Go module
+      run: |
+        cd asterix-go
+        go build -v ./...
+
+    - name: Run tests
+      run: |
+        cd asterix-go
+        go test -v -race -coverprofile=coverage.out ./...
+
+    - name: Check test coverage
+      run: |
+        cd asterix-go
+        go tool cover -func=coverage.out
+
+    - name: Upload coverage
+      uses: actions/upload-artifact@v5
+      with:
+        name: go-coverage-${{ matrix.os }}-${{ matrix.go }}
+        path: asterix-go/coverage.out
+        retention-days: 7
+
+  # =============================================================================
+  # QUALITY CHECKS
+  # =============================================================================
+  quality:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev cmake build-essential
+
+    - name: Build C++ library
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build --parallel
+        cmake --install build
+
+    - name: Check Go formatting
+      run: |
+        cd asterix-go
+        if [ -n "$(gofmt -l .)" ]; then
+          echo "Go files must be formatted with gofmt"
+          gofmt -l .
+          exit 1
+        fi
+
+    - name: Run go vet
+      run: |
+        cd asterix-go
+        go vet ./...
+
+    - name: Install staticcheck
+      run: go install honnef.co/go/tools/cmd/staticcheck@latest
+
+    - name: Run staticcheck
+      run: |
+        cd asterix-go
+        staticcheck ./...
+      continue-on-error: true
+
+    - name: Install golangci-lint
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.61.0
+
+    - name: Run golangci-lint
+      run: |
+        cd asterix-go
+        golangci-lint run --timeout 5m
+      continue-on-error: true
+
+    - name: Check for security issues
+      run: |
+        go install golang.org/x/vuln/cmd/govulncheck@latest
+        cd asterix-go
+        govulncheck ./...
+      continue-on-error: true
+
+  # =============================================================================
+  # BENCHMARKS
+  # =============================================================================
+  benchmark:
+    name: Benchmarks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev cmake build-essential
+
+    - name: Build C++ library
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build --parallel
+        cmake --install build
+
+    - name: Run benchmarks
+      run: |
+        cd asterix-go
+        go test -bench=. -benchmem -benchtime=5s ./... | tee benchmark-results.txt
+
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v5
+      with:
+        name: go-benchmark-results
+        path: asterix-go/benchmark-results.txt
+        retention-days: 30
+
+  # =============================================================================
+  # BUILD EXAMPLES
+  # =============================================================================
+  examples:
+    name: Build Examples
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev cmake build-essential
+
+    - name: Build C++ library
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build --parallel
+        cmake --install build
+
+    - name: Build examples
+      run: |
+        cd asterix-go
+        for dir in examples/*/; do
+          if [ -f "${dir}main.go" ]; then
+            echo "Building example: $dir"
+            go build -v "$dir"
+          fi
+        done
+
+  # =============================================================================
+  # BUILD SUMMARY
+  # =============================================================================
+  go-build-summary:
+    name: Go Build Summary
+    runs-on: ubuntu-latest
+    needs: [test, quality, benchmark, examples]
+    if: always()
+
+    steps:
+    - name: Check results
+      run: |
+        echo "=========================================="
+        echo "   GO BINDINGS BUILD SUMMARY"
+        echo "=========================================="
+        echo ""
+        echo "Tests:           ${{ needs.test.result }}"
+        echo "Quality:         ${{ needs.quality.result }}"
+        echo "Benchmarks:      ${{ needs.benchmark.result }}"
+        echo "Examples:        ${{ needs.examples.result }}"
+        echo ""
+
+        CRITICAL_FAILED=0
+        if [[ "${{ needs.test.result }}" != "success" ]]; then
+          echo "CRITICAL: Tests failed"
+          CRITICAL_FAILED=1
+        fi
+
+        if [[ $CRITICAL_FAILED -eq 1 ]]; then
+          echo ""
+          echo "BUILD FAILED: Critical checks did not pass"
+          exit 1
+        else
+          echo "Core checks passed!"
+          exit 0
+        fi
