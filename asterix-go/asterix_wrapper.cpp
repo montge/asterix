@@ -27,17 +27,24 @@
 #include <string>
 #include <sstream>
 #include <chrono>
+#include <vector>
 
 #ifdef _WIN32
-  #include "../src/engine/win32_compat.h"
+  #include "win32_compat.h"
 #else
   #include <sys/time.h>
 #endif
 
-#include "../src/asterix/AsterixDefinition.h"
-#include "../src/asterix/XMLParser.h"
-#include "../src/asterix/InputParser.h"
-#include "../src/asterix/Tracer.h"
+#include "AsterixDefinition.h"
+#include "XMLParser.h"
+#include "InputParser.h"
+#include "Tracer.h"
+#include "AsterixData.h"
+#include "DataBlock.h"
+#include "DataRecord.h"
+#include "DataItem.h"
+#include "DataItemDescription.h"
+#include "Category.h"
 
 // Global state
 static AsterixDefinition* g_pDefinition = nullptr;
@@ -46,13 +53,18 @@ static bool g_bInitialized = false;
 static std::string g_lastError;
 static const char* g_version = "2.9.0";
 
-// Required globals for ASTERIX library
-bool gFiltering = false;
-bool gSynchronous = false;
-const char* gAsterixDefinitionsFile = nullptr;
-bool gVerbose = false;
-bool gForceRouting = false;
-int gHeartbeat = 0;
+// Extern declarations for globals defined in globals.cpp
+extern bool gFiltering;
+extern bool gSynchronous;
+extern const char* gAsterixDefinitionsFile;
+extern bool gVerbose;
+extern bool gForceRouting;
+extern int gHeartbeat;
+
+// JSON format type from AsterixData
+// CAsterixFormat::EJSON = 2, EJSONH = 3, EJSONE = 4
+static const unsigned int FORMAT_JSON = 2;
+static const unsigned int FORMAT_JSON_VERBOSE = 4;
 
 // Debug trace function for Tracer
 static void debug_trace(char const* format, ...) {
@@ -204,8 +216,9 @@ AsterixParseResult* asterix_parse_with_offset(
         // Parse all blocks
         std::vector<AsterixRecord> records;
         size_t pos = offset;
+        size_t block_count = 0;
 
-        while (pos < length && records.size() < max_blocks) {
+        while (pos < length && block_count < max_blocks) {
             size_t remaining = length - pos;
             if (remaining < 3) break;  // Minimum ASTERIX header size
 
@@ -220,48 +233,33 @@ AsterixParseResult* asterix_parse_with_offset(
                 break;  // Invalid block, stop parsing
             }
 
-            // Parse the block
+            // Parse the block using InputParser
             AsterixData* pAsterixData = g_pInputParser->parsePacket(pData, block_length, timestamp / 1000);
 
             if (pAsterixData) {
-                // Extract records from parsed data
+                // Get JSON representation using getText
+                std::string jsonStr;
+                unsigned int format = verbose ? FORMAT_JSON_VERBOSE : FORMAT_JSON;
+                pAsterixData->getText(jsonStr, format);
+
+                // Count records in this block
                 for (auto* pBlock : pAsterixData->m_lDataBlocks) {
                     if (!pBlock) continue;
 
-                    for (auto* pRecord : pBlock->m_lDataRecords) {
-                        if (!pRecord) continue;
-
+                    size_t numRecords = pBlock->m_lDataRecords.size();
+                    for (size_t i = 0; i < numRecords; i++) {
                         AsterixRecord rec;
                         rec.category = category;
                         rec.length = block_length;
                         rec.timestamp_us = timestamp;
                         rec.crc = crc32(pData, block_length);
-
-                        // Get JSON representation
-                        std::ostringstream json;
-                        json << "{";
-                        json << "\"category\":" << static_cast<int>(category);
-
-                        // Add data items
-                        bool first = true;
-                        for (auto* pItem : pRecord->m_lDataItems) {
-                            if (!pItem) continue;
-
-                            std::string itemJson = pItem->toJSON(verbose != 0);
-                            if (!itemJson.empty()) {
-                                if (!first) json << ",";
-                                first = false;
-                                json << "\"" << pItem->m_pDescription->m_strID << "\":" << itemJson;
-                            }
-                        }
-
-                        json << "}";
-                        rec.json_data = alloc_string(json.str());
-
+                        rec.json_data = alloc_string(jsonStr);  // Same JSON for all records in block
                         records.push_back(rec);
                     }
                 }
+
                 delete pAsterixData;
+                block_count++;
             }
 
             pos += block_length;
@@ -272,6 +270,10 @@ AsterixParseResult* asterix_parse_with_offset(
             result->records = static_cast<AsterixRecord*>(
                 calloc(records.size(), sizeof(AsterixRecord)));
             if (!result->records) {
+                // Clean up any allocated json_data strings
+                for (auto& rec : records) {
+                    free(rec.json_data);
+                }
                 result->error_code = ASTERIX_ERR_MEMORY;
                 result->error_message = alloc_string("Out of memory");
                 return result;
@@ -322,7 +324,7 @@ char* asterix_describe(int category, const char* item, const char* field, const 
             description = pCat->m_strName;
         } else {
             // Find item
-            DataItemDescription* pItem = pCat->getItem(item);
+            DataItemDescription* pItem = pCat->getDataItemDescription(item);
             if (!pItem) {
                 return nullptr;
             }
