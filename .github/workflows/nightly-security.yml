@@ -187,8 +187,12 @@ jobs:
           echo "Using ASAN library: $ASAN_LIB"
 
           # Run with LD_PRELOAD to load ASAN runtime before Python
+          # Note: detect_leaks=0 because Python's runtime and coverage.py have
+          # internal "leaks" at shutdown that are false positives. ASAN still
+          # detects use-after-free, buffer overflows, stack overflows, etc.
+          # Memory leak testing is done separately via Valgrind with proper suppressions.
           LD_PRELOAD="$ASAN_LIB" \
-          ASAN_OPTIONS=detect_leaks=1:symbolize=1:verify_asan_link_order=0 \
+          ASAN_OPTIONS=detect_leaks=0:symbolize=1:verify_asan_link_order=0:halt_on_error=1 \
           python3 -m pytest asterix/test/test_ffi_security.py -v
 
       - name: Create issue on failure
