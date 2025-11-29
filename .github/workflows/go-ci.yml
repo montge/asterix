@@ -61,7 +61,7 @@ jobs:
 
     - name: Build C++ library
       run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
         cmake --build build --parallel
         cmake --install build
 
@@ -110,7 +110,7 @@ jobs:
 
     - name: Build C++ library
       run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
         cmake --build build --parallel
         cmake --install build
 
@@ -177,7 +177,7 @@ jobs:
 
     - name: Build C++ library
       run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
         cmake --build build --parallel
         cmake --install build
 
@@ -216,7 +216,7 @@ jobs:
 
     - name: Build C++ library
       run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
         cmake --build build --parallel
         cmake --install build
 
