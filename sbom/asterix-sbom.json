@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:2e60647f-3154-4df7-a48c-c2ac57ad27f4",
+  "serialNumber": "urn:uuid:ac60f08c-8d3a-497e-9cf3-fcf22319f6c3",
   "version": 1,
   "metadata": {
-    "timestamp": "2025-11-29T23:12:17Z",
+    "timestamp": "2025-11-30T00:37:18Z",
     "tools": {
       "components": [
         {
@@ -25,7 +25,7 @@
     "properties": [
       {
         "name": "commit",
-        "value": "d35cdcacacd500fb5a53404ae64a9c672eb0a693"
+        "value": "ceb9569564eeda6adf17ff52ffabcff0839656ed"
       },
       {
         "name": "repository",
@@ -33,7 +33,7 @@
       },
       {
         "name": "generated",
-        "value": "2025-11-29T23:12:17Z"
+        "value": "2025-11-30T00:37:18Z"
       },
       {
         "name": "tool",
@@ -696,6 +696,32 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/weekly-audit.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/checkout@v5?package-id=22ecf18b17682b08",
+      "type": "library",
+      "name": "actions/checkout",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:actions\\/checkout:actions\\/checkout:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/checkout@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/wireshark-ci.yml"
         }
       ]
     },
@@ -1616,6 +1642,52 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/weekly-audit.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/upload-artifact@v4?package-id=9700384b69d4a5de",
+      "type": "library",
+      "name": "actions/upload-artifact",
+      "version": "v4",
+      "cpe": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload-artifact:v4:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/upload-artifact@v4",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload_artifact:v4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload-artifact:v4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload_artifact:v4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload-artifact:v4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload_artifact:v4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/wireshark-ci.yml"
         }
       ]
     },
@@ -14700,11 +14772,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "657742e286919cf4a7876b52d27407490a3e8c5a"
+          "content": "a098a34715382f876ddb2598f7feb7574b2c16a6"
         },
         {
           "alg": "SHA-256",
-          "content": "e0fa608b910aed4089fa18727af7fe6a9c1a58a11e971f39425f923be934e25f"
+          "content": "83270ebf235160fd250340b470badc68800f7b433825821d6065b5309115c050"
         }
       ]
     },
@@ -14855,6 +14927,21 @@
         {
           "alg": "SHA-256",
           "content": "6d2dd41f686403217695986590bdb5cb832008e4c6cb2ab917232ea3f9b43e00"
+        }
+      ]
+    },
+    {
+      "bom-ref": "029d21170287738d",
+      "type": "file",
+      "name": "/home/runner/work/asterix/asterix/.github/workflows/wireshark-ci.yml",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "1282882d224777e7fdc80d40533c1a51629cbd6b"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "e1d2fbcbea4249db3cdf6df249535253fcb7ead8f3857977201c21ba3665a2eb"
         }
       ]
     },
