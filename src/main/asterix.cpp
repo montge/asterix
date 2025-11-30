@@ -91,6 +91,14 @@ static void show_usage(std::string name) {
             << "\n------------"
             << "\n\t-f filename\tFile generated from libpcap (tcpdump or Wireshark) or file in FINAL or HDLC format.\n\t\t\tFor example: -f filename.pcap"
             << "\n\t-i m:i:p[:s]\tMulticast UDP/IP address:Interface address:Port[:Source address].\n\t\t\tFor example: 232.1.1.12:10.17.58.37:21112:10.17.22.23\n\t\t\tMore than one multicast group could be defined, use @ as separator.\n\t\t\tFor example: 232.1.1.13:10.17.58.37:21112:10.17.22.23@232.1.1.14:10.17.58.37:21112:10.17.22.23"
+#ifdef HAVE_ZEROMQ
+            << "\n\t-z,--zmq\tZeroMQ endpoint. Format: type:endpoint[:bind]"
+            << "\n\t\t\ttype: SUB (subscribe) or PULL (pull socket)"
+            << "\n\t\t\tendpoint: tcp://host:port, ipc:///path, or inproc://name"
+            << "\n\t\t\tbind: optional, 'bind' to bind instead of connect"
+            << "\n\t\t\tFor example: -z SUB:tcp://192.168.1.10:5555"
+            << "\n\t\t\tFor example: -z PULL:tcp://*:5556:bind"
+#endif
             << std::endl;
 }
 
@@ -98,6 +106,7 @@ int main(int argc, const char *argv[]) {
     std::string strDefinitions = "config/asterix.ini";
     std::string strFileInput;
     std::string strIPInput;
+    std::string strZMQInput;
     std::string strFilterFile;
     std::string strInputFormat = "ASTERIX_RAW";
     std::string strOutputFormat = "ASTERIX_TXT";
@@ -238,6 +247,17 @@ int main(int argc, const char *argv[]) {
                 return 1;
             }
             strIPInput = argv[++i];
+        } else if ((arg == "-z") || (arg == "--zmq") || (arg == "--zeromq")) {
+#ifdef HAVE_ZEROMQ
+            if (i >= argc - 1) {
+                std::cerr << "Error: " + arg + " option requires one argument." << std::endl;
+                return 1;
+            }
+            strZMQInput = argv[++i];
+#else
+            std::cerr << "Error: ZeroMQ support not compiled in. Rebuild with -DENABLE_ZEROMQ=ON" << std::endl;
+            return 1;
+#endif
         }
     }
 
@@ -287,6 +307,13 @@ int main(int argc, const char *argv[]) {
 */
         strInput = "udp;" + strIPInput + ";"; // + ":S ";
     }
+#ifdef HAVE_ZEROMQ
+    else if (!strZMQInput.empty()) {
+        // ZeroMQ input: format is type:endpoint[:bind]
+        // e.g., SUB:tcp://192.168.1.10:5555 or PULL:tcp://*:5556:bind
+        strInput = "zmq;" + strZMQInput + ";";
+    }
+#endif
 
     strInput += strInputFormat;
 
