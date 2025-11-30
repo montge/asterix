@@ -86,6 +86,7 @@ let records = parser.parse(&data)?;
 - **[MQTT Transport Guide](guides/MQTT_GUIDE.html)** - IoT and cloud messaging transport
 - **[gRPC Transport Guide](guides/GRPC_GUIDE.html)** - High-performance RPC transport
 - **[Cyclone DDS Guide](guides/CYCLONEDDS_GUIDE.html)** - Real-time DDS for safety-critical systems
+- **[Zenoh Transport Guide](guides/ZENOH_GUIDE.html)** - Edge-to-cloud pub/sub for distributed systems (Rust)
 - **[Troubleshooting Guide](TROUBLESHOOTING.html)** - Solutions to common issues
 
 ### Technical Resources

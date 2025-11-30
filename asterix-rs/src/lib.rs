@@ -216,6 +216,11 @@ pub mod error;
 pub mod parser;
 pub mod types;
 
+// Transport modules (feature-gated)
+#[cfg(feature = "zenoh")]
+#[cfg_attr(docsrs, doc(cfg(feature = "zenoh")))]
+pub mod transport;
+
 // Private FFI module
 mod ffi;
 

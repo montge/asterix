@@ -22,6 +22,39 @@ This crate enables Rust developers to parse and process ASTERIX data with type s
 - Optional serde support for JSON serialization
 - Incremental parsing for large files and streaming data
 - Metadata queries for category/item/field descriptions
+- **Transport layers**: Optional Zenoh pub/sub support for distributed systems
+
+## Feature Flags
+
+| Feature | Description | Default |
+|---------|-------------|---------|
+| `serde` | JSON serialization/deserialization | Enabled |
+| `zenoh` | Zenoh pub/sub transport for distributed ASTERIX data | Disabled |
+
+### Zenoh Transport
+
+Enable Zenoh for pub/sub communication across distributed systems:
+
+```toml
+[dependencies]
+asterix = { version = "0.1", features = ["zenoh"] }
+```
+
+```rust
+use asterix::transport::zenoh::{ZenohPublisher, ZenohSubscriber, ZenohConfig};
+
+// Publish ASTERIX data
+let publisher = ZenohPublisher::new(ZenohConfig::default()).await?;
+publisher.publish(&record).await?;
+
+// Subscribe to ASTERIX data
+let mut subscriber = ZenohSubscriber::new(ZenohConfig::default(), "asterix/**").await?;
+while let Some(sample) = subscriber.recv().await {
+    println!("Received CAT{}: {} bytes", sample.category, sample.data.len());
+}
+```
+
+See [ZENOH_GUIDE.md](../docs/guides/ZENOH_GUIDE.md) for detailed documentation.
 
 ## Installation
 
