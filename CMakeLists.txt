@@ -405,8 +405,25 @@ if(ENABLE_GRPC AND GRPC_FOUND)
 endif()
 
 # Cyclone DDS device (optional)
+# Note: DDS files are compiled with C++17 due to cyclonedds-cxx header
+# incompatibility with C++20/23 and GCC 13+ (template-id destructor issue)
+# See: https://github.com/eclipse-cyclonedds/cyclonedds-cxx/issues/181
 if(ENABLE_CYCLONEDDS AND CYCLONEDDS_FOUND)
+    # List of source files that include DDS headers
+    set(DDS_SOURCE_FILES
+        src/engine/cycloneddsdevice.cxx
+        src/engine/AsterixData.cpp
+        src/engine/devicefactory.cxx
+    )
+    # Set C++17 for files that include DDS headers (workaround for GCC 13+ DR 2237)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "13")
+        set_source_files_properties(${DDS_SOURCE_FILES}
+            PROPERTIES COMPILE_FLAGS "-std=c++17"
+        )
+    endif()
+    # Add DDS-specific source files to library
     list(APPEND ASTERIX_LIB_SOURCES src/engine/cycloneddsdevice.cxx)
+    list(APPEND ASTERIX_LIB_SOURCES src/engine/AsterixData.cpp)
 endif()
 
 # Go bindings C wrapper (included in library for cgo)

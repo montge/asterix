@@ -21,21 +21,88 @@ Cyclone DDS is particularly suited for:
 
 ### Prerequisites
 
-Install Cyclone DDS C++ bindings:
+#### Step 1: Install Cyclone DDS C Library (Ubuntu/Debian)
+
+The C library is available in Ubuntu repositories:
 
 ```bash
-# Ubuntu/Debian
-sudo apt-get install libcyclonedds-cxx-dev
+sudo apt-get update
+sudo apt-get install -y \
+    cyclonedds-dev \
+    cyclonedds-tools \
+    libddsc0t64 \
+    libcycloneddsidl0t64
+```
 
-# macOS (Homebrew)
+Verify the installation:
+```bash
+pkg-config --modversion CycloneDDS
+# Expected output: 0.10.4 (or similar)
+```
+
+#### Step 2: Build and Install Cyclone DDS C++ Bindings
+
+**Note:** The `cyclonedds-cxx` C++ bindings are **not available** as Ubuntu packages and must be built from source.
+
+```bash
+# Clone the repository (or use your own fork)
+git clone https://github.com/eclipse-cyclonedds/cyclonedds-cxx.git
+cd cyclonedds-cxx
+
+# Create build directory
+mkdir build && cd build
+
+# Configure with CMake
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
+
+# Build (uses all available CPU cores)
+make -j$(nproc)
+
+# Generate Debian packages
+cpack -G DEB
+
+# Install the packages
+sudo apt install ./eclipse-cyclone-dds-iso-iec-c++-psm_*.deb
+sudo apt install ./eclipse-cyclone-dds-iso-iec-c++-psm-dev_*.deb
+sudo apt install ./CycloneDDS-CXX-*-Linux-idlcxx.deb
+```
+
+**Generated Packages:**
+
+| Package | Description |
+|---------|-------------|
+| `eclipse-cyclone-dds-iso-iec-c++-psm_*.deb` | C++ runtime library (`libddscxx.so`) |
+| `eclipse-cyclone-dds-iso-iec-c++-psm-dev_*.deb` | Development headers |
+| `CycloneDDS-CXX-*-Linux-idlcxx.deb` | IDL compiler C++ plugin |
+
+**Verify the installation:**
+```bash
+# Check that the library is installed
+ldconfig -p | grep ddscxx
+# Expected: libddscxx.so.0 (libc6,x86-64) => /usr/lib/x86_64-linux-gnu/libddscxx.so.0
+
+# Check CMake can find it
+pkg-config --exists CycloneDDS-CXX && echo "CycloneDDS-CXX found"
+```
+
+#### macOS (Homebrew)
+
+```bash
 brew install cyclonedds cyclonedds-cxx
+```
 
-# From source
+#### From Source (Alternative)
+
+If you prefer to install directly without packages:
+
+```bash
 git clone https://github.com/eclipse-cyclonedds/cyclonedds-cxx.git
 cd cyclonedds-cxx
 mkdir build && cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
-make && sudo make install
+make -j$(nproc)
+sudo make install
+sudo ldconfig
 ```
 
 ### Build Configuration
@@ -266,6 +333,199 @@ See [OMG DDS Security Specification](https://www.omg.org/spec/DDS-SECURITY/) for
 - Use separate VLANs for ASTERIX DDS traffic
 - Configure firewall rules for DDS ports (7400-7499 by default)
 - Consider domain isolation for different trust levels
+
+## Building Debian Packages for Cyclone DDS C++
+
+Since the C++ bindings are not available in Ubuntu repositories, you may want to build and distribute your own Debian packages. This section provides detailed instructions.
+
+### Prerequisites
+
+Ensure you have the required build tools:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y \
+    build-essential \
+    cmake \
+    git \
+    dpkg-dev \
+    cyclonedds-dev \
+    cyclonedds-tools \
+    libddsc0t64 \
+    libcycloneddsidl0t64
+```
+
+### Clone and Configure
+
+```bash
+# Clone the official repository
+git clone https://github.com/eclipse-cyclonedds/cyclonedds-cxx.git
+cd cyclonedds-cxx
+
+# Create and enter build directory
+mkdir build && cd build
+
+# Configure CMake
+# Note: Use -DCMAKE_INSTALL_PREFIX=/usr for proper Debian package paths
+cmake .. \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release
+```
+
+**CMake Configuration Output:**
+You should see output similar to:
+```
+-- Found iceoryx_binding_c: (found version "2.0.5")
+-- Compiling with type discovery support
+-- Configuring done
+-- Generating done
+```
+
+### Build the Project
+
+```bash
+# Build using all available CPU cores
+make -j$(nproc)
+```
+
+The build typically takes 30-60 seconds and produces:
+- `lib/libddscxx.so.0.10.4` - Shared library
+- `lib/libcycloneddsidlcxx.so` - IDL compiler plugin
+
+### Generate Debian Packages
+
+The project includes CPack configuration for Debian package generation:
+
+```bash
+# Generate all three .deb packages
+cpack -G DEB
+```
+
+**Generated Packages:**
+
+| File | Size | Contents |
+|------|------|----------|
+| `eclipse-cyclone-dds-iso-iec-c++-psm_0.10.4_amd64.deb` | ~325 KB | Runtime library (`libddscxx.so`) |
+| `eclipse-cyclone-dds-iso-iec-c++-psm-dev_0.10.4_amd64.deb` | ~254 KB | Development headers and CMake config |
+| `CycloneDDS-CXX-0.10.4-Linux-idlcxx.deb` | ~35 KB | IDL compiler C++ plugin (`libcycloneddsidlcxx.so`) |
+
+### Inspect Package Contents
+
+Before installing, you can inspect what each package contains:
+
+```bash
+# View package metadata
+dpkg -I eclipse-cyclone-dds-iso-iec-c++-psm_0.10.4_amd64.deb
+
+# List package contents
+dpkg -c eclipse-cyclone-dds-iso-iec-c++-psm_0.10.4_amd64.deb
+```
+
+**Runtime library package contents:**
+```
+/usr/lib/x86_64-linux-gnu/libddscxx.so -> libddscxx.so.0
+/usr/lib/x86_64-linux-gnu/libddscxx.so.0 -> libddscxx.so.0.10.4
+/usr/lib/x86_64-linux-gnu/libddscxx.so.0.10.4
+```
+
+**Development package contents:**
+```
+/usr/include/dds/
+/usr/include/org/
+/usr/lib/cmake/CycloneDDS-CXX/
+```
+
+### Install the Packages
+
+```bash
+# Install all three packages
+sudo apt install \
+    ./eclipse-cyclone-dds-iso-iec-c++-psm_0.10.4_amd64.deb \
+    ./eclipse-cyclone-dds-iso-iec-c++-psm-dev_0.10.4_amd64.deb \
+    ./CycloneDDS-CXX-0.10.4-Linux-idlcxx.deb
+
+# Update library cache
+sudo ldconfig
+```
+
+**Note:** You may see a warning like:
+```
+N: Download is performed unsandboxed as root as file '...' couldn't be accessed by user '_apt'.
+```
+This is harmless - it's just apt being cautious about local files.
+
+### Verify Installation
+
+```bash
+# Check library is in linker cache
+ldconfig -p | grep ddscxx
+# Expected: libddscxx.so.0 (libc6,x86-64) => /usr/lib/x86_64-linux-gnu/libddscxx.so.0
+
+# Check CMake can find the package
+cmake --find-package -DNAME=CycloneDDS-CXX -DCOMPILER_ID=GNU -DLANGUAGE=CXX -DMODE=EXIST
+# Expected: CycloneDDS-CXX found.
+
+# Check installed packages
+dpkg -l | grep -i cyclone
+```
+
+### Uninstalling
+
+To remove the packages:
+
+```bash
+sudo apt remove \
+    eclipse-cyclone-dds-iso-iec-c++-psm \
+    eclipse-cyclone-dds-iso-iec-c++-psm-dev \
+    cyclonedds-cxx-idlcxx
+```
+
+### Building for Distribution
+
+If you're building packages for distribution to other machines:
+
+1. **Ensure consistent build environment** - Use a clean Ubuntu installation or Docker container
+2. **Version matching** - The C++ bindings version should match the installed C library version
+3. **Architecture** - Packages are architecture-specific (amd64, arm64, etc.)
+
+**Docker-based build example:**
+```bash
+docker run --rm -v $(pwd):/src -w /src ubuntu:24.04 bash -c "
+    apt-get update && \
+    apt-get install -y build-essential cmake git cyclonedds-dev && \
+    cd cyclonedds-cxx && \
+    mkdir build && cd build && \
+    cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release && \
+    make -j\$(nproc) && \
+    cpack -G DEB
+"
+```
+
+### Troubleshooting Package Generation
+
+**Issue: "CycloneDDS not found" during cmake**
+
+Solution: Install the C library first:
+```bash
+sudo apt-get install cyclonedds-dev
+```
+
+**Issue: cpack fails with permission errors**
+
+Solution: Ensure you're running from a writable directory:
+```bash
+cd /tmp
+git clone https://github.com/eclipse-cyclonedds/cyclonedds-cxx.git
+cd cyclonedds-cxx/build
+cpack -G DEB
+```
+
+**Issue: Package installs but library not found at runtime**
+
+Solution: Update the linker cache:
+```bash
+sudo ldconfig
+```
 
 ## Related Resources
 
