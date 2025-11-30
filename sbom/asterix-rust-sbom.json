@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:6af6eb32-7539-4280-9344-81da67bf3c0d",
+  "serialNumber": "urn:uuid:7558848b-bcce-4fdf-a378-e4a4be629b4b",
   "version": 1,
   "metadata": {
-    "timestamp": "2025-11-30T00:37:20Z",
+    "timestamp": "2025-11-30T01:42:39Z",
     "tools": {
       "components": [
         {
@@ -25,11 +25,11 @@
     "properties": [
       {
         "name": "commit",
-        "value": "ceb9569564eeda6adf17ff52ffabcff0839656ed"
+        "value": "abe1bf7c4589ce1c583b569598dc40e52f3c334d"
       },
       {
         "name": "generated",
-        "value": "2025-11-30T00:37:20Z"
+        "value": "2025-11-30T01:42:39Z"
       },
       {
         "name": "main_version",
