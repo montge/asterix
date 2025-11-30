@@ -1,0 +1,21 @@
+/*
+ * ASTERIX Data DDS IDL definition
+ *
+ * Defines a simple bytes payload type for transmitting raw ASTERIX data
+ * over DDS networks.
+ */
+module AsterixDDS
+{
+    @final
+    struct AsterixPayload
+    {
+        // Raw ASTERIX data bytes (variable length)
+        sequence<octet> data;
+
+        // ASTERIX category (extracted from data block header)
+        unsigned short category;
+
+        // Timestamp when data was published (microseconds since epoch)
+        unsigned long long timestamp;
+    };
+};

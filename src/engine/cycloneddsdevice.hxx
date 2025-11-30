@@ -37,6 +37,7 @@
 
 #include "basedevice.hxx"
 #include "descriptor.hxx"
+#include "AsterixData.hpp"
 
 #define MAX_DDS_MESSAGE_SIZE    65536
 
@@ -95,9 +96,9 @@ private:
 
     // DDS entities
     std::shared_ptr<dds::domain::DomainParticipant> _participant;
-    std::shared_ptr<dds::topic::Topic<dds::core::BytesTopicType>> _topic;
-    std::shared_ptr<dds::pub::DataWriter<dds::core::BytesTopicType>> _writer;
-    std::shared_ptr<dds::sub::DataReader<dds::core::BytesTopicType>> _reader;
+    std::shared_ptr<dds::topic::Topic<AsterixDDS::AsterixPayload>> _topic;
+    std::shared_ptr<dds::pub::DataWriter<AsterixDDS::AsterixPayload>> _writer;
+    std::shared_ptr<dds::sub::DataReader<AsterixDDS::AsterixPayload>> _reader;
 
     // Message queue for received data (SUB mode)
     std::queue<std::vector<unsigned char>> _messageQueue;

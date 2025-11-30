@@ -181,15 +181,15 @@ bool CCycloneDdsDevice::InitPublisher() {
         // Create DomainParticipant
         _participant = std::make_shared<dds::domain::DomainParticipant>(_domainId);
 
-        // Create Topic using bytes type for raw ASTERIX data
-        _topic = std::make_shared<dds::topic::Topic<dds::core::BytesTopicType>>(
+        // Create Topic using AsterixPayload type for ASTERIX data
+        _topic = std::make_shared<dds::topic::Topic<AsterixDDS::AsterixPayload>>(
             *_participant, _topicName);
 
         // Create Publisher with default QoS
         dds::pub::Publisher publisher(*_participant);
 
         // Create DataWriter with configured QoS
-        _writer = std::make_shared<dds::pub::DataWriter<dds::core::BytesTopicType>>(
+        _writer = std::make_shared<dds::pub::DataWriter<AsterixDDS::AsterixPayload>>(
             publisher, *_topic, GetWriterQos());
 
         LOGINFO(gVerbose, "Cyclone DDS publisher initialized on domain %d, topic %s\n",
@@ -209,15 +209,15 @@ bool CCycloneDdsDevice::InitSubscriber() {
         // Create DomainParticipant
         _participant = std::make_shared<dds::domain::DomainParticipant>(_domainId);
 
-        // Create Topic using bytes type for raw ASTERIX data
-        _topic = std::make_shared<dds::topic::Topic<dds::core::BytesTopicType>>(
+        // Create Topic using AsterixPayload type for ASTERIX data
+        _topic = std::make_shared<dds::topic::Topic<AsterixDDS::AsterixPayload>>(
             *_participant, _topicName);
 
         // Create Subscriber with default QoS
         dds::sub::Subscriber subscriber(*_participant);
 
         // Create DataReader with configured QoS
-        _reader = std::make_shared<dds::sub::DataReader<dds::core::BytesTopicType>>(
+        _reader = std::make_shared<dds::sub::DataReader<AsterixDDS::AsterixPayload>>(
             subscriber, *_topic, GetReaderQos());
 
         // Start listener thread
@@ -253,8 +253,9 @@ void CCycloneDdsDevice::ListenerLoop() {
             auto samples = _reader->take();
             for (const auto &sample : samples) {
                 if (sample.info().valid()) {
-                    const auto &data = sample.data();
-                    std::vector<unsigned char> msg(data.begin(), data.end());
+                    const auto &payload = sample.data();
+                    // Extract raw data from AsterixPayload
+                    std::vector<unsigned char> msg(payload.data().begin(), payload.data().end());
 
                     {
                         std::lock_guard<std::mutex> lock(_queueMutex);
@@ -262,8 +263,8 @@ void CCycloneDdsDevice::ListenerLoop() {
                     }
                     _queueCondition.notify_one();
 
-                    LOGDEBUG(ZONE_UDPDEVICE, "Cyclone DDS received %zu bytes\n",
-                             data.size());
+                    LOGDEBUG(ZONE_UDPDEVICE, "Cyclone DDS received %zu bytes (cat %u)\n",
+                             payload.data().size(), payload.category());
                 }
             }
 
@@ -360,15 +361,29 @@ bool CCycloneDdsDevice::Write(const void *data, size_t len) {
     }
 
     try {
-        // Create bytes sample from raw data
-        dds::core::BytesTopicType sample(
-            static_cast<const uint8_t*>(data),
-            static_cast<const uint8_t*>(data) + len);
+        // Create AsterixPayload sample from raw data
+        AsterixDDS::AsterixPayload sample;
+
+        // Copy raw bytes to payload
+        const uint8_t* bytes = static_cast<const uint8_t*>(data);
+        sample.data(std::vector<uint8_t>(bytes, bytes + len));
+
+        // Extract category from ASTERIX data block header (first byte)
+        if (len > 0) {
+            sample.category(static_cast<uint16_t>(bytes[0]));
+        }
+
+        // Set timestamp (microseconds since epoch)
+        sample.timestamp(static_cast<uint64_t>(
+            std::chrono::duration_cast<std::chrono::microseconds>(
+                std::chrono::system_clock::now().time_since_epoch()
+            ).count()));
 
         // Publish
         _writer->write(sample);
 
-        LOGDEBUG(ZONE_UDPDEVICE, "Cyclone DDS published %zu bytes\n", len);
+        LOGDEBUG(ZONE_UDPDEVICE, "Cyclone DDS published %zu bytes (cat %u)\n",
+                 len, sample.category());
 
         ResetWriteErrors(true);
         return true;
