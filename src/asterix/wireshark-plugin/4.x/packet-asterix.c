@@ -382,16 +382,33 @@ static int dissect_asterix(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, 
 
 /*
  * Plugin version information (required for Wireshark 4.x plugins)
+ *
+ * Note: For Wireshark 4.x, plugins export version symbols and a plugin_register
+ * function that registers the protocol. The WS_DLL_PUBLIC_DEF macro is used
+ * to export symbols from the shared library.
  */
 #ifdef HAVE_PLUGINS
-#include <wsutil/plugins.h>
 
+/* Define required macros if not provided by Wireshark headers */
+#ifndef WS_DLL_PUBLIC_DEF
+#if defined(_WIN32)
+#define WS_DLL_PUBLIC_DEF __declspec(dllexport)
+#else
+#define WS_DLL_PUBLIC_DEF __attribute__((visibility("default")))
+#endif
+#endif
+
+/* Plugin version information exported symbols */
 WS_DLL_PUBLIC_DEF const gchar plugin_version[] = ASTERIX_PLUGIN_VERSION;
 WS_DLL_PUBLIC_DEF const int plugin_want_major = WIRESHARK_VERSION_MAJOR;
 WS_DLL_PUBLIC_DEF const int plugin_want_minor = WIRESHARK_VERSION_MINOR;
 
-WS_DLL_PUBLIC void plugin_register(void);
+WS_DLL_PUBLIC_DEF void plugin_register(void);
 
+/**
+ * Plugin registration function
+ * Called by Wireshark when loading the plugin
+ */
 void plugin_register(void) {
     static proto_plugin plug;
 
