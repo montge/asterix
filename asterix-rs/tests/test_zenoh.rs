@@ -196,7 +196,7 @@ mod integration {
             }
             Err(e) => {
                 // May fail in CI environments without Zenoh network
-                println!("Publisher creation skipped (no Zenoh network): {}", e);
+                println!("Publisher creation skipped (no Zenoh network): {e}");
             }
         }
     }
@@ -214,7 +214,7 @@ mod integration {
                 assert!(close_result.is_ok(), "Failed to close subscriber");
             }
             Err(e) => {
-                println!("Subscriber creation skipped (no Zenoh network): {}", e);
+                println!("Subscriber creation skipped (no Zenoh network): {e}");
             }
         }
     }
@@ -228,7 +228,7 @@ mod integration {
         let publisher = match ZenohPublisher::new(config.clone()).await {
             Ok(p) => p,
             Err(e) => {
-                println!("Skipping pubsub test (no Zenoh): {}", e);
+                println!("Skipping pubsub test (no Zenoh): {e}");
                 return;
             }
         };
@@ -238,7 +238,7 @@ mod integration {
             Ok(s) => s,
             Err(e) => {
                 let _ = publisher.close().await;
-                println!("Skipping pubsub test (subscriber failed): {}", e);
+                println!("Skipping pubsub test (subscriber failed): {e}");
                 return;
             }
         };
@@ -264,7 +264,7 @@ mod integration {
                 assert_eq!(sample.sac, Some(1));
                 assert_eq!(sample.sic, Some(2));
                 assert_eq!(sample.data, test_data);
-                println!("Successfully received sample: {:?}", sample);
+                println!("Successfully received sample: {sample:?}");
             }
             Ok(None) => {
                 println!("Channel closed (no data received)");
@@ -322,9 +322,9 @@ mod integration {
 
         // Various wildcard patterns
         let patterns = vec![
-            "asterix/**",     // All ASTERIX
-            "asterix/48/**",  // All CAT048
-            "asterix/*/1/*",  // All SAC=1
+            "asterix/**",    // All ASTERIX
+            "asterix/48/**", // All CAT048
+            "asterix/*/1/*", // All SAC=1
         ];
 
         for pattern in patterns {
@@ -332,10 +332,10 @@ mod integration {
             match subscriber {
                 Ok(s) => {
                     let _ = s.close().await;
-                    println!("Pattern '{}' accepted", pattern);
+                    println!("Pattern '{pattern}' accepted");
                 }
                 Err(e) => {
-                    println!("Pattern '{}' rejected: {}", pattern, e);
+                    println!("Pattern '{pattern}' rejected: {e}");
                     // Some patterns may not be supported depending on Zenoh version
                 }
             }
@@ -370,12 +370,12 @@ fn test_key_expr_format() {
             .split('/')
             .collect();
 
-        assert!(!parts.is_empty(), "Invalid format: {}", description);
+        assert!(!parts.is_empty(), "Invalid format: {description}");
 
         // Category should be parseable as u8
         let category: Result<u8, _> = parts[0].parse();
-        assert!(category.is_ok(), "Invalid category in: {}", description);
+        assert!(category.is_ok(), "Invalid category in: {description}");
 
-        println!("{}: {} parsed successfully", description, key_expr);
+        println!("{description}: {key_expr} parsed successfully");
     }
 }

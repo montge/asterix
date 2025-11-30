@@ -20,4 +20,4 @@
 pub mod zenoh;
 
 #[cfg(feature = "zenoh")]
-pub use self::zenoh::{ZenohPublisher, ZenohSubscriber, ZenohConfig, ZenohError};
+pub use self::zenoh::{ZenohConfig, ZenohError, ZenohPublisher, ZenohSubscriber};

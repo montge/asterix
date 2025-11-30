@@ -33,7 +33,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Read ASTERIX data
     let data = std::fs::read(&file_path).map_err(|e| {
-        eprintln!("Failed to read file '{}': {}", file_path, e);
+        eprintln!("Failed to read file '{file_path}': {e}");
         e
     })?;
 
@@ -49,7 +49,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create Zenoh publisher
     let config = match router {
         Some(endpoint) => {
-            println!("Connecting to router: {}", endpoint);
+            println!("Connecting to router: {endpoint}");
             ZenohConfig::with_router(&endpoint)
         }
         None => {

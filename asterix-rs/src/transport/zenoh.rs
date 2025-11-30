@@ -71,15 +71,15 @@
 //! }
 //! ```
 
-use std::sync::Arc;
 use std::fmt;
+use std::sync::Arc;
 
+use tokio::sync::mpsc;
 use zenoh::Config;
 use zenoh::Session;
-use tokio::sync::mpsc;
 
-use crate::types::AsterixRecord;
 use crate::error::AsterixError;
+use crate::types::AsterixRecord;
 
 /// Error type for Zenoh transport operations
 #[derive(Debug)]
@@ -103,12 +103,12 @@ pub enum ZenohError {
 impl fmt::Display for ZenohError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ZenohError::SessionError(msg) => write!(f, "Zenoh session error: {}", msg),
-            ZenohError::PublisherError(msg) => write!(f, "Zenoh publisher error: {}", msg),
-            ZenohError::SubscriberError(msg) => write!(f, "Zenoh subscriber error: {}", msg),
-            ZenohError::PublishError(msg) => write!(f, "Zenoh publish error: {}", msg),
-            ZenohError::ReceiveError(msg) => write!(f, "Zenoh receive error: {}", msg),
-            ZenohError::SerializationError(msg) => write!(f, "Serialization error: {}", msg),
+            ZenohError::SessionError(msg) => write!(f, "Zenoh session error: {msg}"),
+            ZenohError::PublisherError(msg) => write!(f, "Zenoh publisher error: {msg}"),
+            ZenohError::SubscriberError(msg) => write!(f, "Zenoh subscriber error: {msg}"),
+            ZenohError::PublishError(msg) => write!(f, "Zenoh publish error: {msg}"),
+            ZenohError::ReceiveError(msg) => write!(f, "Zenoh receive error: {msg}"),
+            ZenohError::SerializationError(msg) => write!(f, "Serialization error: {msg}"),
             ZenohError::ChannelClosed => write!(f, "Channel closed"),
         }
     }
@@ -242,10 +242,7 @@ impl ZenohPublisher {
 
         // Configure endpoints if specified
         if !config.endpoints.is_empty() {
-            let endpoints_json = format!(
-                r#"["{}"]"#,
-                config.endpoints.join(r#"",""#)
-            );
+            let endpoints_json = format!(r#"["{}"]"#, config.endpoints.join(r#"",""#));
             zenoh_config
                 .insert_json5("connect/endpoints", &endpoints_json)
                 .map_err(|e| ZenohError::SessionError(e.to_string()))?;
@@ -289,7 +286,12 @@ impl ZenohPublisher {
             .await
             .map_err(|e| ZenohError::PublishError(e.to_string()))?;
 
-        log::debug!("Published {} bytes of CAT{} to {}", data.len(), category, key_expr);
+        log::debug!(
+            "Published {} bytes of CAT{} to {}",
+            data.len(),
+            category,
+            key_expr
+        );
 
         Ok(())
     }
@@ -311,7 +313,11 @@ impl ZenohPublisher {
 
         log::debug!(
             "Published {} bytes of CAT{} SAC={} SIC={} to {}",
-            data.len(), category, sac, sic, key_expr
+            data.len(),
+            category,
+            sac,
+            sic,
+            key_expr
         );
 
         Ok(())
@@ -330,7 +336,9 @@ impl ZenohPublisher {
         let (sac, sic) = self.extract_sac_sic(record);
 
         match (sac, sic) {
-            (Some(s), Some(c)) => format!("{}/{}/{}/{}", self.config.key_prefix, record.category, s, c),
+            (Some(s), Some(c)) => {
+                format!("{}/{}/{}/{}", self.config.key_prefix, record.category, s, c)
+            }
             _ => format!("{}/{}", self.config.key_prefix, record.category),
         }
     }
@@ -341,11 +349,15 @@ impl ZenohPublisher {
         let item_id = format!("I{:03}/010", record.category);
 
         if let Some(item) = record.get_item(&item_id) {
-            let sac = item.fields.get("SAC")
+            let sac = item
+                .fields
+                .get("SAC")
                 .and_then(|v| v.as_i64())
                 .map(|v| v as u8);
 
-            let sic = item.fields.get("SIC")
+            let sic = item
+                .fields
+                .get("SIC")
                 .and_then(|v| v.as_i64())
                 .map(|v| v as u8);
 
@@ -364,13 +376,13 @@ impl ZenohPublisher {
         // Fallback: serialize as JSON if serde available
         #[cfg(feature = "serde")]
         {
-            serde_json::to_vec(record)
-                .map_err(|e| ZenohError::SerializationError(e.to_string()))
+            serde_json::to_vec(record).map_err(|e| ZenohError::SerializationError(e.to_string()))
         }
 
         #[cfg(not(feature = "serde"))]
         Err(ZenohError::SerializationError(
-            "No serialization method available (enable 'serde' feature or provide hex_data)".to_string()
+            "No serialization method available (enable 'serde' feature or provide hex_data)"
+                .to_string(),
         ))
     }
 
@@ -380,7 +392,7 @@ impl ZenohPublisher {
 
         if hex_clean.len() % 2 != 0 {
             return Err(ZenohError::SerializationError(
-                "Invalid hex string length".to_string()
+                "Invalid hex string length".to_string(),
             ));
         }
 
@@ -419,10 +431,7 @@ impl ZenohSubscriber {
         let mut zenoh_config = Config::default();
 
         if !config.endpoints.is_empty() {
-            let endpoints_json = format!(
-                r#"["{}"]"#,
-                config.endpoints.join(r#"",""#)
-            );
+            let endpoints_json = format!(r#"["{}"]"#, config.endpoints.join(r#"",""#));
             zenoh_config
                 .insert_json5("connect/endpoints", &endpoints_json)
                 .map_err(|e| ZenohError::SessionError(e.to_string()))?;
@@ -431,7 +440,7 @@ impl ZenohSubscriber {
         let session = Arc::new(
             zenoh::open(zenoh_config)
                 .await
-                .map_err(|e| ZenohError::SessionError(e.to_string()))?
+                .map_err(|e| ZenohError::SessionError(e.to_string()))?,
         );
 
         let (tx, rx) = mpsc::channel(1000);
@@ -443,32 +452,27 @@ impl ZenohSubscriber {
 
         let key_prefix = config.key_prefix.clone();
         let handle = tokio::spawn(async move {
-            loop {
-                match subscriber.recv_async().await {
-                    Ok(sample) => {
-                        let key = sample.key_expr().to_string();
-                        let data: Vec<u8> = sample.payload().to_bytes().to_vec();
+            while let Ok(sample) = subscriber.recv_async().await {
+                let key = sample.key_expr().to_string();
+                let data: Vec<u8> = sample.payload().to_bytes().to_vec();
 
-                        // Parse key expression to extract category/sac/sic
-                        let (category, sac, sic) = parse_key_expr(&key, &key_prefix);
+                // Parse key expression to extract category/sac/sic
+                let (category, sac, sic) = parse_key_expr(&key, &key_prefix);
 
-                        let asterix_sample = AsterixSample {
-                            category,
-                            sac,
-                            sic,
-                            data,
-                            timestamp: std::time::SystemTime::now()
-                                .duration_since(std::time::UNIX_EPOCH)
-                                .map(|d| d.as_micros() as u64)
-                                .unwrap_or(0),
-                            key_expr: key,
-                        };
+                let asterix_sample = AsterixSample {
+                    category,
+                    sac,
+                    sic,
+                    data,
+                    timestamp: std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .map(|d| d.as_micros() as u64)
+                        .unwrap_or(0),
+                    key_expr: key,
+                };
 
-                        if tx.send(asterix_sample).await.is_err() {
-                            break;
-                        }
-                    }
-                    Err(_) => break,
+                if tx.send(asterix_sample).await.is_err() {
+                    break;
                 }
             }
         });
@@ -504,15 +508,14 @@ fn parse_key_expr(key: &str, prefix: &str) -> (u8, Option<u8>, Option<u8>) {
     let stripped = key.strip_prefix(prefix).unwrap_or(key);
     let parts: Vec<&str> = stripped.trim_start_matches('/').split('/').collect();
 
-    let category = parts.first()
+    let category = parts
+        .first()
         .and_then(|s| s.parse::<u8>().ok())
         .unwrap_or(0);
 
-    let sac = parts.get(1)
-        .and_then(|s| s.parse::<u8>().ok());
+    let sac = parts.get(1).and_then(|s| s.parse::<u8>().ok());
 
-    let sic = parts.get(2)
-        .and_then(|s| s.parse::<u8>().ok());
+    let sic = parts.get(2).and_then(|s| s.parse::<u8>().ok());
 
     (category, sac, sic)
 }
@@ -534,29 +537,50 @@ mod tests {
 
     #[test]
     fn test_parse_key_expr_with_sac_sic() {
-        assert_eq!(parse_key_expr("asterix/62/1/2", "asterix"), (62, Some(1), Some(2)));
-        assert_eq!(parse_key_expr("asterix/65/10/20", "asterix"), (65, Some(10), Some(20)));
-        assert_eq!(parse_key_expr("asterix/48/255/255", "asterix"), (48, Some(255), Some(255)));
+        assert_eq!(
+            parse_key_expr("asterix/62/1/2", "asterix"),
+            (62, Some(1), Some(2))
+        );
+        assert_eq!(
+            parse_key_expr("asterix/65/10/20", "asterix"),
+            (65, Some(10), Some(20))
+        );
+        assert_eq!(
+            parse_key_expr("asterix/48/255/255", "asterix"),
+            (48, Some(255), Some(255))
+        );
     }
 
     #[test]
     fn test_parse_key_expr_partial_routing() {
         // Only SAC, no SIC
-        assert_eq!(parse_key_expr("asterix/48/1", "asterix"), (48, Some(1), None));
+        assert_eq!(
+            parse_key_expr("asterix/48/1", "asterix"),
+            (48, Some(1), None)
+        );
     }
 
     #[test]
     fn test_parse_key_expr_invalid_category() {
         // Invalid category returns 0
-        assert_eq!(parse_key_expr("asterix/invalid", "asterix"), (0, None, None));
+        assert_eq!(
+            parse_key_expr("asterix/invalid", "asterix"),
+            (0, None, None)
+        );
         assert_eq!(parse_key_expr("asterix/", "asterix"), (0, None, None));
     }
 
     #[test]
     fn test_parse_key_expr_different_prefix() {
         // Using different prefix
-        assert_eq!(parse_key_expr("custom/48/1/2", "custom"), (48, Some(1), Some(2)));
-        assert_eq!(parse_key_expr("atm/surveillance/62", "atm/surveillance"), (62, None, None));
+        assert_eq!(
+            parse_key_expr("custom/48/1/2", "custom"),
+            (48, Some(1), Some(2))
+        );
+        assert_eq!(
+            parse_key_expr("atm/surveillance/62", "atm/surveillance"),
+            (62, None, None)
+        );
     }
 
     #[test]
@@ -575,7 +599,10 @@ mod tests {
         assert!(config.endpoints.is_empty());
         assert_eq!(config.key_prefix, "asterix");
         assert!(config.include_raw_bytes);
-        assert!(matches!(config.congestion_control, CongestionControl::Block));
+        assert!(matches!(
+            config.congestion_control,
+            CongestionControl::Block
+        ));
         assert!(matches!(config.priority, Priority::Data));
     }
 
@@ -621,19 +648,29 @@ mod tests {
         let errors = vec![
             (ZenohError::SessionError("test".to_string()), "session"),
             (ZenohError::PublisherError("test".to_string()), "publisher"),
-            (ZenohError::SubscriberError("test".to_string()), "subscriber"),
+            (
+                ZenohError::SubscriberError("test".to_string()),
+                "subscriber",
+            ),
             (ZenohError::PublishError("test".to_string()), "publish"),
             (ZenohError::ReceiveError("test".to_string()), "receive"),
-            (ZenohError::SerializationError("test".to_string()), "Serialization"),
+            (
+                ZenohError::SerializationError("test".to_string()),
+                "Serialization",
+            ),
             (ZenohError::ChannelClosed, "closed"),
         ];
 
         for (err, expected_substr) in errors {
             let display = err.to_string();
             assert!(
-                display.to_lowercase().contains(&expected_substr.to_lowercase()),
+                display
+                    .to_lowercase()
+                    .contains(&expected_substr.to_lowercase()),
                 "Expected '{}' to contain '{}': got '{}'",
-                stringify!(err), expected_substr, display
+                stringify!(err),
+                expected_substr,
+                display
             );
         }
     }
@@ -641,7 +678,7 @@ mod tests {
     #[test]
     fn test_zenoh_error_debug() {
         let err = ZenohError::SessionError("debug test".to_string());
-        let debug_str = format!("{:?}", err);
+        let debug_str = format!("{err:?}");
         assert!(debug_str.contains("SessionError"));
         assert!(debug_str.contains("debug test"));
     }
@@ -728,7 +765,7 @@ mod tests {
             key_expr: "asterix/62".to_string(),
         };
 
-        let debug_str = format!("{:?}", sample);
+        let debug_str = format!("{sample:?}");
         assert!(debug_str.contains("62"));
         assert!(debug_str.contains("AsterixSample"));
     }
@@ -762,7 +799,11 @@ mod tests {
 
         // This exercises: publish(), build_key_expr(), extract_sac_sic(), serialize_record(), hex_to_bytes()
         let result = publisher.publish(&record).await;
-        assert!(result.is_ok(), "Failed to publish record: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "Failed to publish record: {:?}",
+            result.err()
+        );
 
         let _ = publisher.close().await;
     }
@@ -784,10 +825,13 @@ mod tests {
         let mut fields = BTreeMap::new();
         fields.insert("SAC".to_string(), ParsedValue::Integer(1));
         fields.insert("SIC".to_string(), ParsedValue::Integer(2));
-        items.insert("I048/010".to_string(), DataItem {
-            description: Some("Data Source Identifier".to_string()),
-            fields,
-        });
+        items.insert(
+            "I048/010".to_string(),
+            DataItem {
+                description: Some("Data Source Identifier".to_string()),
+                fields,
+            },
+        );
 
         let record = AsterixRecord {
             category: 48,
@@ -849,7 +893,7 @@ mod tests {
             }
             Err(e) => {
                 // Expected - no router running
-                assert!(e.to_string().contains("session") || e.to_string().len() > 0);
+                assert!(e.to_string().contains("session") || !e.to_string().is_empty());
             }
         }
     }
@@ -866,10 +910,7 @@ mod tests {
         };
 
         // Try to receive with short timeout (no data expected)
-        let result = tokio::time::timeout(
-            Duration::from_millis(100),
-            subscriber.recv()
-        ).await;
+        let result = tokio::time::timeout(Duration::from_millis(100), subscriber.recv()).await;
 
         // Should timeout since no publisher is sending
         assert!(result.is_err() || result.unwrap().is_none());
@@ -901,13 +942,13 @@ mod tests {
 
         // Publish data
         let test_data = vec![0x63, 0x00, 0x05, 0xAB, 0xCD]; // Category 99 test data
-        publisher.publish_raw_with_routing(99, 10, 20, &test_data).await.unwrap();
+        publisher
+            .publish_raw_with_routing(99, 10, 20, &test_data)
+            .await
+            .unwrap();
 
         // Receive with timeout
-        let result = tokio::time::timeout(
-            Duration::from_secs(2),
-            subscriber.recv()
-        ).await;
+        let result = tokio::time::timeout(Duration::from_secs(2), subscriber.recv()).await;
 
         if let Ok(Some(sample)) = result {
             assert_eq!(sample.category, 99);
@@ -951,8 +992,10 @@ mod tests {
         assert!(result.is_err(), "Should fail with odd-length hex");
 
         if let Err(e) = result {
-            assert!(e.to_string().contains("hex") || e.to_string().contains("Serialization"),
-                "Error should mention hex or serialization: {}", e);
+            assert!(
+                e.to_string().contains("hex") || e.to_string().contains("Serialization"),
+                "Error should mention hex or serialization: {e}"
+            );
         }
 
         let _ = publisher.close().await;
@@ -1011,7 +1054,11 @@ mod tests {
 
         let result = publisher.publish(&record).await;
         // Should succeed - whitespace is stripped
-        assert!(result.is_ok(), "Should handle whitespace in hex: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "Should handle whitespace in hex: {:?}",
+            result.err()
+        );
 
         let _ = publisher.close().await;
     }
@@ -1031,7 +1078,7 @@ mod tests {
             }
             Err(e) => {
                 // Expected - no router running, but we exercised the config path
-                assert!(e.to_string().len() > 0);
+                assert!(!e.to_string().is_empty());
             }
         }
     }
@@ -1052,7 +1099,7 @@ mod tests {
             }
             Err(e) => {
                 // Expected if routers not running
-                assert!(e.to_string().len() > 0);
+                assert!(!e.to_string().is_empty());
             }
         }
     }
@@ -1097,8 +1144,14 @@ mod tests {
         };
 
         // Test publish_raw_with_routing
-        let result = publisher.publish_raw_with_routing(48, 1, 2, &[0x30, 0x00, 0x10]).await;
-        assert!(result.is_ok(), "publish_raw_with_routing failed: {:?}", result.err());
+        let result = publisher
+            .publish_raw_with_routing(48, 1, 2, &[0x30, 0x00, 0x10])
+            .await;
+        assert!(
+            result.is_ok(),
+            "publish_raw_with_routing failed: {:?}",
+            result.err()
+        );
 
         let _ = publisher.close().await;
     }
@@ -1117,8 +1170,8 @@ mod tests {
         ];
 
         for err in errors {
-            let display = format!("{}", err);
-            let debug = format!("{:?}", err);
+            let display = format!("{err}");
+            let debug = format!("{err:?}");
             assert!(!display.is_empty(), "Display should not be empty");
             assert!(!debug.is_empty(), "Debug should not be empty");
         }
@@ -1126,7 +1179,8 @@ mod tests {
 
     #[test]
     fn test_zenoh_error_is_std_error() {
-        let err: Box<dyn std::error::Error> = Box::new(ZenohError::SessionError("test".to_string()));
+        let err: Box<dyn std::error::Error> =
+            Box::new(ZenohError::SessionError("test".to_string()));
         assert!(err.to_string().contains("test"));
     }
 
@@ -1153,27 +1207,39 @@ mod tests {
         let mut fields_010 = BTreeMap::new();
         fields_010.insert("SAC".to_string(), ParsedValue::Integer(25));
         fields_010.insert("SIC".to_string(), ParsedValue::Integer(100));
-        items.insert("I048/010".to_string(), DataItem {
-            description: Some("Data Source Identifier".to_string()),
-            fields: fields_010,
-        });
+        items.insert(
+            "I048/010".to_string(),
+            DataItem {
+                description: Some("Data Source Identifier".to_string()),
+                fields: fields_010,
+            },
+        );
 
         // I048/140 - Time of Day
         let mut fields_140 = BTreeMap::new();
         fields_140.insert("ToD".to_string(), ParsedValue::Float(43200.5)); // 12:00:00.5
-        items.insert("I048/140".to_string(), DataItem {
-            description: Some("Time of Day".to_string()),
-            fields: fields_140,
-        });
+        items.insert(
+            "I048/140".to_string(),
+            DataItem {
+                description: Some("Time of Day".to_string()),
+                fields: fields_140,
+            },
+        );
 
         // I048/020 - Target Report Descriptor
         let mut fields_020 = BTreeMap::new();
-        fields_020.insert("TYP".to_string(), ParsedValue::String("Single SSR".to_string()));
+        fields_020.insert(
+            "TYP".to_string(),
+            ParsedValue::String("Single SSR".to_string()),
+        );
         fields_020.insert("SIM".to_string(), ParsedValue::Boolean(false));
-        items.insert("I048/020".to_string(), DataItem {
-            description: Some("Target Report Descriptor".to_string()),
-            fields: fields_020,
-        });
+        items.insert(
+            "I048/020".to_string(),
+            DataItem {
+                description: Some("Target Report Descriptor".to_string()),
+                fields: fields_020,
+            },
+        );
 
         let record = AsterixRecord {
             category: 48,
@@ -1222,10 +1288,13 @@ mod tests {
         let mut fields = BTreeMap::new();
         fields.insert("SAC".to_string(), ParsedValue::Integer(5));
         fields.insert("SIC".to_string(), ParsedValue::Integer(10));
-        items.insert("I048/010".to_string(), DataItem {
-            description: Some("Data Source Identifier".to_string()),
-            fields,
-        });
+        items.insert(
+            "I048/010".to_string(),
+            DataItem {
+                description: Some("Data Source Identifier".to_string()),
+                fields,
+            },
+        );
 
         let record = AsterixRecord {
             category: 48,
@@ -1285,13 +1354,16 @@ mod tests {
 
         // Publish multiple categories
         let categories = vec![
-            (48, vec![0x30, 0x00, 0x05]),  // CAT048
-            (62, vec![0x3E, 0x00, 0x05]),  // CAT062
-            (65, vec![0x41, 0x00, 0x05]),  // CAT065
+            (48, vec![0x30, 0x00, 0x05]), // CAT048
+            (62, vec![0x3E, 0x00, 0x05]), // CAT062
+            (65, vec![0x41, 0x00, 0x05]), // CAT065
         ];
 
         for (cat, data) in &categories {
-            publisher.publish_raw(*cat, data).await.expect("Publish failed");
+            publisher
+                .publish_raw(*cat, data)
+                .await
+                .expect("Publish failed");
         }
 
         // Try to receive multiple samples
@@ -1340,9 +1412,7 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
     async fn test_subscriber_connection_to_nonexistent_router() {
-        let config = ZenohConfig::with_endpoints(vec![
-            "tcp/192.0.2.1:7447".to_string(),
-        ]);
+        let config = ZenohConfig::with_endpoints(vec!["tcp/192.0.2.1:7447".to_string()]);
 
         let result = ZenohSubscriber::new(config, "asterix/**").await;
 
@@ -1358,8 +1428,10 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
     async fn test_config_with_empty_key_prefix() {
-        let mut config = ZenohConfig::default();
-        config.key_prefix = String::new();
+        let config = ZenohConfig {
+            key_prefix: String::new(),
+            ..Default::default()
+        };
 
         let publisher = match ZenohPublisher::new(config).await {
             Ok(p) => p,
@@ -1390,7 +1462,11 @@ mod tests {
 
         // Publishing empty data should work
         let result = publisher.publish_raw(48, &[]).await;
-        assert!(result.is_ok(), "Publishing empty data failed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "Publishing empty data failed: {:?}",
+            result.err()
+        );
 
         let _ = publisher.close().await;
     }
@@ -1407,7 +1483,11 @@ mod tests {
         // Publish a large payload (64KB)
         let large_data = vec![0xAB; 65536];
         let result = publisher.publish_raw(48, &large_data).await;
-        assert!(result.is_ok(), "Publishing large data failed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "Publishing large data failed: {:?}",
+            result.err()
+        );
 
         let _ = publisher.close().await;
     }
@@ -1435,10 +1515,13 @@ mod tests {
         let mut items = BTreeMap::new();
         let mut fields = BTreeMap::new();
         fields.insert("test_value".to_string(), ParsedValue::Integer(42));
-        items.insert("I048/999".to_string(), DataItem {
-            description: Some("Test item".to_string()),
-            fields,
-        });
+        items.insert(
+            "I048/999".to_string(),
+            DataItem {
+                description: Some("Test item".to_string()),
+                fields,
+            },
+        );
 
         let record = AsterixRecord {
             category: 48,
@@ -1451,7 +1534,11 @@ mod tests {
 
         // With serde feature and valid data, this exercises the JSON serialization path
         let result = publisher.publish(&record).await;
-        assert!(result.is_ok(), "JSON serialization should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "JSON serialization should succeed: {:?}",
+            result.err()
+        );
 
         let _ = publisher.close().await;
     }
@@ -1462,8 +1549,10 @@ mod tests {
         use crate::types::{AsterixRecord, DataItem, ParsedValue};
         use std::collections::BTreeMap;
 
-        let mut config = ZenohConfig::peer_to_peer();
-        config.include_raw_bytes = false; // Force JSON path even with hex_data
+        let config = ZenohConfig {
+            include_raw_bytes: false, // Force JSON path even with hex_data
+            ..ZenohConfig::peer_to_peer()
+        };
 
         let publisher = match ZenohPublisher::new(config).await {
             Ok(p) => p,
@@ -1474,10 +1563,13 @@ mod tests {
         let mut fields = BTreeMap::new();
         fields.insert("SAC".to_string(), ParsedValue::Integer(1));
         fields.insert("SIC".to_string(), ParsedValue::Integer(2));
-        items.insert("I048/010".to_string(), DataItem {
-            description: None,
-            fields,
-        });
+        items.insert(
+            "I048/010".to_string(),
+            DataItem {
+                description: None,
+                fields,
+            },
+        );
 
         let record = AsterixRecord {
             category: 48,
@@ -1492,7 +1584,11 @@ mod tests {
         let result = publisher.publish(&record).await;
         // This actually uses hex_data because the condition is `include_raw_bytes && !hex_data.is_empty()`
         // So with include_raw_bytes=false, it goes to JSON path
-        assert!(result.is_ok(), "JSON serialization should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "JSON serialization should succeed: {:?}",
+            result.err()
+        );
 
         let _ = publisher.close().await;
     }
@@ -1502,8 +1598,14 @@ mod tests {
     fn test_publisher_error_display() {
         let err = ZenohError::PublisherError("test publisher error".to_string());
         let display = err.to_string();
-        assert!(display.contains("publisher"), "Display should contain 'publisher'");
-        assert!(display.contains("test publisher error"), "Display should contain message");
+        assert!(
+            display.contains("publisher"),
+            "Display should contain 'publisher'"
+        );
+        assert!(
+            display.contains("test publisher error"),
+            "Display should contain message"
+        );
     }
 
     /// Test receiver error display
@@ -1511,7 +1613,10 @@ mod tests {
     fn test_receive_error_display() {
         let err = ZenohError::ReceiveError("channel disconnected".to_string());
         let display = err.to_string();
-        assert!(display.contains("receive"), "Display should contain 'receive'");
+        assert!(
+            display.contains("receive"),
+            "Display should contain 'receive'"
+        );
         assert!(display.contains("channel disconnected"));
     }
 
@@ -1539,7 +1644,11 @@ mod tests {
         };
 
         let result = publisher.publish(&record).await;
-        assert!(result.is_ok(), "Should handle whitespace in hex: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "Should handle whitespace in hex: {:?}",
+            result.err()
+        );
 
         let _ = publisher.close().await;
     }
@@ -1547,11 +1656,13 @@ mod tests {
     /// Test config clone and debug
     #[test]
     fn test_zenoh_config_debug_and_clone() {
-        let mut config = ZenohConfig::default();
-        config.congestion_control = CongestionControl::Drop;
-        config.priority = Priority::RealTime;
+        let config = ZenohConfig {
+            congestion_control: CongestionControl::Drop,
+            priority: Priority::RealTime,
+            ..Default::default()
+        };
 
-        let debug_str = format!("{:?}", config);
+        let debug_str = format!("{config:?}");
         assert!(debug_str.contains("ZenohConfig"));
         assert!(debug_str.contains("asterix"));
 
@@ -1565,7 +1676,7 @@ mod tests {
     fn test_priority_clone_copy() {
         let p1 = Priority::Interactive;
         let p2 = p1; // Copy
-        let p3 = p1.clone(); // Clone
+        let p3 = p1; // Clone
         assert!(matches!(p2, Priority::Interactive));
         assert!(matches!(p3, Priority::Interactive));
     }
@@ -1574,11 +1685,11 @@ mod tests {
     #[test]
     fn test_congestion_control_debug() {
         let cc = CongestionControl::Block;
-        let debug_str = format!("{:?}", cc);
+        let debug_str = format!("{cc:?}");
         assert!(debug_str.contains("Block"));
 
         let cc2 = CongestionControl::Drop;
-        let debug_str2 = format!("{:?}", cc2);
+        let debug_str2 = format!("{cc2:?}");
         assert!(debug_str2.contains("Drop"));
     }
 
@@ -1614,10 +1725,16 @@ mod tests {
         assert_eq!(parse_key_expr("asterix/999", "asterix"), (0, None, None));
 
         // Negative numbers - category fails to parse but SAC/SIC still parsed
-        assert_eq!(parse_key_expr("asterix/-1/1/2", "asterix"), (0, Some(1), Some(2)));
+        assert_eq!(
+            parse_key_expr("asterix/-1/1/2", "asterix"),
+            (0, Some(1), Some(2))
+        );
 
         // With extra path segments
-        assert_eq!(parse_key_expr("asterix/48/1/2/extra", "asterix"), (48, Some(1), Some(2)));
+        assert_eq!(
+            parse_key_expr("asterix/48/1/2/extra", "asterix"),
+            (48, Some(1), Some(2))
+        );
     }
 
     /// Test extract_sac_sic with different item ID formats
@@ -1638,10 +1755,13 @@ mod tests {
         let mut fields = BTreeMap::new();
         fields.insert("SIC".to_string(), ParsedValue::Integer(5));
         // No SAC field
-        items.insert("I048/010".to_string(), DataItem {
-            description: None,
-            fields,
-        });
+        items.insert(
+            "I048/010".to_string(),
+            DataItem {
+                description: None,
+                fields,
+            },
+        );
 
         let record = AsterixRecord {
             category: 48,
