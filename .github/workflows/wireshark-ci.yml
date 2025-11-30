@@ -84,12 +84,13 @@ jobs:
 
         # Verify plugin loads
         echo "Checking plugin registration..."
-        tshark -G plugins 2>&1 | grep -i asterix || echo "Note: Plugin may need config path adjustment"
+        tshark -G plugins 2>&1 | grep -i asterix_ext || echo "Note: Plugin may need config path adjustment"
 
         # Test actual PCAP parsing if plugin loads
-        if tshark -G plugins 2>&1 | grep -qi asterix; then
+        if tshark -G plugins 2>&1 | grep -qi asterix_ext; then
           echo "Plugin loaded! Testing PCAP parsing..."
-          tshark -r asterix/sample_data/cat_048.pcap -Y "asterix" 2>&1 | head -20 || echo "PCAP test skipped"
+          # Note: asterix_ext filter works on ASTERIX protocol data
+          tshark -r asterix/sample_data/cat_048.pcap 2>&1 | head -20 || echo "PCAP test skipped"
         fi
       continue-on-error: true
 

@@ -83,25 +83,25 @@ static void ws_log_callback(const char *format, ...) {
  * Protocol registration - called once when Wireshark loads the plugin
  */
 void proto_register_asterix(void) {
-    /* Header field definitions */
+    /* Header field definitions - use asterix_ext prefix to avoid conflict */
     static hf_register_info hf[] = {
         { &hf_asterix_category,
-            { "Category", "asterix.category",
+            { "Category", "asterix_ext.category",
               FT_UINT8, BASE_DEC, NULL, 0x0,
               "ASTERIX Category", HFILL }
         },
         { &hf_asterix_length,
-            { "Length", "asterix.length",
+            { "Length", "asterix_ext.length",
               FT_UINT16, BASE_DEC, NULL, 0x0,
               "Data Block Length", HFILL }
         },
         { &hf_asterix_fspec,
-            { "FSPEC", "asterix.fspec",
+            { "FSPEC", "asterix_ext.fspec",
               FT_BYTES, BASE_NONE, NULL, 0x0,
               "Field Specification", HFILL }
         },
         { &hf_asterix_data,
-            { "Data", "asterix.data",
+            { "Data", "asterix_ext.data",
               FT_BYTES, BASE_NONE, NULL, 0x0,
               "ASTERIX Data", HFILL }
         }
@@ -114,14 +114,14 @@ void proto_register_asterix(void) {
         &ett_asterix_item
     };
 
-    /* Expert info */
+    /* Expert info - use asterix_ext prefix */
     static ei_register_info ei[] = {
         { &ei_asterix_parse_error,
-            { "asterix.parse_error", PI_MALFORMED, PI_ERROR,
+            { "asterix_ext.parse_error", PI_MALFORMED, PI_ERROR,
               "ASTERIX parse error", EXPFILL }
         },
         { &ei_asterix_unknown_category,
-            { "asterix.unknown_category", PI_UNDECODED, PI_WARN,
+            { "asterix_ext.unknown_category", PI_UNDECODED, PI_WARN,
               "Unknown ASTERIX category", EXPFILL }
         }
     };
@@ -129,11 +129,15 @@ void proto_register_asterix(void) {
     expert_module_t *expert_asterix;
     module_t *asterix_module;
 
-    /* Register the protocol */
+    /* Register the protocol
+     * Note: We use "ASTERIX_EXT" to avoid conflict with Wireshark's built-in
+     * ASTERIX dissector. This plugin provides extended category support
+     * (CAT 030, 031, 252, BDS) and uses XML-based definitions.
+     */
     proto_asterix = proto_register_protocol(
-        "ASTERIX Protocol",     /* Full name */
-        "ASTERIX",              /* Short name */
-        "asterix"               /* Filter name */
+        "ASTERIX Extended",     /* Full name */
+        "ASTERIX_EXT",          /* Short name - must be unique */
+        "asterix_ext"           /* Filter name */
     );
 
     /* Register header fields */
