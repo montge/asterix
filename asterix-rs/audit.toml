@@ -1,0 +1,25 @@
+# Security audit configuration for asterix-rs
+# See: https://rustsec.org/
+
+[advisories]
+# Ignore specific advisories that we're tracking but can't fix yet
+ignore = [
+    # RUSTSEC-2023-0071: rsa timing side-channel (Marvin Attack)
+    # Status: No fixed version available (as of 2024-11)
+    # Impact: Medium (5.9) - potential key recovery via timing attack
+    # Source: Transitive dependency from zenoh-transport -> rsa 0.9.9
+    # Tracking: https://github.com/RustCrypto/RSA/issues/19
+    # Mitigation: Only affects TLS connections; non-TLS Zenoh usage unaffected
+    "RUSTSEC-2023-0071",
+]
+
+# Treat unmaintained crates as warnings, not errors
+informational_warnings = ["unmaintained"]
+
+[output]
+# Output format
+format = "terminal"
+
+# Show dependency tree for vulnerabilities
+show_tree = true
+

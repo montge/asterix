@@ -114,7 +114,7 @@ class TestCrossBindingConsistency(unittest.TestCase):
                     json.loads(line)
                     cpp_count += 1
                 except json.JSONDecodeError:
-                    pass
+                    pass  # nosec B110 - intentionally skipping non-JSON output lines
 
         # Record counts should match
         self.assertEqual(len(py_records), cpp_count,
@@ -154,7 +154,7 @@ class TestCrossBindingConsistency(unittest.TestCase):
                     if 'category' in obj:
                         cpp_categories.add(obj['category'])
                 except json.JSONDecodeError:
-                    pass
+                    pass  # nosec B110 - intentionally skipping non-JSON output lines
         cpp_categories = sorted(cpp_categories)
 
         # Categories should match
@@ -265,7 +265,7 @@ class TestCRCConsistency(unittest.TestCase):
                     if 'crc' in obj:
                         cpp_crcs.append(obj['crc'])
                 except json.JSONDecodeError:
-                    pass
+                    pass  # nosec B110 - intentionally skipping non-JSON output lines
 
         # CRC values should match
         self.assertEqual(py_crcs, cpp_crcs,
@@ -331,7 +331,7 @@ class TestDataItemConsistency(unittest.TestCase):
                 try:
                     cpp_records.append(json.loads(line))
                 except json.JSONDecodeError:
-                    pass
+                    pass  # nosec B110 - intentionally skipping non-JSON output lines
 
         # Compare I010 values
         for py_rec, cpp_rec in zip(py_records, cpp_records):

@@ -117,7 +117,8 @@ def setup_multicast_receiver(multicast_group, port):
     # 4. Binding to specific interface IP if multicast is on a known interface
     # Binding to all interfaces is required for multicast reception
     # Security: Documented above, use firewall rules in production
-    sock.bind(('', port))  # lgtm[py/bind-socket-all-network-interfaces] nosec B104
+    # CodeQL suppression: Required for multicast - use network isolation in production
+    sock.bind(('', port))  # codeql[py/bind-socket-all-network-interfaces] lgtm nosec B104
 
     # Join the multicast group
     # mreq = 4 bytes (multicast address) + 4 bytes (interface address)

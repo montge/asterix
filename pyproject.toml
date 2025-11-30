@@ -152,9 +152,14 @@ PATH = "C:/vcpkg/installed/x64-windows/bin;$PATH"
 MACOSX_DEPLOYMENT_TARGET = "11.0"
 
 [tool.bandit]
-# Skip B101 (assert_used) - assert is correct for unit tests
-# The GitHub security workflow runs Bandit on the entire codebase
-skips = ["B101"]
+# Security rule exclusions for test code:
+# - B101 (assert_used) - assert is correct for unit tests
+# - B110 (try_except_pass) - acceptable in test error-handling tests
+# - B404 (import_subprocess) - required for cross-binding validation tests
+# - B603 (subprocess_without_shell_equals_true) - subprocess calls are validated
+# - B607 (start_process_with_partial_path) - using system node/cargo for tests
+# These are enabled by default for production code via inline # nosec comments
+skips = ["B101", "B110"]
 exclude_dirs = [
     ".git",
     ".local",
