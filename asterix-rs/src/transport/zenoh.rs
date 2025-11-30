@@ -390,7 +390,7 @@ impl ZenohPublisher {
         // Remove any whitespace and decode hex string to bytes
         let hex_clean: String = hex.chars().filter(|c| !c.is_whitespace()).collect();
 
-        if hex_clean.len() % 2 != 0 {
+        if !hex_clean.len().is_multiple_of(2) {
             return Err(ZenohError::SerializationError(
                 "Invalid hex string length".to_string(),
             ));
