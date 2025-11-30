@@ -1,0 +1,121 @@
+name: PCAP Validation CI
+
+on:
+  push:
+    branches: [ master, develop, 'feature/**' ]
+    paths:
+      - 'src/asterix/**'
+      - 'src/engine/**'
+      - 'tests/pcap/**'
+      - '.github/workflows/pcap-validation.yml'
+  pull_request:
+    branches: [ master, develop ]
+    paths:
+      - 'src/asterix/**'
+      - 'src/engine/**'
+      - 'tests/pcap/**'
+      - '.github/workflows/pcap-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # =============================================================================
+  # PCAP VALIDATION TESTS
+  # =============================================================================
+  pcap-validation:
+    name: PCAP Validation Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake libexpat1-dev python3
+
+    - name: Build ASTERIX
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build --parallel
+        cmake --install build
+
+    - name: Run PCAP validation tests
+      run: |
+        export LD_LIBRARY_PATH=${{ github.workspace }}/install/lib:$LD_LIBRARY_PATH
+        python3 tests/pcap/tools/pcap_validator.py --all
+
+    - name: Run performance tests
+      run: |
+        export LD_LIBRARY_PATH=${{ github.workspace }}/install/lib:$LD_LIBRARY_PATH
+        echo "=== Performance Baselines ==="
+        python3 tests/pcap/tools/pcap_validator.py --performance
+
+    - name: Archive golden files on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: pcap-validation-failure
+        path: |
+          tests/pcap/golden/
+          install/share/asterix/samples/
+        retention-days: 7
+
+  # =============================================================================
+  # COMPARE WITH EXISTING TEST SUITE
+  # =============================================================================
+  legacy-tests:
+    name: Legacy Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake libexpat1-dev valgrind
+
+    - name: Build ASTERIX
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build --parallel
+        cmake --install build
+
+    - name: Run legacy test suite
+      run: |
+        export LD_LIBRARY_PATH=${{ github.workspace }}/install/lib:$LD_LIBRARY_PATH
+        cd install/test
+        ./test.sh
+
+  # =============================================================================
+  # BUILD SUMMARY
+  # =============================================================================
+  pcap-summary:
+    name: PCAP Validation Summary
+    runs-on: ubuntu-latest
+    needs: [pcap-validation, legacy-tests]
+    if: always()
+
+    steps:
+    - name: Check results
+      run: |
+        echo "=========================================="
+        echo "   PCAP VALIDATION SUMMARY"
+        echo "=========================================="
+        echo ""
+        echo "PCAP Validation: ${{ needs.pcap-validation.result }}"
+        echo "Legacy Tests:    ${{ needs.legacy-tests.result }}"
+        echo ""
+
+        if [[ "${{ needs.pcap-validation.result }}" == "success" && "${{ needs.legacy-tests.result }}" == "success" ]]; then
+          echo "All PCAP validation tests passed!"
+          exit 0
+        else
+          echo "Some tests failed"
+          exit 1
+        fi
