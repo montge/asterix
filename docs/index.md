@@ -77,13 +77,22 @@ let records = parser.parse(&data)?;
 - **[Quick Start Examples](https://github.com/montge/asterix#quick-start)** - Get running in 5 minutes
 - **[C++ API Reference](cpp/html/)** - Complete C++ API documentation
 
+### User Guides
+- **[Python User Guide](guides/PYTHON_GUIDE.html)** - Complete Python API guide
+- **[Rust User Guide](guides/RUST_GUIDE.html)** - Complete Rust API guide
+- **[Wireshark Plugin Guide](guides/WIRESHARK_GUIDE.html)** - Wireshark ASTERIX_EXT plugin
+
 ### Technical Resources
+- **[Architecture Overview](ARCHITECTURE.html)** - System design and layer separation
+- **[Binding Guidelines](BINDING_GUIDELINES.html)** - Creating new language bindings
+- **[Protocol Integration](PROTOCOL_INTEGRATION.html)** - Adding protocol adapters
 - **[GitHub Repository](https://github.com/montge/asterix)** - Source code and examples
 - **[Performance Optimizations](https://github.com/montge/asterix/blob/master/PERFORMANCE_OPTIMIZATIONS.md)** - 55-61% speedup details
 - **[Security Policy](https://github.com/montge/asterix/blob/master/SECURITY.md)** - Security audit and policy
 
 ### Development
 - **[Contributing Guide](https://github.com/montge/asterix/blob/master/CONTRIBUTING.md)** - How to contribute
+- **[Safety-Critical Guide](SAFETY_CRITICAL.html)** - DO-278 compliance patterns
 - **[DO-278 Compliance](https://github.com/montge/asterix/tree/master/do-278)** - Aviation safety certification
 - **[Issue Tracker](https://github.com/montge/asterix/issues)** - Report bugs or request features
 
@@ -141,5 +150,5 @@ let records = parser.parse(&data)?;
 ---
 
 <small>
-Last updated: 2025-11-04 | Version 2.8.10 | [Edit this page](https://github.com/montge/asterix/edit/master/docs/index.md)
+Last updated: 2025-11-30 | Version 2.9.0 | [Edit this page](https://github.com/montge/asterix/edit/master/docs/index.md)
 </small>
