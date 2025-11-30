@@ -25,10 +25,13 @@ fn create_test_record(category: u8, payload_size: usize) -> AsterixRecord {
     let mut fields = BTreeMap::new();
     fields.insert("SAC".to_string(), ParsedValue::Integer(1));
     fields.insert("SIC".to_string(), ParsedValue::Integer(2));
-    items.insert(format!("I{:03}/010", category), DataItem {
-        description: Some("Data Source Identifier".to_string()),
-        fields,
-    });
+    items.insert(
+        format!("I{category:03}/010"),
+        DataItem {
+            description: Some("Data Source Identifier".to_string()),
+            fields,
+        },
+    );
 
     // Create hex_data of approximate size
     let hex_data = "AB".repeat(payload_size / 2);
@@ -51,10 +54,10 @@ fn create_raw_payload(size: usize) -> Vec<u8> {
         data.push(0x30); // Category 48
         data.push(((size >> 8) & 0xFF) as u8); // Length high byte
         data.push((size & 0xFF) as u8); // Length low byte
-        // Fill rest with pattern
-        data.extend(std::iter::repeat(0xAB).take(size.saturating_sub(3)));
+                                        // Fill rest with pattern
+        data.extend(std::iter::repeat_n(0xAB, size.saturating_sub(3)));
     } else {
-        data.extend(std::iter::repeat(0xAB).take(size));
+        data.extend(std::iter::repeat_n(0xAB, size));
     }
     data
 }
@@ -70,7 +73,9 @@ fn bench_publisher_connect(c: &mut Criterion) {
     group.bench_function("peer_to_peer", |b| {
         b.to_async(&rt).iter(|| async {
             let config = ZenohConfig::peer_to_peer();
-            let publisher = ZenohPublisher::new(config).await.expect("Failed to connect");
+            let publisher = ZenohPublisher::new(config)
+                .await
+                .expect("Failed to connect");
             black_box(&publisher);
             publisher.close().await.expect("Failed to close");
         })
@@ -108,7 +113,9 @@ fn bench_publish_raw_throughput(c: &mut Criterion) {
     // Create publisher once for all benchmarks
     let publisher = rt.block_on(async {
         let config = ZenohConfig::peer_to_peer();
-        ZenohPublisher::new(config).await.expect("Failed to create publisher")
+        ZenohPublisher::new(config)
+            .await
+            .expect("Failed to create publisher")
     });
 
     let mut group = c.benchmark_group("zenoh_publish_raw_throughput");
@@ -150,7 +157,9 @@ fn bench_publish_with_routing(c: &mut Criterion) {
 
     let publisher = rt.block_on(async {
         let config = ZenohConfig::peer_to_peer();
-        ZenohPublisher::new(config).await.expect("Failed to create publisher")
+        ZenohPublisher::new(config)
+            .await
+            .expect("Failed to create publisher")
     });
 
     let mut group = c.benchmark_group("zenoh_publish_with_routing");
@@ -189,16 +198,15 @@ fn bench_publish_record(c: &mut Criterion) {
 
     let publisher = rt.block_on(async {
         let config = ZenohConfig::peer_to_peer();
-        ZenohPublisher::new(config).await.expect("Failed to create publisher")
+        ZenohPublisher::new(config)
+            .await
+            .expect("Failed to create publisher")
     });
 
     let mut group = c.benchmark_group("zenoh_publish_record");
     group.measurement_time(Duration::from_secs(5));
 
-    let record_sizes = [
-        (100, "small_100B"),
-        (1024, "medium_1KB"),
-    ];
+    let record_sizes = [(100, "small_100B"), (1024, "medium_1KB")];
 
     for (size, name) in record_sizes {
         let record = create_test_record(48, size);
@@ -234,55 +242,48 @@ fn bench_pubsub_latency(c: &mut Criterion) {
     for size in payload_sizes {
         let payload = create_raw_payload(size);
 
-        group.bench_with_input(
-            BenchmarkId::new("roundtrip", size),
-            &payload,
-            |b, data| {
-                b.to_async(&rt).iter_custom(|iters| {
-                    let data = data.clone();
-                    async move {
-                        let config = ZenohConfig::peer_to_peer();
+        group.bench_with_input(BenchmarkId::new("roundtrip", size), &payload, |b, data| {
+            b.to_async(&rt).iter_custom(|iters| {
+                let data = data.clone();
+                async move {
+                    let config = ZenohConfig::peer_to_peer();
 
-                        // Create publisher and subscriber
-                        let publisher = ZenohPublisher::new(config.clone())
+                    // Create publisher and subscriber
+                    let publisher = ZenohPublisher::new(config.clone())
+                        .await
+                        .expect("Failed to create publisher");
+
+                    let mut subscriber = ZenohSubscriber::new(config, "asterix/99/**")
+                        .await
+                        .expect("Failed to create subscriber");
+
+                    // Allow subscription to establish
+                    tokio::time::sleep(Duration::from_millis(50)).await;
+
+                    let start = std::time::Instant::now();
+
+                    for _ in 0..iters {
+                        // Publish
+                        publisher
+                            .publish_raw_with_routing(99, 1, 2, &data)
                             .await
-                            .expect("Failed to create publisher");
+                            .expect("Publish failed");
 
-                        let mut subscriber = ZenohSubscriber::new(config, "asterix/99/**")
-                            .await
-                            .expect("Failed to create subscriber");
-
-                        // Allow subscription to establish
-                        tokio::time::sleep(Duration::from_millis(50)).await;
-
-                        let start = std::time::Instant::now();
-
-                        for _ in 0..iters {
-                            // Publish
-                            publisher
-                                .publish_raw_with_routing(99, 1, 2, &data)
-                                .await
-                                .expect("Publish failed");
-
-                            // Receive with timeout
-                            let _ = tokio::time::timeout(
-                                Duration::from_millis(100),
-                                subscriber.recv(),
-                            )
+                        // Receive with timeout
+                        let _ = tokio::time::timeout(Duration::from_millis(100), subscriber.recv())
                             .await;
-                        }
-
-                        let elapsed = start.elapsed();
-
-                        // Cleanup
-                        let _ = publisher.close().await;
-                        let _ = subscriber.close().await;
-
-                        elapsed
                     }
-                })
-            },
-        );
+
+                    let elapsed = start.elapsed();
+
+                    // Cleanup
+                    let _ = publisher.close().await;
+                    let _ = subscriber.close().await;
+
+                    elapsed
+                }
+            })
+        });
     }
 
     group.finish();
@@ -358,7 +359,9 @@ fn bench_message_throughput(c: &mut Criterion) {
 
     let publisher = rt.block_on(async {
         let config = ZenohConfig::peer_to_peer();
-        ZenohPublisher::new(config).await.expect("Failed to create publisher")
+        ZenohPublisher::new(config)
+            .await
+            .expect("Failed to create publisher")
     });
 
     group.bench_function("messages_per_second", |b| {
@@ -390,4 +393,3 @@ criterion_group!(
 );
 
 criterion_main!(zenoh_benches);
-

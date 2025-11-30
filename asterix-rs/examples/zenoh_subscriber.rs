@@ -34,7 +34,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create Zenoh config
     let config = match router {
         Some(endpoint) => {
-            println!("Connecting to router: {}", endpoint);
+            println!("Connecting to router: {endpoint}");
             ZenohConfig::with_router(&endpoint)
         }
         None => {
@@ -43,9 +43,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
 
-    println!("Subscribing to: {}", key_expr);
+    println!("Subscribing to: {key_expr}");
     if let Some(max) = max_samples {
-        println!("Will receive {} samples then exit", max);
+        println!("Will receive {max} samples then exit");
     } else {
         println!("Press Ctrl+C to exit");
     }
@@ -60,33 +60,35 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     while let Some(sample) = subscriber.recv().await {
         count += 1;
 
-        println!("Sample #{}", count);
+        println!("Sample #{count}");
         println!("  Key:       {}", sample.key_expr);
         println!("  Category:  {}", sample.category);
         if let Some(sac) = sample.sac {
-            println!("  SAC:       {}", sac);
+            println!("  SAC:       {sac}");
         }
         if let Some(sic) = sample.sic {
-            println!("  SIC:       {}", sic);
+            println!("  SIC:       {sic}");
         }
         println!("  Data len:  {} bytes", sample.data.len());
         println!("  Timestamp: {}", sample.timestamp);
 
         // Show first few bytes of data
         if !sample.data.is_empty() {
-            let preview: String = sample.data.iter()
+            let preview: String = sample
+                .data
+                .iter()
                 .take(16)
-                .map(|b| format!("{:02X}", b))
+                .map(|b| format!("{b:02X}"))
                 .collect::<Vec<_>>()
                 .join(" ");
-            println!("  Data:      {} ...", preview);
+            println!("  Data:      {preview} ...");
         }
         println!();
 
         // Check if we've received enough samples
         if let Some(max) = max_samples {
             if count >= max {
-                println!("Received {} samples, exiting", count);
+                println!("Received {count} samples, exiting");
                 break;
             }
         }
@@ -95,7 +97,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Close subscriber
     subscriber.close().await?;
 
-    println!("Total samples received: {}", count);
+    println!("Total samples received: {count}");
 
     Ok(())
 }
