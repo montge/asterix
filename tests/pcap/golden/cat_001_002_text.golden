@@ -1,0 +1,707 @@
+
+
+-------------------------
+Data Block 1
+Category: 1
+Len: 69
+Timestamp: 45826414.000000
+HexData: 010048
+-------------------------
+Data Record 1
+Len: 20
+CRC: B709B730
+HexData: F7C619C9A00EB2767F189408AA42D8033405C880
+
+Item 010 : Data Source Identifier
+[ 19 C9 ]
+	System Area Code: 25
+	System Identification Code: 201
+
+Item 020 : Target Report Descriptor
+[ A0 ]
+	TYP: 1 (Track)
+	SIM: 0 (Actual plot or track)
+	Radar Detection in Last Antenna Scan: 2 (Sole secondary detection)
+	ANT: 0 (Target report from antenna 1)
+	SPI: 0 (Default)
+	RAB: 0 (Default)
+	Extension Indicator: 0 (End of Data Item)
+
+Item 040 : Measured Position in Polar Co-ordinates
+[ 0E B2 76 7F ]
+	RHO: 3762 (29.3906250 NM)
+	THETA: 30335 (166.6351318 deg)
+
+Item 070 : Mode-3/A Code in Octal Representation
+[ 18 94 ]
+	V: 0 (Code validated)
+	G: 0 (Default)
+	L: 0 (Mode-3/A code derived from the reply of the transponder)
+	Spare bit(s) set to 0: 1
+	Warning: Value should be set to 0
+	Mode-3/A Reply in Octal Representation: 4224
+
+Item 130 : Radar Plot Characteristics
+[ 08 ]
+	Indicator: 4
+	Extension Indicator: 0 (End of Data Item)
+
+Item 141 : Truncated Time of Day
+[ AA 42 ]
+	Truncated Time of Day: 43586 (340.5156250 s)
+
+Item 050 : Mode-2 Code in Octal Representation
+[ D8 03 ]
+	V: 1 (Code not validated)
+	G: 1 (Garbled code)
+	L: 0 (Mode-2 code as derived from the reply of the transponder)
+	Spare bit(s) set to 0: 1
+	Warning: Value should be set to 0
+	Mode-2 Code in Octal Representation: 4003
+
+Item 120 : Measured Radial Doppler Speed
+[ 34 ]
+	Measured Radial Doppler Speed: 52 (0.2031250 NM/s)
+
+Item 060 : Mode-2 Code Confidence Indicator
+[ 05 C8 ]
+	Spare bit(s) set to 0: 0
+	QA4: 0 (High quality pulse A4)
+	QA2: 1 (Low quality pulse A2)
+	QA1: 0 (High quality pulse A1)
+	QB4: 1 (Low quality pulse B4)
+	QB2: 1 (Low quality pulse B2)
+	QB1: 1 (Low quality pulse B1)
+	QC4: 0 (High quality pulse C4)
+	QC2: 0 (High quality pulse C2)
+	QC1: 1 (Low quality pulse C1)
+	QD4: 0 (High quality pulse D4)
+	QD2: 0 (High quality pulse D2)
+	QD1: 0 (High quality pulse D1)
+
+Item 030 : Warning/Error Conditions
+[ 80 ]
+	WEVALUE: 64 (Possible wrong code in Mode-3/A)
+	Extension Indicator: 0 (End of Data Item)
+-------------------------
+Data Record 2
+Len: 6
+CRC: 376CF3FF
+HexData: 0D400EF7C619
+
+Item 090 : Mode-C Code in Binary Representation
+[ 0E F7 ]
+	V: 0 (Code validated)
+	G: 0 (Default)
+	Mode-C HEIGHT: 3831 (957.7500000 FL)
+
+Item 130 : Radar Plot Characteristics
+[ C6 ]
+	Indicator: 99
+	Extension Indicator: 0 (End of Data Item)
+
+Item 120 : Measured Radial Doppler Speed
+[ 19 ]
+	Measured Radial Doppler Speed: 25 (0.0976562 NM/s)
+-------------------------
+Data Record 3
+Len: 13
+CRC: A149573B
+HexData: C9B00F7561EC1A14077EB5550E
+
+Item 010 : Data Source Identifier
+[ 0F 75 ]
+	System Area Code: 15
+	System Identification Code: 117
+
+Item 020 : Target Report Descriptor
+[ 61 EC ]
+	TYP: 0 (Plot)
+	SIM: 1 (Simulated plot or track)
+	Radar Detection in Last Antenna Scan: 2 (Sole secondary detection)
+	ANT: 0 (Target report from antenna 1)
+	SPI: 0 (Default)
+	RAB: 0 (Default)
+	Extension Indicator: 1 (Extension)
+	TST: 1 (Test target indicator)
+	Radar Detection in Last Antenna Scan: 3 (Emergency (code 7700))
+	ME: 0 (Default)
+	MI: 1 (Military identification)
+	Spare bit(s) set to 0: 2
+	Warning: Value should be set to 0
+
+Item 090 : Mode-C Code in Binary Representation
+[ 1A 14 ]
+	V: 0 (Code validated)
+	G: 0 (Default)
+	Mode-C HEIGHT: 6676 (1669.0000000 FL)
+
+Item 050 : Mode-2 Code in Octal Representation
+[ 07 7E ]
+	V: 0 (Code validated)
+	G: 0 (Default)
+	L: 0 (Mode-2 code as derived from the reply of the transponder)
+	Spare bit(s) set to 0: 0
+	Mode-2 Code in Octal Representation: 3576
+
+Item 131 : Received Power
+[ B5 ]
+	Received Power: -75 (-75.0000000 dBm)
+
+Item 080 : Mode-3/A Code Confidence Indicator
+[ 55 0E ]
+	Spare bit(s) set to 0: 5
+	Warning: Value should be set to 0
+	QA4: 0 (High quality pulse A4)
+	QA2: 1 (Low quality pulse A2)
+	QA1: 0 (High quality pulse A1)
+	QB4: 1 (Low quality pulse B4)
+	QB2: 0 (High quality pulse B2)
+	QB1: 0 (High quality pulse B1)
+	QC4: 0 (High quality pulse C4)
+	QC2: 0 (High quality pulse C2)
+	QC1: 1 (Low quality pulse C1)
+	QD4: 1 (Low quality pulse D4)
+	QD2: 1 (Low quality pulse D2)
+	QD1: 0 (High quality pulse D1)
+-------------------------
+Data Record 4
+Len: 7
+CRC: 0638ADB9
+HexData: 5205508014400E
+
+Item 020 : Target Report Descriptor
+[ 05 50 ]
+	TYP: 0 (Plot)
+	SIM: 0 (Actual plot or track)
+	Radar Detection in Last Antenna Scan: 0 (No detection)
+	ANT: 0 (Target report from antenna 1)
+	SPI: 1 (Special Position Identification)
+	RAB: 0 (Default)
+	Extension Indicator: 1 (Extension)
+	TST: 0 (Default)
+	Radar Detection in Last Antenna Scan: 2 (Radio-communication failure (code 7600))
+	ME: 1 (Military emergency)
+	MI: 0 (Default)
+	Spare bit(s) set to 0: 0
+
+Item 070 : Mode-3/A Code in Octal Representation
+[ 80 14 ]
+	V: 1 (Code not validated)
+	G: 0 (Default)
+	L: 0 (Mode-3/A code derived from the reply of the transponder)
+	Spare bit(s) set to 0: 0
+	Mode-3/A Reply in Octal Representation: 0024
+
+Item 141 : Truncated Time of Day
+[ 40 0E ]
+	Truncated Time of Day: 16398 (128.1093750 s)
+-------------------------
+Data Record 5
+Len: 21
+CRC: 3AE42A3B
+HexData: F7C619C9B00DCA69DE1A7C07F011110E3006188016
+
+Item 010 : Data Source Identifier
+[ 19 C9 ]
+	System Area Code: 25
+	System Identification Code: 201
+
+Item 020 : Target Report Descriptor
+[ B0 ]
+	TYP: 1 (Track)
+	SIM: 0 (Actual plot or track)
+	Radar Detection in Last Antenna Scan: 3 (Combined primary and secondary detection)
+	ANT: 0 (Target report from antenna 1)
+	SPI: 0 (Default)
+	RAB: 0 (Default)
+	Extension Indicator: 0 (End of Data Item)
+
+Item 040 : Measured Position in Polar Co-ordinates
+[ 0D CA 69 DE ]
+	RHO: 3530 (27.5781250 NM)
+	THETA: 27102 (148.8757324 deg)
+
+Item 070 : Mode-3/A Code in Octal Representation
+[ 1A 7C ]
+	V: 0 (Code validated)
+	G: 0 (Default)
+	L: 0 (Mode-3/A code derived from the reply of the transponder)
+	Spare bit(s) set to 0: 1
+	Warning: Value should be set to 0
+	Mode-3/A Reply in Octal Representation: 5174
+
+Item 130 : Radar Plot Characteristics
+[ 07 F0 ]
+	Indicator: 3
+	Extension Indicator: 1 (Extension)
+	Indicator: 120
+	Extension Indicator: 0 (End of Data Item)
+
+Item 141 : Truncated Time of Day
+[ 11 11 ]
+	Truncated Time of Day: 4369 (34.1328125 s)
+
+Item 050 : Mode-2 Code in Octal Representation
+[ 0E 30 ]
+	V: 0 (Code validated)
+	G: 0 (Default)
+	L: 0 (Mode-2 code as derived from the reply of the transponder)
+	Spare bit(s) set to 0: 0
+	Mode-2 Code in Octal Representation: 7060
+
+Item 120 : Measured Radial Doppler Speed
+[ 06 ]
+	Measured Radial Doppler Speed: 6 (0.0234375 NM/s)
+
+Item 060 : Mode-2 Code Confidence Indicator
+[ 18 80 ]
+	Spare bit(s) set to 0: 1
+	Warning: Value should be set to 0
+	QA4: 1 (Low quality pulse A4)
+	QA2: 0 (High quality pulse A2)
+	QA1: 0 (High quality pulse A1)
+	QB4: 0 (High quality pulse B4)
+	QB2: 1 (Low quality pulse B2)
+	QB1: 0 (High quality pulse B1)
+	QC4: 0 (High quality pulse C4)
+	QC2: 0 (High quality pulse C2)
+	QC1: 0 (High quality pulse C1)
+	QD4: 0 (High quality pulse D4)
+	QD2: 0 (High quality pulse D2)
+	QD1: 0 (High quality pulse D1)
+
+Item 030 : Warning/Error Conditions
+[ 16 ]
+	WEVALUE: 11 ( ?????? )
+	Extension Indicator: 0 (End of Data Item)
+-------------------------
+Data Record 6
+Len: 2
+CRC: 4F0341BC
+HexData: 400E
+
+Item 020 : Target Report Descriptor
+[ 0E ]
+	TYP: 0 (Plot)
+	SIM: 0 (Actual plot or track)
+	Radar Detection in Last Antenna Scan: 0 (No detection)
+	ANT: 1 (Target report from antenna 2)
+	SPI: 1 (Special Position Identification)
+	RAB: 1 (Plot or track from a fixed transponder)
+	Extension Indicator: 0 (End of Data Item)
+
+-------------------------
+Data Block 2
+Category: 1
+Len: 23
+Timestamp: 45826414.000000
+HexData: 01001A
+-------------------------
+Data Record 1
+Len: 20
+CRC: 0A1126AC
+HexData: F7C619C9B00D685C881CE008424FA4004A04D880
+
+Item 010 : Data Source Identifier
+[ 19 C9 ]
+	System Area Code: 25
+	System Identification Code: 201
+
+Item 020 : Target Report Descriptor
+[ B0 ]
+	TYP: 1 (Track)
+	SIM: 0 (Actual plot or track)
+	Radar Detection in Last Antenna Scan: 3 (Combined primary and secondary detection)
+	ANT: 0 (Target report from antenna 1)
+	SPI: 0 (Default)
+	RAB: 0 (Default)
+	Extension Indicator: 0 (End of Data Item)
+
+Item 040 : Measured Position in Polar Co-ordinates
+[ 0D 68 5C 88 ]
+	RHO: 3432 (26.8125000 NM)
+	THETA: 23688 (130.1220703 deg)
+
+Item 070 : Mode-3/A Code in Octal Representation
+[ 1C E0 ]
+	V: 0 (Code validated)
+	G: 0 (Default)
+	L: 0 (Mode-3/A code derived from the reply of the transponder)
+	Spare bit(s) set to 0: 1
+	Warning: Value should be set to 0
+	Mode-3/A Reply in Octal Representation: 6340
+
+Item 130 : Radar Plot Characteristics
+[ 08 ]
+	Indicator: 4
+	Extension Indicator: 0 (End of Data Item)
+
+Item 141 : Truncated Time of Day
+[ 42 4F ]
+	Truncated Time of Day: 16975 (132.6171875 s)
+
+Item 050 : Mode-2 Code in Octal Representation
+[ A4 00 ]
+	V: 1 (Code not validated)
+	G: 0 (Default)
+	L: 1 (Smoothed Mode-2 code as provided by a local tracker)
+	Spare bit(s) set to 0: 0
+	Mode-2 Code in Octal Representation: 2000
+
+Item 120 : Measured Radial Doppler Speed
+[ 4A ]
+	Measured Radial Doppler Speed: 74 (0.2890625 NM/s)
+
+Item 060 : Mode-2 Code Confidence Indicator
+[ 04 D8 ]
+	Spare bit(s) set to 0: 0
+	QA4: 0 (High quality pulse A4)
+	QA2: 1 (Low quality pulse A2)
+	QA1: 0 (High quality pulse A1)
+	QB4: 0 (High quality pulse B4)
+	QB2: 1 (Low quality pulse B2)
+	QB1: 1 (Low quality pulse B1)
+	QC4: 0 (High quality pulse C4)
+	QC2: 1 (Low quality pulse C2)
+	QC1: 1 (Low quality pulse C1)
+	QD4: 0 (High quality pulse D4)
+	QD2: 0 (High quality pulse D2)
+	QD1: 0 (High quality pulse D1)
+
+Item 030 : Warning/Error Conditions
+[ 80 ]
+	WEVALUE: 64 (Possible wrong code in Mode-3/A)
+	Extension Indicator: 0 (End of Data Item)
+-------------------------
+Data Record 3
+Len: 2
+CRC: 4F0341BC
+HexData: 400E
+
+Item 020 : Target Report Descriptor
+[ 0E ]
+	TYP: 0 (Plot)
+	SIM: 0 (Actual plot or track)
+	Radar Detection in Last Antenna Scan: 0 (No detection)
+	ANT: 1 (Target report from antenna 2)
+	SPI: 1 (Special Position Identification)
+	RAB: 1 (Plot or track from a fixed transponder)
+	Extension Indicator: 0 (End of Data Item)
+
+-------------------------
+Data Block 3
+Category: 2
+Len: 8
+Timestamp: 45826414.000000
+HexData: 02000B
+-------------------------
+Data Record 1
+Len: 8
+CRC: E1A938EC
+HexData: F019C90250598117
+
+Item 010 : Data Source Identifier
+[ 19 C9 ]
+	System Area Code: 25
+	System Identification Code: 201
+
+Item 000 : Message Type
+[ 02 ]
+	Message Type: 2 (Sector crossing message)
+
+Item 020 : Sector Number
+[ 50 ]
+	Sector Number: 80 (112.5000000 deg)
+
+Item 030 : Time of Day
+[ 59 81 17 ]
+	Time of Day: 5865751 (45826.1796875 s)
+
+-------------------------
+Data Block 4
+Category: 1
+Len: 23
+Timestamp: 45826414.000000
+HexData: 01001A
+-------------------------
+Data Record 1
+Len: 20
+CRC: 0455D327
+HexData: F7C619C9B00CE173571E28081DD1100AC405A080
+
+Item 010 : Data Source Identifier
+[ 19 C9 ]
+	System Area Code: 25
+	System Identification Code: 201
+
+Item 020 : Target Report Descriptor
+[ B0 ]
+	TYP: 1 (Track)
+	SIM: 0 (Actual plot or track)
+	Radar Detection in Last Antenna Scan: 3 (Combined primary and secondary detection)
+	ANT: 0 (Target report from antenna 1)
+	SPI: 0 (Default)
+	RAB: 0 (Default)
+	Extension Indicator: 0 (End of Data Item)
+
+Item 040 : Measured Position in Polar Co-ordinates
+[ 0C E1 73 57 ]
+	RHO: 3297 (25.7578125 NM)
+	THETA: 29527 (162.1966553 deg)
+
+Item 070 : Mode-3/A Code in Octal Representation
+[ 1E 28 ]
+	V: 0 (Code validated)
+	G: 0 (Default)
+	L: 0 (Mode-3/A code derived from the reply of the transponder)
+	Spare bit(s) set to 0: 1
+	Warning: Value should be set to 0
+	Mode-3/A Reply in Octal Representation: 7050
+
+Item 130 : Radar Plot Characteristics
+[ 08 ]
+	Indicator: 4
+	Extension Indicator: 0 (End of Data Item)
+
+Item 141 : Truncated Time of Day
+[ 1D D1 ]
+	Truncated Time of Day: 7633 (59.6328125 s)
+
+Item 050 : Mode-2 Code in Octal Representation
+[ 10 0A ]
+	V: 0 (Code validated)
+	G: 0 (Default)
+	L: 0 (Mode-2 code as derived from the reply of the transponder)
+	Spare bit(s) set to 0: 1
+	Warning: Value should be set to 0
+	Mode-2 Code in Octal Representation: 0012
+
+Item 120 : Measured Radial Doppler Speed
+[ C4 ]
+	Measured Radial Doppler Speed: -60 (-0.2343750 NM/s)
+
+Item 060 : Mode-2 Code Confidence Indicator
+[ 05 A0 ]
+	Spare bit(s) set to 0: 0
+	QA4: 0 (High quality pulse A4)
+	QA2: 1 (Low quality pulse A2)
+	QA1: 0 (High quality pulse A1)
+	QB4: 1 (Low quality pulse B4)
+	QB2: 1 (Low quality pulse B2)
+	QB1: 0 (High quality pulse B1)
+	QC4: 1 (Low quality pulse C4)
+	QC2: 0 (High quality pulse C2)
+	QC1: 0 (High quality pulse C1)
+	QD4: 0 (High quality pulse D4)
+	QD2: 0 (High quality pulse D2)
+	QD1: 0 (High quality pulse D1)
+
+Item 030 : Warning/Error Conditions
+[ 80 ]
+	WEVALUE: 64 (Possible wrong code in Mode-3/A)
+	Extension Indicator: 0 (End of Data Item)
+-------------------------
+Data Record 3
+Len: 2
+CRC: 4F0341BC
+HexData: 400E
+
+Item 020 : Target Report Descriptor
+[ 0E ]
+	TYP: 0 (Plot)
+	SIM: 0 (Actual plot or track)
+	Radar Detection in Last Antenna Scan: 0 (No detection)
+	ANT: 1 (Target report from antenna 2)
+	SPI: 1 (Special Position Identification)
+	RAB: 1 (Plot or track from a fixed transponder)
+	Extension Indicator: 0 (End of Data Item)
+
+-------------------------
+Data Block 5
+Category: 1
+Len: 23
+Timestamp: 45826414.000000
+HexData: 01001A
+-------------------------
+Data Record 1
+Len: 21
+CRC: EE1462F2
+HexData: F7C619C9A00C10514C212C05DCE2D7059E025A8038
+
+Item 010 : Data Source Identifier
+[ 19 C9 ]
+	System Area Code: 25
+	System Identification Code: 201
+
+Item 020 : Target Report Descriptor
+[ A0 ]
+	TYP: 1 (Track)
+	SIM: 0 (Actual plot or track)
+	Radar Detection in Last Antenna Scan: 2 (Sole secondary detection)
+	ANT: 0 (Target report from antenna 1)
+	SPI: 0 (Default)
+	RAB: 0 (Default)
+	Extension Indicator: 0 (End of Data Item)
+
+Item 040 : Measured Position in Polar Co-ordinates
+[ 0C 10 51 4C ]
+	RHO: 3088 (24.1250000 NM)
+	THETA: 20812 (114.3237305 deg)
+
+Item 070 : Mode-3/A Code in Octal Representation
+[ 21 2C ]
+	V: 0 (Code validated)
+	G: 0 (Default)
+	L: 1 (Smoothed Mode-3/A code as provided by a local tracker)
+	Spare bit(s) set to 0: 0
+	Mode-3/A Reply in Octal Representation: 0454
+
+Item 130 : Radar Plot Characteristics
+[ 05 DC ]
+	Indicator: 2
+	Extension Indicator: 1 (Extension)
+	Indicator: 110
+	Extension Indicator: 0 (End of Data Item)
+
+Item 141 : Truncated Time of Day
+[ E2 D7 ]
+	Truncated Time of Day: 58071 (453.6796875 s)
+
+Item 050 : Mode-2 Code in Octal Representation
+[ 05 9E ]
+	V: 0 (Code validated)
+	G: 0 (Default)
+	L: 0 (Mode-2 code as derived from the reply of the transponder)
+	Spare bit(s) set to 0: 0
+	Mode-2 Code in Octal Representation: 2636
+
+Item 120 : Measured Radial Doppler Speed
+[ 02 ]
+	Measured Radial Doppler Speed: 2 (0.0078125 NM/s)
+
+Item 060 : Mode-2 Code Confidence Indicator
+[ 5A 80 ]
+	Spare bit(s) set to 0: 5
+	Warning: Value should be set to 0
+	QA4: 1 (Low quality pulse A4)
+	QA2: 0 (High quality pulse A2)
+	QA1: 1 (Low quality pulse A1)
+	QB4: 0 (High quality pulse B4)
+	QB2: 1 (Low quality pulse B2)
+	QB1: 0 (High quality pulse B1)
+	QC4: 0 (High quality pulse C4)
+	QC2: 0 (High quality pulse C2)
+	QC1: 0 (High quality pulse C1)
+	QD4: 0 (High quality pulse D4)
+	QD2: 0 (High quality pulse D2)
+	QD1: 0 (High quality pulse D1)
+
+Item 030 : Warning/Error Conditions
+[ 38 ]
+	WEVALUE: 28 ( ?????? )
+	Extension Indicator: 0 (End of Data Item)
+-------------------------
+Data Record 2
+Len: 2
+CRC: 4F0341BC
+HexData: 400E
+
+Item 020 : Target Report Descriptor
+[ 0E ]
+	TYP: 0 (Plot)
+	SIM: 0 (Actual plot or track)
+	Radar Detection in Last Antenna Scan: 0 (No detection)
+	ANT: 1 (Target report from antenna 2)
+	SPI: 1 (Special Position Identification)
+	RAB: 1 (Plot or track from a fixed transponder)
+	Extension Indicator: 0 (End of Data Item)
+
+-------------------------
+Data Block 6
+Category: 1
+Len: 23
+Timestamp: 45826414.000000
+HexData: 01001A
+-------------------------
+Data Record 1
+Len: 23
+CRC: 6E189DDB
+HexData: F7C619C9B00F0D37FE21C80755D1C605A505A0803B400E
+
+Item 010 : Data Source Identifier
+[ 19 C9 ]
+	System Area Code: 25
+	System Identification Code: 201
+
+Item 020 : Target Report Descriptor
+[ B0 ]
+	TYP: 1 (Track)
+	SIM: 0 (Actual plot or track)
+	Radar Detection in Last Antenna Scan: 3 (Combined primary and secondary detection)
+	ANT: 0 (Target report from antenna 1)
+	SPI: 0 (Default)
+	RAB: 0 (Default)
+	Extension Indicator: 0 (End of Data Item)
+
+Item 040 : Measured Position in Polar Co-ordinates
+[ 0F 0D 37 FE ]
+	RHO: 3853 (30.1015625 NM)
+	THETA: 14334 (78.7390137 deg)
+
+Item 070 : Mode-3/A Code in Octal Representation
+[ 21 C8 ]
+	V: 0 (Code validated)
+	G: 0 (Default)
+	L: 1 (Smoothed Mode-3/A code as provided by a local tracker)
+	Spare bit(s) set to 0: 0
+	Mode-3/A Reply in Octal Representation: 0710
+
+Item 130 : Radar Plot Characteristics
+[ 07 55 D1 C6 ]
+	Indicator: 3
+	Extension Indicator: 1 (Extension)
+	Indicator: 42
+	Extension Indicator: 1 (Extension)
+	Indicator: 104
+	Extension Indicator: 1 (Extension)
+	Indicator: 99
+	Extension Indicator: 0 (End of Data Item)
+
+Item 141 : Truncated Time of Day
+[ 05 A5 ]
+	Truncated Time of Day: 1445 (11.2890625 s)
+
+Item 050 : Mode-2 Code in Octal Representation
+[ 05 A0 ]
+	V: 0 (Code validated)
+	G: 0 (Default)
+	L: 0 (Mode-2 code as derived from the reply of the transponder)
+	Spare bit(s) set to 0: 0
+	Mode-2 Code in Octal Representation: 2640
+
+Item 120 : Measured Radial Doppler Speed
+[ 80 ]
+	Measured Radial Doppler Speed: -128 (-0.5000000 NM/s)
+
+Item 060 : Mode-2 Code Confidence Indicator
+[ 3B 40 ]
+	Spare bit(s) set to 0: 3
+	Warning: Value should be set to 0
+	QA4: 1 (Low quality pulse A4)
+	QA2: 0 (High quality pulse A2)
+	QA1: 1 (Low quality pulse A1)
+	QB4: 1 (Low quality pulse B4)
+	QB2: 0 (High quality pulse B2)
+	QB1: 1 (Low quality pulse B1)
+	QC4: 0 (High quality pulse C4)
+	QC2: 0 (High quality pulse C2)
+	QC1: 0 (High quality pulse C1)
+	QD4: 0 (High quality pulse D4)
+	QD2: 0 (High quality pulse D2)
+	QD1: 0 (High quality pulse D1)
+
+Item 030 : Warning/Error Conditions
+[ 0E ]
+	WEVALUE: 7 (Terrestrial vehicles)
+	Extension Indicator: 0 (End of Data Item)
