@@ -48,6 +48,29 @@ cmake --build .
 
 ## Installation
 
+### Prerequisites
+
+The plugin requires the ASTERIX shared library (`libasterix.so`) to be installed in a location where the dynamic linker can find it:
+
+**Linux:**
+```bash
+# Install ASTERIX library system-wide
+sudo cp install/lib/libasterix.so* /usr/local/lib/
+sudo ldconfig
+```
+
+**macOS:**
+```bash
+# Install ASTERIX library
+sudo cp install/lib/libasterix.dylib /usr/local/lib/
+```
+
+**Windows:**
+```powershell
+# Copy DLL alongside plugin or to system path
+copy install\bin\asterix.dll %APPDATA%\Wireshark\plugins\4.x\epan\
+```
+
 ### User Installation (Recommended)
 
 ```bash
