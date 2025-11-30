@@ -1,0 +1,28 @@
+# CodeQL Configuration for ASTERIX Project
+# This file configures code scanning to exclude false positives in example/test code
+
+name: "ASTERIX Security Configuration"
+
+# Paths to ignore during CodeQL analysis
+paths-ignore:
+  # Example code - may contain patterns not suitable for production
+  - "asterix/examples/*"
+  - "examples/*"
+  # Test code - security patterns are intentional for testing
+  - "asterix/test/*"
+  - "tests/*"
+  # Build artifacts
+  - "build/*"
+  - "install/*"
+  - "*.pyc"
+
+# Query filters - disable specific queries that generate false positives
+# in the context of this project
+query-filters:
+  # Socket binding to all interfaces is required for multicast reception
+  # Security is handled via network isolation, not application-level binding
+  - exclude:
+      id: py/bind-socket-all-network-interfaces
+      paths:
+        - asterix/examples/multicast_receive.py
+

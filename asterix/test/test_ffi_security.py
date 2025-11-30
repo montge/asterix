@@ -278,8 +278,8 @@ class TestFFIRobustness(unittest.TestCase):
             # If it doesn't raise, result should be safe
             self.assertIsInstance(records, list)
         except (ValueError, OverflowError):
-            # Raising an error is also acceptable
-            pass
+            # Raising an error is also acceptable for invalid offset
+            pass  # nosec B110 - testing that error is acceptable
 
     def test_huge_blocks_count(self):
         """Test parse_with_offset with unreasonably large blocks_count raises ValueError."""
