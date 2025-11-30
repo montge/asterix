@@ -78,9 +78,11 @@ let records = parser.parse(&data)?;
 - **[C++ API Reference](cpp/html/)** - Complete C++ API documentation
 
 ### User Guides
+- **[C++ User Guide](guides/CPP_GUIDE.html)** - Command-line tool and library guide
 - **[Python User Guide](guides/PYTHON_GUIDE.html)** - Complete Python API guide
 - **[Rust User Guide](guides/RUST_GUIDE.html)** - Complete Rust API guide
 - **[Wireshark Plugin Guide](guides/WIRESHARK_GUIDE.html)** - Wireshark ASTERIX_EXT plugin
+- **[Troubleshooting Guide](TROUBLESHOOTING.html)** - Solutions to common issues
 
 ### Technical Resources
 - **[Architecture Overview](ARCHITECTURE.html)** - System design and layer separation
