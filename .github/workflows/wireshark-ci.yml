@@ -105,7 +105,11 @@ jobs:
         # Test actual PCAP parsing if plugin loads
         if tshark -G plugins 2>&1 | grep -qi asterix; then
           echo "Plugin loaded! Testing PCAP parsing..."
-          tshark -r asterix/sample_data/cat_048.pcap 2>&1 | head -20 || echo "PCAP test skipped"
+          # Use the samples from the installed location
+          tshark -r install/share/asterix/samples/cat_034_048.pcap 2>&1 | head -20 || echo "PCAP test skipped"
+          # Test with decode-as to verify ASTERIX_EXT dissector
+          echo "Testing ASTERIX_EXT dissector with decode-as..."
+          tshark -r install/share/asterix/samples/cat_034_048.pcap -d udp.port==22131,asterix_ext 2>&1 | head -5 || true
         fi
       continue-on-error: true
 
