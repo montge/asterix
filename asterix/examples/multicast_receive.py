@@ -115,8 +115,9 @@ def setup_multicast_receiver(multicast_group, port):
     # 2. Running in isolated network segments for ASTERIX traffic
     # 3. Implementing application-level authentication if needed
     # 4. Binding to specific interface IP if multicast is on a known interface
-    # lgtm [py/bind-socket-all-network-interfaces]
-    sock.bind(('', port))  # nosec B104 - Required for multicast reception
+    # Binding to all interfaces is required for multicast reception
+    # Security: Documented above, use firewall rules in production
+    sock.bind(('', port))  # lgtm[py/bind-socket-all-network-interfaces] nosec B104
 
     # Join the multicast group
     # mreq = 4 bytes (multicast address) + 4 bytes (interface address)

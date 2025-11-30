@@ -40,6 +40,12 @@
 #ifdef HAVE_ZEROMQ
 #include "zeromqdevice.hxx"
 #endif
+#ifdef HAVE_MQTT
+#include "mqttdevice.hxx"
+#endif
+#ifdef HAVE_GRPC
+#include "grpcdevice.hxx"
+#endif
 
 
 CSingleton<CDeviceFactory> CDeviceFactory::_Instance;
@@ -93,6 +99,16 @@ bool CDeviceFactory::CreateDevice(const char *deviceName, const char *deviceDesc
     } else if (strcasecmp(deviceName, "zmq") == 0 || strcasecmp(deviceName, "zeromq") == 0) {
         CDescriptor descriptor(deviceDescriptor, ":");
         _Device[_nDevices] = new CZeromqDevice(descriptor);
+#endif
+#ifdef HAVE_MQTT
+    } else if (strcasecmp(deviceName, "mqtt") == 0) {
+        CDescriptor descriptor(deviceDescriptor, ":");
+        _Device[_nDevices] = new CMqttDevice(descriptor);
+#endif
+#ifdef HAVE_GRPC
+    } else if (strcasecmp(deviceName, "grpc") == 0) {
+        CDescriptor descriptor(deviceDescriptor, ":");
+        _Device[_nDevices] = new CGrpcDevice(descriptor);
 #endif
     } else {
         LOGERROR(1, "Unknown device '%s'\n", deviceName);

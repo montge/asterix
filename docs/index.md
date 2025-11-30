@@ -83,6 +83,8 @@ let records = parser.parse(&data)?;
 - **[Rust User Guide](guides/RUST_GUIDE.html)** - Complete Rust API guide
 - **[Wireshark Plugin Guide](guides/WIRESHARK_GUIDE.html)** - Wireshark ASTERIX_EXT plugin
 - **[ZeroMQ Transport Guide](guides/ZEROMQ_GUIDE.html)** - Low-latency messaging transport
+- **[MQTT Transport Guide](guides/MQTT_GUIDE.html)** - IoT and cloud messaging transport
+- **[gRPC Transport Guide](guides/GRPC_GUIDE.html)** - High-performance RPC transport
 - **[Troubleshooting Guide](TROUBLESHOOTING.html)** - Solutions to common issues
 
 ### Technical Resources
