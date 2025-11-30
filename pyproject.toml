@@ -150,3 +150,22 @@ PATH = "C:/vcpkg/installed/x64-windows/bin;$PATH"
 # This prevents the "Library dependencies do not satisfy target MacOS version" error
 [tool.cibuildwheel.macos.environment]
 MACOSX_DEPLOYMENT_TARGET = "11.0"
+
+[tool.bandit]
+# Skip B101 (assert_used) - assert is correct for unit tests
+# The GitHub security workflow runs Bandit on the entire codebase
+skips = ["B101"]
+exclude_dirs = [
+    ".git",
+    ".local",
+    "build",
+    "install",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "asterix-node/node_modules",
+]
+
+[tool.bandit.assert_used]
+# Even if B101 isn't skipped globally, exclude test files
+exclude_dirs = ["asterix/test", "tests"]
