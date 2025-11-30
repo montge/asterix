@@ -289,6 +289,8 @@ if(BUILD_SHARED_LIBS)
         SOVERSION ${PROJECT_VERSION_MAJOR}
         PUBLIC_HEADER "${ASTERIX_LIB_HEADERS}"
     )
+    # Enable Wireshark wrapper API in the shared library
+    target_compile_definitions(asterix_shared PRIVATE WIRESHARK_WRAPPER)
     # On macOS, set the install name to use @rpath
     if(APPLE)
         set_target_properties(asterix_shared PROPERTIES
@@ -314,6 +316,8 @@ if(BUILD_STATIC_LIBS)
         VERSION ${PROJECT_VERSION}
         PUBLIC_HEADER "${ASTERIX_LIB_HEADERS}"
     )
+    # Enable Wireshark wrapper API in the static library
+    target_compile_definitions(asterix_static PRIVATE WIRESHARK_WRAPPER)
     target_link_libraries(asterix_static ${EXPAT_LIBRARIES})
 
     # Install static library
