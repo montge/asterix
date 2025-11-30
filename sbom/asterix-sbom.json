@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:da2db4c3-993d-4dc0-a278-f1691a4314cc",
+  "serialNumber": "urn:uuid:0a028f8c-1dd7-40eb-910a-1b1d0f0a87cb",
   "version": 1,
   "metadata": {
-    "timestamp": "2025-11-30T01:42:37Z",
+    "timestamp": "2025-11-30T03:25:23Z",
     "tools": {
       "components": [
         {
@@ -25,7 +25,7 @@
     "properties": [
       {
         "name": "commit",
-        "value": "abe1bf7c4589ce1c583b569598dc40e52f3c334d"
+        "value": "098626747d22502765fed82ee72d0c1de82ee7d3"
       },
       {
         "name": "repository",
@@ -33,7 +33,7 @@
       },
       {
         "name": "generated",
-        "value": "2025-11-30T01:42:37Z"
+        "value": "2025-11-30T03:25:23Z"
       },
       {
         "name": "tool",
@@ -514,6 +514,32 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/node-ci.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/checkout@v5?package-id=bfc249490263a821",
+      "type": "library",
+      "name": "actions/checkout",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:actions\\/checkout:actions\\/checkout:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/checkout@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/pcap-validation.yml"
         }
       ]
     },
@@ -1642,6 +1668,52 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/weekly-audit.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/upload-artifact@v4?package-id=4d86f8b542899717",
+      "type": "library",
+      "name": "actions/upload-artifact",
+      "version": "v4",
+      "cpe": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload-artifact:v4:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/upload-artifact@v4",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload_artifact:v4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload-artifact:v4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload_artifact:v4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload-artifact:v4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload_artifact:v4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/pcap-validation.yml"
         }
       ]
     },
@@ -14826,6 +14898,21 @@
       ]
     },
     {
+      "bom-ref": "48dc2cb2588f7f23",
+      "type": "file",
+      "name": "/home/runner/work/asterix/asterix/.github/workflows/pcap-validation.yml",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "714745c416e85731c703cbd4314c5862b40fc734"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "7d30ac699929bc0ca01790dcf44a92f1abc667557c4769ea1ab3709c5316ce9d"
+        }
+      ]
+    },
+    {
       "bom-ref": "eb662ab3f69ac51b",
       "type": "file",
       "name": "/home/runner/work/asterix/asterix/.github/workflows/performance-benchmarks.yml",
@@ -14937,11 +15024,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "21e34ec7b60df8dfb32b282f9ce9df1a404d1309"
+          "content": "977cd9ebed05b7b5320e2cd111bfb2a8c23c6e50"
         },
         {
           "alg": "SHA-256",
-          "content": "352387ae6b489203ad41811b8bd4e7ef21cb749b92819d124d1659af01f6ba60"
+          "content": "d5436c2a8f91f605e706f77bc9eab8b480f77b4da6ef2c5547ea415e682ea3de"
         }
       ]
     },
