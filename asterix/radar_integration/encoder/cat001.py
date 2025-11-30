@@ -334,13 +334,15 @@ def encode_cat001(
 
         mode3a = None
         if include_mode3a:
-            import random
-            mode3a = random.randint(0, 0o7777)
+            # nosec B311 - random is intentionally used for demo data, not security
+            import random  # nosec B311
+            mode3a = random.randint(0, 0o7777)  # nosec B311
 
         flight_level = None
         if include_flight_level:
-            import random
-            flight_level = random.randint(0, 400)
+            # nosec B311 - random is intentionally used for demo data, not security
+            import random  # nosec B311
+            flight_level = random.randint(0, 400)  # nosec B311
 
         record = encode_cat001_record(
             range_m=range_m,
