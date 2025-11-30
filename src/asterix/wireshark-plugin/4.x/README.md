@@ -2,6 +2,15 @@
 
 Protocol dissector for ASTERIX (All Purpose STructured EUROCONTROL SuRveillance Information EXchange) data in Wireshark 4.x.
 
+## Why ASTERIX_EXT?
+
+This plugin registers as **ASTERIX_EXT** (Extended) to coexist with Wireshark's built-in ASTERIX dissector. The extended plugin provides:
+
+- **Additional categories**: CAT 030, 031, 252, BDS (not in built-in)
+- **Newer specification versions**: CAT 021 v2.6, CAT 034 v1.29
+- **XML-based definitions**: Easy to update for new ASTERIX versions
+- **Custom category support**: Load your own category definitions
+
 ## Requirements
 
 - **Wireshark 4.0+** (development headers required for building)
@@ -147,11 +156,15 @@ tshark -r capture.pcap -q -z io,stat,0,asterix
 
 ### Display Filters
 
+This plugin registers as `asterix_ext` to coexist with Wireshark's built-in ASTERIX dissector:
+
 ```
-asterix                    # All ASTERIX packets
-asterix.category == 48     # Category 48 only
-asterix.category == 62     # Category 62 only
+asterix_ext                    # All ASTERIX packets (this plugin)
+asterix_ext.category == 48     # Category 48 only
+asterix_ext.category == 62     # Category 62 only
 ```
+
+**Note:** The built-in `asterix` filter still works for basic ASTERIX parsing. Use `asterix_ext` to access extended categories (CAT 030, 031, 252, BDS) and newer specification versions provided by this plugin.
 
 ## Supported Categories
 
