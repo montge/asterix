@@ -78,18 +78,33 @@ jobs:
         sudo cp ${{ github.workspace }}/install/lib/libasterix.so* /usr/local/lib/
         sudo ldconfig
 
-        # Copy config files
-        mkdir -p ~/.config/asterix/
-        cp -r asterix/config/* ~/.config/asterix/ 2>/dev/null || cp -r install/share/asterix/config/* ~/.config/asterix/
+        # Copy config files to default plugin location
+        sudo mkdir -p /usr/share/asterix/config/
+        sudo cp -r asterix/config/* /usr/share/asterix/config/ 2>/dev/null || sudo cp -r install/share/asterix/config/* /usr/share/asterix/config/
+
+        # Debug: Check library dependencies
+        echo "Checking plugin dependencies..."
+        ldd ~/.local/lib/wireshark/plugins/${WS_VERSION}/epan/asterix.so 2>&1 || true
+
+        # Debug: Check if library can be found
+        echo "Library search paths:"
+        ldconfig -p | grep asterix || echo "libasterix not in ldconfig cache"
 
         # Verify plugin loads
         echo "Checking plugin registration..."
-        tshark -G plugins 2>&1 | grep -i asterix_ext || echo "Note: Plugin may need config path adjustment"
+        tshark -G plugins 2>&1 | grep -i asterix || echo "Plugin not loaded - checking errors..."
+
+        # If plugin not loaded, try to get more info
+        if ! tshark -G plugins 2>&1 | grep -qi asterix; then
+          echo "Attempting to load plugin with debug..."
+          # Try running tshark and capture any plugin load errors
+          tshark --version 2>&1 | head -10
+          echo "Checking for plugin load errors in stderr..."
+        fi
 
         # Test actual PCAP parsing if plugin loads
-        if tshark -G plugins 2>&1 | grep -qi asterix_ext; then
+        if tshark -G plugins 2>&1 | grep -qi asterix; then
           echo "Plugin loaded! Testing PCAP parsing..."
-          # Note: asterix_ext filter works on ASTERIX protocol data
           tshark -r asterix/sample_data/cat_048.pcap 2>&1 | head -20 || echo "PCAP test skipped"
         fi
       continue-on-error: true
