@@ -1,10 +1,40 @@
 # Wireshark Plugin Status
 
-## Current Status: Legacy Plugins Deprecated
+## Current Status: Wireshark 4.x Plugin Available
 
 **Date:** November 2025
 
-### Removed Legacy Code
+### Wireshark 4.x Plugin
+
+A modern Wireshark 4.x plugin is now available in `src/asterix/wireshark-plugin/4.x/`.
+
+**Features:**
+- Wireshark 4.x dissector API support
+- Cross-platform builds (Linux, Windows, macOS)
+- CMake-based plugin build system
+- tshark CLI support
+- Uses WiresharkWrapper API for full ASTERIX parsing
+
+**Build and Install:**
+```bash
+# Build main ASTERIX library first
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install
+cmake --build build && cmake --install build
+
+# Build Wireshark plugin
+cd src/asterix/wireshark-plugin/4.x
+mkdir build && cd build
+cmake .. && cmake --build .
+
+# Install to user directory
+cmake --install . --prefix ~/.local/lib/wireshark/plugins/4.x/epan/
+```
+
+See `src/asterix/wireshark-plugin/4.x/README.md` for detailed instructions.
+
+---
+
+## Legacy Plugins (Removed)
 
 The following obsolete Wireshark/Ethereal plugins have been removed:
 
@@ -20,56 +50,31 @@ The following obsolete Wireshark/Ethereal plugins have been removed:
 - No support for Wireshark 4.x's modern dissector API
 - Security vulnerabilities in old Wireshark versions
 
-### Current Architecture
+### Architecture
 
-The `WiresharkWrapper.h` and `WiresharkWrapper.cpp` files in `src/asterix/` define a C-compatible FFI boundary that can be used to build Wireshark plugins. These files are **retained** for future Wireshark 4.x plugin development.
+The `WiresharkWrapper.h` and `WiresharkWrapper.cpp` files in `src/asterix/` define a C-compatible FFI boundary used by the Wireshark plugin. Key APIs:
 
-### Future Plans
+- `fulliautomatix_start()` - Initialize parser with config directory
+- `fulliautomatix_get_definitions()` - Get protocol field definitions
+- `fulliautomatix_parse()` - Parse ASTERIX data to protocol tree
+- `fulliautomatix_data_destroy()` - Cleanup parsed data
 
-A modern Wireshark 4.x plugin is planned. See [GitHub Issue #22](https://github.com/montge/asterix/issues/22) for:
+### Alternatives
 
-- Wireshark 4.x dissector API support
-- Cross-platform builds (Linux, Windows, macOS)
-- CMake-based plugin build system
-- tshark CLI support
-- CI/CD integration
+If you cannot use the Wireshark plugin, you can:
 
-### Migration Guide
+1. **Use Wireshark's built-in ASTERIX dissector** (Wireshark 3.0+)
 
-**For users on legacy Wireshark versions:**
-
-1. Upgrade to Wireshark 4.x (current stable)
-2. Use the standalone ASTERIX decoder for parsing:
-   ```bash
-   # Parse ASTERIX from PCAP
-   asterix -f capture.pcap -P -j
-   ```
-3. For programmatic access, use the language bindings:
-   - **Python:** `pip install asterix-decoder`
-   - **Rust:** `cargo add asterix-decoder`
-   - **Node.js:** `npm install asterix-decoder`
-   - **Go:** See `asterix-go/` directory
-
-### Wireshark Alternatives
-
-Until the Wireshark 4.x plugin is ready, you can:
-
-1. **Export to JSON and post-process:**
+2. **Export to JSON and post-process:**
    ```bash
    asterix -f capture.pcap -P -j > parsed.json
    ```
 
-2. **Use tshark with raw export + ASTERIX decoder:**
-   ```bash
-   tshark -r capture.pcap -T fields -e data | asterix -R -j
-   ```
-
-3. **Use the Python bindings for scripted analysis:**
-   ```python
-   import asterix
-   with open('capture.pcap', 'rb') as f:
-       records = asterix.parse(f.read())
-   ```
+3. **Use language bindings:**
+   - **Python:** `pip install asterix-decoder`
+   - **Rust:** `cargo add asterix-decoder`
+   - **Node.js:** `npm install asterix-decoder`
+   - **Go:** See `asterix-go/` directory
 
 ## Related Issues
 
