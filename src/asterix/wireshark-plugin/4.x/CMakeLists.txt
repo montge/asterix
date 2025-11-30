@@ -129,6 +129,7 @@ set_target_properties(asterix PROPERTIES
 
 # Include directories
 target_include_directories(asterix PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}     # For local config.h
     ${WIRESHARK_INCLUDE_DIRS}
     ${GLIB_INCLUDE_DIRS}
     ${ASTERIX_INCLUDE_DIR}
