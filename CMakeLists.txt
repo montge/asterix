@@ -69,6 +69,7 @@ option(ENABLE_COVERAGE "Enable code coverage" OFF)
 option(ENABLE_ZEROMQ "Enable ZeroMQ transport support" OFF)
 option(ENABLE_MQTT "Enable MQTT transport support" OFF)
 option(ENABLE_GRPC "Enable gRPC transport support" OFF)
+option(ENABLE_CYCLONEDDS "Enable Cyclone DDS transport support" OFF)
 
 # C++ standard: C++23 for GCC/Clang, C++20 for MSVC (MSVC doesn't fully support C++23 yet)
 if(MSVC)
@@ -264,6 +265,46 @@ if(ENABLE_GRPC)
     endif()
 endif()
 
+# Optional Cyclone DDS support (requires CycloneDDS C++ bindings)
+if(ENABLE_CYCLONEDDS)
+    find_package(CycloneDDS-CXX CONFIG QUIET)
+    if(CycloneDDS-CXX_FOUND)
+        set(CYCLONEDDS_FOUND TRUE)
+        set(CYCLONEDDS_LIBRARIES CycloneDDS-CXX::ddscxx)
+        message(STATUS "Cyclone DDS C++ found via CMake config")
+    else()
+        # Try pkg-config
+        find_package(PkgConfig)
+        if(PkgConfig_FOUND)
+            pkg_check_modules(CYCLONEDDS cyclonedds-cxx)
+        endif()
+
+        if(NOT CYCLONEDDS_FOUND)
+            # Try manual search
+            find_path(CYCLONEDDS_INCLUDE_DIRS dds/dds.hpp
+                PATHS /usr/include /usr/local/include
+            )
+            find_library(CYCLONEDDS_LIBRARIES ddscxx
+                PATHS /usr/lib /usr/local/lib /usr/lib/x86_64-linux-gnu
+            )
+            if(CYCLONEDDS_INCLUDE_DIRS AND CYCLONEDDS_LIBRARIES)
+                set(CYCLONEDDS_FOUND TRUE)
+            endif()
+        endif()
+    endif()
+
+    if(CYCLONEDDS_FOUND)
+        message(STATUS "Cyclone DDS found: ${CYCLONEDDS_LIBRARIES}")
+        if(CYCLONEDDS_INCLUDE_DIRS)
+            include_directories(${CYCLONEDDS_INCLUDE_DIRS})
+        endif()
+        add_compile_definitions(HAVE_CYCLONEDDS)
+    else()
+        message(WARNING "Cyclone DDS requested but not found. Cyclone DDS support disabled.")
+        set(ENABLE_CYCLONEDDS OFF)
+    endif()
+endif()
+
 # Coverage flags (if enabled)
 if(ENABLE_COVERAGE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
@@ -363,6 +404,11 @@ if(ENABLE_GRPC AND GRPC_FOUND)
     list(APPEND ASTERIX_LIB_SOURCES src/engine/grpcdevice.cxx)
 endif()
 
+# Cyclone DDS device (optional)
+if(ENABLE_CYCLONEDDS AND CYCLONEDDS_FOUND)
+    list(APPEND ASTERIX_LIB_SOURCES src/engine/cycloneddsdevice.cxx)
+endif()
+
 # Go bindings C wrapper (included in library for cgo)
 list(APPEND ASTERIX_LIB_SOURCES src/go/asterix_wrapper.cpp)
 
@@ -429,6 +475,11 @@ if(BUILD_SHARED_LIBS)
         target_link_libraries(asterix_shared ${GRPC_LIBRARIES})
     endif()
 
+    # Link Cyclone DDS if enabled
+    if(ENABLE_CYCLONEDDS AND CYCLONEDDS_FOUND)
+        target_link_libraries(asterix_shared ${CYCLONEDDS_LIBRARIES})
+    endif()
+
     # Install shared library
     # On macOS, LIBRARY DESTINATION installs .dylib files
     # For versioned libraries, CMake automatically handles the symlinks
@@ -463,6 +514,11 @@ if(BUILD_STATIC_LIBS)
     # Link gRPC if enabled
     if(ENABLE_GRPC AND GRPC_FOUND)
         target_link_libraries(asterix_static ${GRPC_LIBRARIES})
+    endif()
+
+    # Link Cyclone DDS if enabled
+    if(ENABLE_CYCLONEDDS AND CYCLONEDDS_FOUND)
+        target_link_libraries(asterix_static ${CYCLONEDDS_LIBRARIES})
     endif()
 
     # Install static library
@@ -669,6 +725,11 @@ if(ENABLE_GRPC)
     message(STATUS "  gRPC support: ${GRPC_FOUND}")
 else()
     message(STATUS "  gRPC support: OFF")
+endif()
+if(ENABLE_CYCLONEDDS)
+    message(STATUS "  Cyclone DDS support: ${CYCLONEDDS_FOUND}")
+else()
+    message(STATUS "  Cyclone DDS support: OFF")
 endif()
 message(STATUS "  C++ Standard: C++${CMAKE_CXX_STANDARD}")
 message(STATUS "  C Standard: C${CMAKE_C_STANDARD}")

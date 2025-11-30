@@ -46,6 +46,9 @@
 #ifdef HAVE_GRPC
 #include "grpcdevice.hxx"
 #endif
+#ifdef HAVE_CYCLONEDDS
+#include "cycloneddsdevice.hxx"
+#endif
 
 
 CSingleton<CDeviceFactory> CDeviceFactory::_Instance;
@@ -109,6 +112,11 @@ bool CDeviceFactory::CreateDevice(const char *deviceName, const char *deviceDesc
     } else if (strcasecmp(deviceName, "grpc") == 0) {
         CDescriptor descriptor(deviceDescriptor, ":");
         _Device[_nDevices] = new CGrpcDevice(descriptor);
+#endif
+#ifdef HAVE_CYCLONEDDS
+    } else if (strcasecmp(deviceName, "dds") == 0 || strcasecmp(deviceName, "cyclonedds") == 0) {
+        CDescriptor descriptor(deviceDescriptor, ":");
+        _Device[_nDevices] = new CCycloneDdsDevice(descriptor);
 #endif
     } else {
         LOGERROR(1, "Unknown device '%s'\n", deviceName);
