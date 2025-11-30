@@ -35,8 +35,9 @@
 
 
 static AsterixDefinition* pDefinition = NULL;
-bool gFiltering = false;
-bool gSynchronous = false;
+// These globals are defined in globals.cpp - use extern here
+extern bool gFiltering;
+extern bool gSynchronous;
 
 /*
  * Initialize Asterix Wireshark wrapper
