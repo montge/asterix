@@ -99,6 +99,23 @@ static void show_usage(std::string name) {
             << "\n\t\t\tFor example: -z SUB:tcp://192.168.1.10:5555"
             << "\n\t\t\tFor example: -z PULL:tcp://*:5556:bind"
 #endif
+#ifdef HAVE_MQTT
+            << "\n\t-m,--mqtt\tMQTT broker. Format: mode:host:port:topic[:qos[:clientid[:user:pass]]]"
+            << "\n\t\t\tmode: SUB (subscribe) or PUB (publish)"
+            << "\n\t\t\thost: MQTT broker hostname"
+            << "\n\t\t\tport: MQTT broker port (1883 or 8883 for TLS)"
+            << "\n\t\t\ttopic: MQTT topic (e.g., asterix/raw/048)"
+            << "\n\t\t\tFor example: -m SUB:localhost:1883:asterix/#"
+            << "\n\t\t\tFor example: -m SUB:broker.example.com:1883:asterix/cat048:1"
+#endif
+#ifdef HAVE_GRPC
+            << "\n\t-g,--grpc\tgRPC endpoint. Format: mode:endpoint[:tls]"
+            << "\n\t\t\tmode: CLIENT or SERVER"
+            << "\n\t\t\tendpoint: host:port (e.g., localhost:50051)"
+            << "\n\t\t\ttls: optional, 'tls' to enable TLS/SSL"
+            << "\n\t\t\tFor example: -g CLIENT:localhost:50051"
+            << "\n\t\t\tFor example: -g SERVER:0.0.0.0:50051"
+#endif
             << std::endl;
 }
 
@@ -107,6 +124,8 @@ int main(int argc, const char *argv[]) {
     std::string strFileInput;
     std::string strIPInput;
     std::string strZMQInput;
+    std::string strMQTTInput;
+    std::string strGRPCInput;
     std::string strFilterFile;
     std::string strInputFormat = "ASTERIX_RAW";
     std::string strOutputFormat = "ASTERIX_TXT";
@@ -258,6 +277,28 @@ int main(int argc, const char *argv[]) {
             std::cerr << "Error: ZeroMQ support not compiled in. Rebuild with -DENABLE_ZEROMQ=ON" << std::endl;
             return 1;
 #endif
+        } else if ((arg == "-m") || (arg == "--mqtt")) {
+#ifdef HAVE_MQTT
+            if (i >= argc - 1) {
+                std::cerr << "Error: " + arg + " option requires one argument." << std::endl;
+                return 1;
+            }
+            strMQTTInput = argv[++i];
+#else
+            std::cerr << "Error: MQTT support not compiled in. Rebuild with -DENABLE_MQTT=ON" << std::endl;
+            return 1;
+#endif
+        } else if ((arg == "-g") || (arg == "--grpc")) {
+#ifdef HAVE_GRPC
+            if (i >= argc - 1) {
+                std::cerr << "Error: " + arg + " option requires one argument." << std::endl;
+                return 1;
+            }
+            strGRPCInput = argv[++i];
+#else
+            std::cerr << "Error: gRPC support not compiled in. Rebuild with -DENABLE_GRPC=ON" << std::endl;
+            return 1;
+#endif
         }
     }
 
@@ -312,6 +353,20 @@ int main(int argc, const char *argv[]) {
         // ZeroMQ input: format is type:endpoint[:bind]
         // e.g., SUB:tcp://192.168.1.10:5555 or PULL:tcp://*:5556:bind
         strInput = "zmq;" + strZMQInput + ";";
+    }
+#endif
+#ifdef HAVE_MQTT
+    else if (!strMQTTInput.empty()) {
+        // MQTT input: format is mode:host:port:topic[:qos[:clientid[:user:pass]]]
+        // e.g., SUB:localhost:1883:asterix/#
+        strInput = "mqtt;" + strMQTTInput + ";";
+    }
+#endif
+#ifdef HAVE_GRPC
+    else if (!strGRPCInput.empty()) {
+        // gRPC input: format is mode:endpoint[:tls]
+        // e.g., CLIENT:localhost:50051 or SERVER:0.0.0.0:50051
+        strInput = "grpc;" + strGRPCInput + ";";
     }
 #endif
 

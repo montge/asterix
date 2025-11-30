@@ -67,6 +67,8 @@ option(BUILD_EXECUTABLE "Build command-line executable" ON)
 option(BUILD_TESTING "Build tests" OFF)
 option(ENABLE_COVERAGE "Enable code coverage" OFF)
 option(ENABLE_ZEROMQ "Enable ZeroMQ transport support" OFF)
+option(ENABLE_MQTT "Enable MQTT transport support" OFF)
+option(ENABLE_GRPC "Enable gRPC transport support" OFF)
 
 # C++ standard: C++23 for GCC/Clang, C++20 for MSVC (MSVC doesn't fully support C++23 yet)
 if(MSVC)
@@ -195,6 +197,73 @@ if(ENABLE_ZEROMQ)
     endif()
 endif()
 
+# Optional MQTT support (requires libmosquitto)
+if(ENABLE_MQTT)
+    find_package(PkgConfig)
+    if(PkgConfig_FOUND)
+        pkg_check_modules(MOSQUITTO libmosquitto)
+    endif()
+
+    if(NOT MOSQUITTO_FOUND)
+        # Try manual search
+        find_path(MOSQUITTO_INCLUDE_DIRS mosquitto.h
+            PATHS /usr/include /usr/local/include
+        )
+        find_library(MOSQUITTO_LIBRARIES mosquitto
+            PATHS /usr/lib /usr/local/lib /usr/lib/x86_64-linux-gnu
+        )
+        if(MOSQUITTO_INCLUDE_DIRS AND MOSQUITTO_LIBRARIES)
+            set(MOSQUITTO_FOUND TRUE)
+        endif()
+    endif()
+
+    if(MOSQUITTO_FOUND)
+        message(STATUS "Mosquitto (MQTT) found: ${MOSQUITTO_LIBRARIES}")
+        include_directories(${MOSQUITTO_INCLUDE_DIRS})
+        add_compile_definitions(HAVE_MQTT)
+    else()
+        message(WARNING "MQTT requested but libmosquitto not found. MQTT support disabled.")
+        set(ENABLE_MQTT OFF)
+    endif()
+endif()
+
+# Optional gRPC support (requires grpc++)
+if(ENABLE_GRPC)
+    find_package(PkgConfig)
+    if(PkgConfig_FOUND)
+        pkg_check_modules(GRPC grpc++)
+    endif()
+
+    if(NOT GRPC_FOUND)
+        # Try CMake find_package for gRPC
+        find_package(gRPC CONFIG QUIET)
+        if(gRPC_FOUND)
+            set(GRPC_FOUND TRUE)
+            set(GRPC_LIBRARIES gRPC::grpc++)
+        else()
+            # Try manual search
+            find_path(GRPC_INCLUDE_DIRS grpcpp/grpcpp.h
+                PATHS /usr/include /usr/local/include
+            )
+            find_library(GRPC_LIBRARIES grpc++
+                PATHS /usr/lib /usr/local/lib /usr/lib/x86_64-linux-gnu
+            )
+            if(GRPC_INCLUDE_DIRS AND GRPC_LIBRARIES)
+                set(GRPC_FOUND TRUE)
+            endif()
+        endif()
+    endif()
+
+    if(GRPC_FOUND)
+        message(STATUS "gRPC found: ${GRPC_LIBRARIES}")
+        include_directories(${GRPC_INCLUDE_DIRS})
+        add_compile_definitions(HAVE_GRPC)
+    else()
+        message(WARNING "gRPC requested but not found. gRPC support disabled.")
+        set(ENABLE_GRPC OFF)
+    endif()
+endif()
+
 # Coverage flags (if enabled)
 if(ENABLE_COVERAGE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
@@ -284,6 +353,16 @@ if(ENABLE_ZEROMQ AND ZMQ_FOUND)
     list(APPEND ASTERIX_LIB_SOURCES src/engine/zeromqdevice.cxx)
 endif()
 
+# MQTT device (optional)
+if(ENABLE_MQTT AND MOSQUITTO_FOUND)
+    list(APPEND ASTERIX_LIB_SOURCES src/engine/mqttdevice.cxx)
+endif()
+
+# gRPC device (optional)
+if(ENABLE_GRPC AND GRPC_FOUND)
+    list(APPEND ASTERIX_LIB_SOURCES src/engine/grpcdevice.cxx)
+endif()
+
 # Go bindings C wrapper (included in library for cgo)
 list(APPEND ASTERIX_LIB_SOURCES src/go/asterix_wrapper.cpp)
 
@@ -340,6 +419,16 @@ if(BUILD_SHARED_LIBS)
         target_link_libraries(asterix_shared ${ZMQ_LIBRARIES})
     endif()
 
+    # Link MQTT if enabled
+    if(ENABLE_MQTT AND MOSQUITTO_FOUND)
+        target_link_libraries(asterix_shared ${MOSQUITTO_LIBRARIES})
+    endif()
+
+    # Link gRPC if enabled
+    if(ENABLE_GRPC AND GRPC_FOUND)
+        target_link_libraries(asterix_shared ${GRPC_LIBRARIES})
+    endif()
+
     # Install shared library
     # On macOS, LIBRARY DESTINATION installs .dylib files
     # For versioned libraries, CMake automatically handles the symlinks
@@ -364,6 +453,16 @@ if(BUILD_STATIC_LIBS)
     # Link ZeroMQ if enabled
     if(ENABLE_ZEROMQ AND ZMQ_FOUND)
         target_link_libraries(asterix_static ${ZMQ_LIBRARIES})
+    endif()
+
+    # Link MQTT if enabled
+    if(ENABLE_MQTT AND MOSQUITTO_FOUND)
+        target_link_libraries(asterix_static ${MOSQUITTO_LIBRARIES})
+    endif()
+
+    # Link gRPC if enabled
+    if(ENABLE_GRPC AND GRPC_FOUND)
+        target_link_libraries(asterix_static ${GRPC_LIBRARIES})
     endif()
 
     # Install static library
@@ -560,6 +659,16 @@ if(ENABLE_ZEROMQ)
     message(STATUS "  ZeroMQ support: ${ZMQ_FOUND}")
 else()
     message(STATUS "  ZeroMQ support: OFF")
+endif()
+if(ENABLE_MQTT)
+    message(STATUS "  MQTT support: ${MOSQUITTO_FOUND}")
+else()
+    message(STATUS "  MQTT support: OFF")
+endif()
+if(ENABLE_GRPC)
+    message(STATUS "  gRPC support: ${GRPC_FOUND}")
+else()
+    message(STATUS "  gRPC support: OFF")
 endif()
 message(STATUS "  C++ Standard: C++${CMAKE_CXX_STANDARD}")
 message(STATUS "  C Standard: C${CMAKE_C_STANDARD}")

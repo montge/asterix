@@ -22,6 +22,10 @@ import os
 import json
 import hashlib
 import time
+import logging
+
+# Configure logging for test diagnostics
+logger = logging.getLogger(__name__)
 
 
 def get_pcap_file(filename):
@@ -242,9 +246,9 @@ class TestMalformedInput(unittest.TestCase):
         try:
             records = asterix.parse(truncated)
             self.assertIsInstance(records, list)
-        except Exception:
-            # Raising an error is also acceptable
-            pass
+        except (ValueError, RuntimeError) as e:
+            # Raising an error is acceptable for malformed data
+            logger.debug("Expected exception for truncated record: %s", e)
 
     def test_invalid_category(self):
         """Test handling of invalid/undefined category."""
@@ -254,8 +258,9 @@ class TestMalformedInput(unittest.TestCase):
         try:
             records = asterix.parse(invalid_cat)
             self.assertIsInstance(records, list)
-        except Exception:
-            pass
+        except (ValueError, RuntimeError) as e:
+            # Raising an error is acceptable for invalid category
+            logger.debug("Expected exception for invalid category: %s", e)
 
     def test_zero_length_block(self):
         """Test handling of zero-length block."""
@@ -264,8 +269,9 @@ class TestMalformedInput(unittest.TestCase):
         try:
             records = asterix.parse(zero_len)
             self.assertIsInstance(records, list)
-        except Exception:
-            pass
+        except (ValueError, RuntimeError) as e:
+            # Raising an error is acceptable for zero-length block
+            logger.debug("Expected exception for zero-length block: %s", e)
 
     def test_oversized_length(self):
         """Test handling of length field larger than data."""
@@ -274,8 +280,9 @@ class TestMalformedInput(unittest.TestCase):
         try:
             records = asterix.parse(oversized)
             self.assertIsInstance(records, list)
-        except Exception:
-            pass
+        except (ValueError, RuntimeError) as e:
+            # Raising an error is acceptable for oversized length
+            logger.debug("Expected exception for oversized length: %s", e)
 
 
 class TestCRCValidation(unittest.TestCase):

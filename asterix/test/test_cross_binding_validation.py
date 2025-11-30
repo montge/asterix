@@ -18,10 +18,14 @@ Prerequisites:
 
 import asterix
 import unittest
-import subprocess
+import subprocess  # nosec B404 - subprocess is required for cross-binding validation tests
 import json
 import os
 import sys
+import logging
+
+# Configure logging for test diagnostics
+logger = logging.getLogger(__name__)
 
 
 def get_sample_file(filename):
@@ -93,6 +97,7 @@ class TestCrossBindingConsistency(unittest.TestCase):
         py_records = asterix.parse(data)
 
         # C++ parsing (JSON output)
+        # nosec B603 - exe_path is validated to exist above, not user input
         result = subprocess.run(
             [exe_path, '-d', config_path, '-j', '-f', raw_path],
             capture_output=True, text=True, timeout=30
@@ -132,6 +137,7 @@ class TestCrossBindingConsistency(unittest.TestCase):
         py_categories = sorted(set(r['category'] for r in py_records))
 
         # C++ parsing
+        # nosec B603 - exe_path is validated to exist above, not user input
         result = subprocess.run(
             [exe_path, '-d', config_path, '-j', '-f', raw_path],
             capture_output=True, text=True, timeout=30
@@ -181,6 +187,7 @@ try {{
     console.log(JSON.stringify({{ error: e.message }}));
 }}
 '''
+        # nosec B603 B607 - Test code with known node executable and controlled script
         result = subprocess.run(
             ['node', '-e', node_script],
             capture_output=True, text=True, timeout=30,
@@ -241,6 +248,7 @@ class TestCRCConsistency(unittest.TestCase):
         py_crcs = [r['crc'] for r in py_records]
 
         # C++ parsing
+        # nosec B603 - exe_path is validated to exist above, not user input
         result = subprocess.run(
             [exe_path, '-d', config_path, '-j', '-f', raw_path],
             capture_output=True, text=True, timeout=30
@@ -308,6 +316,7 @@ class TestDataItemConsistency(unittest.TestCase):
         py_records = asterix.parse(data)
 
         # C++ parsing
+        # nosec B603 - exe_path is validated to exist above, not user input
         result = subprocess.run(
             [exe_path, '-d', config_path, '-j', '-f', raw_path],
             capture_output=True, text=True, timeout=30
@@ -354,8 +363,9 @@ class TestErrorHandlingConsistency(unittest.TestCase):
         try:
             result = asterix.parse(invalid)
             self.assertIsInstance(result, list)
-        except Exception:
-            pass  # Raising is acceptable
+        except (ValueError, RuntimeError) as e:
+            # Raising is acceptable for invalid data
+            logger.debug("Expected exception for invalid data: %s", e)
 
     def test_python_truncated_data(self):
         """Test Python handling of truncated data."""
@@ -364,8 +374,9 @@ class TestErrorHandlingConsistency(unittest.TestCase):
         try:
             result = asterix.parse(truncated)
             self.assertIsInstance(result, list)
-        except Exception:
-            pass  # Raising is acceptable
+        except (ValueError, RuntimeError) as e:
+            # Raising is acceptable for truncated data
+            logger.debug("Expected exception for truncated data: %s", e)
 
 
 if __name__ == '__main__':
