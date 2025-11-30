@@ -10,7 +10,7 @@ documentation = "https://docs.rs/asterix"
 readme = "README.md"
 keywords = ["asterix", "aviation", "atm", "surveillance", "decoder"]
 categories = ["aerospace", "parser-implementations", "encoding"]
-rust-version = "1.87"
+rust-version = "1.88"
 
 [lib]
 name = "asterix"

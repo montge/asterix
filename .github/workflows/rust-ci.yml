@@ -578,15 +578,15 @@ jobs:
   # MINIMUM SUPPORTED RUST VERSION (MSRV)
   # =============================================================================
   msrv:
-    name: Check MSRV (1.87)
+    name: Check MSRV (1.88)
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v5
 
-    - name: Install Rust 1.87
-      uses: dtolnay/rust-toolchain@1.87
+    - name: Install Rust 1.88
+      uses: dtolnay/rust-toolchain@1.88
 
     - name: Install dependencies
       run: |
