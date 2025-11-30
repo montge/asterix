@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:bb2eb21e-3277-475d-8093-b2328a9a4cd5",
+  "serialNumber": "urn:uuid:ff3b6380-3f65-4a2a-a05c-35b4322c6793",
   "version": 1,
   "metadata": {
-    "timestamp": "2025-11-30T20:41:02Z",
+    "timestamp": "2025-11-30T21:16:08Z",
     "tools": {
       "components": [
         {
@@ -25,7 +25,7 @@
     "properties": [
       {
         "name": "commit",
-        "value": "ba16a26bc1e1c869777b1f6ada9e04b2ca514b76"
+        "value": "a4fa4d8ed0c207dc935fca0c51d6c720ba34b6e1"
       },
       {
         "name": "repository",
@@ -33,7 +33,7 @@
       },
       {
         "name": "generated",
-        "value": "2025-11-30T20:41:02Z"
+        "value": "2025-11-30T21:16:08Z"
       },
       {
         "name": "tool",
@@ -254,6 +254,32 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/rust-ci.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/cache@v4?package-id=3223c78713a2a961",
+      "type": "library",
+      "name": "actions/cache",
+      "version": "v4",
+      "cpe": "cpe:2.3:a:actions\\/cache:actions\\/cache:v4:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/cache@v4",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/zenoh-integration.yml"
         }
       ]
     },
@@ -748,6 +774,32 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/wireshark-ci.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/checkout@v5?package-id=ab7fb707de4cf461",
+      "type": "library",
+      "name": "actions/checkout",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:actions\\/checkout:actions\\/checkout:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/checkout@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/zenoh-integration.yml"
         }
       ]
     },
@@ -2358,6 +2410,52 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/weekly-audit.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/upload-artifact@v5?package-id=96adba32ccb41705",
+      "type": "library",
+      "name": "actions/upload-artifact",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload-artifact:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/upload-artifact@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload_artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload-artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload_artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload-artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload_artifact:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/zenoh-integration.yml"
         }
       ]
     },
@@ -6138,7 +6236,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/criterion@0.7.0?package-id=2af057853097b2c1",
+      "bom-ref": "pkg:cargo/criterion@0.7.0?package-id=7068610ac31eaf7f",
       "type": "library",
       "name": "criterion",
       "version": "0.7.0",
@@ -8078,6 +8176,52 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/weekly-audit.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/dtolnay/rust-toolchain@stable?package-id=03603fe7f05aada5",
+      "type": "library",
+      "name": "dtolnay/rust-toolchain",
+      "version": "stable",
+      "cpe": "cpe:2.3:a:dtolnay\\/rust-toolchain:dtolnay\\/rust-toolchain:stable:*:*:*:*:*:*:*",
+      "purl": "pkg:github/dtolnay/rust-toolchain@stable",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:dtolnay\\/rust-toolchain:dtolnay\\/rust_toolchain:stable:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:dtolnay\\/rust_toolchain:dtolnay\\/rust-toolchain:stable:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:dtolnay\\/rust_toolchain:dtolnay\\/rust_toolchain:stable:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:dtolnay\\/rust:dtolnay\\/rust-toolchain:stable:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:dtolnay\\/rust:dtolnay\\/rust_toolchain:stable:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/zenoh-integration.yml"
         }
       ]
     },
@@ -23341,6 +23485,68 @@
       ]
     },
     {
+      "bom-ref": "pkg:github/taiki-e/install-action@cargo-llvm-cov?package-id=f6d88bc40b10fcd9",
+      "type": "library",
+      "name": "taiki-e/install-action",
+      "version": "cargo-llvm-cov",
+      "cpe": "cpe:2.3:a:taiki-e\\/install-action:taiki-e\\/install-action:cargo-llvm-cov:*:*:*:*:*:*:*",
+      "purl": "pkg:github/taiki-e/install-action@cargo-llvm-cov",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:taiki-e\\/install-action:taiki_e\\/install_action:cargo-llvm-cov:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:taiki_e\\/install_action:taiki-e\\/install-action:cargo-llvm-cov:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:taiki_e\\/install_action:taiki_e\\/install_action:cargo-llvm-cov:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:taiki-e\\/install:taiki-e\\/install-action:cargo-llvm-cov:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:taiki-e\\/install:taiki_e\\/install_action:cargo-llvm-cov:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:taiki_e\\/install:taiki-e\\/install-action:cargo-llvm-cov:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:taiki_e\\/install:taiki_e\\/install_action:cargo-llvm-cov:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:taiki:taiki-e\\/install-action:cargo-llvm-cov:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:taiki:taiki_e\\/install_action:cargo-llvm-cov:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/zenoh-integration.yml"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:github/taiki-e/install-action@cargo-tarpaulin?package-id=782c5da2ec2ff422",
       "type": "library",
       "name": "taiki-e/install-action",
@@ -32944,6 +33150,21 @@
       ]
     },
     {
+      "bom-ref": "2cc9a485623d6d3e",
+      "type": "file",
+      "name": "/home/runner/work/asterix/asterix/.github/workflows/zenoh-integration.yml",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "3643ad2c777bdc644bedd3b184cef3eea5f1bc4e"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "e156758748e5a467ab7564afd25302ee0d3c28317d5d1c22f1cc64decbedde75"
+        }
+      ]
+    },
+    {
       "bom-ref": "e0d936dda7fa042c",
       "type": "file",
       "name": "/home/runner/work/asterix/asterix/asterix-go/go.mod",
@@ -32980,11 +33201,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "938dd9b06b5dbb3732fbc4243f722f9e13cecf60"
+          "content": "e74454a4d25dbc2e8bf755cac229bdfeef6e05a2"
         },
         {
           "alg": "SHA-256",
-          "content": "1729bfb3e8f5e2f9d6fac6737daff8d700a80cc0b8957601f92a3a72ed882d14"
+          "content": "a3497af7e299f6a08d4a7556bdfa458d60b4af27f0df01f5fc0c320dafe1344f"
         }
       ]
     },
@@ -33108,7 +33329,7 @@
       "ref": "pkg:cargo/asterix@0.1.0?package-id=2b5a9dfbf154d504",
       "dependsOn": [
         "pkg:cargo/cc@1.2.47?package-id=91350c22edec1b8e",
-        "pkg:cargo/criterion@0.7.0?package-id=2af057853097b2c1",
+        "pkg:cargo/criterion@0.7.0?package-id=7068610ac31eaf7f",
         "pkg:cargo/cxx-build@1.0.189?package-id=cbf2aef29914986c",
         "pkg:cargo/cxx@1.0.189?package-id=df6a8325d590948a",
         "pkg:cargo/env_logger@0.11.8?package-id=9c253cbe57a1598c",
@@ -33293,7 +33514,7 @@
       ]
     },
     {
-      "ref": "pkg:cargo/criterion@0.7.0?package-id=2af057853097b2c1",
+      "ref": "pkg:cargo/criterion@0.7.0?package-id=7068610ac31eaf7f",
       "dependsOn": [
         "pkg:cargo/anes@0.1.6?package-id=fffa91752ddac43f",
         "pkg:cargo/cast@0.3.0?package-id=6e18e026d74ffa04",
@@ -33309,6 +33530,7 @@
         "pkg:cargo/serde@1.0.228?package-id=6623a63a8836851d",
         "pkg:cargo/serde_json@1.0.145?package-id=1e1f347f741ba165",
         "pkg:cargo/tinytemplate@1.2.1?package-id=81c47d46fab1e76b",
+        "pkg:cargo/tokio@1.48.0?package-id=eb319630447b1798",
         "pkg:cargo/walkdir@2.5.0?package-id=a775cd9d1aa04103"
       ]
     },

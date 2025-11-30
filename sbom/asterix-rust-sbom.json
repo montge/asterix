@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:e8e35084-d3e1-4d76-9284-632e4ee57da9",
+  "serialNumber": "urn:uuid:e1eb10b2-9aad-4c9d-9f25-316e83b97de3",
   "version": 1,
   "metadata": {
-    "timestamp": "2025-11-30T20:41:04Z",
+    "timestamp": "2025-11-30T21:16:11Z",
     "tools": {
       "components": [
         {
@@ -25,11 +25,11 @@
     "properties": [
       {
         "name": "commit",
-        "value": "ba16a26bc1e1c869777b1f6ada9e04b2ca514b76"
+        "value": "a4fa4d8ed0c207dc935fca0c51d6c720ba34b6e1"
       },
       {
         "name": "generated",
-        "value": "2025-11-30T20:41:04Z"
+        "value": "2025-11-30T21:16:11Z"
       },
       {
         "name": "main_version",
@@ -2901,7 +2901,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/criterion@0.7.0?package-id=59fad5ca07fb461d",
+      "bom-ref": "pkg:cargo/criterion@0.7.0?package-id=5e20d897d915bad3",
       "type": "library",
       "name": "criterion",
       "version": "0.7.0",
@@ -24826,11 +24826,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "938dd9b06b5dbb3732fbc4243f722f9e13cecf60"
+          "content": "e74454a4d25dbc2e8bf755cac229bdfeef6e05a2"
         },
         {
           "alg": "SHA-256",
-          "content": "1729bfb3e8f5e2f9d6fac6737daff8d700a80cc0b8957601f92a3a72ed882d14"
+          "content": "a3497af7e299f6a08d4a7556bdfa458d60b4af27f0df01f5fc0c320dafe1344f"
         }
       ]
     },
@@ -24967,7 +24967,7 @@
       "ref": "pkg:cargo/asterix@0.1.0?package-id=dd489551188729be",
       "dependsOn": [
         "pkg:cargo/cc@1.2.47?package-id=7c85dd3b0938e6d2",
-        "pkg:cargo/criterion@0.7.0?package-id=59fad5ca07fb461d",
+        "pkg:cargo/criterion@0.7.0?package-id=5e20d897d915bad3",
         "pkg:cargo/cxx-build@1.0.189?package-id=cb3fee9b3e583300",
         "pkg:cargo/cxx@1.0.189?package-id=5e57148eb6795ae7",
         "pkg:cargo/env_logger@0.11.8?package-id=f18323cf7d36dcd0",
@@ -25139,7 +25139,7 @@
       ]
     },
     {
-      "ref": "pkg:cargo/criterion@0.7.0?package-id=59fad5ca07fb461d",
+      "ref": "pkg:cargo/criterion@0.7.0?package-id=5e20d897d915bad3",
       "dependsOn": [
         "pkg:cargo/anes@0.1.6?package-id=3c40a7ab8b8116b5",
         "pkg:cargo/cast@0.3.0?package-id=c0503009f5ff121e",
@@ -25155,6 +25155,7 @@
         "pkg:cargo/serde@1.0.228?package-id=bc7b9aacea66060b",
         "pkg:cargo/serde_json@1.0.145?package-id=12a6f5288b90b95a",
         "pkg:cargo/tinytemplate@1.2.1?package-id=f6e1f784db1e6270",
+        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
         "pkg:cargo/walkdir@2.5.0?package-id=6e656f3cc1b03460"
       ]
     },
