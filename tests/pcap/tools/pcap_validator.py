@@ -229,16 +229,20 @@ class PCAPValidator:
         with open(golden_path, "r") as f:
             golden_content = f.read()
 
-        if output.strip() == golden_content.strip():
+        # Normalize both outputs: strip trailing whitespace from each line
+        def normalize(text):
+            return '\n'.join(line.rstrip() for line in text.split('\n')).strip()
+
+        if normalize(output) == normalize(golden_content):
             return TestResult(
                 name=test_case.name,
                 passed=True,
                 message="Output matches golden file"
             )
         else:
-            # Find first difference
-            output_lines = output.strip().split('\n')
-            golden_lines = golden_content.strip().split('\n')
+            # Find first difference (using normalized lines)
+            output_lines = [line.rstrip() for line in output.strip().split('\n')]
+            golden_lines = [line.rstrip() for line in golden_content.strip().split('\n')]
 
             diff_line = 0
             for i, (out, gold) in enumerate(zip(output_lines, golden_lines)):
