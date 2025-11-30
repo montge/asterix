@@ -390,14 +390,186 @@ zenohd --plugin dds
 
 ## Security Considerations
 
-### Transport Security
+### TLS Configuration
 
-Zenoh supports TLS for encrypted communications:
+Zenoh supports TLS for encrypted communications between clients and routers. This section covers complete TLS setup for production deployments.
+
+#### Certificate Generation
+
+Generate certificates using OpenSSL for testing or production:
+
+```bash
+#!/bin/bash
+# generate_certs.sh - Generate TLS certificates for Zenoh
+
+CERT_DIR="./certs"
+mkdir -p "$CERT_DIR"
+
+# 1. Generate CA (Certificate Authority)
+openssl genrsa -out "$CERT_DIR/ca.key" 4096
+openssl req -new -x509 -days 3650 -key "$CERT_DIR/ca.key" \
+    -out "$CERT_DIR/ca.crt" \
+    -subj "/C=US/ST=State/L=City/O=Organization/CN=ASTERIX-CA"
+
+# 2. Generate Router Certificate
+openssl genrsa -out "$CERT_DIR/router.key" 2048
+openssl req -new -key "$CERT_DIR/router.key" \
+    -out "$CERT_DIR/router.csr" \
+    -subj "/C=US/ST=State/L=City/O=Organization/CN=zenoh-router"
+
+# Sign with CA
+openssl x509 -req -days 365 -in "$CERT_DIR/router.csr" \
+    -CA "$CERT_DIR/ca.crt" -CAkey "$CERT_DIR/ca.key" \
+    -CAcreateserial -out "$CERT_DIR/router.crt"
+
+# 3. Generate Client Certificate (for mTLS)
+openssl genrsa -out "$CERT_DIR/client.key" 2048
+openssl req -new -key "$CERT_DIR/client.key" \
+    -out "$CERT_DIR/client.csr" \
+    -subj "/C=US/ST=State/L=City/O=Organization/CN=asterix-client"
+
+openssl x509 -req -days 365 -in "$CERT_DIR/client.csr" \
+    -CA "$CERT_DIR/ca.crt" -CAkey "$CERT_DIR/ca.key" \
+    -CAcreateserial -out "$CERT_DIR/client.crt"
+
+echo "Certificates generated in $CERT_DIR/"
+ls -la "$CERT_DIR/"
+```
+
+#### Router TLS Configuration
+
+Configure the Zenoh router (`zenohd`) with TLS:
+
+```json5
+// zenoh_router_tls.json5
+{
+  // Listen on TLS endpoint
+  listen: {
+    endpoints: ["tls/0.0.0.0:7447"]
+  },
+
+  // TLS configuration
+  transport: {
+    link: {
+      tls: {
+        // Server certificate
+        server_certificate: "/path/to/certs/router.crt",
+        server_private_key: "/path/to/certs/router.key",
+
+        // CA for client verification (mTLS)
+        root_ca_certificate: "/path/to/certs/ca.crt",
+
+        // Require client certificates (mTLS)
+        client_auth: true
+      }
+    }
+  }
+}
+```
+
+Start router with TLS configuration:
+
+```bash
+zenohd -c zenoh_router_tls.json5
+```
+
+#### Client TLS Configuration in Rust
+
+Connect to TLS-enabled router:
 
 ```rust
-// Connect via TLS
-let config = ZenohConfig::with_router("tls/secure-router.atc.local:7447");
+use asterix::transport::zenoh::{ZenohPublisher, ZenohConfig};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Simple TLS connection (server certificate verification)
+    let config = ZenohConfig::with_router("tls/secure-router.atc.local:7447");
+    let publisher = ZenohPublisher::new(config).await?;
+
+    // ... publish data
+
+    publisher.close().await?;
+    Ok(())
+}
 ```
+
+For advanced TLS configuration with client certificates (mTLS), use Zenoh's native configuration:
+
+```rust
+use zenoh::Config;
+use asterix::transport::zenoh::{ZenohPublisher, ZenohConfig};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Create Zenoh config with full TLS settings
+    let mut zenoh_config = Config::default();
+
+    // Set TLS endpoint
+    zenoh_config.insert_json5(
+        "connect/endpoints",
+        r#"["tls/secure-router.atc.local:7447"]"#
+    )?;
+
+    // Configure client certificate (for mTLS)
+    zenoh_config.insert_json5(
+        "transport/link/tls/client_certificate",
+        r#""/path/to/certs/client.crt""#
+    )?;
+
+    zenoh_config.insert_json5(
+        "transport/link/tls/client_private_key",
+        r#""/path/to/certs/client.key""#
+    )?;
+
+    // CA certificate for server verification
+    zenoh_config.insert_json5(
+        "transport/link/tls/root_ca_certificate",
+        r#""/path/to/certs/ca.crt""#
+    )?;
+
+    // Create session with TLS config
+    let session = zenoh::open(zenoh_config).await?;
+
+    // ... use session for publishing/subscribing
+
+    session.close().await?;
+    Ok(())
+}
+```
+
+#### Mutual TLS (mTLS) Architecture
+
+For maximum security in ATM environments, use mutual TLS where both client and server authenticate each other:
+
+```
+┌──────────────────┐                    ┌──────────────────┐
+│  ASTERIX Client  │                    │   Zenoh Router   │
+│                  │                    │                  │
+│  ┌────────────┐  │   TLS Handshake    │  ┌────────────┐  │
+│  │client.crt  │──┼───────────────────►│  │server.crt  │  │
+│  │client.key  │  │                    │  │server.key  │  │
+│  │ca.crt      │◄─┼────────────────────│  │ca.crt      │  │
+│  └────────────┘  │   Mutual Auth      │  └────────────┘  │
+└──────────────────┘                    └──────────────────┘
+
+1. Client presents client.crt to server
+2. Server verifies client.crt against ca.crt
+3. Server presents server.crt to client
+4. Client verifies server.crt against ca.crt
+5. Encrypted channel established
+```
+
+#### TLS Best Practices for ATM/ATC
+
+| Practice | Description |
+|----------|-------------|
+| **Use strong keys** | RSA 2048+ or ECDSA P-256+ |
+| **Short certificate lifetimes** | 90-365 days for operational certs |
+| **Certificate revocation** | Implement CRL or OCSP checking |
+| **Separate CA** | Use dedicated CA for ASTERIX infrastructure |
+| **HSM for keys** | Store private keys in Hardware Security Modules |
+| **TLS 1.3** | Use TLS 1.3 where possible for improved security |
+| **Certificate pinning** | Consider for high-security deployments |
 
 ### Access Control
 
@@ -407,6 +579,7 @@ For production deployments:
 2. **Configure router access control** to limit who can publish/subscribe
 3. **Enable authentication** on Zenoh routers
 4. **Encrypt data in transit** using TLS
+5. **Audit logging** - Enable connection and message logging
 
 ### Network Isolation
 
