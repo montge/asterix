@@ -116,6 +116,15 @@ static void show_usage(std::string name) {
             << "\n\t\t\tFor example: -g CLIENT:localhost:50051"
             << "\n\t\t\tFor example: -g SERVER:0.0.0.0:50051"
 #endif
+#ifdef HAVE_CYCLONEDDS
+            << "\n\t--dds\t\tCyclone DDS endpoint. Format: mode:domain:topic[:qos]"
+            << "\n\t\t\tmode: PUB (publisher) or SUB (subscriber)"
+            << "\n\t\t\tdomain: DDS domain ID (0-232)"
+            << "\n\t\t\ttopic: Topic name (e.g., AsterixData)"
+            << "\n\t\t\tqos: optional QoS profile (besteffort, reliable, transient)"
+            << "\n\t\t\tFor example: --dds SUB:0:AsterixData"
+            << "\n\t\t\tFor example: --dds SUB:0:AsterixCat048:reliable"
+#endif
             << std::endl;
 }
 
@@ -126,6 +135,7 @@ int main(int argc, const char *argv[]) {
     std::string strZMQInput;
     std::string strMQTTInput;
     std::string strGRPCInput;
+    std::string strDDSInput;
     std::string strFilterFile;
     std::string strInputFormat = "ASTERIX_RAW";
     std::string strOutputFormat = "ASTERIX_TXT";
@@ -299,6 +309,17 @@ int main(int argc, const char *argv[]) {
             std::cerr << "Error: gRPC support not compiled in. Rebuild with -DENABLE_GRPC=ON" << std::endl;
             return 1;
 #endif
+        } else if ((arg == "--dds") || (arg == "--cyclonedds")) {
+#ifdef HAVE_CYCLONEDDS
+            if (i >= argc - 1) {
+                std::cerr << "Error: " + arg + " option requires one argument." << std::endl;
+                return 1;
+            }
+            strDDSInput = argv[++i];
+#else
+            std::cerr << "Error: Cyclone DDS support not compiled in. Rebuild with -DENABLE_CYCLONEDDS=ON" << std::endl;
+            return 1;
+#endif
         }
     }
 
@@ -367,6 +388,13 @@ int main(int argc, const char *argv[]) {
         // gRPC input: format is mode:endpoint[:tls]
         // e.g., CLIENT:localhost:50051 or SERVER:0.0.0.0:50051
         strInput = "grpc;" + strGRPCInput + ";";
+    }
+#endif
+#ifdef HAVE_CYCLONEDDS
+    else if (!strDDSInput.empty()) {
+        // DDS input: format is mode:domain:topic[:qos]
+        // e.g., SUB:0:AsterixData or SUB:0:AsterixCat048:reliable
+        strInput = "dds;" + strDDSInput + ";";
     }
 #endif
 

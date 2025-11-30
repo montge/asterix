@@ -85,6 +85,7 @@ let records = parser.parse(&data)?;
 - **[ZeroMQ Transport Guide](guides/ZEROMQ_GUIDE.html)** - Low-latency messaging transport
 - **[MQTT Transport Guide](guides/MQTT_GUIDE.html)** - IoT and cloud messaging transport
 - **[gRPC Transport Guide](guides/GRPC_GUIDE.html)** - High-performance RPC transport
+- **[Cyclone DDS Guide](guides/CYCLONEDDS_GUIDE.html)** - Real-time DDS for safety-critical systems
 - **[Troubleshooting Guide](TROUBLESHOOTING.html)** - Solutions to common issues
 
 ### Technical Resources
