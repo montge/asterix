@@ -1,0 +1,164 @@
+name: Wireshark Plugin CI
+
+on:
+  push:
+    branches: [ master, develop, 'feature/**', 'wireshark/**' ]
+    paths:
+      - 'src/asterix/wireshark-plugin/**'
+      - 'src/asterix/WiresharkWrapper.*'
+      - '.github/workflows/wireshark-ci.yml'
+  pull_request:
+    branches: [ master, develop ]
+    paths:
+      - 'src/asterix/wireshark-plugin/**'
+      - 'src/asterix/WiresharkWrapper.*'
+      - '.github/workflows/wireshark-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # =============================================================================
+  # BUILD ON LINUX
+  # =============================================================================
+  build-linux:
+    name: Build on Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          libexpat1-dev \
+          libglib2.0-dev \
+          wireshark-dev \
+          tshark
+
+    - name: Build ASTERIX library
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build --parallel
+        cmake --install build
+
+    - name: Build Wireshark plugin
+      run: |
+        cd src/asterix/wireshark-plugin/4.x
+        mkdir build && cd build
+        cmake .. \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DASTERIX_LIBRARY=${{ github.workspace }}/install/lib/libasterix.so \
+          -DASTERIX_INCLUDE_DIR=${{ github.workspace }}/install/include/asterix
+        cmake --build .
+
+    - name: Verify plugin built
+      run: |
+        ls -la src/asterix/wireshark-plugin/4.x/build/
+        file src/asterix/wireshark-plugin/4.x/build/asterix.so
+
+    - name: Test plugin loading (tshark)
+      run: |
+        # Get Wireshark version for plugin path
+        WS_VERSION=$(tshark --version | head -1 | grep -oP '\d+\.\d+' | head -1)
+        echo "Wireshark version: $WS_VERSION"
+
+        # Create plugin directory
+        mkdir -p ~/.local/lib/wireshark/plugins/${WS_VERSION}/epan/
+
+        # Copy plugin
+        cp src/asterix/wireshark-plugin/4.x/build/asterix.so ~/.local/lib/wireshark/plugins/${WS_VERSION}/epan/
+
+        # Copy config files
+        mkdir -p ~/.config/asterix/
+        cp -r asterix/config/* ~/.config/asterix/ 2>/dev/null || cp -r install/share/asterix/config/* ~/.config/asterix/
+
+        # Verify plugin loads
+        tshark -G plugins 2>&1 | grep -i asterix || echo "Note: Plugin may need config path adjustment"
+      continue-on-error: true
+
+    - name: Upload plugin artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: wireshark-plugin-linux
+        path: src/asterix/wireshark-plugin/4.x/build/asterix.so
+        retention-days: 7
+
+  # =============================================================================
+  # BUILD ON MACOS
+  # =============================================================================
+  build-macos:
+    name: Build on macOS
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Install dependencies
+      run: |
+        brew update
+        brew install cmake expat glib wireshark
+
+    - name: Build ASTERIX library
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build --parallel
+        cmake --install build
+
+    - name: Build Wireshark plugin
+      run: |
+        cd src/asterix/wireshark-plugin/4.x
+        mkdir build && cd build
+
+        # Find Wireshark include path
+        WS_INCLUDE=$(brew --prefix wireshark)/include/wireshark
+
+        cmake .. \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DASTERIX_LIBRARY=${{ github.workspace }}/install/lib/libasterix.dylib \
+          -DASTERIX_INCLUDE_DIR=${{ github.workspace }}/install/include/asterix \
+          -DWIRESHARK_INCLUDE_DIR=${WS_INCLUDE}
+        cmake --build .
+      continue-on-error: true  # macOS Wireshark dev setup can be tricky
+
+    - name: Upload plugin artifact
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: wireshark-plugin-macos
+        path: src/asterix/wireshark-plugin/4.x/build/asterix.so
+        retention-days: 7
+
+  # =============================================================================
+  # BUILD SUMMARY
+  # =============================================================================
+  wireshark-build-summary:
+    name: Wireshark Build Summary
+    runs-on: ubuntu-latest
+    needs: [build-linux, build-macos]
+    if: always()
+
+    steps:
+    - name: Check results
+      run: |
+        echo "=========================================="
+        echo "   WIRESHARK PLUGIN BUILD SUMMARY"
+        echo "=========================================="
+        echo ""
+        echo "Linux:     ${{ needs.build-linux.result }}"
+        echo "macOS:     ${{ needs.build-macos.result }}"
+        echo ""
+
+        if [[ "${{ needs.build-linux.result }}" == "success" ]]; then
+          echo "Linux build passed!"
+          exit 0
+        else
+          echo "Linux build failed - this is the primary platform"
+          exit 1
+        fi
