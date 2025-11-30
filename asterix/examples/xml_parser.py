@@ -83,11 +83,14 @@ __author__ = 'xiaojian'
 
 import logging
 import json
-import xml.dom.minidom
-from xml.dom import Node
-from xml.dom.minidom import Text
-from xml.dom.minidom import Element
-from xml.dom.minidom import parseString
+# Security Note: These XML modules are used to parse LOCAL, TRUSTED ASTERIX config
+# files shipped with this project. The XML files are static definitions, not
+# user-provided or external data. XXE and other XML attacks are not applicable.
+import xml.dom.minidom  # nosec B408 - parsing trusted local config files
+from xml.dom import Node  # nosec B408
+from xml.dom.minidom import Text  # nosec B408
+from xml.dom.minidom import Element  # nosec B408
+from xml.dom.minidom import parseString  # nosec B408
 
 logging.basicConfig(level=logging.INFO)
 
@@ -95,7 +98,8 @@ logging.basicConfig(level=logging.INFO)
 xml_file = "asterix/config/asterix_cat062_1_18.xml"
 
 # Parse XML document
-dom = xml.dom.minidom.parse(xml_file)
+# nosec B318 - parsing trusted local ASTERIX config file, not untrusted input
+dom = xml.dom.minidom.parse(xml_file)  # nosec B318
 root = dom.documentElement
 
 # Global counter for variable format items

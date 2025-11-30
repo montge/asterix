@@ -375,14 +375,16 @@ def encode_cat048(
         mode3a = None
         if include_mode3a:
             # Generate random Mode 3/A code for demonstration
-            import random
-            mode3a = random.randint(0, 0o7777)
+            # nosec B311 - random is intentionally used for demo data, not security
+            import random  # nosec B311
+            mode3a = random.randint(0, 0o7777)  # nosec B311
 
         aircraft_address = None
         if include_aircraft_address:
             # Generate random Mode S address for demonstration
-            import random
-            aircraft_address = random.randint(0x400000, 0xFFFFFF)
+            # nosec B311 - random is intentionally used for demo data, not security
+            import random  # nosec B311
+            aircraft_address = random.randint(0x400000, 0xFFFFFF)  # nosec B311
 
         record = encode_cat048_record(
             range_m=range_m,
