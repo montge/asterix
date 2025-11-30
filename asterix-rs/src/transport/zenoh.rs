@@ -1411,4 +1411,272 @@ mod tests {
 
         let _ = publisher.close().await;
     }
+
+    // ============================================================================
+    // Error Path Coverage Tests (Issue #100)
+    // These tests specifically target uncovered error paths
+    // ============================================================================
+
+    /// Test serialization with empty hex_data triggers JSON serialization path (Line 368)
+    /// Note: With serde enabled and valid data, JSON serialization succeeds
+    #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+    async fn test_serialize_record_json_path() {
+        use crate::types::{AsterixRecord, DataItem, ParsedValue};
+        use std::collections::BTreeMap;
+
+        let config = ZenohConfig::peer_to_peer();
+
+        let publisher = match ZenohPublisher::new(config).await {
+            Ok(p) => p,
+            Err(_) => return,
+        };
+
+        // Create record with empty hex_data to trigger JSON serialization path
+        let mut items = BTreeMap::new();
+        let mut fields = BTreeMap::new();
+        fields.insert("test_value".to_string(), ParsedValue::Integer(42));
+        items.insert("I048/999".to_string(), DataItem {
+            description: Some("Test item".to_string()),
+            fields,
+        });
+
+        let record = AsterixRecord {
+            category: 48,
+            length: 10,
+            timestamp_ms: 12345,
+            hex_data: String::new(), // Empty hex_data forces serde JSON path
+            items,
+            crc: 0,
+        };
+
+        // With serde feature and valid data, this exercises the JSON serialization path
+        let result = publisher.publish(&record).await;
+        assert!(result.is_ok(), "JSON serialization should succeed: {:?}", result.err());
+
+        let _ = publisher.close().await;
+    }
+
+    /// Test serialization with include_raw_bytes disabled forces JSON path
+    #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+    async fn test_serialize_record_json_path_disabled_raw() {
+        use crate::types::{AsterixRecord, DataItem, ParsedValue};
+        use std::collections::BTreeMap;
+
+        let mut config = ZenohConfig::peer_to_peer();
+        config.include_raw_bytes = false; // Force JSON path even with hex_data
+
+        let publisher = match ZenohPublisher::new(config).await {
+            Ok(p) => p,
+            Err(_) => return,
+        };
+
+        let mut items = BTreeMap::new();
+        let mut fields = BTreeMap::new();
+        fields.insert("SAC".to_string(), ParsedValue::Integer(1));
+        fields.insert("SIC".to_string(), ParsedValue::Integer(2));
+        items.insert("I048/010".to_string(), DataItem {
+            description: None,
+            fields,
+        });
+
+        let record = AsterixRecord {
+            category: 48,
+            length: 10,
+            timestamp_ms: 0,
+            hex_data: "30000A".to_string(), // Has hex_data but include_raw_bytes is false
+            items,
+            crc: 0,
+        };
+
+        // With include_raw_bytes=false, should use JSON serialization regardless of hex_data
+        let result = publisher.publish(&record).await;
+        // This actually uses hex_data because the condition is `include_raw_bytes && !hex_data.is_empty()`
+        // So with include_raw_bytes=false, it goes to JSON path
+        assert!(result.is_ok(), "JSON serialization should succeed: {:?}", result.err());
+
+        let _ = publisher.close().await;
+    }
+
+    /// Test publisher error display contains expected text
+    #[test]
+    fn test_publisher_error_display() {
+        let err = ZenohError::PublisherError("test publisher error".to_string());
+        let display = err.to_string();
+        assert!(display.contains("publisher"), "Display should contain 'publisher'");
+        assert!(display.contains("test publisher error"), "Display should contain message");
+    }
+
+    /// Test receiver error display
+    #[test]
+    fn test_receive_error_display() {
+        let err = ZenohError::ReceiveError("channel disconnected".to_string());
+        let display = err.to_string();
+        assert!(display.contains("receive"), "Display should contain 'receive'");
+        assert!(display.contains("channel disconnected"));
+    }
+
+    /// Test hex_to_bytes with edge cases
+    #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+    async fn test_hex_to_bytes_edge_cases() {
+        use crate::types::AsterixRecord;
+        use std::collections::BTreeMap;
+
+        let config = ZenohConfig::peer_to_peer();
+
+        let publisher = match ZenohPublisher::new(config).await {
+            Ok(p) => p,
+            Err(_) => return,
+        };
+
+        // Test with tabs and newlines in hex (should be stripped)
+        let record = AsterixRecord {
+            category: 48,
+            length: 10,
+            timestamp_ms: 0,
+            hex_data: "30\t00\n0A".to_string(),
+            items: BTreeMap::new(),
+            crc: 0,
+        };
+
+        let result = publisher.publish(&record).await;
+        assert!(result.is_ok(), "Should handle whitespace in hex: {:?}", result.err());
+
+        let _ = publisher.close().await;
+    }
+
+    /// Test config clone and debug
+    #[test]
+    fn test_zenoh_config_debug_and_clone() {
+        let mut config = ZenohConfig::default();
+        config.congestion_control = CongestionControl::Drop;
+        config.priority = Priority::RealTime;
+
+        let debug_str = format!("{:?}", config);
+        assert!(debug_str.contains("ZenohConfig"));
+        assert!(debug_str.contains("asterix"));
+
+        let cloned = config.clone();
+        assert!(matches!(cloned.congestion_control, CongestionControl::Drop));
+        assert!(matches!(cloned.priority, Priority::RealTime));
+    }
+
+    /// Test priority clone and copy
+    #[test]
+    fn test_priority_clone_copy() {
+        let p1 = Priority::Interactive;
+        let p2 = p1; // Copy
+        let p3 = p1.clone(); // Clone
+        assert!(matches!(p2, Priority::Interactive));
+        assert!(matches!(p3, Priority::Interactive));
+    }
+
+    /// Test congestion control debug
+    #[test]
+    fn test_congestion_control_debug() {
+        let cc = CongestionControl::Block;
+        let debug_str = format!("{:?}", cc);
+        assert!(debug_str.contains("Block"));
+
+        let cc2 = CongestionControl::Drop;
+        let debug_str2 = format!("{:?}", cc2);
+        assert!(debug_str2.contains("Drop"));
+    }
+
+    /// Test AsterixSample with empty data
+    #[test]
+    fn test_asterix_sample_empty_data() {
+        let sample = AsterixSample {
+            category: 0,
+            sac: None,
+            sic: None,
+            data: Vec::new(),
+            timestamp: 0,
+            key_expr: String::new(),
+        };
+
+        assert!(sample.data.is_empty());
+        assert_eq!(sample.category, 0);
+    }
+
+    /// Test parse_key_expr with edge cases
+    #[test]
+    fn test_parse_key_expr_edge_cases() {
+        // Empty string
+        assert_eq!(parse_key_expr("", "asterix"), (0, None, None));
+
+        // Just prefix
+        assert_eq!(parse_key_expr("asterix", "asterix"), (0, None, None));
+
+        // Prefix with trailing slash
+        assert_eq!(parse_key_expr("asterix/", "asterix"), (0, None, None));
+
+        // Very large category number (overflows u8)
+        assert_eq!(parse_key_expr("asterix/999", "asterix"), (0, None, None));
+
+        // Negative numbers - category fails to parse but SAC/SIC still parsed
+        assert_eq!(parse_key_expr("asterix/-1/1/2", "asterix"), (0, Some(1), Some(2)));
+
+        // With extra path segments
+        assert_eq!(parse_key_expr("asterix/48/1/2/extra", "asterix"), (48, Some(1), Some(2)));
+    }
+
+    /// Test extract_sac_sic with different item ID formats
+    #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+    async fn test_extract_sac_sic_edge_cases() {
+        use crate::types::{AsterixRecord, DataItem, ParsedValue};
+        use std::collections::BTreeMap;
+
+        let config = ZenohConfig::peer_to_peer();
+
+        let publisher = match ZenohPublisher::new(config).await {
+            Ok(p) => p,
+            Err(_) => return,
+        };
+
+        // Test with missing SAC field (only SIC present)
+        let mut items = BTreeMap::new();
+        let mut fields = BTreeMap::new();
+        fields.insert("SIC".to_string(), ParsedValue::Integer(5));
+        // No SAC field
+        items.insert("I048/010".to_string(), DataItem {
+            description: None,
+            fields,
+        });
+
+        let record = AsterixRecord {
+            category: 48,
+            length: 10,
+            timestamp_ms: 0,
+            hex_data: "300005".to_string(),
+            items,
+            crc: 0,
+        };
+
+        // Should still publish successfully, just without full routing
+        let result = publisher.publish(&record).await;
+        assert!(result.is_ok());
+
+        let _ = publisher.close().await;
+    }
+
+    /// Test publish with non-standard category numbers
+    #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+    async fn test_publish_edge_category_numbers() {
+        let config = ZenohConfig::peer_to_peer();
+
+        let publisher = match ZenohPublisher::new(config).await {
+            Ok(p) => p,
+            Err(_) => return,
+        };
+
+        // Test with category 0 (edge case)
+        let result = publisher.publish_raw(0, &[0x00, 0x00, 0x05]).await;
+        assert!(result.is_ok());
+
+        // Test with category 255 (max)
+        let result = publisher.publish_raw(255, &[0xFF, 0x00, 0x05]).await;
+        assert!(result.is_ok());
+
+        let _ = publisher.close().await;
+    }
 }
