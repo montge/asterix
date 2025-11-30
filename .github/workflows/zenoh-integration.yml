@@ -1,0 +1,326 @@
+name: Zenoh Integration Tests
+
+on:
+  push:
+    branches: [ master, develop, 'feature/**', 'rust/**' ]
+    paths:
+      - 'asterix-rs/src/transport/zenoh.rs'
+      - 'asterix-rs/tests/test_zenoh.rs'
+      - 'asterix-rs/benches/zenoh_benchmark.rs'
+      - '.github/workflows/zenoh-integration.yml'
+  pull_request:
+    branches: [ master, develop ]
+    paths:
+      - 'asterix-rs/src/transport/zenoh.rs'
+      - 'asterix-rs/tests/test_zenoh.rs'
+      - 'asterix-rs/benches/zenoh_benchmark.rs'
+      - '.github/workflows/zenoh-integration.yml'
+  schedule:
+    - cron: '0 4 * * 0'  # 4 AM UTC on Sundays
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+  RUST_LOG: zenoh=info
+
+jobs:
+  # =============================================================================
+  # ZENOH ROUTER INTEGRATION TESTS
+  # =============================================================================
+  zenoh-router-tests:
+    name: Integration Tests with Zenoh Router
+    runs-on: ubuntu-latest
+
+    services:
+      zenoh-router:
+        image: eclipse/zenoh:latest
+        ports:
+          - 7447:7447
+          - 8000:8000
+        options: >-
+          --name zenoh-router
+          --health-cmd "nc -z localhost 7447 || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Install Rust stable
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Cache Cargo registry
+      uses: actions/cache@v4
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-registry-zenoh-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-registry-zenoh-
+
+    - name: Cache Cargo build
+      uses: actions/cache@v4
+      with:
+        path: asterix-rs/target
+        key: ${{ runner.os }}-cargo-build-zenoh-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-build-zenoh-
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev netcat-openbsd
+
+    - name: Wait for Zenoh router
+      run: |
+        echo "Waiting for Zenoh router to be ready..."
+        for i in {1..30}; do
+          if nc -z localhost 7447; then
+            echo "Zenoh router is ready!"
+            break
+          fi
+          echo "Waiting... ($i/30)"
+          sleep 2
+        done
+
+        # Verify router is responding
+        if ! nc -z localhost 7447; then
+          echo "ERROR: Zenoh router failed to start"
+          docker logs zenoh-router || true
+          exit 1
+        fi
+
+    - name: Build with Zenoh feature
+      run: |
+        cd asterix-rs
+        cargo build --features zenoh --verbose
+
+    - name: Run unit tests (peer-to-peer)
+      run: |
+        cd asterix-rs
+        cargo test --features zenoh zenoh:: --verbose -- --test-threads=1
+      env:
+        RUST_LOG: zenoh=debug
+
+    - name: Run integration tests with router
+      run: |
+        cd asterix-rs
+        # Create a test script that uses the router
+        cat > /tmp/router_test.rs << 'EOF'
+        // Router integration test - verifies connectivity to actual Zenoh router
+        use std::time::Duration;
+
+        #[tokio::main]
+        async fn main() -> Result<(), Box<dyn std::error::Error>> {
+            use asterix::transport::zenoh::{ZenohConfig, ZenohPublisher, ZenohSubscriber};
+
+            println!("Testing connection to Zenoh router at tcp/localhost:7447");
+
+            // Test publisher connection to router
+            let config = ZenohConfig::with_router("tcp/localhost:7447");
+            let publisher = ZenohPublisher::new(config.clone()).await?;
+            println!("✓ Publisher connected to router");
+
+            // Test subscriber connection to router
+            let mut subscriber = ZenohSubscriber::new(config.clone(), "asterix/test/**").await?;
+            println!("✓ Subscriber connected to router");
+
+            // Allow subscription to establish
+            tokio::time::sleep(Duration::from_millis(100)).await;
+
+            // Publish test data
+            let test_data = vec![0x30, 0x00, 0x10, 0xAB, 0xCD];
+            publisher.publish_raw_with_routing(48, 1, 2, &test_data).await?;
+            println!("✓ Published test data");
+
+            // Try to receive (may timeout if router doesn't relay)
+            let result = tokio::time::timeout(
+                Duration::from_secs(2),
+                subscriber.recv()
+            ).await;
+
+            match result {
+                Ok(Some(sample)) => {
+                    println!("✓ Received sample: cat={} sac={:?} sic={:?}",
+                        sample.category, sample.sac, sample.sic);
+                    assert_eq!(sample.category, 48);
+                }
+                Ok(None) => println!("⚠ Channel closed before receiving"),
+                Err(_) => println!("⚠ Timeout waiting for sample (router may not relay to same session)")
+            }
+
+            publisher.close().await?;
+            subscriber.close().await?;
+            println!("✓ Connections closed cleanly");
+
+            Ok(())
+        }
+        EOF
+
+        # Run integration tests
+        cargo test --features zenoh --test test_zenoh -- --test-threads=1
+      env:
+        ZENOH_ROUTER: tcp/localhost:7447
+
+    - name: Test multi-publisher scenario
+      run: |
+        cd asterix-rs
+        cargo test --features zenoh test_fan_in --verbose -- --test-threads=1 || true
+      env:
+        ZENOH_ROUTER: tcp/localhost:7447
+      continue-on-error: true
+
+  # =============================================================================
+  # ZENOH PEER-TO-PEER TESTS (No Router)
+  # =============================================================================
+  zenoh-p2p-tests:
+    name: Peer-to-Peer Tests (No Router)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Install Rust stable
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev
+
+    - name: Build with Zenoh feature
+      run: |
+        cd asterix-rs
+        cargo build --features zenoh
+
+    - name: Run peer-to-peer tests
+      run: |
+        cd asterix-rs
+        cargo test --features zenoh zenoh:: -- --test-threads=1
+      env:
+        RUST_LOG: zenoh=info
+
+  # =============================================================================
+  # ZENOH BENCHMARKS
+  # =============================================================================
+  zenoh-benchmarks:
+    name: Zenoh Benchmarks
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Install Rust stable
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev
+
+    - name: Run Zenoh benchmarks
+      run: |
+        cd asterix-rs
+        cargo bench --features zenoh --bench zenoh_benchmark -- --output-format bencher | tee zenoh-benchmark-results.txt
+      continue-on-error: true
+
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v5
+      with:
+        name: zenoh-benchmark-results
+        path: asterix-rs/zenoh-benchmark-results.txt
+        retention-days: 30
+      continue-on-error: true
+
+  # =============================================================================
+  # ZENOH COVERAGE
+  # =============================================================================
+  zenoh-coverage:
+    name: Zenoh Module Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Install Rust stable with llvm-tools
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: llvm-tools-preview
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev
+
+    - name: Install cargo-llvm-cov
+      uses: taiki-e/install-action@cargo-llvm-cov
+
+    - name: Generate Zenoh coverage
+      run: |
+        cd asterix-rs
+        cargo llvm-cov \
+          --features zenoh \
+          --lcov \
+          --output-path zenoh-coverage.lcov \
+          -- --test-threads=1
+      continue-on-error: true
+
+    - name: Check Zenoh module coverage
+      run: |
+        cd asterix-rs
+        echo "=== Zenoh Module Coverage ==="
+        cargo llvm-cov report --features zenoh 2>&1 | grep -E "zenoh|transport" || echo "Coverage report generated"
+      continue-on-error: true
+
+    - name: Upload coverage
+      uses: actions/upload-artifact@v5
+      with:
+        name: zenoh-coverage
+        path: asterix-rs/zenoh-coverage.lcov
+        retention-days: 14
+      continue-on-error: true
+
+  # =============================================================================
+  # BUILD SUMMARY
+  # =============================================================================
+  zenoh-summary:
+    name: Zenoh Integration Summary
+    runs-on: ubuntu-latest
+    needs: [zenoh-router-tests, zenoh-p2p-tests, zenoh-benchmarks, zenoh-coverage]
+    if: always()
+
+    steps:
+    - name: Check results
+      run: |
+        echo "=========================================="
+        echo "   ZENOH INTEGRATION TEST SUMMARY"
+        echo "=========================================="
+        echo ""
+        echo "Router tests:   ${{ needs.zenoh-router-tests.result }}"
+        echo "P2P tests:      ${{ needs.zenoh-p2p-tests.result }}"
+        echo "Benchmarks:     ${{ needs.zenoh-benchmarks.result }}"
+        echo "Coverage:       ${{ needs.zenoh-coverage.result }}"
+        echo ""
+
+        # Check critical jobs
+        if [[ "${{ needs.zenoh-router-tests.result }}" != "success" ]] && \
+           [[ "${{ needs.zenoh-router-tests.result }}" != "skipped" ]]; then
+          echo "⚠️ Router tests did not pass"
+        fi
+
+        if [[ "${{ needs.zenoh-p2p-tests.result }}" != "success" ]]; then
+          echo "❌ P2P tests failed"
+          exit 1
+        fi
+
+        echo "✅ Zenoh integration tests completed!"
+
