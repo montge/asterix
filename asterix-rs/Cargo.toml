@@ -33,7 +33,7 @@ tokio = { version = "1.0", features = ["rt-multi-thread", "macros", "sync"], opt
 
 [dev-dependencies]
 # Benchmarking
-criterion = { version = "0.7", features = ["html_reports"] }
+criterion = { version = "0.7", features = ["html_reports", "async_tokio"] }
 
 # Testing
 env_logger = "0.11"
@@ -75,6 +75,12 @@ debug = true
 name = "parse_benchmark"
 harness = false
 path = "benches/parse_benchmark.rs"
+
+[[bench]]
+name = "zenoh_benchmark"
+harness = false
+path = "benches/zenoh_benchmark.rs"
+required-features = ["zenoh"]
 
 [package.metadata.docs.rs]
 features = ["serde"]
