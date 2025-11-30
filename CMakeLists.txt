@@ -66,6 +66,7 @@ option(BUILD_STATIC_LIBS "Build static libraries" ON)
 option(BUILD_EXECUTABLE "Build command-line executable" ON)
 option(BUILD_TESTING "Build tests" OFF)
 option(ENABLE_COVERAGE "Enable code coverage" OFF)
+option(ENABLE_ZEROMQ "Enable ZeroMQ transport support" OFF)
 
 # C++ standard: C++23 for GCC/Clang, C++20 for MSVC (MSVC doesn't fully support C++23 yet)
 if(MSVC)
@@ -164,6 +165,36 @@ include(FindEXPAT)
 find_package(EXPAT REQUIRED)
 include_directories(${EXPAT_INCLUDE_DIRS})
 
+# Optional ZeroMQ support
+if(ENABLE_ZEROMQ)
+    find_package(PkgConfig)
+    if(PkgConfig_FOUND)
+        pkg_check_modules(ZMQ libzmq)
+    endif()
+
+    if(NOT ZMQ_FOUND)
+        # Try manual search
+        find_path(ZMQ_INCLUDE_DIRS zmq.h
+            PATHS /usr/include /usr/local/include
+        )
+        find_library(ZMQ_LIBRARIES zmq
+            PATHS /usr/lib /usr/local/lib /usr/lib/x86_64-linux-gnu
+        )
+        if(ZMQ_INCLUDE_DIRS AND ZMQ_LIBRARIES)
+            set(ZMQ_FOUND TRUE)
+        endif()
+    endif()
+
+    if(ZMQ_FOUND)
+        message(STATUS "ZeroMQ found: ${ZMQ_LIBRARIES}")
+        include_directories(${ZMQ_INCLUDE_DIRS})
+        add_compile_definitions(HAVE_ZEROMQ)
+    else()
+        message(WARNING "ZeroMQ requested but not found. ZeroMQ support disabled.")
+        set(ENABLE_ZEROMQ OFF)
+    endif()
+endif()
+
 # Coverage flags (if enabled)
 if(ENABLE_COVERAGE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
@@ -248,6 +279,11 @@ if(NOT WIN32)
     list(APPEND ASTERIX_LIB_SOURCES src/engine/serialdevice.cxx)
 endif()
 
+# ZeroMQ device (optional)
+if(ENABLE_ZEROMQ AND ZMQ_FOUND)
+    list(APPEND ASTERIX_LIB_SOURCES src/engine/zeromqdevice.cxx)
+endif()
+
 # Go bindings C wrapper (included in library for cgo)
 list(APPEND ASTERIX_LIB_SOURCES src/go/asterix_wrapper.cpp)
 
@@ -299,6 +335,11 @@ if(BUILD_SHARED_LIBS)
     endif()
     target_link_libraries(asterix_shared ${EXPAT_LIBRARIES})
 
+    # Link ZeroMQ if enabled
+    if(ENABLE_ZEROMQ AND ZMQ_FOUND)
+        target_link_libraries(asterix_shared ${ZMQ_LIBRARIES})
+    endif()
+
     # Install shared library
     # On macOS, LIBRARY DESTINATION installs .dylib files
     # For versioned libraries, CMake automatically handles the symlinks
@@ -319,6 +360,11 @@ if(BUILD_STATIC_LIBS)
     # Enable Wireshark wrapper API in the static library
     target_compile_definitions(asterix_static PRIVATE WIRESHARK_WRAPPER)
     target_link_libraries(asterix_static ${EXPAT_LIBRARIES})
+
+    # Link ZeroMQ if enabled
+    if(ENABLE_ZEROMQ AND ZMQ_FOUND)
+        target_link_libraries(asterix_static ${ZMQ_LIBRARIES})
+    endif()
 
     # Install static library
     # ARCHIVE DESTINATION installs .a files on all platforms including macOS
@@ -510,6 +556,11 @@ message(STATUS "  Build static library: ${BUILD_STATIC_LIBS}")
 message(STATUS "  Build executable: ${BUILD_EXECUTABLE}")
 message(STATUS "  Build testing: ${BUILD_TESTING}")
 message(STATUS "  Enable coverage: ${ENABLE_COVERAGE}")
+if(ENABLE_ZEROMQ)
+    message(STATUS "  ZeroMQ support: ${ZMQ_FOUND}")
+else()
+    message(STATUS "  ZeroMQ support: OFF")
+endif()
 message(STATUS "  C++ Standard: C++${CMAKE_CXX_STANDARD}")
 message(STATUS "  C Standard: C${CMAKE_C_STANDARD}")
 message(STATUS "  Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")

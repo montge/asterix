@@ -82,6 +82,7 @@ let records = parser.parse(&data)?;
 - **[Python User Guide](guides/PYTHON_GUIDE.html)** - Complete Python API guide
 - **[Rust User Guide](guides/RUST_GUIDE.html)** - Complete Rust API guide
 - **[Wireshark Plugin Guide](guides/WIRESHARK_GUIDE.html)** - Wireshark ASTERIX_EXT plugin
+- **[ZeroMQ Transport Guide](guides/ZEROMQ_GUIDE.html)** - Low-latency messaging transport
 - **[Troubleshooting Guide](TROUBLESHOOTING.html)** - Solutions to common issues
 
 ### Technical Resources

@@ -37,6 +37,9 @@
 #ifndef _WIN32
 #include "serialdevice.hxx"
 #endif
+#ifdef HAVE_ZEROMQ
+#include "zeromqdevice.hxx"
+#endif
 
 
 CSingleton<CDeviceFactory> CDeviceFactory::_Instance;
@@ -85,6 +88,11 @@ bool CDeviceFactory::CreateDevice(const char *deviceName, const char *deviceDesc
     } else if (strcasecmp(deviceName, "serial") == 0) {
         CDescriptor descriptor(deviceDescriptor, ":");
         _Device[_nDevices] = new CSerialDevice(descriptor);
+#endif
+#ifdef HAVE_ZEROMQ
+    } else if (strcasecmp(deviceName, "zmq") == 0 || strcasecmp(deviceName, "zeromq") == 0) {
+        CDescriptor descriptor(deviceDescriptor, ":");
+        _Device[_nDevices] = new CZeromqDevice(descriptor);
 #endif
     } else {
         LOGERROR(1, "Unknown device '%s'\n", deviceName);
