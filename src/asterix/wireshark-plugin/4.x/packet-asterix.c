@@ -222,8 +222,7 @@ static void asterix_cleanup(void) {
  */
 static void add_asterix_data_to_tree(proto_tree *tree, tvbuff_t *tvb,
                                       fulliautomatix_data *data, packet_info *pinfo) {
-    proto_item *item;
-    proto_tree *subtree;
+    proto_item *item = NULL;
 
     while (data != NULL) {
         if (data->tree) {
@@ -233,9 +232,8 @@ static void add_asterix_data_to_tree(proto_tree *tree, tvbuff_t *tvb,
             if (data->description) {
                 proto_item_set_text(item, "%s", data->description);
             }
-            subtree = proto_item_add_subtree(item, ett_asterix_item);
-
-            /* Process children would go here if we had hierarchical structure */
+            /* Create subtree for potential hierarchical display */
+            (void)proto_item_add_subtree(item, ett_asterix_item);
         } else {
             /* Leaf node - add field based on type */
             switch (data->type) {
