@@ -251,6 +251,9 @@ endif()
 # Go bindings C wrapper (included in library for cgo)
 list(APPEND ASTERIX_LIB_SOURCES src/go/asterix_wrapper.cpp)
 
+# Wireshark plugin wrapper (C API for Wireshark dissector)
+list(APPEND ASTERIX_LIB_SOURCES src/asterix/WiresharkWrapper.cpp)
+
 set(ASTERIX_LIB_HEADERS
     src/asterix/AsterixData.h
     src/asterix/AsterixDefinition.h
@@ -272,6 +275,7 @@ set(ASTERIX_LIB_HEADERS
     src/asterix/UAP.h
     src/asterix/UAPItem.h
     src/asterix/Utils.h
+    src/asterix/WiresharkWrapper.h
     src/asterix/XMLParser.h
     src/go/asterix.h
 )
