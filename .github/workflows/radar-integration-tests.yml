@@ -109,6 +109,7 @@ jobs:
         Write-Host "Checking for expat..."
         $expatInclude = Join-Path $env:VCPKG_ROOT "installed/x64-windows/include"
         $expatLib = Join-Path $env:VCPKG_ROOT "installed/x64-windows/lib"
+        $expatBin = Join-Path $env:VCPKG_ROOT "installed/x64-windows/bin"
         if (Test-Path $expatInclude) {
           Write-Host "Found expat include: $expatInclude"
           $env:EXPAT_INCLUDE_DIR = $expatInclude
@@ -118,8 +119,20 @@ jobs:
           $env:EXPAT_LIB_DIR = $expatLib
         }
         pip install .
+        # Add vcpkg bin to PATH for runtime DLL loading
+        if (Test-Path $expatBin) {
+          Write-Host "Adding vcpkg bin to PATH: $expatBin"
+          Add-Content $env:GITHUB_PATH $expatBin
+        }
 
-    - name: Verify radar_integration module exists
+    - name: Verify radar_integration module exists (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        python -c "import asterix.radar_integration; print('radar_integration module loaded successfully')"
+
+    - name: Verify radar_integration module exists (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
       run: |
         python -c "import asterix.radar_integration; print('radar_integration module loaded successfully')"
 
