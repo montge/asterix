@@ -34,6 +34,9 @@ tokio = { version = "1.0", features = ["rt-multi-thread", "macros", "sync"], opt
 # DDS transport using RustDDS (optional)
 rustdds = { version = "0.11", optional = true }
 
+# D-Bus transport for Linux IPC (optional)
+zbus = { version = "5.12", optional = true }
+
 [dev-dependencies]
 # Benchmarking
 criterion = { version = "0.7", features = ["html_reports", "async_tokio"] }
@@ -59,6 +62,8 @@ serde = ["dep:serde", "dep:serde_json"]
 zenoh = ["dep:zenoh", "dep:tokio"]
 # DDS transport using native Rust DDS implementation (RTPS protocol)
 dds = ["dep:rustdds", "dep:tokio"]
+# D-Bus transport for Linux IPC and system services
+dbus = ["dep:zbus"]
 # Future: async parsing support
 async = []
 

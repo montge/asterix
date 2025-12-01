@@ -1,0 +1,50 @@
+# ASTERIX Parser D-Bus Service
+#
+# Installation:
+#   sudo cp asterix-dbus.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable asterix-parser
+#   sudo systemctl start asterix-parser
+#
+# Also install the D-Bus policy file for system bus access:
+#   sudo cp com.asterix.Parser.conf /etc/dbus-1/system.d/
+
+[Unit]
+Description=ASTERIX Parser D-Bus Service
+Documentation=https://github.com/montge/asterix
+After=dbus.service
+Requires=dbus.service
+
+[Service]
+Type=dbus
+BusName=com.asterix.Parser
+ExecStart=/usr/local/bin/asterix-dbus-service
+
+# Restart on failure
+Restart=on-failure
+RestartSec=5
+
+# Environment
+Environment=RUST_LOG=info
+Environment=ASTERIX_CONFIG_DIR=/etc/asterix
+
+# Security hardening
+User=asterix
+Group=asterix
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+MemoryDenyWriteExecute=true
+LockPersonality=true
+
+# Allow read access to ASTERIX definition files
+ReadOnlyPaths=/etc/asterix /usr/share/asterix
+
+[Install]
+WantedBy=multi-user.target

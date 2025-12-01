@@ -217,8 +217,8 @@ pub mod parser;
 pub mod types;
 
 // Transport modules (feature-gated)
-#[cfg(any(feature = "zenoh", feature = "dds"))]
-#[cfg_attr(docsrs, doc(cfg(any(feature = "zenoh", feature = "dds"))))]
+#[cfg(any(feature = "zenoh", feature = "dds", feature = "dbus"))]
+#[cfg_attr(docsrs, doc(cfg(any(feature = "zenoh", feature = "dds", feature = "dbus"))))]
 pub mod transport;
 
 // Private FFI module

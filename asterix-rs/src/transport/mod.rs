@@ -7,6 +7,7 @@
 //!
 //! - `zenoh` - Edge-to-cloud pub/sub with automatic discovery (requires `zenoh` feature)
 //! - `dds` - DDS/RTPS pub/sub for real-time systems (requires `dds` feature)
+//! - `dbus` - Linux D-Bus IPC for system services (requires `dbus` feature)
 //!
 //! # Feature Flags
 //!
@@ -17,6 +18,8 @@
 //! asterix = { version = "0.1", features = ["zenoh"] }
 //! # or
 //! asterix = { version = "0.1", features = ["dds"] }
+//! # or
+//! asterix = { version = "0.1", features = ["dbus"] }
 //! ```
 
 #[cfg(feature = "zenoh")]
@@ -30,3 +33,9 @@ pub mod dds;
 
 #[cfg(feature = "dds")]
 pub use self::dds::{DdsConfig, DdsError, DdsPublisher, DdsSubscriber};
+
+#[cfg(feature = "dbus")]
+pub mod dbus;
+
+#[cfg(feature = "dbus")]
+pub use self::dbus::{BusType, DbusClient, DbusConfig, DbusError, DbusService};
