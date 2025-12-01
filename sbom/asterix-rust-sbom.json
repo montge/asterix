@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:2677b06f-915f-48df-abfc-d77ef378f5ce",
+  "serialNumber": "urn:uuid:5e29815e-8eb1-42bd-91b9-b7ae3e2e31ce",
   "version": 1,
   "metadata": {
-    "timestamp": "2025-12-01T02:18:59Z",
+    "timestamp": "2025-12-01T03:33:04Z",
     "tools": {
       "components": [
         {
@@ -25,11 +25,11 @@
     "properties": [
       {
         "name": "commit",
-        "value": "a22a404a0c57fba6854cb0488782d10508d906f1"
+        "value": "6462c1ba226faecc03b4881d97b23643da2b9e67"
       },
       {
         "name": "generated",
-        "value": "2025-12-01T02:18:59Z"
+        "value": "2025-12-01T03:33:04Z"
       },
       {
         "name": "main_version",
@@ -43,7 +43,7 @@
   },
   "components": [
     {
-      "bom-ref": "pkg:cargo/aes@0.8.4?package-id=793d80b7d67f3019",
+      "bom-ref": "pkg:cargo/aes@0.8.4?package-id=b7778b9a7b35fbb3",
       "type": "library",
       "name": "aes",
       "version": "0.8.4",
@@ -79,7 +79,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/ahash@0.8.12?package-id=33418da54e5bea6a",
+      "bom-ref": "pkg:cargo/ahash@0.8.12?package-id=f0f9405487451585",
       "type": "library",
       "name": "ahash",
       "version": "0.8.12",
@@ -995,7 +995,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/asterix@0.1.0?package-id=dd489551188729be",
+      "bom-ref": "pkg:cargo/asterix@0.1.0?package-id=dbe8da06a1233599",
       "type": "library",
       "name": "asterix",
       "version": "0.1.0",
@@ -1239,6 +1239,98 @@
       "version": "1.8.0",
       "cpe": "cpe:2.3:a:base64ct:base64ct:1.8.0:*:*:*:*:*:*:*",
       "purl": "pkg:cargo/base64ct@1.8.0",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/bit-vec@0.8.0?package-id=39fea64f52fcb0bf",
+      "type": "library",
+      "name": "bit-vec",
+      "version": "0.8.0",
+      "cpe": "cpe:2.3:a:bit-vec:bit-vec:0.8.0:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/bit-vec@0.8.0",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:bit-vec:bit_vec:0.8.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:bit_vec:bit-vec:0.8.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:bit_vec:bit_vec:0.8.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:bit:bit-vec:0.8.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:bit:bit_vec:0.8.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/bitflags@1.3.2?package-id=4e66679aa7bd7439",
+      "type": "library",
+      "name": "bitflags",
+      "version": "1.3.2",
+      "cpe": "cpe:2.3:a:bitflags:bitflags:1.3.2:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/bitflags@1.3.2",
       "externalReferences": [
         {
           "url": "registry+https://github.com/rust-lang/crates.io-index",
@@ -1577,6 +1669,222 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/cdr-encoding@0.10.2?package-id=42fb2511c47d8ae4",
+      "type": "library",
+      "name": "cdr-encoding",
+      "version": "0.10.2",
+      "cpe": "cpe:2.3:a:cdr-encoding:cdr-encoding:0.10.2:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/cdr-encoding@0.10.2",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr-encoding:cdr_encoding:0.10.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr_encoding:cdr-encoding:0.10.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr_encoding:cdr_encoding:0.10.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr:cdr-encoding:0.10.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr:cdr_encoding:0.10.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/cdr-encoding-size@0.5.1?package-id=b2ba80d953d3c8a9",
+      "type": "library",
+      "name": "cdr-encoding-size",
+      "version": "0.5.1",
+      "cpe": "cpe:2.3:a:cdr-encoding-size:cdr-encoding-size:0.5.1:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/cdr-encoding-size@0.5.1",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr-encoding-size:cdr_encoding_size:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr_encoding_size:cdr-encoding-size:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr_encoding_size:cdr_encoding_size:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr-encoding:cdr-encoding-size:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr-encoding:cdr_encoding_size:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr_encoding:cdr-encoding-size:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr_encoding:cdr_encoding_size:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr:cdr-encoding-size:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr:cdr_encoding_size:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/cdr-encoding-size-derive@0.5.1?package-id=23397fda440fe98a",
+      "type": "library",
+      "name": "cdr-encoding-size-derive",
+      "version": "0.5.1",
+      "cpe": "cpe:2.3:a:cdr-encoding-size-derive:cdr-encoding-size-derive:0.5.1:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/cdr-encoding-size-derive@0.5.1",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr-encoding-size-derive:cdr_encoding_size_derive:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr_encoding_size_derive:cdr-encoding-size-derive:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr_encoding_size_derive:cdr_encoding_size_derive:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr-encoding-size:cdr-encoding-size-derive:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr-encoding-size:cdr_encoding_size_derive:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr_encoding_size:cdr-encoding-size-derive:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr_encoding_size:cdr_encoding_size_derive:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr-encoding:cdr-encoding-size-derive:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr-encoding:cdr_encoding_size_derive:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr_encoding:cdr-encoding-size-derive:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr_encoding:cdr_encoding_size_derive:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr:cdr-encoding-size-derive:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cdr:cdr_encoding_size_derive:0.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/cesu8@1.1.0?package-id=c684049275c07ad8",
       "type": "library",
       "name": "cesu8",
@@ -1605,6 +1913,62 @@
         {
           "name": "syft:package:metadataType",
           "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/cfg-if@0.1.10?package-id=5d8d88bdabed05de",
+      "type": "library",
+      "name": "cfg-if",
+      "version": "0.1.10",
+      "cpe": "cpe:2.3:a:cfg-if:cfg-if:0.1.10:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/cfg-if@0.1.10",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cfg-if:cfg_if:0.1.10:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cfg_if:cfg-if:0.1.10:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cfg_if:cfg_if:0.1.10:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cfg:cfg-if:0.1.10:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:cfg:cfg_if:0.1.10:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -1781,7 +2145,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/chrono@0.4.42?package-id=b8897ebeae19a978",
+      "bom-ref": "pkg:cargo/chrono@0.4.42?package-id=25a788b00ddd4edb",
       "type": "library",
       "name": "chrono",
       "version": "0.4.42",
@@ -4489,6 +4853,98 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/enumflags2@0.7.12?package-id=2d803cce9d3497c9",
+      "type": "library",
+      "name": "enumflags2",
+      "version": "0.7.12",
+      "cpe": "cpe:2.3:a:enumflags2:enumflags2:0.7.12:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/enumflags2@0.7.12",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/enumflags2_derive@0.7.12?package-id=0421e4f32b7773a1",
+      "type": "library",
+      "name": "enumflags2_derive",
+      "version": "0.7.12",
+      "cpe": "cpe:2.3:a:enumflags2-derive:enumflags2-derive:0.7.12:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/enumflags2_derive@0.7.12",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:enumflags2-derive:enumflags2_derive:0.7.12:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:enumflags2_derive:enumflags2-derive:0.7.12:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:enumflags2_derive:enumflags2_derive:0.7.12:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:enumflags2:enumflags2-derive:0.7.12:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:enumflags2:enumflags2_derive:0.7.12:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/env_filter@0.1.4?package-id=9418ede3d1f92b46",
       "type": "library",
       "name": "env_filter",
@@ -4669,6 +5125,42 @@
         {
           "name": "syft:location:0:path",
           "value": "/fuzz/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/errno@0.3.14?package-id=ca6cfd19b2f64b9c",
+      "type": "library",
+      "name": "errno",
+      "version": "0.3.14",
+      "cpe": "cpe:2.3:a:errno:errno:0.3.14:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/errno@0.3.14",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
         }
       ]
     },
@@ -5217,6 +5709,134 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/fuchsia-zircon@0.3.3?package-id=1ca2d29103f62ec5",
+      "type": "library",
+      "name": "fuchsia-zircon",
+      "version": "0.3.3",
+      "cpe": "cpe:2.3:a:fuchsia-zircon:fuchsia-zircon:0.3.3:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/fuchsia-zircon@0.3.3",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:fuchsia-zircon:fuchsia_zircon:0.3.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:fuchsia_zircon:fuchsia-zircon:0.3.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:fuchsia_zircon:fuchsia_zircon:0.3.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:fuchsia:fuchsia-zircon:0.3.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:fuchsia:fuchsia_zircon:0.3.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/fuchsia-zircon-sys@0.3.3?package-id=b553b4f18121581d",
+      "type": "library",
+      "name": "fuchsia-zircon-sys",
+      "version": "0.3.3",
+      "cpe": "cpe:2.3:a:fuchsia-zircon-sys:fuchsia-zircon-sys:0.3.3:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/fuchsia-zircon-sys@0.3.3",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:fuchsia-zircon-sys:fuchsia_zircon_sys:0.3.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:fuchsia_zircon_sys:fuchsia-zircon-sys:0.3.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:fuchsia_zircon_sys:fuchsia_zircon_sys:0.3.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:fuchsia-zircon:fuchsia-zircon-sys:0.3.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:fuchsia-zircon:fuchsia_zircon_sys:0.3.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:fuchsia_zircon:fuchsia-zircon-sys:0.3.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:fuchsia_zircon:fuchsia_zircon_sys:0.3.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:fuchsia:fuchsia-zircon-sys:0.3.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:fuchsia:fuchsia_zircon_sys:0.3.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/futures@0.3.31?package-id=131fc65d0a716a69",
       "type": "library",
       "name": "futures",
@@ -5717,7 +6337,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/getrandom@0.2.16?package-id=6b76588c51df9949",
+      "bom-ref": "pkg:cargo/getrandom@0.2.16?package-id=a2e6b80cff4e2560",
       "type": "library",
       "name": "getrandom",
       "version": "0.2.16",
@@ -5753,7 +6373,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/getrandom@0.3.4?package-id=cec13ec1f9903ea0",
+      "bom-ref": "pkg:cargo/getrandom@0.3.4?package-id=532156d18b23a966",
       "type": "library",
       "name": "getrandom",
       "version": "0.3.4",
@@ -5953,7 +6573,43 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/half@2.7.1?package-id=4275c3a15d1f85be",
+      "bom-ref": "pkg:cargo/glob@0.3.3?package-id=afa3a4b15f27c8e3",
+      "type": "library",
+      "name": "glob",
+      "version": "0.3.3",
+      "cpe": "cpe:2.3:a:glob:glob:0.3.3:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/glob@0.3.3",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/half@2.7.1?package-id=f02bc9537ef4a427",
       "type": "library",
       "name": "half",
       "version": "2.7.1",
@@ -7189,6 +7845,62 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/if-addrs@0.13.4?package-id=c13d89ff03f56b77",
+      "type": "library",
+      "name": "if-addrs",
+      "version": "0.13.4",
+      "cpe": "cpe:2.3:a:if-addrs:if-addrs:0.13.4:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/if-addrs@0.13.4",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:if-addrs:if_addrs:0.13.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:if_addrs:if-addrs:0.13.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:if_addrs:if_addrs:0.13.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:if:if-addrs:0.13.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:if:if_addrs:0.13.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/indexmap@1.9.3?package-id=5addd3c4a6c8641e",
       "type": "library",
       "name": "indexmap",
@@ -7303,6 +8015,154 @@
       "version": "0.1.4",
       "cpe": "cpe:2.3:a:inout:inout:0.1.4:*:*:*:*:*:*:*",
       "purl": "pkg:cargo/inout@0.1.4",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/io-extras@0.18.4?package-id=33df7107f5368eca",
+      "type": "library",
+      "name": "io-extras",
+      "version": "0.18.4",
+      "cpe": "cpe:2.3:a:io-extras:io-extras:0.18.4:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/io-extras@0.18.4",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:io-extras:io_extras:0.18.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:io_extras:io-extras:0.18.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:io_extras:io_extras:0.18.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:io:io-extras:0.18.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:io:io_extras:0.18.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/io-lifetimes@2.0.4?package-id=5c3e0f648d394c80",
+      "type": "library",
+      "name": "io-lifetimes",
+      "version": "2.0.4",
+      "cpe": "cpe:2.3:a:io-lifetimes:io-lifetimes:2.0.4:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/io-lifetimes@2.0.4",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:io-lifetimes:io_lifetimes:2.0.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:io_lifetimes:io-lifetimes:2.0.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:io_lifetimes:io_lifetimes:2.0.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:io:io-lifetimes:2.0.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:io:io_lifetimes:2.0.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/iovec@0.1.4?package-id=32cfb08d5ba3b1d3",
+      "type": "library",
+      "name": "iovec",
+      "version": "0.1.4",
+      "cpe": "cpe:2.3:a:iovec:iovec:0.1.4:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/iovec@0.1.4",
       "externalReferences": [
         {
           "url": "registry+https://github.com/rust-lang/crates.io-index",
@@ -7677,7 +8537,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/jni@0.21.1?package-id=c92e5fd0edeb6590",
+      "bom-ref": "pkg:cargo/jni@0.21.1?package-id=ac6561b057890ddc",
       "type": "library",
       "name": "jni",
       "version": "0.21.1",
@@ -7933,6 +8793,62 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/kernel32-sys@0.2.2?package-id=346a6af53eb87efb",
+      "type": "library",
+      "name": "kernel32-sys",
+      "version": "0.2.2",
+      "cpe": "cpe:2.3:a:kernel32-sys:kernel32-sys:0.2.2:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/kernel32-sys@0.2.2",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:kernel32-sys:kernel32_sys:0.2.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:kernel32_sys:kernel32-sys:0.2.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:kernel32_sys:kernel32_sys:0.2.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:kernel32:kernel32-sys:0.2.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:kernel32:kernel32_sys:0.2.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/keyed-set@1.1.0?package-id=650d685dc573a98a",
       "type": "library",
       "name": "keyed-set",
@@ -8037,6 +8953,42 @@
         {
           "name": "syft:cpe23",
           "value": "cpe:2.3:a:lazy:lazy_static:1.5.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/lazycell@1.3.0?package-id=00b148d304cae8ac",
+      "type": "library",
+      "name": "lazycell",
+      "version": "1.3.0",
+      "cpe": "cpe:2.3:a:lazycell:lazycell:1.3.0:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/lazycell@1.3.0",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
         },
         {
           "name": "syft:location:0:path",
@@ -8173,7 +9125,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/libloading@0.8.9?package-id=b87f987c5da9796f",
+      "bom-ref": "pkg:cargo/libloading@0.8.9?package-id=51bfa769f4c20220",
       "type": "library",
       "name": "libloading",
       "version": "0.8.9",
@@ -8245,7 +9197,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/libredox@0.1.10?package-id=2f815c2ebe102e44",
+      "bom-ref": "pkg:cargo/libredox@0.1.10?package-id=b86ec772969f46f3",
       "type": "library",
       "name": "libredox",
       "version": "0.1.10",
@@ -8393,6 +9345,78 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/linux-raw-sys@0.11.0?package-id=13f809b24f1f4c4e",
+      "type": "library",
+      "name": "linux-raw-sys",
+      "version": "0.11.0",
+      "cpe": "cpe:2.3:a:linux-raw-sys:linux-raw-sys:0.11.0:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/linux-raw-sys@0.11.0",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:linux-raw-sys:linux_raw_sys:0.11.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:linux_raw_sys:linux-raw-sys:0.11.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:linux_raw_sys:linux_raw_sys:0.11.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:linux-raw:linux-raw-sys:0.11.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:linux-raw:linux_raw_sys:0.11.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:linux_raw:linux-raw-sys:0.11.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:linux_raw:linux_raw_sys:0.11.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:linux:linux-raw-sys:0.11.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:linux:linux_raw_sys:0.11.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/litemap@0.8.1?package-id=c4cc13ac1254ccbc",
       "type": "library",
       "name": "litemap",
@@ -8421,6 +9445,78 @@
         {
           "name": "syft:package:metadataType",
           "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/local-ip-address@0.6.5?package-id=5e22afde4c93e01b",
+      "type": "library",
+      "name": "local-ip-address",
+      "version": "0.6.5",
+      "cpe": "cpe:2.3:a:local-ip-address:local-ip-address:0.6.5:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/local-ip-address@0.6.5",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:local-ip-address:local_ip_address:0.6.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:local_ip_address:local-ip-address:0.6.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:local_ip_address:local_ip_address:0.6.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:local-ip:local-ip-address:0.6.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:local-ip:local_ip_address:0.6.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:local_ip:local-ip-address:0.6.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:local_ip:local_ip_address:0.6.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:local:local-ip-address:0.6.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:local:local_ip_address:0.6.5:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -8685,6 +9781,42 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/md5@0.8.0?package-id=719e51c081403162",
+      "type": "library",
+      "name": "md5",
+      "version": "0.8.0",
+      "cpe": "cpe:2.3:a:md5:md5:0.8.0:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/md5@0.8.0",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/memchr@2.7.6?package-id=b099e0a84c65b69b",
       "type": "library",
       "name": "memchr",
@@ -8757,6 +9889,42 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/memoffset@0.9.1?package-id=7cc86bd1ecae6934",
+      "type": "library",
+      "name": "memoffset",
+      "version": "0.9.1",
+      "cpe": "cpe:2.3:a:memoffset:memoffset:0.9.1:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/memoffset@0.9.1",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/minimal-lexical@0.2.1?package-id=932db8cebef8c1dd",
       "type": "library",
       "name": "minimal-lexical",
@@ -8813,12 +9981,176 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/mio@0.6.23?package-id=2319a788d667a393",
+      "type": "library",
+      "name": "mio",
+      "version": "0.6.23",
+      "cpe": "cpe:2.3:a:mio:mio:0.6.23:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/mio@0.6.23",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/mio@0.8.11?package-id=ebac2a7374c54aba",
+      "type": "library",
+      "name": "mio",
+      "version": "0.8.11",
+      "cpe": "cpe:2.3:a:mio:mio:0.8.11:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/mio@0.8.11",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/mio@1.1.0?package-id=4955468d2c551b4f",
       "type": "library",
       "name": "mio",
       "version": "1.1.0",
       "cpe": "cpe:2.3:a:mio:mio:1.1.0:*:*:*:*:*:*:*",
       "purl": "pkg:cargo/mio@1.1.0",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/mio-extras@2.0.6?package-id=5556d44576fb4f9f",
+      "type": "library",
+      "name": "mio-extras",
+      "version": "2.0.6",
+      "cpe": "cpe:2.3:a:mio-extras:mio-extras:2.0.6:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/mio-extras@2.0.6",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:mio-extras:mio_extras:2.0.6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:mio_extras:mio-extras:2.0.6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:mio_extras:mio_extras:2.0.6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:mio:mio-extras:2.0.6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:mio:mio_extras:2.0.6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/miow@0.2.2?package-id=11abcb7a93ed660b",
+      "type": "library",
+      "name": "miow",
+      "version": "0.2.2",
+      "cpe": "cpe:2.3:a:miow:miow:0.2.2:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/miow@0.2.2",
       "externalReferences": [
         {
           "url": "registry+https://github.com/rust-lang/crates.io-index",
@@ -8885,7 +10217,151 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/nix@0.29.0?package-id=4f0bc593aa51bb8e",
+      "bom-ref": "pkg:cargo/neli@0.6.5?package-id=016294bb95400696",
+      "type": "library",
+      "name": "neli",
+      "version": "0.6.5",
+      "cpe": "cpe:2.3:a:neli:neli:0.6.5:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/neli@0.6.5",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/neli-proc-macros@0.1.4?package-id=d2241704db1bf283",
+      "type": "library",
+      "name": "neli-proc-macros",
+      "version": "0.1.4",
+      "cpe": "cpe:2.3:a:neli-proc-macros:neli-proc-macros:0.1.4:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/neli-proc-macros@0.1.4",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:neli-proc-macros:neli_proc_macros:0.1.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:neli_proc_macros:neli-proc-macros:0.1.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:neli_proc_macros:neli_proc_macros:0.1.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:neli-proc:neli-proc-macros:0.1.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:neli-proc:neli_proc_macros:0.1.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:neli_proc:neli-proc-macros:0.1.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:neli_proc:neli_proc_macros:0.1.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:neli:neli-proc-macros:0.1.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:neli:neli_proc_macros:0.1.4:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/net2@0.2.39?package-id=a0adf0278e5613d4",
+      "type": "library",
+      "name": "net2",
+      "version": "0.2.39",
+      "cpe": "cpe:2.3:a:net2:net2:0.2.39:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/net2@0.2.39",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/nix@0.29.0?package-id=b3fe4a2d4b0ba3fa",
       "type": "library",
       "name": "nix",
       "version": "0.29.0",
@@ -9333,6 +10809,62 @@
         {
           "name": "syft:cpe23",
           "value": "cpe:2.3:a:num:num_conv:0.1.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/num-derive@0.4.2?package-id=350111a710464736",
+      "type": "library",
+      "name": "num-derive",
+      "version": "0.4.2",
+      "cpe": "cpe:2.3:a:num-derive:num-derive:0.4.2:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/num-derive@0.4.2",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:num-derive:num_derive:0.4.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:num_derive:num-derive:0.4.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:num_derive:num_derive:0.4.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:num:num-derive:0.4.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:num:num_derive:0.4.2:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -10984,6 +12516,42 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/pnet@0.35.0?package-id=f0fc2e432b901715",
+      "type": "library",
+      "name": "pnet",
+      "version": "0.35.0",
+      "cpe": "cpe:2.3:a:pnet_project:pnet:0.35.0:*:*:*:*:rust:*:*",
+      "purl": "pkg:cargo/pnet@0.35.0",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/pnet_base@0.35.0?package-id=28216b309e351bd8",
       "type": "library",
       "name": "pnet_base",
@@ -11040,7 +12608,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/pnet_datalink@0.35.0?package-id=d2d755244d55efbe",
+      "bom-ref": "pkg:cargo/pnet_datalink@0.35.0?package-id=fb1b93da74fe4151",
       "type": "library",
       "name": "pnet_datalink",
       "version": "0.35.0",
@@ -11096,7 +12664,191 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/pnet_sys@0.35.0?package-id=8ec8e9c21276fbb9",
+      "bom-ref": "pkg:cargo/pnet_macros@0.35.0?package-id=e09f909d6f23863b",
+      "type": "library",
+      "name": "pnet_macros",
+      "version": "0.35.0",
+      "cpe": "cpe:2.3:a:pnet-macros:pnet-macros:0.35.0:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/pnet_macros@0.35.0",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet-macros:pnet_macros:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet_macros:pnet-macros:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet_macros:pnet_macros:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet:pnet-macros:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet:pnet_macros:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/pnet_macros_support@0.35.0?package-id=5679515198651562",
+      "type": "library",
+      "name": "pnet_macros_support",
+      "version": "0.35.0",
+      "cpe": "cpe:2.3:a:pnet-macros-support:pnet-macros-support:0.35.0:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/pnet_macros_support@0.35.0",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet-macros-support:pnet_macros_support:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet_macros_support:pnet-macros-support:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet_macros_support:pnet_macros_support:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet-macros:pnet-macros-support:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet-macros:pnet_macros_support:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet_macros:pnet-macros-support:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet_macros:pnet_macros_support:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet:pnet-macros-support:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet:pnet_macros_support:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/pnet_packet@0.35.0?package-id=07415b98c473916b",
+      "type": "library",
+      "name": "pnet_packet",
+      "version": "0.35.0",
+      "cpe": "cpe:2.3:a:pnet-packet:pnet-packet:0.35.0:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/pnet_packet@0.35.0",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet-packet:pnet_packet:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet_packet:pnet-packet:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet_packet:pnet_packet:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet:pnet-packet:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet:pnet_packet:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/pnet_sys@0.35.0?package-id=548ca97d71afffc6",
       "type": "library",
       "name": "pnet_sys",
       "version": "0.35.0",
@@ -11144,6 +12896,62 @@
         {
           "name": "syft:cpe23",
           "value": "cpe:2.3:a:pnet:pnet_sys:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/pnet_transport@0.35.0?package-id=525ecdae9ee64174",
+      "type": "library",
+      "name": "pnet_transport",
+      "version": "0.35.0",
+      "cpe": "cpe:2.3:a:pnet-transport:pnet-transport:0.35.0:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/pnet_transport@0.35.0",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet-transport:pnet_transport:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet_transport:pnet-transport:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet_transport:pnet_transport:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet:pnet-transport:0.35.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pnet:pnet_transport:0.35.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -12624,7 +14432,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/ring@0.17.14?package-id=c66763fec7810e29",
+      "bom-ref": "pkg:cargo/ring@0.17.14?package-id=bf6d9b8ec90c0acf",
       "type": "library",
       "name": "ring",
       "version": "0.17.14",
@@ -12716,7 +14524,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/ron@0.11.0?package-id=653d066a3d2ea4ed",
+      "bom-ref": "pkg:cargo/ron@0.11.0?package-id=f571140e862ecf2f",
       "type": "library",
       "name": "ron",
       "version": "0.11.0",
@@ -12900,6 +14708,42 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/rustdds@0.11.7?package-id=93147d372d758ccf",
+      "type": "library",
+      "name": "rustdds",
+      "version": "0.11.7",
+      "cpe": "cpe:2.3:a:rustdds:rustdds:0.11.7:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/rustdds@0.11.7",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/rusticata-macros@4.1.0?package-id=a43e82a69576bc87",
       "type": "library",
       "name": "rusticata-macros",
@@ -12948,6 +14792,42 @@
         {
           "name": "syft:cpe23",
           "value": "cpe:2.3:a:rusticata:rusticata_macros:4.1.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/rustix@1.1.2?package-id=4c252162af08afdc",
+      "type": "library",
+      "name": "rustix",
+      "version": "1.1.2",
+      "cpe": "cpe:2.3:a:rustix:rustix:1.1.2:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/rustix@1.1.2",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
         },
         {
           "name": "syft:location:0:path",
@@ -13972,7 +15852,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/security-framework@3.5.1?package-id=ac57d7d8c96cebc9",
+      "bom-ref": "pkg:cargo/security-framework@3.5.1?package-id=5869f266d866cd67",
       "type": "library",
       "name": "security-framework",
       "version": "3.5.1",
@@ -14616,6 +16496,62 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/serde_repr@0.1.20?package-id=04f1e1de0286cac3",
+      "type": "library",
+      "name": "serde_repr",
+      "version": "0.1.20",
+      "cpe": "cpe:2.3:a:serde-repr:serde-repr:0.1.20:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/serde_repr@0.1.20",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:serde-repr:serde_repr:0.1.20:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:serde_repr:serde-repr:0.1.20:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:serde_repr:serde_repr:0.1.20:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:serde:serde-repr:0.1.20:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:serde:serde_repr:0.1.20:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/serde_with@3.16.1?package-id=1e25b7cc2d3a843a",
       "type": "library",
       "name": "serde_with",
@@ -14800,7 +16736,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/sha1@0.10.6?package-id=a82448f6272c12a0",
+      "bom-ref": "pkg:cargo/sha1@0.10.6?package-id=13196fe61a5c772b",
       "type": "library",
       "name": "sha1",
       "version": "0.10.6",
@@ -14836,7 +16772,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/sha2@0.10.9?package-id=acf9a8881f3f5dd6",
+      "bom-ref": "pkg:cargo/sha2@0.10.9?package-id=923dae312d7c711d",
       "type": "library",
       "name": "sha2",
       "version": "0.10.9",
@@ -15360,6 +17296,134 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/socketpair@0.19.8?package-id=7ce8e1bc4a24a632",
+      "type": "library",
+      "name": "socketpair",
+      "version": "0.19.8",
+      "cpe": "cpe:2.3:a:socketpair:socketpair:0.19.8:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/socketpair@0.19.8",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/speedy@0.8.7?package-id=2508bb72d9c9d72e",
+      "type": "library",
+      "name": "speedy",
+      "version": "0.8.7",
+      "cpe": "cpe:2.3:a:speedy:speedy:0.8.7:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/speedy@0.8.7",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/speedy-derive@0.8.7?package-id=93632ed5488a72e1",
+      "type": "library",
+      "name": "speedy-derive",
+      "version": "0.8.7",
+      "cpe": "cpe:2.3:a:speedy-derive:speedy-derive:0.8.7:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/speedy-derive@0.8.7",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:speedy-derive:speedy_derive:0.8.7:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:speedy_derive:speedy-derive:0.8.7:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:speedy_derive:speedy_derive:0.8.7:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:speedy:speedy-derive:0.8.7:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:speedy:speedy_derive:0.8.7:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/spin@0.10.0?package-id=21db237915a68668",
       "type": "library",
       "name": "spin",
@@ -15680,6 +17744,62 @@
         {
           "name": "syft:cpe23",
           "value": "cpe:2.3:a:stable:stable_deref_trait:1.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/static_assertions@1.1.0?package-id=a0091b77406f7bf6",
+      "type": "library",
+      "name": "static_assertions",
+      "version": "1.1.0",
+      "cpe": "cpe:2.3:a:static-assertions:static-assertions:1.1.0:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/static_assertions@1.1.0",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:static-assertions:static_assertions:1.1.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:static_assertions:static-assertions:1.1.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:static_assertions:static_assertions:1.1.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:static:static-assertions:1.1.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:static:static_assertions:1.1.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -16196,7 +18316,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/thread_local@1.1.9?package-id=6eb6caf8b77e310f",
+      "bom-ref": "pkg:cargo/thread_local@1.1.9?package-id=c44bbb30c1ca56fa",
       "type": "library",
       "name": "thread_local",
       "version": "1.1.9",
@@ -16676,7 +18796,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+      "bom-ref": "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
       "type": "library",
       "name": "tokio",
       "version": "1.48.0",
@@ -18760,7 +20880,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/wasm-bindgen@0.2.106?package-id=fd8ba1bddfe5c2ec",
+      "bom-ref": "pkg:cargo/wasm-bindgen@0.2.106?package-id=171bc5260ab0803c",
       "type": "library",
       "name": "wasm-bindgen",
       "version": "0.2.106",
@@ -19344,6 +21464,42 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/winapi@0.2.8?package-id=ea72c45435528952",
+      "type": "library",
+      "name": "winapi",
+      "version": "0.2.8",
+      "cpe": "cpe:2.3:a:winapi:winapi:0.2.8:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/winapi@0.2.8",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/winapi@0.3.9?package-id=5f3078532be1b653",
       "type": "library",
       "name": "winapi",
@@ -19372,6 +21528,62 @@
         {
           "name": "syft:package:metadataType",
           "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/winapi-build@0.1.1?package-id=234292d0d4ce67d1",
+      "type": "library",
+      "name": "winapi-build",
+      "version": "0.1.1",
+      "cpe": "cpe:2.3:a:winapi-build:winapi-build:0.1.1:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/winapi-build@0.1.1",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:winapi-build:winapi_build:0.1.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:winapi_build:winapi-build:0.1.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:winapi_build:winapi_build:0.1.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:winapi:winapi-build:0.1.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:winapi:winapi_build:0.1.1:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -20256,6 +22468,62 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/windows-sys@0.48.0?package-id=c37a130efde88009",
+      "type": "library",
+      "name": "windows-sys",
+      "version": "0.48.0",
+      "cpe": "cpe:2.3:a:windows-sys:windows-sys:0.48.0:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/windows-sys@0.48.0",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-sys:windows_sys:0.48.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_sys:windows-sys:0.48.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_sys:windows_sys:0.48.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows-sys:0.48.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows_sys:0.48.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/windows-sys@0.52.0?package-id=c450cf75e67dfadd",
       "type": "library",
       "name": "windows-sys",
@@ -20304,6 +22572,62 @@
         {
           "name": "syft:cpe23",
           "value": "cpe:2.3:a:windows:windows_sys:0.52.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/windows-sys@0.59.0?package-id=4f109fe1e4550bbb",
+      "type": "library",
+      "name": "windows-sys",
+      "version": "0.59.0",
+      "cpe": "cpe:2.3:a:windows-sys:windows-sys:0.59.0:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/windows-sys@0.59.0",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-sys:windows_sys:0.59.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_sys:windows-sys:0.59.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_sys:windows_sys:0.59.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows-sys:0.59.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows_sys:0.59.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -20536,6 +22860,62 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/windows-targets@0.48.5?package-id=dbc65392732255b5",
+      "type": "library",
+      "name": "windows-targets",
+      "version": "0.48.5",
+      "cpe": "cpe:2.3:a:windows-targets:windows-targets:0.48.5:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/windows-targets@0.48.5",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-targets:windows_targets:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_targets:windows-targets:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_targets:windows_targets:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows-targets:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows_targets:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/windows-targets@0.52.6?package-id=0abcf21f8bf8c5b3",
       "type": "library",
       "name": "windows-targets",
@@ -20712,6 +23092,78 @@
         {
           "name": "syft:cpe23",
           "value": "cpe:2.3:a:windows:windows_aarch64_gnullvm:0.42.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/windows_aarch64_gnullvm@0.48.5?package-id=de5f462acab97af0",
+      "type": "library",
+      "name": "windows_aarch64_gnullvm",
+      "version": "0.48.5",
+      "cpe": "cpe:2.3:a:windows-aarch64-gnullvm:windows-aarch64-gnullvm:0.48.5:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/windows_aarch64_gnullvm@0.48.5",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-aarch64-gnullvm:windows_aarch64_gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_aarch64_gnullvm:windows-aarch64-gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_aarch64_gnullvm:windows_aarch64_gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-aarch64:windows-aarch64-gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-aarch64:windows_aarch64_gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_aarch64:windows-aarch64-gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_aarch64:windows_aarch64_gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows-aarch64-gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows_aarch64_gnullvm:0.48.5:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -20936,6 +23388,78 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/windows_aarch64_msvc@0.48.5?package-id=4cb412554024ca76",
+      "type": "library",
+      "name": "windows_aarch64_msvc",
+      "version": "0.48.5",
+      "cpe": "cpe:2.3:a:windows-aarch64-msvc:windows-aarch64-msvc:0.48.5:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/windows_aarch64_msvc@0.48.5",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-aarch64-msvc:windows_aarch64_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_aarch64_msvc:windows-aarch64-msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_aarch64_msvc:windows_aarch64_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-aarch64:windows-aarch64-msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-aarch64:windows_aarch64_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_aarch64:windows-aarch64-msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_aarch64:windows_aarch64_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows-aarch64-msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows_aarch64_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/windows_aarch64_msvc@0.52.6?package-id=b94174e996d19f42",
       "type": "library",
       "name": "windows_aarch64_msvc",
@@ -21144,6 +23668,78 @@
         {
           "name": "syft:cpe23",
           "value": "cpe:2.3:a:windows:windows_i686_gnu:0.42.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/windows_i686_gnu@0.48.5?package-id=cb2224e8c9acbadd",
+      "type": "library",
+      "name": "windows_i686_gnu",
+      "version": "0.48.5",
+      "cpe": "cpe:2.3:a:windows-i686-gnu:windows-i686-gnu:0.48.5:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/windows_i686_gnu@0.48.5",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-i686-gnu:windows_i686_gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_i686_gnu:windows-i686-gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_i686_gnu:windows_i686_gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-i686:windows-i686-gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-i686:windows_i686_gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_i686:windows-i686-gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_i686:windows_i686_gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows-i686-gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows_i686_gnu:0.48.5:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -21512,6 +24108,78 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/windows_i686_msvc@0.48.5?package-id=0beb1261b503e6d1",
+      "type": "library",
+      "name": "windows_i686_msvc",
+      "version": "0.48.5",
+      "cpe": "cpe:2.3:a:windows-i686-msvc:windows-i686-msvc:0.48.5:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/windows_i686_msvc@0.48.5",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-i686-msvc:windows_i686_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_i686_msvc:windows-i686-msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_i686_msvc:windows_i686_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-i686:windows-i686-msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-i686:windows_i686_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_i686:windows-i686-msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_i686:windows_i686_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows-i686-msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows_i686_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/windows_i686_msvc@0.52.6?package-id=0a5f8630b6aa951b",
       "type": "library",
       "name": "windows_i686_msvc",
@@ -21736,6 +24404,94 @@
         {
           "name": "syft:cpe23",
           "value": "cpe:2.3:a:windows:windows_x86_64_gnu:0.42.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/windows_x86_64_gnu@0.48.5?package-id=851aca70a531a3d2",
+      "type": "library",
+      "name": "windows_x86_64_gnu",
+      "version": "0.48.5",
+      "cpe": "cpe:2.3:a:windows-x86-64-gnu:windows-x86-64-gnu:0.48.5:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/windows_x86_64_gnu@0.48.5",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-x86-64-gnu:windows_x86_64_gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86_64_gnu:windows-x86-64-gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86_64_gnu:windows_x86_64_gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-x86-64:windows-x86-64-gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-x86-64:windows_x86_64_gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86_64:windows-x86-64-gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86_64:windows_x86_64_gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-x86:windows-x86-64-gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-x86:windows_x86_64_gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86:windows-x86-64-gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86:windows_x86_64_gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows-x86-64-gnu:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows_x86_64_gnu:0.48.5:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -22008,6 +24764,94 @@
       ]
     },
     {
+      "bom-ref": "pkg:cargo/windows_x86_64_gnullvm@0.48.5?package-id=6d0ba4d4ad06bb30",
+      "type": "library",
+      "name": "windows_x86_64_gnullvm",
+      "version": "0.48.5",
+      "cpe": "cpe:2.3:a:windows-x86-64-gnullvm:windows-x86-64-gnullvm:0.48.5:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/windows_x86_64_gnullvm@0.48.5",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-x86-64-gnullvm:windows_x86_64_gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86_64_gnullvm:windows-x86-64-gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86_64_gnullvm:windows_x86_64_gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-x86-64:windows-x86-64-gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-x86-64:windows_x86_64_gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86_64:windows-x86-64-gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86_64:windows_x86_64_gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-x86:windows-x86-64-gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-x86:windows_x86_64_gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86:windows-x86-64-gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86:windows_x86_64_gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows-x86-64-gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows_x86_64_gnullvm:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:cargo/windows_x86_64_gnullvm@0.52.6?package-id=5e344a6df8ba7f5f",
       "type": "library",
       "name": "windows_x86_64_gnullvm",
@@ -22264,6 +25108,94 @@
         {
           "name": "syft:cpe23",
           "value": "cpe:2.3:a:windows:windows_x86_64_msvc:0.42.2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/windows_x86_64_msvc@0.48.5?package-id=fd6119fa316c15e2",
+      "type": "library",
+      "name": "windows_x86_64_msvc",
+      "version": "0.48.5",
+      "cpe": "cpe:2.3:a:windows-x86-64-msvc:windows-x86-64-msvc:0.48.5:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/windows_x86_64_msvc@0.48.5",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-x86-64-msvc:windows_x86_64_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86_64_msvc:windows-x86-64-msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86_64_msvc:windows_x86_64_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-x86-64:windows-x86-64-msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-x86-64:windows_x86_64_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86_64:windows-x86-64-msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86_64:windows_x86_64_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-x86:windows-x86-64-msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows-x86:windows_x86_64_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86:windows-x86-64-msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows_x86:windows_x86_64_msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows-x86-64-msvc:0.48.5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:windows:windows_x86_64_msvc:0.48.5:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -22624,6 +25556,110 @@
         {
           "name": "syft:package:metadataType",
           "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/Cargo.lock"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/ws2_32-sys@0.2.1?package-id=50c5993a09ca5ce8",
+      "type": "library",
+      "name": "ws2_32-sys",
+      "version": "0.2.1",
+      "cpe": "cpe:2.3:a:ws2-32-sys:ws2-32-sys:0.2.1:*:*:*:*:*:*:*",
+      "purl": "pkg:cargo/ws2_32-sys@0.2.1",
+      "externalReferences": [
+        {
+          "url": "registry+https://github.com/rust-lang/crates.io-index",
+          "type": "distribution"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "rust-cargo-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "rust"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "rust-crate"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "rust-cargo-lock-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2-32-sys:ws2_32-sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2-32-sys:ws2_32_sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2_32-sys:ws2-32-sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2_32-sys:ws2_32-sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2_32-sys:ws2_32_sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2_32_sys:ws2-32-sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2_32_sys:ws2_32-sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2_32_sys:ws2_32_sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2-32:ws2-32-sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2-32:ws2_32-sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2-32:ws2_32_sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2_32:ws2-32-sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2_32:ws2_32-sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2_32:ws2_32_sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2:ws2-32-sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2:ws2_32-sys:0.2.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ws2:ws2_32_sys:0.2.1:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:location:0:path",
@@ -24416,7 +27452,7 @@
       ]
     },
     {
-      "bom-ref": "pkg:cargo/zenoh-util@1.6.2?package-id=129aac33ce1d7a32",
+      "bom-ref": "pkg:cargo/zenoh-util@1.6.2?package-id=4ae572317ce6fdf6",
       "type": "library",
       "name": "zenoh-util",
       "version": "1.6.2",
@@ -24826,11 +27862,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "382166bcf88d8a7ff3098355cc9741f44cff851f"
+          "content": "d02ddb74b2853de96c0cc932d11647bf3f7b2290"
         },
         {
           "alg": "SHA-256",
-          "content": "fdff22a90071efb273f8c6b47892f82155b0e7f7588b1c2b3311498327c3a601"
+          "content": "fdb5aaa0dcd5fd6095fed2d93dd88753811341c0fb4a22445e22906e97d45a6f"
         }
       ]
     },
@@ -24852,7 +27888,7 @@
   ],
   "dependencies": [
     {
-      "ref": "pkg:cargo/aes@0.8.4?package-id=793d80b7d67f3019",
+      "ref": "pkg:cargo/aes@0.8.4?package-id=b7778b9a7b35fbb3",
       "dependsOn": [
         "pkg:cargo/cfg-if@1.0.4?package-id=bf741fa81228653c",
         "pkg:cargo/cipher@0.4.4?package-id=4209b500086673bc",
@@ -24860,10 +27896,10 @@
       ]
     },
     {
-      "ref": "pkg:cargo/ahash@0.8.12?package-id=33418da54e5bea6a",
+      "ref": "pkg:cargo/ahash@0.8.12?package-id=f0f9405487451585",
       "dependsOn": [
         "pkg:cargo/cfg-if@1.0.4?package-id=bf741fa81228653c",
-        "pkg:cargo/getrandom@0.3.4?package-id=cec13ec1f9903ea0",
+        "pkg:cargo/getrandom@0.3.4?package-id=532156d18b23a966",
         "pkg:cargo/once_cell@1.21.3?package-id=33e67327358cdff4",
         "pkg:cargo/version_check@0.9.5?package-id=e867ea551acd83b4",
         "pkg:cargo/zerocopy@0.8.31?package-id=a1dcea9ae00346d1"
@@ -24964,7 +28000,7 @@
       ]
     },
     {
-      "ref": "pkg:cargo/asterix@0.1.0?package-id=dd489551188729be",
+      "ref": "pkg:cargo/asterix@0.1.0?package-id=dbe8da06a1233599",
       "dependsOn": [
         "pkg:cargo/cc@1.2.48?package-id=c7611f670ec9ebc8",
         "pkg:cargo/criterion@0.7.0?package-id=5e20d897d915bad3",
@@ -24973,9 +28009,10 @@
         "pkg:cargo/env_logger@0.11.8?package-id=f18323cf7d36dcd0",
         "pkg:cargo/log@0.4.28?package-id=e1b1f604efdb9488",
         "pkg:cargo/pkg-config@0.3.32?package-id=512d4ffba5bd51c5",
+        "pkg:cargo/rustdds@0.11.7?package-id=93147d372d758ccf",
         "pkg:cargo/serde@1.0.228?package-id=bc7b9aacea66060b",
         "pkg:cargo/serde_json@1.0.145?package-id=12a6f5288b90b95a",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/vcpkg@0.2.15?package-id=951e5041141dc1f9",
         "pkg:cargo/zenoh@1.6.2?package-id=ee6f0625f68dfe01"
       ]
@@ -25017,11 +28054,39 @@
       ]
     },
     {
-      "ref": "pkg:cargo/chrono@0.4.42?package-id=b8897ebeae19a978",
+      "ref": "pkg:cargo/cdr-encoding-size-derive@0.5.1?package-id=23397fda440fe98a",
+      "dependsOn": [
+        "pkg:cargo/proc-macro2@1.0.103?package-id=77af33cc34cb3bf5",
+        "pkg:cargo/quote@1.0.42?package-id=f9e23d26cbf3c029",
+        "pkg:cargo/syn@1.0.109?package-id=9c2e1d63a3a065ec"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/cdr-encoding-size@0.5.1?package-id=b2ba80d953d3c8a9",
+      "dependsOn": [
+        "pkg:cargo/cdr-encoding-size-derive@0.5.1?package-id=23397fda440fe98a"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/cdr-encoding@0.10.2?package-id=42fb2511c47d8ae4",
+      "dependsOn": [
+        "pkg:cargo/byteorder@1.5.0?package-id=6430a4692ba85b66",
+        "pkg:cargo/log@0.4.28?package-id=e1b1f604efdb9488",
+        "pkg:cargo/paste@1.0.15?package-id=952d3185da5cb166",
+        "pkg:cargo/serde@1.0.228?package-id=bc7b9aacea66060b",
+        "pkg:cargo/serde_repr@0.1.20?package-id=04f1e1de0286cac3",
+        "pkg:cargo/static_assertions@1.1.0?package-id=a0091b77406f7bf6",
+        "pkg:cargo/thiserror@1.0.69?package-id=0626917e3ddf0e37"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/chrono@0.4.42?package-id=25a788b00ddd4edb",
       "dependsOn": [
         "pkg:cargo/iana-time-zone@0.1.64?package-id=70977124f5b0199c",
+        "pkg:cargo/js-sys@0.3.83?package-id=930df555d849e45e",
         "pkg:cargo/num-traits@0.2.19?package-id=f3168a1d7ef4d7d9",
         "pkg:cargo/serde@1.0.228?package-id=bc7b9aacea66060b",
+        "pkg:cargo/wasm-bindgen@0.2.106?package-id=171bc5260ab0803c",
         "pkg:cargo/windows-link@0.2.1?package-id=59d9907ec1dff6cf"
       ]
     },
@@ -25029,7 +28094,7 @@
       "ref": "pkg:cargo/ciborium-ll@0.2.2?package-id=7078a21e1f78c4b2",
       "dependsOn": [
         "pkg:cargo/ciborium-io@0.2.2?package-id=2c14080b4c7a9047",
-        "pkg:cargo/half@2.7.1?package-id=4275c3a15d1f85be"
+        "pkg:cargo/half@2.7.1?package-id=f02bc9537ef4a427"
       ]
     },
     {
@@ -25155,7 +28220,7 @@
         "pkg:cargo/serde@1.0.228?package-id=bc7b9aacea66060b",
         "pkg:cargo/serde_json@1.0.145?package-id=12a6f5288b90b95a",
         "pkg:cargo/tinytemplate@1.2.1?package-id=f6e1f784db1e6270",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/walkdir@2.5.0?package-id=6e656f3cc1b03460"
       ]
     },
@@ -25374,6 +28439,21 @@
       ]
     },
     {
+      "ref": "pkg:cargo/enumflags2@0.7.12?package-id=2d803cce9d3497c9",
+      "dependsOn": [
+        "pkg:cargo/enumflags2_derive@0.7.12?package-id=0421e4f32b7773a1",
+        "pkg:cargo/serde@1.0.228?package-id=bc7b9aacea66060b"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/enumflags2_derive@0.7.12?package-id=0421e4f32b7773a1",
+      "dependsOn": [
+        "pkg:cargo/proc-macro2@1.0.103?package-id=77af33cc34cb3bf5",
+        "pkg:cargo/quote@1.0.42?package-id=f9e23d26cbf3c029",
+        "pkg:cargo/syn@2.0.111?package-id=9aea6556d168fdc4"
+      ]
+    },
+    {
       "ref": "pkg:cargo/env_filter@0.1.4?package-id=9418ede3d1f92b46",
       "dependsOn": [
         "pkg:cargo/log@0.4.28?package-id=e1b1f604efdb9488",
@@ -25391,6 +28471,13 @@
       ]
     },
     {
+      "ref": "pkg:cargo/errno@0.3.14?package-id=ca6cfd19b2f64b9c",
+      "dependsOn": [
+        "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
+        "pkg:cargo/windows-sys@0.61.2?package-id=02ececda993605cc"
+      ]
+    },
+    {
       "ref": "pkg:cargo/event-listener@5.4.1?package-id=0ff9a36119289270",
       "dependsOn": [
         "pkg:cargo/concurrent-queue@2.5.0?package-id=acf769d664d6aed0",
@@ -25401,7 +28488,7 @@
     {
       "ref": "pkg:cargo/fastbloom@0.14.0?package-id=0af9362c4ece33e8",
       "dependsOn": [
-        "pkg:cargo/getrandom@0.3.4?package-id=cec13ec1f9903ea0",
+        "pkg:cargo/getrandom@0.3.4?package-id=532156d18b23a966",
         "pkg:cargo/libm@0.2.15?package-id=a0b77ed0741ae025",
         "pkg:cargo/rand@0.9.2?package-id=b62d6ab24da0f2f0",
         "pkg:cargo/siphasher@1.0.1?package-id=889f473b06165bc5"
@@ -25420,6 +28507,13 @@
       "ref": "pkg:cargo/form_urlencoded@1.2.2?package-id=efdeaeb05cfcc21c",
       "dependsOn": [
         "pkg:cargo/percent-encoding@2.3.2?package-id=9fa0762d32caefe9"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/fuchsia-zircon@0.3.3?package-id=1ca2d29103f62ec5",
+      "dependsOn": [
+        "pkg:cargo/bitflags@1.3.2?package-id=4e66679aa7bd7439",
+        "pkg:cargo/fuchsia-zircon-sys@0.3.3?package-id=b553b4f18121581d"
       ]
     },
     {
@@ -25480,13 +28574,24 @@
       ]
     },
     {
-      "ref": "pkg:cargo/getrandom@0.2.16?package-id=6b76588c51df9949",
+      "ref": "pkg:cargo/getrandom@0.2.16?package-id=a2e6b80cff4e2560",
       "dependsOn": [
         "pkg:cargo/cfg-if@1.0.4?package-id=bf741fa81228653c",
         "pkg:cargo/js-sys@0.3.83?package-id=930df555d849e45e",
         "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
         "pkg:cargo/wasi@0.11.1%2Bwasi-snapshot-preview1?package-id=ea75b31e6dcea046",
-        "pkg:cargo/wasm-bindgen@0.2.106?package-id=fd8ba1bddfe5c2ec"
+        "pkg:cargo/wasm-bindgen@0.2.106?package-id=171bc5260ab0803c"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/getrandom@0.3.4?package-id=532156d18b23a966",
+      "dependsOn": [
+        "pkg:cargo/cfg-if@1.0.4?package-id=bf741fa81228653c",
+        "pkg:cargo/js-sys@0.3.83?package-id=930df555d849e45e",
+        "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
+        "pkg:cargo/r-efi@5.3.0?package-id=325e187e73510046",
+        "pkg:cargo/wasip2@1.0.1%2Bwasi-0.2.4?package-id=f4bcad904c69d7ae",
+        "pkg:cargo/wasm-bindgen@0.2.106?package-id=171bc5260ab0803c"
       ]
     },
     {
@@ -25496,17 +28601,6 @@
         "pkg:cargo/libc@0.2.177?package-id=2daa3e9305448941",
         "pkg:cargo/r-efi@5.3.0?package-id=4e03da4724f0927b",
         "pkg:cargo/wasip2@1.0.1%2Bwasi-0.2.4?package-id=7a494d87e90a7ab6"
-      ]
-    },
-    {
-      "ref": "pkg:cargo/getrandom@0.3.4?package-id=cec13ec1f9903ea0",
-      "dependsOn": [
-        "pkg:cargo/cfg-if@1.0.4?package-id=bf741fa81228653c",
-        "pkg:cargo/js-sys@0.3.83?package-id=930df555d849e45e",
-        "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
-        "pkg:cargo/r-efi@5.3.0?package-id=325e187e73510046",
-        "pkg:cargo/wasip2@1.0.1%2Bwasi-0.2.4?package-id=f4bcad904c69d7ae",
-        "pkg:cargo/wasm-bindgen@0.2.106?package-id=fd8ba1bddfe5c2ec"
       ]
     },
     {
@@ -25524,7 +28618,7 @@
       ]
     },
     {
-      "ref": "pkg:cargo/half@2.7.1?package-id=4275c3a15d1f85be",
+      "ref": "pkg:cargo/half@2.7.1?package-id=f02bc9537ef4a427",
       "dependsOn": [
         "pkg:cargo/cfg-if@1.0.4?package-id=bf741fa81228653c",
         "pkg:cargo/crunchy@0.2.4?package-id=1f17d5c71966fa4c",
@@ -25534,7 +28628,7 @@
     {
       "ref": "pkg:cargo/hashbrown@0.14.5?package-id=e455e6c1f40238fb",
       "dependsOn": [
-        "pkg:cargo/ahash@0.8.12?package-id=33418da54e5bea6a",
+        "pkg:cargo/ahash@0.8.12?package-id=f0f9405487451585",
         "pkg:cargo/allocator-api2@0.2.21?package-id=2435500c9b1be216"
       ]
     },
@@ -25585,7 +28679,7 @@
         "pkg:cargo/iana-time-zone-haiku@0.1.2?package-id=b247babf3073e3be",
         "pkg:cargo/js-sys@0.3.83?package-id=930df555d849e45e",
         "pkg:cargo/log@0.4.28?package-id=e1b1f604efdb9488",
-        "pkg:cargo/wasm-bindgen@0.2.106?package-id=fd8ba1bddfe5c2ec",
+        "pkg:cargo/wasm-bindgen@0.2.106?package-id=171bc5260ab0803c",
         "pkg:cargo/windows-core@0.62.2?package-id=a5ebf3f80f04c14d"
       ]
     },
@@ -25659,6 +28753,13 @@
       ]
     },
     {
+      "ref": "pkg:cargo/if-addrs@0.13.4?package-id=c13d89ff03f56b77",
+      "dependsOn": [
+        "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
+        "pkg:cargo/windows-sys@0.59.0?package-id=4f109fe1e4550bbb"
+      ]
+    },
+    {
       "ref": "pkg:cargo/indexmap@1.9.3?package-id=5addd3c4a6c8641e",
       "dependsOn": [
         "pkg:cargo/autocfg@1.5.0?package-id=2be63ae407b2ad54",
@@ -25686,6 +28787,19 @@
       "ref": "pkg:cargo/inout@0.1.4?package-id=499d5dce7295aa3c",
       "dependsOn": [
         "pkg:cargo/generic-array@0.14.7?package-id=254fb996e43125f6"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/io-extras@0.18.4?package-id=33df7107f5368eca",
+      "dependsOn": [
+        "pkg:cargo/io-lifetimes@2.0.4?package-id=5c3e0f648d394c80",
+        "pkg:cargo/windows-sys@0.52.0?package-id=c450cf75e67dfadd"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/iovec@0.1.4?package-id=32cfb08d5ba3b1d3",
+      "dependsOn": [
+        "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd"
       ]
     },
     {
@@ -25725,7 +28839,7 @@
       ]
     },
     {
-      "ref": "pkg:cargo/jni@0.21.1?package-id=c92e5fd0edeb6590",
+      "ref": "pkg:cargo/jni@0.21.1?package-id=ac6561b057890ddc",
       "dependsOn": [
         "pkg:cargo/cesu8@1.1.0?package-id=c684049275c07ad8",
         "pkg:cargo/cfg-if@1.0.4?package-id=bf741fa81228653c",
@@ -25748,7 +28862,7 @@
       "ref": "pkg:cargo/js-sys@0.3.83?package-id=930df555d849e45e",
       "dependsOn": [
         "pkg:cargo/once_cell@1.21.3?package-id=33e67327358cdff4",
-        "pkg:cargo/wasm-bindgen@0.2.106?package-id=fd8ba1bddfe5c2ec"
+        "pkg:cargo/wasm-bindgen@0.2.106?package-id=171bc5260ab0803c"
       ]
     },
     {
@@ -25763,6 +28877,13 @@
       "ref": "pkg:cargo/keccak@0.1.5?package-id=43e50ee5beaf0cee",
       "dependsOn": [
         "pkg:cargo/cpufeatures@0.2.17?package-id=550db72cc597b69f"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/kernel32-sys@0.2.2?package-id=346a6af53eb87efb",
+      "dependsOn": [
+        "pkg:cargo/winapi-build@0.1.1?package-id=234292d0d4ce67d1",
+        "pkg:cargo/winapi@0.2.8?package-id=ea72c45435528952"
       ]
     },
     {
@@ -25785,14 +28906,14 @@
       ]
     },
     {
-      "ref": "pkg:cargo/libloading@0.8.9?package-id=b87f987c5da9796f",
+      "ref": "pkg:cargo/libloading@0.8.9?package-id=51bfa769f4c20220",
       "dependsOn": [
         "pkg:cargo/cfg-if@1.0.4?package-id=bf741fa81228653c",
         "pkg:cargo/windows-link@0.2.1?package-id=59d9907ec1dff6cf"
       ]
     },
     {
-      "ref": "pkg:cargo/libredox@0.1.10?package-id=2f815c2ebe102e44",
+      "ref": "pkg:cargo/libredox@0.1.10?package-id=b86ec772969f46f3",
       "dependsOn": [
         "pkg:cargo/bitflags@2.10.0?package-id=328a4d5d3588edbf",
         "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd"
@@ -25808,6 +28929,15 @@
       "ref": "pkg:cargo/link-cplusplus@1.0.12?package-id=68517ddb3af09906",
       "dependsOn": [
         "pkg:cargo/cc@1.2.44?package-id=9515ea074e1d950f"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/local-ip-address@0.6.5?package-id=5e22afde4c93e01b",
+      "dependsOn": [
+        "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
+        "pkg:cargo/neli@0.6.5?package-id=016294bb95400696",
+        "pkg:cargo/thiserror@2.0.17?package-id=b10142a08db3eeb4",
+        "pkg:cargo/windows-sys@0.59.0?package-id=4f109fe1e4550bbb"
       ]
     },
     {
@@ -25829,6 +28959,46 @@
       ]
     },
     {
+      "ref": "pkg:cargo/memoffset@0.9.1?package-id=7cc86bd1ecae6934",
+      "dependsOn": [
+        "pkg:cargo/autocfg@1.5.0?package-id=2be63ae407b2ad54"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/mio-extras@2.0.6?package-id=5556d44576fb4f9f",
+      "dependsOn": [
+        "pkg:cargo/lazycell@1.3.0?package-id=00b148d304cae8ac",
+        "pkg:cargo/log@0.4.28?package-id=e1b1f604efdb9488",
+        "pkg:cargo/mio@0.6.23?package-id=2319a788d667a393",
+        "pkg:cargo/slab@0.4.11?package-id=c061d827a7ee47bc"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/mio@0.6.23?package-id=2319a788d667a393",
+      "dependsOn": [
+        "pkg:cargo/cfg-if@0.1.10?package-id=5d8d88bdabed05de",
+        "pkg:cargo/fuchsia-zircon-sys@0.3.3?package-id=b553b4f18121581d",
+        "pkg:cargo/fuchsia-zircon@0.3.3?package-id=1ca2d29103f62ec5",
+        "pkg:cargo/iovec@0.1.4?package-id=32cfb08d5ba3b1d3",
+        "pkg:cargo/kernel32-sys@0.2.2?package-id=346a6af53eb87efb",
+        "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
+        "pkg:cargo/log@0.4.28?package-id=e1b1f604efdb9488",
+        "pkg:cargo/miow@0.2.2?package-id=11abcb7a93ed660b",
+        "pkg:cargo/net2@0.2.39?package-id=a0adf0278e5613d4",
+        "pkg:cargo/slab@0.4.11?package-id=c061d827a7ee47bc",
+        "pkg:cargo/winapi@0.2.8?package-id=ea72c45435528952"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/mio@0.8.11?package-id=ebac2a7374c54aba",
+      "dependsOn": [
+        "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
+        "pkg:cargo/log@0.4.28?package-id=e1b1f604efdb9488",
+        "pkg:cargo/wasi@0.11.1%2Bwasi-snapshot-preview1?package-id=ea75b31e6dcea046",
+        "pkg:cargo/windows-sys@0.48.0?package-id=c37a130efde88009"
+      ]
+    },
+    {
       "ref": "pkg:cargo/mio@1.1.0?package-id=4955468d2c551b4f",
       "dependsOn": [
         "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
@@ -25837,13 +29007,49 @@
       ]
     },
     {
-      "ref": "pkg:cargo/nanorand@0.7.0?package-id=26b75a80b541542a",
+      "ref": "pkg:cargo/miow@0.2.2?package-id=11abcb7a93ed660b",
       "dependsOn": [
-        "pkg:cargo/getrandom@0.2.16?package-id=6b76588c51df9949"
+        "pkg:cargo/kernel32-sys@0.2.2?package-id=346a6af53eb87efb",
+        "pkg:cargo/net2@0.2.39?package-id=a0adf0278e5613d4",
+        "pkg:cargo/winapi@0.2.8?package-id=ea72c45435528952",
+        "pkg:cargo/ws2_32-sys@0.2.1?package-id=50c5993a09ca5ce8"
       ]
     },
     {
-      "ref": "pkg:cargo/nix@0.29.0?package-id=4f0bc593aa51bb8e",
+      "ref": "pkg:cargo/nanorand@0.7.0?package-id=26b75a80b541542a",
+      "dependsOn": [
+        "pkg:cargo/getrandom@0.2.16?package-id=a2e6b80cff4e2560"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/neli-proc-macros@0.1.4?package-id=d2241704db1bf283",
+      "dependsOn": [
+        "pkg:cargo/either@1.15.0?package-id=b230361a79b307c0",
+        "pkg:cargo/proc-macro2@1.0.103?package-id=77af33cc34cb3bf5",
+        "pkg:cargo/quote@1.0.42?package-id=f9e23d26cbf3c029",
+        "pkg:cargo/serde@1.0.228?package-id=bc7b9aacea66060b",
+        "pkg:cargo/syn@1.0.109?package-id=9c2e1d63a3a065ec"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/neli@0.6.5?package-id=016294bb95400696",
+      "dependsOn": [
+        "pkg:cargo/byteorder@1.5.0?package-id=6430a4692ba85b66",
+        "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
+        "pkg:cargo/log@0.4.28?package-id=e1b1f604efdb9488",
+        "pkg:cargo/neli-proc-macros@0.1.4?package-id=d2241704db1bf283"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/net2@0.2.39?package-id=a0adf0278e5613d4",
+      "dependsOn": [
+        "pkg:cargo/cfg-if@0.1.10?package-id=5d8d88bdabed05de",
+        "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
+        "pkg:cargo/winapi@0.3.9?package-id=5f3078532be1b653"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/nix@0.29.0?package-id=b3fe4a2d4b0ba3fa",
       "dependsOn": [
         "pkg:cargo/bitflags@2.10.0?package-id=328a4d5d3588edbf",
         "pkg:cargo/cfg-if@1.0.4?package-id=bf741fa81228653c",
@@ -25888,6 +29094,14 @@
       "dependsOn": [
         "pkg:cargo/num-integer@0.1.46?package-id=fbe176a75ede4435",
         "pkg:cargo/num-traits@0.2.19?package-id=f3168a1d7ef4d7d9"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/num-derive@0.4.2?package-id=350111a710464736",
+      "dependsOn": [
+        "pkg:cargo/proc-macro2@1.0.103?package-id=77af33cc34cb3bf5",
+        "pkg:cargo/quote@1.0.42?package-id=f9e23d26cbf3c029",
+        "pkg:cargo/syn@2.0.111?package-id=9aea6556d168fdc4"
       ]
     },
     {
@@ -25958,7 +29172,7 @@
       "ref": "pkg:cargo/pest_meta@2.8.4?package-id=fed2a2d64d5d1728",
       "dependsOn": [
         "pkg:cargo/pest@2.8.4?package-id=bf2e7be404ae13cf",
-        "pkg:cargo/sha2@0.10.9?package-id=acf9a8881f3f5dd6"
+        "pkg:cargo/sha2@0.10.9?package-id=923dae312d7c711d"
       ]
     },
     {
@@ -26028,8 +29242,19 @@
         "pkg:cargo/num-traits@0.2.19?package-id=f3168a1d7ef4d7d9",
         "pkg:cargo/plotters-backend@0.3.7?package-id=af0dde3a031419da",
         "pkg:cargo/plotters-svg@0.3.7?package-id=fb5de90b18252838",
-        "pkg:cargo/wasm-bindgen@0.2.106?package-id=fd8ba1bddfe5c2ec",
+        "pkg:cargo/wasm-bindgen@0.2.106?package-id=171bc5260ab0803c",
         "pkg:cargo/web-sys@0.3.83?package-id=192b71b25e28d775"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/pnet@0.35.0?package-id=f0fc2e432b901715",
+      "dependsOn": [
+        "pkg:cargo/ipnetwork@0.20.0?package-id=7197ec34ba79dcb4",
+        "pkg:cargo/pnet_base@0.35.0?package-id=28216b309e351bd8",
+        "pkg:cargo/pnet_datalink@0.35.0?package-id=fb1b93da74fe4151",
+        "pkg:cargo/pnet_packet@0.35.0?package-id=07415b98c473916b",
+        "pkg:cargo/pnet_sys@0.35.0?package-id=548ca97d71afffc6",
+        "pkg:cargo/pnet_transport@0.35.0?package-id=525ecdae9ee64174"
       ]
     },
     {
@@ -26039,20 +29264,53 @@
       ]
     },
     {
-      "ref": "pkg:cargo/pnet_datalink@0.35.0?package-id=d2d755244d55efbe",
+      "ref": "pkg:cargo/pnet_datalink@0.35.0?package-id=fb1b93da74fe4151",
       "dependsOn": [
         "pkg:cargo/ipnetwork@0.20.0?package-id=7197ec34ba79dcb4",
         "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
         "pkg:cargo/pnet_base@0.35.0?package-id=28216b309e351bd8",
-        "pkg:cargo/pnet_sys@0.35.0?package-id=8ec8e9c21276fbb9",
+        "pkg:cargo/pnet_sys@0.35.0?package-id=548ca97d71afffc6",
         "pkg:cargo/winapi@0.3.9?package-id=5f3078532be1b653"
       ]
     },
     {
-      "ref": "pkg:cargo/pnet_sys@0.35.0?package-id=8ec8e9c21276fbb9",
+      "ref": "pkg:cargo/pnet_macros@0.35.0?package-id=e09f909d6f23863b",
+      "dependsOn": [
+        "pkg:cargo/proc-macro2@1.0.103?package-id=77af33cc34cb3bf5",
+        "pkg:cargo/quote@1.0.42?package-id=f9e23d26cbf3c029",
+        "pkg:cargo/regex@1.12.2?package-id=e4d59ab891c28e8a",
+        "pkg:cargo/syn@2.0.111?package-id=9aea6556d168fdc4"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/pnet_macros_support@0.35.0?package-id=5679515198651562",
+      "dependsOn": [
+        "pkg:cargo/pnet_base@0.35.0?package-id=28216b309e351bd8"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/pnet_packet@0.35.0?package-id=07415b98c473916b",
+      "dependsOn": [
+        "pkg:cargo/glob@0.3.3?package-id=afa3a4b15f27c8e3",
+        "pkg:cargo/pnet_base@0.35.0?package-id=28216b309e351bd8",
+        "pkg:cargo/pnet_macros@0.35.0?package-id=e09f909d6f23863b",
+        "pkg:cargo/pnet_macros_support@0.35.0?package-id=5679515198651562"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/pnet_sys@0.35.0?package-id=548ca97d71afffc6",
       "dependsOn": [
         "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
         "pkg:cargo/winapi@0.3.9?package-id=5f3078532be1b653"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/pnet_transport@0.35.0?package-id=525ecdae9ee64174",
+      "dependsOn": [
+        "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
+        "pkg:cargo/pnet_base@0.35.0?package-id=28216b309e351bd8",
+        "pkg:cargo/pnet_packet@0.35.0?package-id=07415b98c473916b",
+        "pkg:cargo/pnet_sys@0.35.0?package-id=548ca97d71afffc6"
       ]
     },
     {
@@ -26096,10 +29354,10 @@
       "dependsOn": [
         "pkg:cargo/bytes@1.11.0?package-id=410c3e9e36eeea74",
         "pkg:cargo/fastbloom@0.14.0?package-id=0af9362c4ece33e8",
-        "pkg:cargo/getrandom@0.3.4?package-id=cec13ec1f9903ea0",
+        "pkg:cargo/getrandom@0.3.4?package-id=532156d18b23a966",
         "pkg:cargo/lru-slab@0.1.2?package-id=fe8043db0230fa9d",
         "pkg:cargo/rand@0.9.2?package-id=b62d6ab24da0f2f0",
-        "pkg:cargo/ring@0.17.14?package-id=c66763fec7810e29",
+        "pkg:cargo/ring@0.17.14?package-id=bf6d9b8ec90c0acf",
         "pkg:cargo/rustc-hash@2.1.1?package-id=23b59a414a04b185",
         "pkg:cargo/rustls-pki-types@1.13.1?package-id=da30e531b565de44",
         "pkg:cargo/rustls-platform-verifier@0.6.2?package-id=20a0e16ce2137467",
@@ -26134,7 +29392,7 @@
         "pkg:cargo/rustls@0.23.35?package-id=c049c5ce6d3fe4cc",
         "pkg:cargo/socket2@0.6.1?package-id=38b5db7d5e034040",
         "pkg:cargo/thiserror@2.0.17?package-id=b10142a08db3eeb4",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/tracing@0.1.43?package-id=716bf9ce5e56b23b",
         "pkg:cargo/web-time@1.1.0?package-id=50ab6b25775122b9"
       ]
@@ -26183,13 +29441,13 @@
     {
       "ref": "pkg:cargo/rand_core@0.6.4?package-id=d0daca10e1367c86",
       "dependsOn": [
-        "pkg:cargo/getrandom@0.2.16?package-id=6b76588c51df9949"
+        "pkg:cargo/getrandom@0.2.16?package-id=a2e6b80cff4e2560"
       ]
     },
     {
       "ref": "pkg:cargo/rand_core@0.9.3?package-id=758004f63791f5c2",
       "dependsOn": [
-        "pkg:cargo/getrandom@0.3.4?package-id=cec13ec1f9903ea0"
+        "pkg:cargo/getrandom@0.3.4?package-id=532156d18b23a966"
       ]
     },
     {
@@ -26209,8 +29467,8 @@
     {
       "ref": "pkg:cargo/redox_users@0.5.2?package-id=0782379a25723556",
       "dependsOn": [
-        "pkg:cargo/getrandom@0.2.16?package-id=6b76588c51df9949",
-        "pkg:cargo/libredox@0.1.10?package-id=2f815c2ebe102e44",
+        "pkg:cargo/getrandom@0.2.16?package-id=a2e6b80cff4e2560",
+        "pkg:cargo/libredox@0.1.10?package-id=b86ec772969f46f3",
         "pkg:cargo/thiserror@2.0.17?package-id=b10142a08db3eeb4"
       ]
     },
@@ -26246,11 +29504,11 @@
       ]
     },
     {
-      "ref": "pkg:cargo/ring@0.17.14?package-id=c66763fec7810e29",
+      "ref": "pkg:cargo/ring@0.17.14?package-id=bf6d9b8ec90c0acf",
       "dependsOn": [
         "pkg:cargo/cc@1.2.48?package-id=c7611f670ec9ebc8",
         "pkg:cargo/cfg-if@1.0.4?package-id=bf741fa81228653c",
-        "pkg:cargo/getrandom@0.2.16?package-id=6b76588c51df9949",
+        "pkg:cargo/getrandom@0.2.16?package-id=a2e6b80cff4e2560",
         "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
         "pkg:cargo/untrusted@0.9.0?package-id=d2af0bb05866d696",
         "pkg:cargo/windows-sys@0.52.0?package-id=c450cf75e67dfadd"
@@ -26264,7 +29522,7 @@
       ]
     },
     {
-      "ref": "pkg:cargo/ron@0.11.0?package-id=653d066a3d2ea4ed",
+      "ref": "pkg:cargo/ron@0.11.0?package-id=f571140e862ecf2f",
       "dependsOn": [
         "pkg:cargo/base64@0.22.1?package-id=f7b13e75f7c80b9c",
         "pkg:cargo/bitflags@2.10.0?package-id=328a4d5d3588edbf",
@@ -26297,9 +29555,53 @@
       ]
     },
     {
+      "ref": "pkg:cargo/rustdds@0.11.7?package-id=93147d372d758ccf",
+      "dependsOn": [
+        "pkg:cargo/bit-vec@0.8.0?package-id=39fea64f52fcb0bf",
+        "pkg:cargo/byteorder@1.5.0?package-id=6430a4692ba85b66",
+        "pkg:cargo/bytes@1.11.0?package-id=410c3e9e36eeea74",
+        "pkg:cargo/cdr-encoding-size@0.5.1?package-id=b2ba80d953d3c8a9",
+        "pkg:cargo/cdr-encoding@0.10.2?package-id=42fb2511c47d8ae4",
+        "pkg:cargo/chrono@0.4.42?package-id=25a788b00ddd4edb",
+        "pkg:cargo/enumflags2@0.7.12?package-id=2d803cce9d3497c9",
+        "pkg:cargo/futures@0.3.31?package-id=131fc65d0a716a69",
+        "pkg:cargo/if-addrs@0.13.4?package-id=c13d89ff03f56b77",
+        "pkg:cargo/io-extras@0.18.4?package-id=33df7107f5368eca",
+        "pkg:cargo/local-ip-address@0.6.5?package-id=5e22afde4c93e01b",
+        "pkg:cargo/log@0.4.28?package-id=e1b1f604efdb9488",
+        "pkg:cargo/md5@0.8.0?package-id=719e51c081403162",
+        "pkg:cargo/mio-extras@2.0.6?package-id=5556d44576fb4f9f",
+        "pkg:cargo/mio@0.6.23?package-id=2319a788d667a393",
+        "pkg:cargo/mio@0.8.11?package-id=ebac2a7374c54aba",
+        "pkg:cargo/num-derive@0.4.2?package-id=350111a710464736",
+        "pkg:cargo/num-traits@0.2.19?package-id=f3168a1d7ef4d7d9",
+        "pkg:cargo/paste@1.0.15?package-id=952d3185da5cb166",
+        "pkg:cargo/pnet@0.35.0?package-id=f0fc2e432b901715",
+        "pkg:cargo/pnet_sys@0.35.0?package-id=548ca97d71afffc6",
+        "pkg:cargo/rand@0.9.2?package-id=b62d6ab24da0f2f0",
+        "pkg:cargo/serde@1.0.228?package-id=bc7b9aacea66060b",
+        "pkg:cargo/serde_repr@0.1.20?package-id=04f1e1de0286cac3",
+        "pkg:cargo/socket2@0.5.10?package-id=14b57ea029e115b3",
+        "pkg:cargo/socketpair@0.19.8?package-id=7ce8e1bc4a24a632",
+        "pkg:cargo/speedy@0.8.7?package-id=2508bb72d9c9d72e",
+        "pkg:cargo/static_assertions@1.1.0?package-id=a0091b77406f7bf6",
+        "pkg:cargo/thiserror@2.0.17?package-id=b10142a08db3eeb4"
+      ]
+    },
+    {
       "ref": "pkg:cargo/rusticata-macros@4.1.0?package-id=a43e82a69576bc87",
       "dependsOn": [
         "pkg:cargo/nom@7.1.3?package-id=a21d5022e6749182"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/rustix@1.1.2?package-id=4c252162af08afdc",
+      "dependsOn": [
+        "pkg:cargo/bitflags@2.10.0?package-id=328a4d5d3588edbf",
+        "pkg:cargo/errno@0.3.14?package-id=ca6cfd19b2f64b9c",
+        "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
+        "pkg:cargo/linux-raw-sys@0.11.0?package-id=13f809b24f1f4c4e",
+        "pkg:cargo/windows-sys@0.61.2?package-id=02ececda993605cc"
       ]
     },
     {
@@ -26308,7 +29610,7 @@
         "pkg:cargo/openssl-probe@0.1.6?package-id=dde6f34d6e41bb27",
         "pkg:cargo/rustls-pki-types@1.13.1?package-id=da30e531b565de44",
         "pkg:cargo/schannel@0.1.28?package-id=af2407c68dff2a7d",
-        "pkg:cargo/security-framework@3.5.1?package-id=ac57d7d8c96cebc9"
+        "pkg:cargo/security-framework@3.5.1?package-id=5869f266d866cd67"
       ]
     },
     {
@@ -26329,7 +29631,7 @@
       "dependsOn": [
         "pkg:cargo/core-foundation-sys@0.8.7?package-id=3e5c1b0a222f17ed",
         "pkg:cargo/core-foundation@0.10.1?package-id=0053c2a8362b4db8",
-        "pkg:cargo/jni@0.21.1?package-id=c92e5fd0edeb6590",
+        "pkg:cargo/jni@0.21.1?package-id=ac6561b057890ddc",
         "pkg:cargo/log@0.4.28?package-id=e1b1f604efdb9488",
         "pkg:cargo/once_cell@1.21.3?package-id=33e67327358cdff4",
         "pkg:cargo/rustls-native-certs@0.8.2?package-id=0a0fe3fee4fc780d",
@@ -26337,7 +29639,7 @@
         "pkg:cargo/rustls-webpki@0.103.8?package-id=1b26fc9375b6c68e",
         "pkg:cargo/rustls@0.23.35?package-id=c049c5ce6d3fe4cc",
         "pkg:cargo/security-framework-sys@2.15.0?package-id=cac045d0da0c9872",
-        "pkg:cargo/security-framework@3.5.1?package-id=ac57d7d8c96cebc9",
+        "pkg:cargo/security-framework@3.5.1?package-id=5869f266d866cd67",
         "pkg:cargo/webpki-root-certs@1.0.4?package-id=d4ded4d64a15b517",
         "pkg:cargo/windows-sys@0.61.2?package-id=02ececda993605cc"
       ]
@@ -26345,7 +29647,7 @@
     {
       "ref": "pkg:cargo/rustls-webpki@0.102.8?package-id=bbb34e37053cbdc0",
       "dependsOn": [
-        "pkg:cargo/ring@0.17.14?package-id=c66763fec7810e29",
+        "pkg:cargo/ring@0.17.14?package-id=bf6d9b8ec90c0acf",
         "pkg:cargo/rustls-pki-types@1.13.1?package-id=da30e531b565de44",
         "pkg:cargo/untrusted@0.9.0?package-id=d2af0bb05866d696"
       ]
@@ -26353,7 +29655,7 @@
     {
       "ref": "pkg:cargo/rustls-webpki@0.103.8?package-id=1b26fc9375b6c68e",
       "dependsOn": [
-        "pkg:cargo/ring@0.17.14?package-id=c66763fec7810e29",
+        "pkg:cargo/ring@0.17.14?package-id=bf6d9b8ec90c0acf",
         "pkg:cargo/rustls-pki-types@1.13.1?package-id=da30e531b565de44",
         "pkg:cargo/untrusted@0.9.0?package-id=d2af0bb05866d696"
       ]
@@ -26363,7 +29665,7 @@
       "dependsOn": [
         "pkg:cargo/log@0.4.28?package-id=e1b1f604efdb9488",
         "pkg:cargo/once_cell@1.21.3?package-id=33e67327358cdff4",
-        "pkg:cargo/ring@0.17.14?package-id=c66763fec7810e29",
+        "pkg:cargo/ring@0.17.14?package-id=bf6d9b8ec90c0acf",
         "pkg:cargo/rustls-pki-types@1.13.1?package-id=da30e531b565de44",
         "pkg:cargo/rustls-webpki@0.103.8?package-id=1b26fc9375b6c68e",
         "pkg:cargo/subtle@2.6.1?package-id=9f42a083086714af",
@@ -26434,7 +29736,7 @@
       ]
     },
     {
-      "ref": "pkg:cargo/security-framework@3.5.1?package-id=ac57d7d8c96cebc9",
+      "ref": "pkg:cargo/security-framework@3.5.1?package-id=5869f266d866cd67",
       "dependsOn": [
         "pkg:cargo/bitflags@2.10.0?package-id=328a4d5d3588edbf",
         "pkg:cargo/core-foundation-sys@0.8.7?package-id=3e5c1b0a222f17ed",
@@ -26514,10 +29816,18 @@
       ]
     },
     {
+      "ref": "pkg:cargo/serde_repr@0.1.20?package-id=04f1e1de0286cac3",
+      "dependsOn": [
+        "pkg:cargo/proc-macro2@1.0.103?package-id=77af33cc34cb3bf5",
+        "pkg:cargo/quote@1.0.42?package-id=f9e23d26cbf3c029",
+        "pkg:cargo/syn@2.0.111?package-id=9aea6556d168fdc4"
+      ]
+    },
+    {
       "ref": "pkg:cargo/serde_with@3.16.1?package-id=1e25b7cc2d3a843a",
       "dependsOn": [
         "pkg:cargo/base64@0.22.1?package-id=f7b13e75f7c80b9c",
-        "pkg:cargo/chrono@0.4.42?package-id=b8897ebeae19a978",
+        "pkg:cargo/chrono@0.4.42?package-id=25a788b00ddd4edb",
         "pkg:cargo/hex@0.4.3?package-id=9a814c55e8b0d7a9",
         "pkg:cargo/indexmap@1.9.3?package-id=5addd3c4a6c8641e",
         "pkg:cargo/indexmap@2.12.1?package-id=de434d241ee03d0c",
@@ -26549,7 +29859,7 @@
       ]
     },
     {
-      "ref": "pkg:cargo/sha1@0.10.6?package-id=a82448f6272c12a0",
+      "ref": "pkg:cargo/sha1@0.10.6?package-id=13196fe61a5c772b",
       "dependsOn": [
         "pkg:cargo/cfg-if@1.0.4?package-id=bf741fa81228653c",
         "pkg:cargo/cpufeatures@0.2.17?package-id=550db72cc597b69f",
@@ -26557,7 +29867,7 @@
       ]
     },
     {
-      "ref": "pkg:cargo/sha2@0.10.9?package-id=acf9a8881f3f5dd6",
+      "ref": "pkg:cargo/sha2@0.10.9?package-id=923dae312d7c711d",
       "dependsOn": [
         "pkg:cargo/cfg-if@1.0.4?package-id=bf741fa81228653c",
         "pkg:cargo/cpufeatures@0.2.17?package-id=550db72cc597b69f",
@@ -26602,6 +29912,31 @@
       "dependsOn": [
         "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
         "pkg:cargo/windows-sys@0.60.2?package-id=9d1c1144c798acca"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/socketpair@0.19.8?package-id=7ce8e1bc4a24a632",
+      "dependsOn": [
+        "pkg:cargo/io-extras@0.18.4?package-id=33df7107f5368eca",
+        "pkg:cargo/io-lifetimes@2.0.4?package-id=5c3e0f648d394c80",
+        "pkg:cargo/rustix@1.1.2?package-id=4c252162af08afdc",
+        "pkg:cargo/uuid@1.18.1?package-id=588e8e8f7990c7db",
+        "pkg:cargo/windows-sys@0.59.0?package-id=4f109fe1e4550bbb"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/speedy-derive@0.8.7?package-id=93632ed5488a72e1",
+      "dependsOn": [
+        "pkg:cargo/proc-macro2@1.0.103?package-id=77af33cc34cb3bf5",
+        "pkg:cargo/quote@1.0.42?package-id=f9e23d26cbf3c029",
+        "pkg:cargo/syn@2.0.111?package-id=9aea6556d168fdc4"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/speedy@0.8.7?package-id=2508bb72d9c9d72e",
+      "dependsOn": [
+        "pkg:cargo/memoffset@0.9.1?package-id=7cc86bd1ecae6934",
+        "pkg:cargo/speedy-derive@0.8.7?package-id=93632ed5488a72e1"
       ]
     },
     {
@@ -26716,7 +30051,7 @@
       ]
     },
     {
-      "ref": "pkg:cargo/thread_local@1.1.9?package-id=6eb6caf8b77e310f",
+      "ref": "pkg:cargo/thread_local@1.1.9?package-id=c44bbb30c1ca56fa",
       "dependsOn": [
         "pkg:cargo/cfg-if@1.0.4?package-id=bf741fa81228653c"
       ]
@@ -26767,7 +30102,7 @@
         "pkg:cargo/pin-project-lite@0.2.16?package-id=bd8e40eebf7456fa",
         "pkg:cargo/thiserror@2.0.17?package-id=b10142a08db3eeb4",
         "pkg:cargo/tokio-rustls@0.26.4?package-id=abf9a85ccb0c3cdd",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d"
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602"
       ]
     },
     {
@@ -26790,7 +30125,7 @@
       "ref": "pkg:cargo/tokio-rustls@0.26.4?package-id=abf9a85ccb0c3cdd",
       "dependsOn": [
         "pkg:cargo/rustls@0.23.35?package-id=c049c5ce6d3fe4cc",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d"
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602"
       ]
     },
     {
@@ -26798,7 +30133,7 @@
       "dependsOn": [
         "pkg:cargo/futures-util@0.3.31?package-id=fbecd0b84851f58e",
         "pkg:cargo/log@0.4.28?package-id=e1b1f604efdb9488",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/tungstenite@0.24.0?package-id=077525cae1d6fbe3"
       ]
     },
@@ -26810,11 +30145,11 @@
         "pkg:cargo/futures-sink@0.3.31?package-id=b8d7924011b97740",
         "pkg:cargo/futures-util@0.3.31?package-id=fbecd0b84851f58e",
         "pkg:cargo/pin-project-lite@0.2.16?package-id=bd8e40eebf7456fa",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d"
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602"
       ]
     },
     {
-      "ref": "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+      "ref": "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
       "dependsOn": [
         "pkg:cargo/bytes@1.11.0?package-id=410c3e9e36eeea74",
         "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
@@ -26887,7 +30222,7 @@
         "pkg:cargo/serde_json@1.0.145?package-id=12a6f5288b90b95a",
         "pkg:cargo/sharded-slab@0.1.7?package-id=f55e3bb930413da6",
         "pkg:cargo/smallvec@1.15.1?package-id=16199256f4888627",
-        "pkg:cargo/thread_local@1.1.9?package-id=6eb6caf8b77e310f",
+        "pkg:cargo/thread_local@1.1.9?package-id=c44bbb30c1ca56fa",
         "pkg:cargo/tracing-core@0.1.35?package-id=e3532c3164029539",
         "pkg:cargo/tracing-log@0.2.0?package-id=e00ae2a49b31de7d",
         "pkg:cargo/tracing-serde@0.2.0?package-id=313673bbdd87b2a3",
@@ -26913,7 +30248,7 @@
         "pkg:cargo/httparse@1.10.1?package-id=acf68065cbb591b2",
         "pkg:cargo/log@0.4.28?package-id=e1b1f604efdb9488",
         "pkg:cargo/rand@0.8.5?package-id=e33b0e7d883abb0a",
-        "pkg:cargo/sha1@0.10.6?package-id=a82448f6272c12a0",
+        "pkg:cargo/sha1@0.10.6?package-id=13196fe61a5c772b",
         "pkg:cargo/thiserror@1.0.69?package-id=0626917e3ddf0e37",
         "pkg:cargo/utf-8@0.7.6?package-id=8b6299a52175249b"
       ]
@@ -26949,9 +30284,9 @@
     {
       "ref": "pkg:cargo/uuid@1.18.1?package-id=588e8e8f7990c7db",
       "dependsOn": [
-        "pkg:cargo/getrandom@0.3.4?package-id=cec13ec1f9903ea0",
+        "pkg:cargo/getrandom@0.3.4?package-id=532156d18b23a966",
         "pkg:cargo/js-sys@0.3.83?package-id=930df555d849e45e",
-        "pkg:cargo/wasm-bindgen@0.2.106?package-id=fd8ba1bddfe5c2ec"
+        "pkg:cargo/wasm-bindgen@0.2.106?package-id=171bc5260ab0803c"
       ]
     },
     {
@@ -27015,7 +30350,7 @@
       ]
     },
     {
-      "ref": "pkg:cargo/wasm-bindgen@0.2.106?package-id=fd8ba1bddfe5c2ec",
+      "ref": "pkg:cargo/wasm-bindgen@0.2.106?package-id=171bc5260ab0803c",
       "dependsOn": [
         "pkg:cargo/cfg-if@1.0.4?package-id=bf741fa81228653c",
         "pkg:cargo/once_cell@1.21.3?package-id=33e67327358cdff4",
@@ -27028,14 +30363,14 @@
       "ref": "pkg:cargo/web-sys@0.3.83?package-id=192b71b25e28d775",
       "dependsOn": [
         "pkg:cargo/js-sys@0.3.83?package-id=930df555d849e45e",
-        "pkg:cargo/wasm-bindgen@0.2.106?package-id=fd8ba1bddfe5c2ec"
+        "pkg:cargo/wasm-bindgen@0.2.106?package-id=171bc5260ab0803c"
       ]
     },
     {
       "ref": "pkg:cargo/web-time@1.1.0?package-id=50ab6b25775122b9",
       "dependsOn": [
         "pkg:cargo/js-sys@0.3.83?package-id=930df555d849e45e",
-        "pkg:cargo/wasm-bindgen@0.2.106?package-id=fd8ba1bddfe5c2ec"
+        "pkg:cargo/wasm-bindgen@0.2.106?package-id=171bc5260ab0803c"
       ]
     },
     {
@@ -27120,7 +30455,19 @@
       ]
     },
     {
+      "ref": "pkg:cargo/windows-sys@0.48.0?package-id=c37a130efde88009",
+      "dependsOn": [
+        "pkg:cargo/windows-targets@0.48.5?package-id=dbc65392732255b5"
+      ]
+    },
+    {
       "ref": "pkg:cargo/windows-sys@0.52.0?package-id=c450cf75e67dfadd",
+      "dependsOn": [
+        "pkg:cargo/windows-targets@0.52.6?package-id=0abcf21f8bf8c5b3"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/windows-sys@0.59.0?package-id=4f109fe1e4550bbb",
       "dependsOn": [
         "pkg:cargo/windows-targets@0.52.6?package-id=0abcf21f8bf8c5b3"
       ]
@@ -27156,6 +30503,18 @@
       ]
     },
     {
+      "ref": "pkg:cargo/windows-targets@0.48.5?package-id=dbc65392732255b5",
+      "dependsOn": [
+        "pkg:cargo/windows_aarch64_gnullvm@0.48.5?package-id=de5f462acab97af0",
+        "pkg:cargo/windows_aarch64_msvc@0.48.5?package-id=4cb412554024ca76",
+        "pkg:cargo/windows_i686_gnu@0.48.5?package-id=cb2224e8c9acbadd",
+        "pkg:cargo/windows_i686_msvc@0.48.5?package-id=0beb1261b503e6d1",
+        "pkg:cargo/windows_x86_64_gnu@0.48.5?package-id=851aca70a531a3d2",
+        "pkg:cargo/windows_x86_64_gnullvm@0.48.5?package-id=6d0ba4d4ad06bb30",
+        "pkg:cargo/windows_x86_64_msvc@0.48.5?package-id=fd6119fa316c15e2"
+      ]
+    },
+    {
       "ref": "pkg:cargo/windows-targets@0.52.6?package-id=0abcf21f8bf8c5b3",
       "dependsOn": [
         "pkg:cargo/windows_aarch64_gnullvm@0.52.6?package-id=5ba08be50c427761",
@@ -27186,6 +30545,13 @@
       "ref": "pkg:cargo/winnow@0.7.14?package-id=f5d68be131f927d1",
       "dependsOn": [
         "pkg:cargo/memchr@2.7.6?package-id=b099e0a84c65b69b"
+      ]
+    },
+    {
+      "ref": "pkg:cargo/ws2_32-sys@0.2.1?package-id=50c5993a09ca5ce8",
+      "dependsOn": [
+        "pkg:cargo/winapi-build@0.1.1?package-id=234292d0d4ce67d1",
+        "pkg:cargo/winapi@0.2.8?package-id=ea72c45435528952"
       ]
     },
     {
@@ -27237,7 +30603,7 @@
     {
       "ref": "pkg:cargo/zenoh-collections@1.6.2?package-id=20f8f9889db109f3",
       "dependsOn": [
-        "pkg:cargo/ahash@0.8.12?package-id=33418da54e5bea6a"
+        "pkg:cargo/ahash@0.8.12?package-id=f0f9405487451585"
       ]
     },
     {
@@ -27259,14 +30625,14 @@
         "pkg:cargo/zenoh-macros@1.6.2?package-id=c83a7b221e56f52f",
         "pkg:cargo/zenoh-protocol@1.6.2?package-id=fdcb399d42d58fac",
         "pkg:cargo/zenoh-result@1.6.2?package-id=0b85ffa2cd8387a4",
-        "pkg:cargo/zenoh-util@1.6.2?package-id=129aac33ce1d7a32"
+        "pkg:cargo/zenoh-util@1.6.2?package-id=4ae572317ce6fdf6"
       ]
     },
     {
       "ref": "pkg:cargo/zenoh-core@1.6.2?package-id=bfa3a64232689e43",
       "dependsOn": [
         "pkg:cargo/lazy_static@1.5.0?package-id=0bf43a73ea03fee6",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/zenoh-result@1.6.2?package-id=0b85ffa2cd8387a4",
         "pkg:cargo/zenoh-runtime@1.6.2?package-id=593252d69a3c00ca"
       ]
@@ -27274,7 +30640,7 @@
     {
       "ref": "pkg:cargo/zenoh-crypto@1.6.2?package-id=9f38d1ca5bbed2b3",
       "dependsOn": [
-        "pkg:cargo/aes@0.8.4?package-id=793d80b7d67f3019",
+        "pkg:cargo/aes@0.8.4?package-id=b7778b9a7b35fbb3",
         "pkg:cargo/hmac@0.12.1?package-id=3e7a02128f09188b",
         "pkg:cargo/rand@0.8.5?package-id=e33b0e7d883abb0a",
         "pkg:cargo/rand_chacha@0.3.1?package-id=b6176be766053ce5",
@@ -27285,7 +30651,7 @@
     {
       "ref": "pkg:cargo/zenoh-keyexpr@1.6.2?package-id=5ef13b722893045a",
       "dependsOn": [
-        "pkg:cargo/getrandom@0.2.16?package-id=6b76588c51df9949",
+        "pkg:cargo/getrandom@0.2.16?package-id=a2e6b80cff4e2560",
         "pkg:cargo/hashbrown@0.16.1?package-id=1398d12682a6af6b",
         "pkg:cargo/keyed-set@1.1.0?package-id=650d685dc573a98a",
         "pkg:cargo/rand@0.8.5?package-id=e33b0e7d883abb0a",
@@ -27312,7 +30678,7 @@
         "pkg:cargo/socket2@0.5.10?package-id=14b57ea029e115b3",
         "pkg:cargo/time@0.3.44?package-id=3287acf6e40e1c12",
         "pkg:cargo/tokio-util@0.7.17?package-id=cb21685f5991ca3e",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/tracing@0.1.43?package-id=716bf9ce5e56b23b",
         "pkg:cargo/webpki-roots@0.26.11?package-id=f3e6ffe3c33bb02f",
         "pkg:cargo/x509-parser@0.18.0?package-id=03d9a75c08d81fd2",
@@ -27323,7 +30689,7 @@
         "pkg:cargo/zenoh-protocol@1.6.2?package-id=fdcb399d42d58fac",
         "pkg:cargo/zenoh-result@1.6.2?package-id=0b85ffa2cd8387a4",
         "pkg:cargo/zenoh-runtime@1.6.2?package-id=593252d69a3c00ca",
-        "pkg:cargo/zenoh-util@1.6.2?package-id=129aac33ce1d7a32"
+        "pkg:cargo/zenoh-util@1.6.2?package-id=4ae572317ce6fdf6"
       ]
     },
     {
@@ -27338,7 +30704,7 @@
         "pkg:cargo/secrecy@0.8.0?package-id=4d9771614a91e23d",
         "pkg:cargo/time@0.3.44?package-id=3287acf6e40e1c12",
         "pkg:cargo/tokio-util@0.7.17?package-id=cb21685f5991ca3e",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/tracing@0.1.43?package-id=716bf9ce5e56b23b",
         "pkg:cargo/webpki-roots@0.26.11?package-id=f3e6ffe3c33bb02f",
         "pkg:cargo/zenoh-config@1.6.2?package-id=bc4b6b7e6ef27507",
@@ -27346,7 +30712,7 @@
         "pkg:cargo/zenoh-link-commons@1.6.2?package-id=10fc8a545ce6d7d4",
         "pkg:cargo/zenoh-protocol@1.6.2?package-id=fdcb399d42d58fac",
         "pkg:cargo/zenoh-result@1.6.2?package-id=0b85ffa2cd8387a4",
-        "pkg:cargo/zenoh-util@1.6.2?package-id=129aac33ce1d7a32"
+        "pkg:cargo/zenoh-util@1.6.2?package-id=4ae572317ce6fdf6"
       ]
     },
     {
@@ -27358,13 +30724,13 @@
         "pkg:cargo/rustls@0.23.35?package-id=c049c5ce6d3fe4cc",
         "pkg:cargo/time@0.3.44?package-id=3287acf6e40e1c12",
         "pkg:cargo/tokio-util@0.7.17?package-id=cb21685f5991ca3e",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/tracing@0.1.43?package-id=716bf9ce5e56b23b",
         "pkg:cargo/zenoh-core@1.6.2?package-id=bfa3a64232689e43",
         "pkg:cargo/zenoh-link-commons@1.6.2?package-id=10fc8a545ce6d7d4",
         "pkg:cargo/zenoh-protocol@1.6.2?package-id=fdcb399d42d58fac",
         "pkg:cargo/zenoh-result@1.6.2?package-id=0b85ffa2cd8387a4",
-        "pkg:cargo/zenoh-util@1.6.2?package-id=129aac33ce1d7a32"
+        "pkg:cargo/zenoh-util@1.6.2?package-id=4ae572317ce6fdf6"
       ]
     },
     {
@@ -27373,7 +30739,7 @@
         "pkg:cargo/async-trait@0.1.89?package-id=b4c984a065cc276a",
         "pkg:cargo/socket2@0.5.10?package-id=14b57ea029e115b3",
         "pkg:cargo/tokio-util@0.7.17?package-id=cb21685f5991ca3e",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/tracing@0.1.43?package-id=716bf9ce5e56b23b",
         "pkg:cargo/zenoh-config@1.6.2?package-id=bc4b6b7e6ef27507",
         "pkg:cargo/zenoh-core@1.6.2?package-id=bfa3a64232689e43",
@@ -27397,7 +30763,7 @@
         "pkg:cargo/tls-listener@0.11.2?package-id=84189ac414083dda",
         "pkg:cargo/tokio-rustls@0.26.4?package-id=abf9a85ccb0c3cdd",
         "pkg:cargo/tokio-util@0.7.17?package-id=cb21685f5991ca3e",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/tracing@0.1.43?package-id=716bf9ce5e56b23b",
         "pkg:cargo/webpki-roots@0.26.11?package-id=f3e6ffe3c33bb02f",
         "pkg:cargo/x509-parser@0.18.0?package-id=03d9a75c08d81fd2",
@@ -27416,7 +30782,7 @@
         "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
         "pkg:cargo/socket2@0.5.10?package-id=14b57ea029e115b3",
         "pkg:cargo/tokio-util@0.7.17?package-id=cb21685f5991ca3e",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/tracing@0.1.43?package-id=716bf9ce5e56b23b",
         "pkg:cargo/windows-sys@0.61.2?package-id=02ececda993605cc",
         "pkg:cargo/zenoh-buffers@1.6.2?package-id=75cfd0f5aa018a03",
@@ -27425,16 +30791,16 @@
         "pkg:cargo/zenoh-protocol@1.6.2?package-id=fdcb399d42d58fac",
         "pkg:cargo/zenoh-result@1.6.2?package-id=0b85ffa2cd8387a4",
         "pkg:cargo/zenoh-sync@1.6.2?package-id=6c550cb794685805",
-        "pkg:cargo/zenoh-util@1.6.2?package-id=129aac33ce1d7a32"
+        "pkg:cargo/zenoh-util@1.6.2?package-id=4ae572317ce6fdf6"
       ]
     },
     {
       "ref": "pkg:cargo/zenoh-link-unixsock_stream@1.6.2?package-id=76f860df4bb21fff",
       "dependsOn": [
         "pkg:cargo/async-trait@0.1.89?package-id=b4c984a065cc276a",
-        "pkg:cargo/nix@0.29.0?package-id=4f0bc593aa51bb8e",
+        "pkg:cargo/nix@0.29.0?package-id=b3fe4a2d4b0ba3fa",
         "pkg:cargo/tokio-util@0.7.17?package-id=cb21685f5991ca3e",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/tracing@0.1.43?package-id=716bf9ce5e56b23b",
         "pkg:cargo/uuid@1.18.1?package-id=588e8e8f7990c7db",
         "pkg:cargo/zenoh-core@1.6.2?package-id=bfa3a64232689e43",
@@ -27451,7 +30817,7 @@
         "pkg:cargo/futures-util@0.3.31?package-id=fbecd0b84851f58e",
         "pkg:cargo/tokio-tungstenite@0.24.0?package-id=cdd3cccfc54afbb3",
         "pkg:cargo/tokio-util@0.7.17?package-id=cb21685f5991ca3e",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/tracing@0.1.43?package-id=716bf9ce5e56b23b",
         "pkg:cargo/url@2.5.7?package-id=980fc8a2664b8c77",
         "pkg:cargo/zenoh-core@1.6.2?package-id=bfa3a64232689e43",
@@ -27459,7 +30825,7 @@
         "pkg:cargo/zenoh-protocol@1.6.2?package-id=fdcb399d42d58fac",
         "pkg:cargo/zenoh-result@1.6.2?package-id=0b85ffa2cd8387a4",
         "pkg:cargo/zenoh-runtime@1.6.2?package-id=593252d69a3c00ca",
-        "pkg:cargo/zenoh-util@1.6.2?package-id=129aac33ce1d7a32"
+        "pkg:cargo/zenoh-util@1.6.2?package-id=4ae572317ce6fdf6"
       ]
     },
     {
@@ -27491,7 +30857,7 @@
       "ref": "pkg:cargo/zenoh-plugin-trait@1.6.2?package-id=4e4589259932b535",
       "dependsOn": [
         "pkg:cargo/git-version@0.3.9?package-id=3f9f268d5b5507ec",
-        "pkg:cargo/libloading@0.8.9?package-id=b87f987c5da9796f",
+        "pkg:cargo/libloading@0.8.9?package-id=51bfa769f4c20220",
         "pkg:cargo/serde@1.0.228?package-id=bc7b9aacea66060b",
         "pkg:cargo/stabby@36.2.2?package-id=46f6e45c0efa42fc",
         "pkg:cargo/tracing@0.1.43?package-id=716bf9ce5e56b23b",
@@ -27499,7 +30865,7 @@
         "pkg:cargo/zenoh-keyexpr@1.6.2?package-id=5ef13b722893045a",
         "pkg:cargo/zenoh-macros@1.6.2?package-id=c83a7b221e56f52f",
         "pkg:cargo/zenoh-result@1.6.2?package-id=0b85ffa2cd8387a4",
-        "pkg:cargo/zenoh-util@1.6.2?package-id=129aac33ce1d7a32"
+        "pkg:cargo/zenoh-util@1.6.2?package-id=4ae572317ce6fdf6"
       ]
     },
     {
@@ -27524,9 +30890,9 @@
       "ref": "pkg:cargo/zenoh-runtime@1.6.2?package-id=593252d69a3c00ca",
       "dependsOn": [
         "pkg:cargo/lazy_static@1.5.0?package-id=0bf43a73ea03fee6",
-        "pkg:cargo/ron@0.11.0?package-id=653d066a3d2ea4ed",
+        "pkg:cargo/ron@0.11.0?package-id=f571140e862ecf2f",
         "pkg:cargo/serde@1.0.228?package-id=bc7b9aacea66060b",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/tracing@0.1.43?package-id=716bf9ce5e56b23b",
         "pkg:cargo/zenoh-macros@1.6.2?package-id=c83a7b221e56f52f",
         "pkg:cargo/zenoh-result@1.6.2?package-id=0b85ffa2cd8387a4"
@@ -27538,7 +30904,7 @@
         "pkg:cargo/arc-swap@1.7.1?package-id=fb262fc981a4a00b",
         "pkg:cargo/event-listener@5.4.1?package-id=0ff9a36119289270",
         "pkg:cargo/futures@0.3.31?package-id=131fc65d0a716a69",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/zenoh-buffers@1.6.2?package-id=75cfd0f5aa018a03",
         "pkg:cargo/zenoh-collections@1.6.2?package-id=20f8f9889db109f3",
         "pkg:cargo/zenoh-core@1.6.2?package-id=bfa3a64232689e43"
@@ -27549,7 +30915,7 @@
       "dependsOn": [
         "pkg:cargo/futures@0.3.31?package-id=131fc65d0a716a69",
         "pkg:cargo/tokio-util@0.7.17?package-id=cb21685f5991ca3e",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/tracing@0.1.43?package-id=716bf9ce5e56b23b",
         "pkg:cargo/zenoh-core@1.6.2?package-id=bfa3a64232689e43",
         "pkg:cargo/zenoh-runtime@1.6.2?package-id=593252d69a3c00ca"
@@ -27570,7 +30936,7 @@
         "pkg:cargo/serde@1.0.228?package-id=bc7b9aacea66060b",
         "pkg:cargo/sha3@0.10.8?package-id=a4bc364a85f493ca",
         "pkg:cargo/tokio-util@0.7.17?package-id=cb21685f5991ca3e",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/tracing@0.1.43?package-id=716bf9ce5e56b23b",
         "pkg:cargo/zenoh-buffers@1.6.2?package-id=75cfd0f5aa018a03",
         "pkg:cargo/zenoh-codec@1.6.2?package-id=a5d40b10e7fa5319",
@@ -27584,11 +30950,11 @@
         "pkg:cargo/zenoh-runtime@1.6.2?package-id=593252d69a3c00ca",
         "pkg:cargo/zenoh-sync@1.6.2?package-id=6c550cb794685805",
         "pkg:cargo/zenoh-task@1.6.2?package-id=a1c7e5356fbc2a8e",
-        "pkg:cargo/zenoh-util@1.6.2?package-id=129aac33ce1d7a32"
+        "pkg:cargo/zenoh-util@1.6.2?package-id=4ae572317ce6fdf6"
       ]
     },
     {
-      "ref": "pkg:cargo/zenoh-util@1.6.2?package-id=129aac33ce1d7a32",
+      "ref": "pkg:cargo/zenoh-util@1.6.2?package-id=4ae572317ce6fdf6",
       "dependsOn": [
         "pkg:cargo/async-trait@0.1.89?package-id=b4c984a065cc276a",
         "pkg:cargo/const_format@0.2.35?package-id=d80fbddcbc5382e4",
@@ -27597,13 +30963,13 @@
         "pkg:cargo/humantime@2.3.0?package-id=0c223ca4b1ebcd8e",
         "pkg:cargo/lazy_static@1.5.0?package-id=0bf43a73ea03fee6",
         "pkg:cargo/libc@0.2.177?package-id=61f78162dd56b0cd",
-        "pkg:cargo/libloading@0.8.9?package-id=b87f987c5da9796f",
-        "pkg:cargo/pnet_datalink@0.35.0?package-id=d2d755244d55efbe",
+        "pkg:cargo/libloading@0.8.9?package-id=51bfa769f4c20220",
+        "pkg:cargo/pnet_datalink@0.35.0?package-id=fb1b93da74fe4151",
         "pkg:cargo/schemars@0.8.22?package-id=9296050cf1ebadfc",
         "pkg:cargo/serde@1.0.228?package-id=bc7b9aacea66060b",
         "pkg:cargo/serde_json@1.0.145?package-id=12a6f5288b90b95a",
         "pkg:cargo/shellexpand@3.1.1?package-id=bc153ce6fdf592e6",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/tracing-subscriber@0.3.22?package-id=ff7143e76bc169e0",
         "pkg:cargo/tracing@0.1.43?package-id=716bf9ce5e56b23b",
         "pkg:cargo/winapi@0.3.9?package-id=5f3078532be1b653",
@@ -27614,7 +30980,7 @@
     {
       "ref": "pkg:cargo/zenoh@1.6.2?package-id=ee6f0625f68dfe01",
       "dependsOn": [
-        "pkg:cargo/ahash@0.8.12?package-id=33418da54e5bea6a",
+        "pkg:cargo/ahash@0.8.12?package-id=f0f9405487451585",
         "pkg:cargo/arc-swap@1.7.1?package-id=fb262fc981a4a00b",
         "pkg:cargo/async-trait@0.1.89?package-id=b4c984a065cc276a",
         "pkg:cargo/bytes@1.11.0?package-id=410c3e9e36eeea74",
@@ -27637,7 +31003,7 @@
         "pkg:cargo/serde_json@1.0.145?package-id=12a6f5288b90b95a",
         "pkg:cargo/socket2@0.5.10?package-id=14b57ea029e115b3",
         "pkg:cargo/tokio-util@0.7.17?package-id=cb21685f5991ca3e",
-        "pkg:cargo/tokio@1.48.0?package-id=cebe19b2a2a8d23d",
+        "pkg:cargo/tokio@1.48.0?package-id=f84bbaa04a23a602",
         "pkg:cargo/tracing@0.1.43?package-id=716bf9ce5e56b23b",
         "pkg:cargo/uhlc@0.8.2?package-id=3c43bdc8109fa9fb",
         "pkg:cargo/vec_map@0.8.2?package-id=bcf82d321f2b319e",
@@ -27657,7 +31023,7 @@
         "pkg:cargo/zenoh-sync@1.6.2?package-id=6c550cb794685805",
         "pkg:cargo/zenoh-task@1.6.2?package-id=a1c7e5356fbc2a8e",
         "pkg:cargo/zenoh-transport@1.6.2?package-id=ba09ae50d156e75e",
-        "pkg:cargo/zenoh-util@1.6.2?package-id=129aac33ce1d7a32"
+        "pkg:cargo/zenoh-util@1.6.2?package-id=4ae572317ce6fdf6"
       ]
     },
     {
