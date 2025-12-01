@@ -31,6 +31,9 @@ log = "0.4"
 zenoh = { version = "1.6", optional = true }
 tokio = { version = "1.0", features = ["rt-multi-thread", "macros", "sync"], optional = true }
 
+# DDS transport using RustDDS (optional)
+rustdds = { version = "0.11", optional = true }
+
 [dev-dependencies]
 # Benchmarking
 criterion = { version = "0.7", features = ["html_reports", "async_tokio"] }
@@ -54,6 +57,8 @@ default = ["serde"]
 serde = ["dep:serde", "dep:serde_json"]
 # Zenoh pub/sub transport for edge-to-cloud ASTERIX distribution
 zenoh = ["dep:zenoh", "dep:tokio"]
+# DDS transport using native Rust DDS implementation (RTPS protocol)
+dds = ["dep:rustdds", "dep:tokio"]
 # Future: async parsing support
 async = []
 

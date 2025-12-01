@@ -6,6 +6,7 @@
 //! # Available Transports
 //!
 //! - `zenoh` - Edge-to-cloud pub/sub with automatic discovery (requires `zenoh` feature)
+//! - `dds` - DDS/RTPS pub/sub for real-time systems (requires `dds` feature)
 //!
 //! # Feature Flags
 //!
@@ -14,6 +15,8 @@
 //! ```toml
 //! [dependencies]
 //! asterix = { version = "0.1", features = ["zenoh"] }
+//! # or
+//! asterix = { version = "0.1", features = ["dds"] }
 //! ```
 
 #[cfg(feature = "zenoh")]
@@ -21,3 +24,9 @@ pub mod zenoh;
 
 #[cfg(feature = "zenoh")]
 pub use self::zenoh::{ZenohConfig, ZenohError, ZenohPublisher, ZenohSubscriber};
+
+#[cfg(feature = "dds")]
+pub mod dds;
+
+#[cfg(feature = "dds")]
+pub use self::dds::{DdsConfig, DdsError, DdsPublisher, DdsSubscriber};
