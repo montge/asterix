@@ -290,7 +290,7 @@ When adding new workflows, follow these guidelines:
 ### Common Issues
 
 1. **"No module named 'asterix.radar_integration'"**
-   - Ensure `python setup.py install` runs before tests
+   - Ensure `pip install .` runs before tests
    - Check that radar_integration module is in PYTHONPATH
 
 2. **"No radar integration test files found"**

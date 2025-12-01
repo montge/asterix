@@ -52,8 +52,7 @@ jobs:
 
     - name: Build ASTERIX Python module
       run: |
-        python setup.py build
-        python setup.py install
+        pip install .
 
     - name: Run encoder round-trip tests (pytest)
       run: |
@@ -91,8 +90,7 @@ jobs:
 
     - name: Build ASTERIX Python module
       run: |
-        python setup.py build
-        python setup.py install
+        pip install .
 
     - name: Validate CAT048 binary format structure
       run: python scripts/ci/test_cat048_binary_format.py
@@ -126,8 +124,7 @@ jobs:
 
     - name: Build ASTERIX Python module
       run: |
-        python setup.py build
-        python setup.py install
+        pip install .
 
     - name: Run encoder edge case tests
       run: python scripts/ci/test_encoder_edge_cases.py

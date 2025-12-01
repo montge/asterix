@@ -627,8 +627,7 @@ jobs:
 
     - name: Build Python module
       run: |
-        python setup.py build
-        python setup.py install
+        pip install .
 
     - name: Build Rust module
       run: |

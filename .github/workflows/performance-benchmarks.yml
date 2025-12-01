@@ -47,8 +47,7 @@ jobs:
 
     - name: Build ASTERIX Python module
       run: |
-        python setup.py build
-        python setup.py install
+        pip install .
 
     - name: Run encoder benchmarks
       run: python scripts/ci/benchmark_encoder.py
@@ -89,8 +88,7 @@ jobs:
 
     - name: Build ASTERIX Python module
       run: |
-        python setup.py build
-        python setup.py install
+        pip install .
 
     - name: Run mock radar benchmarks
       run: python scripts/ci/benchmark_mock_radar.py
