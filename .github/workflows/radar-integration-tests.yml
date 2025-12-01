@@ -119,10 +119,17 @@ jobs:
           $env:EXPAT_LIB_DIR = $expatLib
         }
         pip install .
-        # Add vcpkg bin to PATH for runtime DLL loading
+        # Add vcpkg bin to PATH for runtime DLL loading (takes effect in next steps)
         if (Test-Path $expatBin) {
           Write-Host "Adding vcpkg bin to PATH: $expatBin"
           Add-Content $env:GITHUB_PATH $expatBin
+          # Also copy DLL to Python site-packages for immediate availability
+          $pythonSitePackages = python -c "import site; print(site.getsitepackages()[0])"
+          Write-Host "Python site-packages: $pythonSitePackages"
+          Get-ChildItem "$expatBin\*.dll" | ForEach-Object {
+            Write-Host "Copying $($_.Name) to $pythonSitePackages"
+            Copy-Item $_.FullName -Destination $pythonSitePackages -Force
+          }
         }
 
     - name: Verify radar_integration module exists (Unix)
