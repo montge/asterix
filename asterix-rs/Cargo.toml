@@ -87,6 +87,12 @@ harness = false
 path = "benches/zenoh_benchmark.rs"
 required-features = ["zenoh"]
 
+[[bench]]
+name = "dds_benchmark"
+harness = false
+path = "benches/dds_benchmark.rs"
+required-features = ["dds"]
+
 [package.metadata.docs.rs]
 features = ["serde"]
 rustdoc-args = ["--cfg", "docsrs"]
