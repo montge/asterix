@@ -137,13 +137,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install setuptools wheel coverage pytest pytest-cov memory-profiler numpy scipy
 
-    - name: Build Python module
+    - name: Build and Install Python module
       run: |
-        python setup.py build
-
-    - name: Install Python module
-      run: |
-        python setup.py install
+        pip install .
 
     - name: Verify Python test directory exists
       run: |
@@ -443,8 +439,7 @@ jobs:
 
     - name: Build Python module
       run: |
-        python setup.py build
-        python setup.py install
+        pip install .
 
     - name: Verify integration test environment
       run: |

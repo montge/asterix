@@ -1,7 +1,8 @@
 try:
-    from setuptools import setup, Extension
+    from setuptools import setup, Extension, find_packages
 except ImportError:
     from distutils.core import setup, Extension
+    find_packages = None
 import distutils.sysconfig
 import shutil
 import os.path
@@ -226,7 +227,7 @@ sample_files = ['./asterix/sample_data/cat048.raw',
                 './asterix/sample_data/cat_062_065.pcap']
 
 setup(name='asterix_decoder',
-      packages=['asterix'],
+      packages=find_packages() if find_packages else ['asterix'],
       version=__version__,
       description="ASTERIX decoder in Python",
       keywords="asterix, eurocontrol, radar, track, croatiacontrol",

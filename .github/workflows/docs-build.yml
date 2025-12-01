@@ -244,8 +244,7 @@ jobs:
 
     - name: Build ASTERIX Python module
       run: |
-        python setup.py build
-        python setup.py install
+        pip install .
 
     - name: Extract and test Python code from README.md
       run: |

@@ -94,10 +94,30 @@ jobs:
       run: |
         pip install matplotlib
 
-    - name: Build ASTERIX Python module
+    - name: Build ASTERIX Python module (Unix)
+      if: runner.os != 'Windows'
       run: |
-        python setup.py build
-        python setup.py install
+        pip install .
+
+    - name: Build ASTERIX Python module (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $env:VCPKG_ROOT = "${{ github.workspace }}/vcpkg"
+        $env:VCPKG_DEFAULT_TRIPLET = "x64-windows"
+        Write-Host "VCPKG_ROOT: $env:VCPKG_ROOT"
+        Write-Host "Checking for expat..."
+        $expatInclude = Join-Path $env:VCPKG_ROOT "installed/x64-windows/include"
+        $expatLib = Join-Path $env:VCPKG_ROOT "installed/x64-windows/lib"
+        if (Test-Path $expatInclude) {
+          Write-Host "Found expat include: $expatInclude"
+          $env:EXPAT_INCLUDE_DIR = $expatInclude
+        }
+        if (Test-Path $expatLib) {
+          Write-Host "Found expat lib: $expatLib"
+          $env:EXPAT_LIB_DIR = $expatLib
+        }
+        pip install .
 
     - name: Verify radar_integration module exists
       run: |
@@ -167,8 +187,7 @@ jobs:
 
     - name: Build ASTERIX Python module
       run: |
-        python setup.py build
-        python setup.py install
+        pip install .
 
     - name: Test basic_mock_radar.py
       run: |
@@ -231,8 +250,7 @@ jobs:
 
     - name: Build ASTERIX Python module
       run: |
-        python setup.py build
-        python setup.py install
+        pip install .
 
     - name: Test all encoders are importable
       run: |

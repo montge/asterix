@@ -54,9 +54,14 @@ Issues = "https://github.com/montge/asterix/issues"
 Download = "https://github.com/montge/asterix"
 
 [tool.setuptools]
-packages = ["asterix"]
+# Use find to automatically discover all packages including subpackages
 include-package-data = true
 zip-safe = false
+
+[tool.setuptools.packages.find]
+# Automatically find all packages including asterix.radar_integration, asterix.test, etc.
+where = ["."]
+include = ["asterix*"]
 
 [tool.setuptools.package-data]
 asterix = [
