@@ -1,0 +1,30 @@
+name = "asterix_decoder"
+description = "Ada bindings for ASTERIX ATM surveillance protocol decoder"
+version = "0.1.0"
+authors = ["ASTERIX Contributors"]
+maintainers = ["montge@mianetworks.net"]
+maintainers-logins = ["montge"]
+licenses = "GPL-3.0-or-later"
+website = "https://github.com/montge/asterix"
+tags = ["asterix", "atm", "surveillance", "radar", "aviation", "ffi"]
+
+[[depends-on]]
+aunit = "^24.0.0"
+
+[gpr-externals]
+ASTERIX_BUILD_MODE = ["debug", "release"]
+
+[gpr-set-externals]
+ASTERIX_BUILD_MODE = "debug"
+
+[build-switches]
+"*".style_checks = "No"
+release.optimization = "Performance"
+release.debug_info = "No"
+development.optimization = "Debug"
+development.debug_info = "Yes"
+validation.optimization = "Debug"
+validation.debug_info = "Yes"
+
+[[depends-on]]
+gnatprove = "^13.2.1"

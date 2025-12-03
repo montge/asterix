@@ -1,0 +1,186 @@
+# Ada CI/CD Pipeline for ASTERIX Ada Bindings
+#
+# Runs on: push/PR to master, changes to asterix-ada/**
+# Tests: compile, style checks, unit tests
+#
+# Reference: https://github.com/montge/asterix/issues/118
+
+name: Ada CI
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'asterix-ada/**'
+      - 'src/go/asterix.h'
+      - 'src/go/asterix_wrapper.cpp'
+      - '.github/workflows/ada-ci.yml'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'asterix-ada/**'
+      - 'src/go/asterix.h'
+      - 'src/go/asterix_wrapper.cpp'
+      - '.github/workflows/ada-ci.yml'
+  workflow_dispatch:
+
+env:
+  ASTERIX_BUILD_MODE: debug
+
+jobs:
+  build-and-test:
+    name: Build & Test (Ubuntu)
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Ada toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gnat \
+            gprbuild \
+            libaunit-dev \
+            libexpat1-dev \
+            cmake \
+            g++
+
+      - name: Verify Ada installation
+        run: |
+          echo "=== GNAT Version ==="
+          gnat --version
+          echo ""
+          echo "=== GPRbuild Version ==="
+          gprbuild --version
+
+      - name: Build C++ ASTERIX library
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel $(nproc)
+          cmake --install build --prefix install
+
+      - name: Create Ada build directories
+        run: |
+          mkdir -p asterix-ada/obj/debug
+          mkdir -p asterix-ada/obj/release
+          mkdir -p asterix-ada/lib/debug
+          mkdir -p asterix-ada/lib/release
+          mkdir -p asterix-ada/bin
+          mkdir -p asterix-ada/obj/examples
+
+      - name: Build Ada library (debug)
+        working-directory: asterix-ada
+        run: |
+          gprbuild -P asterix_decoder.gpr -XASTERIX_BUILD_MODE=debug -j$(nproc)
+
+      - name: Build Ada library (release)
+        working-directory: asterix-ada
+        run: |
+          gprbuild -P asterix_decoder.gpr -XASTERIX_BUILD_MODE=release -j$(nproc)
+
+      - name: Check line lengths
+        working-directory: asterix-ada
+        run: |
+          echo "Checking for lines exceeding 79 characters..."
+          ERRORS=0
+          for file in src/*.ad[sb]; do
+            if awk 'length > 79 {exit 1}' "$file"; then
+              echo "✓ $file"
+            else
+              echo "✗ $file has lines > 79 chars:"
+              awk 'length > 79 {print NR": "$0}' "$file"
+              ERRORS=1
+            fi
+          done
+          exit $ERRORS
+
+      - name: Upload Ada artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ada-library-ubuntu
+          path: |
+            asterix-ada/lib/
+            asterix-ada/obj/
+          retention-days: 7
+
+  # Future: Add AUnit tests when available
+  # unit-tests:
+  #   name: Unit Tests (AUnit)
+  #   needs: build-and-test
+  #   runs-on: ubuntu-24.04
+  #   steps:
+  #     - name: Run AUnit tests
+  #       working-directory: asterix-ada
+  #       run: |
+  #         gprbuild -P tests/tests.gpr
+  #         ./bin/test_runner
+
+  # Alire build (alternative package manager)
+  alire-build:
+    name: Alire Build
+    runs-on: ubuntu-24.04
+    continue-on-error: true  # Alire may not be configured yet
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Alire
+        uses: alire-project/setup-alire@v3
+        with:
+          version: 2.0.1
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libexpat1-dev cmake g++
+
+      - name: Build C++ library first
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel $(nproc)
+          cmake --install build --prefix install
+
+      - name: Build with Alire
+        working-directory: asterix-ada
+        run: |
+          # Initialize if needed
+          if [ ! -f alire.lock ]; then
+            alr init --in-place || true
+          fi
+          alr build || echo "Alire build not fully configured yet"
+
+  # Documentation generation
+  documentation:
+    name: Generate Documentation
+    runs-on: ubuntu-24.04
+    needs: build-and-test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnat gprbuild
+
+      - name: Generate Ada documentation
+        working-directory: asterix-ada
+        run: |
+          # GNATdoc generates HTML documentation from Ada source
+          # For now, we verify the source has proper comments
+          echo "Checking for documentation comments..."
+          for file in src/*.ads; do
+            if grep -q "^--  " "$file"; then
+              echo "✓ $file has documentation comments"
+            else
+              echo "⚠ $file may need documentation"
+            fi
+          done
