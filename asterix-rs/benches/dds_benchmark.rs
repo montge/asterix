@@ -16,8 +16,8 @@ use asterix::types::{AsterixRecord, DataItem, ParsedValue};
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
 use std::collections::BTreeMap;
 use std::hint::black_box;
-use std::time::Duration;
 use std::thread;
+use std::time::Duration;
 
 /// Create a test AsterixRecord with given size characteristics
 fn create_test_record(category: u8, payload_size: usize) -> AsterixRecord {
@@ -204,10 +204,10 @@ fn bench_pubsub_latency(c: &mut Criterion) {
             b.iter_custom(|iters| {
                 let config = DdsConfig::best_effort();
 
-                let publisher = DdsPublisher::new(config.clone())
-                    .expect("Failed to create publisher");
-                let mut subscriber = DdsSubscriber::new(config, topic_name)
-                    .expect("Failed to create subscriber");
+                let publisher =
+                    DdsPublisher::new(config.clone()).expect("Failed to create publisher");
+                let mut subscriber =
+                    DdsSubscriber::new(config, topic_name).expect("Failed to create subscriber");
 
                 // Allow DDS discovery
                 thread::sleep(Duration::from_millis(500));
@@ -215,9 +215,7 @@ fn bench_pubsub_latency(c: &mut Criterion) {
                 let start = std::time::Instant::now();
 
                 for _ in 0..iters {
-                    publisher
-                        .publish_raw(48, data)
-                        .expect("Publish failed");
+                    publisher.publish_raw(48, data).expect("Publish failed");
 
                     // Try to receive (may not always succeed due to DDS timing)
                     let _ = subscriber.recv_timeout(Duration::from_millis(100));
@@ -269,13 +267,17 @@ fn bench_qos_configurations(c: &mut Criterion) {
         let config = DdsConfig::best_effort();
         let publisher = DdsPublisher::new(config).expect("Failed to create publisher");
 
-        group.bench_with_input(BenchmarkId::new("publish", "best_effort"), &payload, |b, data| {
-            b.iter(|| {
-                publisher
-                    .publish_raw(48, black_box(data))
-                    .expect("Publish failed");
-            })
-        });
+        group.bench_with_input(
+            BenchmarkId::new("publish", "best_effort"),
+            &payload,
+            |b, data| {
+                b.iter(|| {
+                    publisher
+                        .publish_raw(48, black_box(data))
+                        .expect("Publish failed");
+                })
+            },
+        );
     }
 
     // Reliable
@@ -283,13 +285,17 @@ fn bench_qos_configurations(c: &mut Criterion) {
         let config = DdsConfig::reliable();
         let publisher = DdsPublisher::new(config).expect("Failed to create publisher");
 
-        group.bench_with_input(BenchmarkId::new("publish", "reliable"), &payload, |b, data| {
-            b.iter(|| {
-                publisher
-                    .publish_raw(48, black_box(data))
-                    .expect("Publish failed");
-            })
-        });
+        group.bench_with_input(
+            BenchmarkId::new("publish", "reliable"),
+            &payload,
+            |b, data| {
+                b.iter(|| {
+                    publisher
+                        .publish_raw(48, black_box(data))
+                        .expect("Publish failed");
+                })
+            },
+        );
     }
 
     group.finish();
@@ -314,4 +320,3 @@ criterion_group!(
 );
 
 criterion_main!(dds_benches);
-
