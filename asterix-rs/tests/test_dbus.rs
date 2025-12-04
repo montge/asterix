@@ -317,12 +317,10 @@ fn test_invalid_object_path() {
     };
 
     match DbusService::new(config.clone()) {
-        Ok(service) => {
-            match service.run_for(Duration::from_millis(100)) {
-                Ok(_) => println!("Unexpected success with invalid path"),
-                Err(e) => println!("Expected error with invalid path: {e}"),
-            }
-        }
+        Ok(service) => match service.run_for(Duration::from_millis(100)) {
+            Ok(_) => println!("Unexpected success with invalid path"),
+            Err(e) => println!("Expected error with invalid path: {e}"),
+        },
         Err(e) => {
             println!("Expected error during creation: {e}");
         }
@@ -411,8 +409,7 @@ fn test_rapid_method_calls() {
 
             let elapsed = start.elapsed();
             println!(
-                "100 method calls in {:?}: {} success, {} errors",
-                elapsed, success_count, error_count
+                "100 method calls in {elapsed:?}: {success_count} success, {error_count} errors"
             );
 
             if success_count > 0 {
@@ -427,4 +424,3 @@ fn test_rapid_method_calls() {
 
     let _ = handle.join();
 }
-
