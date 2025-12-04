@@ -46,7 +46,7 @@ arbitrary-int = { version = "2", optional = true }
 
 [dev-dependencies]
 # Benchmarking
-criterion = { version = "0.7", features = ["html_reports", "async_tokio"] }
+criterion = { version = "0.8", features = ["html_reports", "async_tokio"] }
 
 # Testing
 env_logger = "0.11"
