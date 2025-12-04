@@ -407,7 +407,7 @@ impl CcsdsPublisher {
     fn hex_to_bytes(&self, hex: &str) -> Result<Vec<u8>, CcsdsError> {
         let hex_clean: String = hex.chars().filter(|c| !c.is_whitespace()).collect();
 
-        if hex_clean.len() % 2 != 0 {
+        if !hex_clean.len().is_multiple_of(2) {
             return Err(CcsdsError::SerializationError(
                 "Invalid hex string length".to_string(),
             ));

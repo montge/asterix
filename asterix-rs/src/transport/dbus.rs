@@ -344,7 +344,7 @@ impl DbusClient {
     }
 
     /// Create a proxy for calling methods
-    fn create_proxy(&self) -> Result<zbus::blocking::Proxy, DbusError> {
+    fn create_proxy(&self) -> Result<zbus::blocking::Proxy<'_>, DbusError> {
         use zbus::blocking::Proxy;
         use zbus::names::BusName;
 
@@ -412,7 +412,7 @@ impl DbusClient {
 fn hex_to_bytes(hex: &str) -> Result<Vec<u8>, String> {
     let hex_clean: String = hex.chars().filter(|c| !c.is_whitespace()).collect();
 
-    if hex_clean.len() % 2 != 0 {
+    if !hex_clean.len().is_multiple_of(2) {
         return Err("Invalid hex string length".to_string());
     }
 

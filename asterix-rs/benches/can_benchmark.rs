@@ -17,13 +17,21 @@
 //! cargo bench --features can --bench can_benchmark
 //! ```
 
-#![cfg(feature = "can")]
+// CAN benchmarks only run on Linux with the can feature enabled
+#[cfg(not(all(feature = "can", target_os = "linux")))]
+fn main() {
+    eprintln!("CAN benchmarks only available on Linux with 'can' feature");
+}
 
+#[cfg(all(feature = "can", target_os = "linux"))]
 use criterion::{criterion_group, criterion_main, Criterion, Throughput};
+#[cfg(all(feature = "can", target_os = "linux"))]
 use std::hint::black_box;
 
+#[cfg(all(feature = "can", target_os = "linux"))]
 use asterix::transport::can::{CanConfig, CanPublisher};
 
+#[cfg(all(feature = "can", target_os = "linux"))]
 fn bench_can_publish_small(c: &mut Criterion) {
     let config = CanConfig::new("vcan0").unwrap();
     let publisher = match CanPublisher::new(config) {
@@ -50,6 +58,7 @@ fn bench_can_publish_small(c: &mut Criterion) {
     group.finish();
 }
 
+#[cfg(all(feature = "can", target_os = "linux"))]
 fn bench_can_publish_medium(c: &mut Criterion) {
     let config = CanConfig::new("vcan0").unwrap();
     let publisher = match CanPublisher::new(config) {
@@ -73,6 +82,7 @@ fn bench_can_publish_medium(c: &mut Criterion) {
     group.finish();
 }
 
+#[cfg(all(feature = "can", target_os = "linux"))]
 fn bench_can_publish_large(c: &mut Criterion) {
     let config = CanConfig::new("vcan0").unwrap();
     let publisher = match CanPublisher::new(config) {
@@ -96,6 +106,7 @@ fn bench_can_publish_large(c: &mut Criterion) {
     group.finish();
 }
 
+#[cfg(all(feature = "can", target_os = "linux"))]
 fn bench_can_fragmentation(c: &mut Criterion) {
     use asterix::transport::can::{CanConfig, CanPublisher};
 
@@ -136,6 +147,7 @@ fn bench_can_fragmentation(c: &mut Criterion) {
     group.finish();
 }
 
+#[cfg(all(feature = "can", target_os = "linux"))]
 fn bench_can_config_creation(c: &mut Criterion) {
     let mut group = c.benchmark_group("can_config");
 
@@ -161,6 +173,7 @@ fn bench_can_config_creation(c: &mut Criterion) {
     group.finish();
 }
 
+#[cfg(all(feature = "can", target_os = "linux"))]
 criterion_group!(
     benches,
     bench_can_config_creation,
@@ -170,4 +183,5 @@ criterion_group!(
     bench_can_fragmentation,
 );
 
+#[cfg(all(feature = "can", target_os = "linux"))]
 criterion_main!(benches);
