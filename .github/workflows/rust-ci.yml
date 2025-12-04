@@ -108,9 +108,22 @@ jobs:
         & "$VCPKG_ROOT/vcpkg.exe" integrate install
 
     - name: Build Rust crate
+      shell: bash
       run: |
         cd asterix-rs
-        cargo build --verbose --all-features
+        # Use platform-specific features:
+        # - Linux: all features (dbus, can, dds, zenoh, ccsds, etc.)
+        # - macOS: all features except Linux-only ones (can requires SocketCAN)
+        # - Windows: default features only (no dbus, can which are Linux-only)
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          cargo build --verbose --all-features
+        elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          # macOS doesn't have SocketCAN, skip can feature
+          cargo build --verbose --features "default,serde,async,zenoh,dds,ccsds"
+        else
+          # Windows: only default features (no Linux-only features)
+          cargo build --verbose --features "default,serde,async,zenoh,ccsds"
+        fi
       env:
         CMAKE_TOOLCHAIN_FILE: ${{ runner.os == 'Windows' && format('{0}/vcpkg/scripts/buildsystems/vcpkg.cmake', github.workspace) || '' }}
         VCPKG_ROOT: ${{ runner.os == 'Windows' && format('{0}/vcpkg', github.workspace) || '' }}
@@ -124,21 +137,41 @@ jobs:
           echo "Error: Cargo.toml not found in asterix-rs/"
           exit 1
         fi
-        # Run tests with better error reporting
+        # Run tests with platform-specific features
         # Note: --test-threads=1 works around global state SIGSEGV issue (temporary)
-        cargo test --verbose --all-features -- --test-threads=1 || {
-          echo "::error::Rust tests failed"
-          exit 1
-        }
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          cargo test --verbose --all-features -- --test-threads=1 || {
+            echo "::error::Rust tests failed"
+            exit 1
+          }
+        elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          cargo test --verbose --features "default,serde,async,zenoh,dds,ccsds" -- --test-threads=1 || {
+            echo "::error::Rust tests failed"
+            exit 1
+          }
+        else
+          cargo test --verbose --features "default,serde,async,zenoh,ccsds" -- --test-threads=1 || {
+            echo "::error::Rust tests failed"
+            exit 1
+          }
+        fi
       env:
         CMAKE_TOOLCHAIN_FILE: ${{ runner.os == 'Windows' && format('{0}/vcpkg/scripts/buildsystems/vcpkg.cmake', github.workspace) || '' }}
         VCPKG_ROOT: ${{ runner.os == 'Windows' && format('{0}/vcpkg', github.workspace) || '' }}
       continue-on-error: ${{ matrix.rust == 'nightly' }}
 
     - name: Run clippy (strict)
+      shell: bash
       run: |
         cd asterix-rs
-        cargo clippy --all-features --all-targets -- -D warnings
+        # Use platform-specific features for clippy
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          cargo clippy --all-features --all-targets -- -D warnings
+        elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          cargo clippy --features "default,serde,async,zenoh,dds,ccsds" --all-targets -- -D warnings
+        else
+          cargo clippy --features "default,serde,async,zenoh,ccsds" --all-targets -- -D warnings
+        fi
       continue-on-error: ${{ matrix.rust == 'nightly' }}
 
     - name: Check formatting

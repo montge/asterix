@@ -1,0 +1,32 @@
+/.bundle/
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+
+# RSpec status file
+.rspec_status
+
+# Compiled extension files
+*.bundle
+*.so
+*.o
+Makefile
+mkmf.log
+
+# Gem files
+*.gem
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

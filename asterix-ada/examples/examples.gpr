@@ -1,0 +1,31 @@
+--  GNAT Project file for ASTERIX Ada examples
+--
+--  Build with: gprbuild -P examples.gpr
+
+with "../asterix_decoder.gpr";
+
+project Examples is
+
+   for Source_Dirs use (".");
+   for Object_Dir use "../obj/examples";
+   for Exec_Dir use "../bin";
+   for Main use ("parse_example.adb");
+
+   package Compiler is
+      for Default_Switches ("Ada") use
+        ("-g", "-gnatwa", "-gnat2022");
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("Ada") use ("-Es");
+   end Binder;
+
+   package Linker is
+      for Default_Switches ("Ada") use
+        ("-L../../install/lib",
+         "-lasterix",
+         "-lstdc++",
+         "-lexpat");
+   end Linker;
+
+end Examples;
