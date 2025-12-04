@@ -22,7 +22,7 @@ jobs:
     outputs:
       version: ${{ steps.read-version.outputs.version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Read version from VERSION file
         id: read-version
         run: |
@@ -73,7 +73,7 @@ jobs:
           ca-certificates
 
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Build Debian package
       run: |
@@ -135,7 +135,7 @@ jobs:
         fi
 
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Setup RPM build environment
       run: |
@@ -181,7 +181,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Install dependencies
       run: |
