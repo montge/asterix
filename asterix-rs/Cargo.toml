@@ -37,8 +37,8 @@ rustdds = { version = "0.11", optional = true }
 # D-Bus transport for Linux IPC (optional)
 zbus = { version = "5.12", optional = true }
 
-# CAN Bus transport via SocketCAN (optional)
-socketcan = { version = "3.5", optional = true }
+# CAN Bus transport via SocketCAN (optional, Linux only)
+# Note: socketcan is a target-specific dependency, defined below
 
 # CCSDS Space Packet Protocol transport (optional)
 spacepackets = { version = "0.17", optional = true, default-features = false, features = ["std", "serde"] }
@@ -129,3 +129,7 @@ all-features = true
 # Prevent multiple simultaneous builds of the C++ core
 [package.metadata.system-deps]
 links = "asterix"
+
+# Platform-specific dependencies
+[target.'cfg(target_os = "linux")'.dependencies]
+socketcan = { version = "3.5", optional = true }
