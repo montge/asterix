@@ -103,6 +103,15 @@ asterix-rs/target/
 asterix-rs/Cargo.lock
 *.rlib
 
+# Ada build artifacts
+asterix-ada/obj/
+asterix-ada/lib/
+asterix-ada/bin/
+asterix-ada/alire/
+*.ali
+*.bexch
+b__*.ad[sb]
+
 # Test outputs
 valgrind.result
 build_output.txt
@@ -171,5 +180,6 @@ test_rust*.ps1
 !SPECS_SUBMODULE*.md
 !SPEC_UPDATE*.md
 !asterix-rs/**/*.md
+!asterix-ada/**/*.md
 version.h\n
 .claude/

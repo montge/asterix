@@ -1,0 +1,61 @@
+# frozen_string_literal: true
+
+require 'bundler/gem_tasks'
+require 'rspec/core/rake_task'
+require 'rake/extensiontask'
+
+# Define the extension task
+Rake::ExtensionTask.new('asterix_ext') do |ext|
+  ext.lib_dir = 'lib'
+  ext.ext_dir = 'ext/asterix'
+  ext.source_pattern = '*.{c,cpp}'
+end
+
+# Define RSpec task
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.rspec_opts = '--format documentation --color'
+end
+
+# Default task: compile and test
+task default: %i[compile spec]
+
+# Clean task
+task :clean do
+  sh 'rm -rf tmp pkg coverage'
+  sh 'cd ext/asterix && make clean' if File.exist?('ext/asterix/Makefile')
+end
+
+# Clobber task (deep clean)
+task clobber: :clean do
+  sh 'rm -f ext/asterix/Makefile'
+  sh 'rm -f ext/asterix/*.o'
+  sh 'rm -f lib/asterix_ext.so'
+  sh 'rm -f lib/asterix_ext.bundle'
+  sh 'rm -f .rspec_status'
+end
+
+# Documentation task
+task :doc do
+  sh 'yard doc'
+end
+
+# Console task for interactive testing
+task :console => :compile do
+  require 'irb'
+  require_relative 'lib/asterix'
+  ARGV.clear
+  IRB.start
+end
+
+desc 'Run RuboCop linter'
+task :rubocop do
+  sh 'rubocop'
+end
+
+desc 'Run security audit'
+task :audit do
+  sh 'bundler-audit check --update'
+end
+
+desc 'Run all checks (lint, audit, test)'
+task check: %i[rubocop audit spec]

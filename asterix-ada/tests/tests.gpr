@@ -1,0 +1,44 @@
+--  tests.gpr
+--  GNAT project file for ASTERIX Ada test suite
+--
+--  Usage:
+--    gprbuild -P tests.gpr             -- Build tests
+--    ./bin/test_runner                  -- Run all tests
+--
+--  Copyright (c) 2024 ASTERIX Contributors
+--  SPDX-License-Identifier: GPL-3.0-or-later
+
+with "aunit";
+with "../asterix_decoder.gpr";
+
+project Tests is
+
+   for Source_Dirs use (".");
+   for Object_Dir use "../obj/tests";
+   for Exec_Dir use "../bin";
+   for Main use ("test_runner.adb");
+
+   package Compiler is
+      for Default_Switches ("Ada") use
+        ("-gnatwa",      --  All warnings
+         "-gnatwe",      --  Warnings as errors
+         "-gnata",       --  Enable assertions
+         "-gnatVa",      --  All validity checks
+         "-gnatyaAbcefhiklnOprtu",  --  Style checks
+         "-g",           --  Debug info
+         "-O0");         --  No optimization for testing
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("Ada") use ("-E");  --  Store tracebacks
+   end Binder;
+
+   package Linker is
+      for Default_Switches ("Ada") use
+        ("-L../../install/lib",
+         "-lasterix",
+         "-lstdc++",
+         "-lexpat");
+   end Linker;
+
+end Tests;

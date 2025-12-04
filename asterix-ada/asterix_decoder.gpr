@@ -1,0 +1,71 @@
+--  GNAT Project file for ASTERIX Ada bindings
+--
+--  Build with: gprbuild -P asterix_decoder.gpr
+--  Clean with: gprclean -P asterix_decoder.gpr
+
+library project Asterix_Decoder is
+
+   --  Build mode: debug or release
+   type Build_Mode_Type is ("debug", "release");
+   Build_Mode : Build_Mode_Type := external ("ASTERIX_BUILD_MODE", "debug");
+
+   --  Source directories
+   for Source_Dirs use ("src");
+
+   --  Object and library output
+   for Object_Dir use "obj/" & Build_Mode;
+   for Library_Dir use "lib/" & Build_Mode;
+
+   --  Library configuration
+   for Library_Name use "asterix_ada";
+   for Library_Kind use "static";
+   for Library_Interface use ("Asterix", "Asterix.FFI", "Asterix.Records", "Asterix.Errors");
+
+   --  Languages
+   for Languages use ("Ada");
+
+   --  Compiler switches
+   package Compiler is
+      --  Style checks: aAbcefhiklnOprStu (gnatyg minus 's' for subprogram spec)
+      Common_Switches := ("-gnatwa",      --  All warnings
+                          "-gnatwe",      --  Warnings as errors
+                          "-gnatyaAbcefhiklnOprtu", --  Style checks (no 's')
+                          "-gnatw.X",     --  Disable warnings for hiding
+                          "-gnat2022",    --  Ada 2022 standard
+                          "-fstack-check" --  Stack overflow checking
+                         );
+
+      case Build_Mode is
+         when "debug" =>
+            for Default_Switches ("Ada") use Common_Switches &
+               ("-g",           --  Debug info
+                "-O0",          --  No optimization
+                "-gnata",       --  Enable assertions
+                "-gnatVa",      --  All validity checks
+                "-gnato13",     --  Overflow checking
+                "-gnatf"        --  Full error info
+               );
+         when "release" =>
+            for Default_Switches ("Ada") use Common_Switches &
+               ("-O2",          --  Optimization
+                "-gnatn",       --  Inline across units
+                "-gnatp"        --  Suppress all checks (for performance)
+               );
+      end case;
+   end Compiler;
+
+   --  Binder switches
+   package Binder is
+      for Default_Switches ("Ada") use ("-Es");  --  Symbolic tracebacks
+   end Binder;
+
+   --  Linker switches - link against C++ ASTERIX library
+   package Linker is
+      for Default_Switches ("Ada") use
+         ("-L../install/lib",
+          "-lasterix",
+          "-lstdc++",
+          "-lexpat");
+   end Linker;
+
+end Asterix_Decoder;

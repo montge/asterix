@@ -29,13 +29,20 @@ log = "0.4"
 
 # Zenoh pub/sub transport (optional)
 zenoh = { version = "1.6", optional = true }
-tokio = { version = "1.0", features = ["rt-multi-thread", "macros", "sync"], optional = true }
+tokio = { version = "1.0", features = ["rt-multi-thread", "macros", "sync", "time"], optional = true }
 
 # DDS transport using RustDDS (optional)
 rustdds = { version = "0.11", optional = true }
 
 # D-Bus transport for Linux IPC (optional)
 zbus = { version = "5.12", optional = true }
+
+# CAN Bus transport via SocketCAN (optional, Linux only)
+# Note: socketcan is a target-specific dependency, defined below
+
+# CCSDS Space Packet Protocol transport (optional)
+spacepackets = { version = "0.17", optional = true, default-features = false, features = ["std", "serde"] }
+arbitrary-int = { version = "2", optional = true }
 
 [dev-dependencies]
 # Benchmarking
@@ -64,6 +71,10 @@ zenoh = ["dep:zenoh", "dep:tokio"]
 dds = ["dep:rustdds", "dep:tokio"]
 # D-Bus transport for Linux IPC and system services
 dbus = ["dep:zbus"]
+# CAN Bus transport via SocketCAN for automotive/embedded systems
+can = ["dep:socketcan"]
+# CCSDS Space Packet Protocol transport for space mission data
+ccsds = ["dep:spacepackets", "dep:tokio", "dep:arbitrary-int"]
 # Future: async parsing support
 async = []
 
@@ -98,6 +109,17 @@ harness = false
 path = "benches/dds_benchmark.rs"
 required-features = ["dds"]
 
+[[bench]]
+name = "can_benchmark"
+harness = false
+path = "benches/can_benchmark.rs"
+required-features = ["can"]
+
+[[example]]
+name = "ccsds_publisher"
+path = "examples/ccsds_publisher.rs"
+required-features = ["ccsds"]
+
 [package.metadata.docs.rs]
 features = ["serde"]
 rustdoc-args = ["--cfg", "docsrs"]
@@ -107,3 +129,7 @@ all-features = true
 # Prevent multiple simultaneous builds of the C++ core
 [package.metadata.system-deps]
 links = "asterix"
+
+# Platform-specific dependencies
+[target.'cfg(target_os = "linux")'.dependencies]
+socketcan = { version = "3.5", optional = true }
