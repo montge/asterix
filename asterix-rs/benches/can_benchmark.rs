@@ -17,7 +17,7 @@
 //! cargo bench --features can --bench can_benchmark
 //! ```
 
-#![cfg(feature = "can")]
+#![cfg(all(feature = "can", target_os = "linux"))]
 
 use criterion::{criterion_group, criterion_main, Criterion, Throughput};
 use std::hint::black_box;

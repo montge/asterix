@@ -13,7 +13,7 @@
 //!
 //! Note: Tests run with --test-threads=1 to avoid CAN bus conflicts
 
-#![cfg(feature = "can")]
+#![cfg(all(feature = "can", target_os = "linux"))]
 
 use asterix::transport::can::{CanConfig, CanError, CanFrameType, CanPublisher, CanSubscriber};
 use std::thread;

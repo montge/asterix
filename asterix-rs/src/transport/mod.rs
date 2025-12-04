@@ -46,10 +46,10 @@ pub mod dbus;
 #[cfg(feature = "dbus")]
 pub use self::dbus::{BusType, DbusClient, DbusConfig, DbusError, DbusService};
 
-#[cfg(feature = "can")]
+#[cfg(all(feature = "can", target_os = "linux"))]
 pub mod can;
 
-#[cfg(feature = "can")]
+#[cfg(all(feature = "can", target_os = "linux"))]
 pub use self::can::{CanConfig, CanError, CanFrameType, CanPublisher, CanSample, CanSubscriber};
 
 #[cfg(feature = "ccsds")]
