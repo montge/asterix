@@ -22,13 +22,13 @@
 //! cargo run --example can_publisher --features can
 //! ```
 
-#[cfg(feature = "can")]
+#[cfg(all(feature = "can", target_os = "linux"))]
 use asterix::transport::can::{CanConfig, CanPublisher};
 
-#[cfg(feature = "can")]
+#[cfg(all(feature = "can", target_os = "linux"))]
 use asterix::init_default;
 
-#[cfg(feature = "can")]
+#[cfg(all(feature = "can", target_os = "linux"))]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
 
@@ -77,9 +77,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-#[cfg(not(feature = "can"))]
+#[cfg(not(all(feature = "can", target_os = "linux")))]
 fn main() {
+    #[cfg(not(target_os = "linux"))]
+    eprintln!("This example is only available on Linux (requires SocketCAN).");
+    #[cfg(all(target_os = "linux", not(feature = "can")))]
     eprintln!("This example requires the 'can' feature to be enabled.");
+    #[cfg(all(target_os = "linux", not(feature = "can")))]
     eprintln!("Run with: cargo run --example can_publisher --features can");
     std::process::exit(1);
 }
