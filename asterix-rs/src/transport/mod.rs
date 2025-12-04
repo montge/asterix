@@ -8,6 +8,8 @@
 //! - `zenoh` - Edge-to-cloud pub/sub with automatic discovery (requires `zenoh` feature)
 //! - `dds` - DDS/RTPS pub/sub for real-time systems (requires `dds` feature)
 //! - `dbus` - Linux D-Bus IPC for system services (requires `dbus` feature)
+//! - `can` - CAN Bus via SocketCAN for automotive/embedded (requires `can` feature)
+//! - `ccsds` - CCSDS Space Packet Protocol for space mission data (requires `ccsds` feature)
 //!
 //! # Feature Flags
 //!
@@ -20,6 +22,10 @@
 //! asterix = { version = "0.1", features = ["dds"] }
 //! # or
 //! asterix = { version = "0.1", features = ["dbus"] }
+//! # or
+//! asterix = { version = "0.1", features = ["can"] }
+//! # or
+//! asterix = { version = "0.1", features = ["ccsds"] }
 //! ```
 
 #[cfg(feature = "zenoh")]
@@ -39,3 +45,18 @@ pub mod dbus;
 
 #[cfg(feature = "dbus")]
 pub use self::dbus::{BusType, DbusClient, DbusConfig, DbusError, DbusService};
+
+#[cfg(feature = "can")]
+pub mod can;
+
+#[cfg(feature = "can")]
+pub use self::can::{CanConfig, CanError, CanFrameType, CanPublisher, CanSample, CanSubscriber};
+
+#[cfg(feature = "ccsds")]
+pub mod ccsds;
+
+#[cfg(feature = "ccsds")]
+pub use self::ccsds::{
+    category_from_apid, parse_ccsds_header, CcsdsConfig, CcsdsError, CcsdsMode, CcsdsPublisher,
+    CcsdsSample, CcsdsSubscriber,
+};

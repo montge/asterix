@@ -55,14 +55,14 @@ use std::fmt;
 use std::sync::Arc;
 use std::time::Duration;
 
-use rustdds::{
-    DomainParticipantBuilder, QosPolicyBuilder, TopicKind, Keyed,
-    policy::{Reliability as DdsReliability, Durability as DdsDurability, History as DdsHistory},
-};
 use rustdds::dds::DomainParticipant;
-use rustdds::with_key::{DataWriter, DataReader};
-use rustdds::serialization::{CDRSerializerAdapter, CDRDeserializerAdapter};
-use serde::{Serialize, Deserialize};
+use rustdds::serialization::{CDRDeserializerAdapter, CDRSerializerAdapter};
+use rustdds::with_key::{DataReader, DataWriter};
+use rustdds::{
+    policy::{Durability as DdsDurability, History as DdsHistory, Reliability as DdsReliability},
+    DomainParticipantBuilder, Keyed, QosPolicyBuilder, TopicKind,
+};
+use serde::{Deserialize, Serialize};
 
 use crate::error::AsterixError;
 use crate::types::AsterixRecord;
@@ -245,7 +245,9 @@ impl DdsConfig {
         // Set deadline if specified
         if self.deadline_ms > 0 {
             use rustdds::policy::Deadline;
-            builder = builder.deadline(Deadline(rustdds::Duration::from_millis(self.deadline_ms as i64)));
+            builder = builder.deadline(Deadline(rustdds::Duration::from_millis(
+                self.deadline_ms as i64,
+            )));
         }
 
         builder.build()
@@ -298,7 +300,12 @@ pub struct AsterixSample {
 pub struct DdsPublisher {
     participant: Arc<DomainParticipant>,
     config: DdsConfig,
-    writers: std::sync::Mutex<std::collections::HashMap<String, DataWriter<AsterixMessage, CDRSerializerAdapter<AsterixMessage>>>>,
+    writers: std::sync::Mutex<
+        std::collections::HashMap<
+            String,
+            DataWriter<AsterixMessage, CDRSerializerAdapter<AsterixMessage>>,
+        >,
+    >,
 }
 
 impl DdsPublisher {
@@ -389,7 +396,8 @@ impl DdsPublisher {
         if !writers.contains_key(topic_name) {
             let qos = self.config.build_qos();
 
-            let topic = self.participant
+            let topic = self
+                .participant
                 .create_topic(
                     topic_name.to_string(),
                     "AsterixMessage".to_string(),
@@ -398,7 +406,8 @@ impl DdsPublisher {
                 )
                 .map_err(|e| DdsError::TopicError(format!("{e:?}")))?;
 
-            let publisher = self.participant
+            let publisher = self
+                .participant
                 .create_publisher(&qos)
                 .map_err(|e| DdsError::PublisherError(format!("{e:?}")))?;
 
@@ -414,14 +423,17 @@ impl DdsPublisher {
             .write(message, None)
             .map_err(|e| DdsError::WriteError(format!("{e:?}")))?;
 
-        log::debug!("Published ASTERIX to DDS topic {}", topic_name);
+        log::debug!("Published ASTERIX to DDS topic {topic_name}");
         Ok(())
     }
 
     fn build_topic_name(&self, category: u8, sac: Option<u8>, sic: Option<u8>) -> String {
         match (sac, sic) {
             (Some(s), Some(c)) => {
-                format!("{}_cat{}_sac{}_sic{}", self.config.topic_prefix, category, s, c)
+                format!(
+                    "{}_cat{}_sac{}_sic{}",
+                    self.config.topic_prefix, category, s, c
+                )
             }
             _ => format!("{}_cat{}", self.config.topic_prefix, category),
         }
@@ -456,8 +468,7 @@ impl DdsPublisher {
 
         #[cfg(feature = "serde")]
         {
-            serde_json::to_vec(record)
-                .map_err(|e| DdsError::SerializationError(e.to_string()))
+            serde_json::to_vec(record).map_err(|e| DdsError::SerializationError(e.to_string()))
         }
 
         #[cfg(not(feature = "serde"))]
@@ -554,7 +565,7 @@ impl DdsSubscriber {
             }
             Ok(None) => None,
             Err(e) => {
-                log::warn!("DDS read error: {:?}", e);
+                log::warn!("DDS read error: {e:?}");
                 None
             }
         }
@@ -607,22 +618,26 @@ mod tests {
     #[test]
     fn test_dds_error_display_variants() {
         let errors = vec![
-            (DdsError::ParticipantError("test".to_string()), "participant"),
+            (
+                DdsError::ParticipantError("test".to_string()),
+                "participant",
+            ),
             (DdsError::PublisherError("test".to_string()), "publisher"),
             (DdsError::SubscriberError("test".to_string()), "subscriber"),
             (DdsError::TopicError("test".to_string()), "topic"),
             (DdsError::WriteError("test".to_string()), "write"),
             (DdsError::ReadError("test".to_string()), "read"),
-            (DdsError::SerializationError("test".to_string()), "Serialization"),
+            (
+                DdsError::SerializationError("test".to_string()),
+                "Serialization",
+            ),
         ];
 
         for (err, expected_substring) in errors {
             let display = err.to_string();
             assert!(
                 display.contains(expected_substring),
-                "Expected '{}' in '{}'",
-                expected_substring,
-                display
+                "Expected '{expected_substring}' in '{display}'"
             );
         }
     }
@@ -630,7 +645,7 @@ mod tests {
     #[test]
     fn test_dds_error_debug() {
         let err = DdsError::ParticipantError("test error".to_string());
-        let debug = format!("{:?}", err);
+        let debug = format!("{err:?}");
         assert!(debug.contains("ParticipantError"));
         assert!(debug.contains("test error"));
     }
@@ -721,8 +736,14 @@ mod tests {
 
     #[test]
     fn test_parse_topic_name_category_only() {
-        assert_eq!(parse_topic_name("asterix_cat48", "asterix"), (48, None, None));
-        assert_eq!(parse_topic_name("asterix_cat62", "asterix"), (62, None, None));
+        assert_eq!(
+            parse_topic_name("asterix_cat48", "asterix"),
+            (48, None, None)
+        );
+        assert_eq!(
+            parse_topic_name("asterix_cat62", "asterix"),
+            (62, None, None)
+        );
     }
 
     #[test]
@@ -739,10 +760,7 @@ mod tests {
 
     #[test]
     fn test_parse_topic_name_different_prefix() {
-        assert_eq!(
-            parse_topic_name("radar_cat48", "radar"),
-            (48, None, None)
-        );
+        assert_eq!(parse_topic_name("radar_cat48", "radar"), (48, None, None));
     }
 
     #[test]
@@ -792,7 +810,7 @@ mod tests {
             timestamp: 100,
             topic_name: "test".to_string(),
         };
-        let debug = format!("{:?}", sample);
+        let debug = format!("{sample:?}");
         assert!(debug.contains("48"));
         assert!(debug.contains("Some(1)"));
     }
