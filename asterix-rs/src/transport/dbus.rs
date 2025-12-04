@@ -183,8 +183,7 @@ impl AsterixParserInterface {
 
         #[cfg(feature = "serde")]
         {
-            serde_json::to_string(&records)
-                .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))
+            serde_json::to_string(&records).map_err(|e| zbus::fdo::Error::Failed(e.to_string()))
         }
 
         #[cfg(not(feature = "serde"))]
@@ -195,8 +194,7 @@ impl AsterixParserInterface {
 
     /// Parse hex-encoded ASTERIX data and return JSON result
     fn parse_hex(&self, hex_data: String) -> Result<String, zbus::fdo::Error> {
-        let bytes = hex_to_bytes(&hex_data)
-            .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
+        let bytes = hex_to_bytes(&hex_data).map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
         self.parse(bytes)
     }
 
@@ -208,7 +206,9 @@ impl AsterixParserInterface {
     /// Get supported ASTERIX categories
     fn get_categories(&self) -> Vec<u8> {
         // Common ASTERIX categories
-        vec![1, 2, 4, 8, 10, 19, 20, 21, 23, 25, 31, 32, 34, 48, 62, 63, 65, 240, 247, 252]
+        vec![
+            1, 2, 4, 8, 10, 19, 20, 21, 23, 25, 31, 32, 34, 48, 62, 63, 65, 240, 247, 252,
+        ]
     }
 
     /// Check if the service is healthy
@@ -231,10 +231,7 @@ impl DbusService {
             BusType::System => Connection::system()?,
         };
 
-        Ok(Self {
-            connection,
-            config,
-        })
+        Ok(Self { connection, config })
     }
 
     /// Start the D-Bus service and block
@@ -245,7 +242,11 @@ impl DbusService {
         use zbus::names::WellKnownName;
 
         // Request the service name
-        let name: WellKnownName = self.config.service_name.as_str().try_into()
+        let name: WellKnownName = self
+            .config
+            .service_name
+            .as_str()
+            .try_into()
             .map_err(|e| DbusError::ServiceError(format!("Invalid service name: {e}")))?;
         self.connection
             .request_name(name)
@@ -257,7 +258,11 @@ impl DbusService {
         };
 
         // Serve the interface at the object path
-        let path: zbus::zvariant::ObjectPath = self.config.object_path.as_str().try_into()
+        let path: zbus::zvariant::ObjectPath = self
+            .config
+            .object_path
+            .as_str()
+            .try_into()
             .map_err(|e| DbusError::ServiceError(format!("Invalid object path: {e}")))?;
         self.connection
             .object_server()
@@ -281,7 +286,11 @@ impl DbusService {
     pub fn run_for(&self, duration: std::time::Duration) -> Result<(), DbusError> {
         use zbus::names::WellKnownName;
 
-        let name: WellKnownName = self.config.service_name.as_str().try_into()
+        let name: WellKnownName = self
+            .config
+            .service_name
+            .as_str()
+            .try_into()
             .map_err(|e| DbusError::ServiceError(format!("Invalid service name: {e}")))?;
         self.connection
             .request_name(name)
@@ -291,7 +300,11 @@ impl DbusService {
             emit_signals: self.config.emit_signals,
         };
 
-        let path: zbus::zvariant::ObjectPath = self.config.object_path.as_str().try_into()
+        let path: zbus::zvariant::ObjectPath = self
+            .config
+            .object_path
+            .as_str()
+            .try_into()
             .map_err(|e| DbusError::ServiceError(format!("Invalid object path: {e}")))?;
         self.connection
             .object_server()
@@ -332,21 +345,22 @@ impl DbusClient {
 
     /// Create a proxy for calling methods
     fn create_proxy(&self) -> Result<zbus::blocking::Proxy, DbusError> {
-        use zbus::names::BusName;
         use zbus::blocking::Proxy;
+        use zbus::names::BusName;
 
-        let dest: BusName = self.service_name.as_str().try_into()
+        let dest: BusName = self
+            .service_name
+            .as_str()
+            .try_into()
             .map_err(|e| DbusError::ConnectionError(format!("Invalid bus name: {e}")))?;
-        let path: zbus::zvariant::ObjectPath = self.object_path.as_str().try_into()
+        let path: zbus::zvariant::ObjectPath = self
+            .object_path
+            .as_str()
+            .try_into()
             .map_err(|e| DbusError::ConnectionError(format!("Invalid object path: {e}")))?;
 
-        Proxy::new(
-            &self.connection,
-            dest,
-            path,
-            "com.asterix.Parser",
-        )
-        .map_err(|e| DbusError::ConnectionError(e.to_string()))
+        Proxy::new(&self.connection, dest, path, "com.asterix.Parser")
+            .map_err(|e| DbusError::ConnectionError(e.to_string()))
     }
 
     /// Parse ASTERIX data by calling the D-Bus service
@@ -404,10 +418,7 @@ fn hex_to_bytes(hex: &str) -> Result<Vec<u8>, String> {
 
     (0..hex_clean.len())
         .step_by(2)
-        .map(|i| {
-            u8::from_str_radix(&hex_clean[i..i + 2], 16)
-                .map_err(|e| e.to_string())
-        })
+        .map(|i| u8::from_str_radix(&hex_clean[i..i + 2], 16).map_err(|e| e.to_string()))
         .collect()
 }
 
@@ -432,9 +443,7 @@ mod tests {
             let display = err.to_string().to_lowercase();
             assert!(
                 display.contains(expected_substring),
-                "Expected '{}' in '{}'",
-                expected_substring,
-                display
+                "Expected '{expected_substring}' in '{display}'"
             );
         }
     }
@@ -442,7 +451,7 @@ mod tests {
     #[test]
     fn test_dbus_error_debug() {
         let err = DbusError::ConnectionError("test error".to_string());
-        let debug = format!("{:?}", err);
+        let debug = format!("{err:?}");
         assert!(debug.contains("ConnectionError"));
         assert!(debug.contains("test error"));
     }
@@ -587,7 +596,9 @@ mod tests {
 
     #[test]
     fn test_asterix_parser_interface_health_check() {
-        let interface = AsterixParserInterface { emit_signals: false };
+        let interface = AsterixParserInterface {
+            emit_signals: false,
+        };
         assert!(interface.health_check());
     }
 }

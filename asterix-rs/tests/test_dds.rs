@@ -6,8 +6,8 @@
 #![cfg(feature = "dds")]
 
 use asterix::transport::dds::{
-    AsterixMessage, AsterixSample, DdsConfig, DdsError, DdsPublisher, DdsSubscriber,
-    Durability, History, Reliability, parse_topic_name,
+    parse_topic_name, AsterixMessage, AsterixSample, DdsConfig, DdsError, DdsPublisher,
+    DdsSubscriber, Durability, History, Reliability,
 };
 
 // ============================================================================
@@ -265,8 +265,8 @@ fn test_parse_topic_name_max_values() {
 /// These tests require a DDS domain participant and are marked as integration tests.
 mod integration {
     use super::*;
-    use std::time::Duration;
     use std::thread;
+    use std::time::Duration;
 
     /// Test creating a publisher
     #[test]
@@ -346,7 +346,7 @@ mod integration {
                 match sample {
                     Some(s) => {
                         assert_eq!(s.category, 48);
-                        println!("Successfully received sample: {:?}", s);
+                        println!("Successfully received sample: {s:?}");
                     }
                     None => {
                         // May not receive in all environments due to DDS discovery timing
@@ -468,9 +468,11 @@ fn test_topic_name_format() {
         let (cat, sac, sic) = parse_topic_name(topic_name, "asterix");
 
         // Category should be valid
-        assert!(cat > 0 || topic_name.contains("cat0"), "Invalid category in: {description}");
+        assert!(
+            cat > 0 || topic_name.contains("cat0"),
+            "Invalid category in: {description}"
+        );
 
         println!("{description}: {topic_name} -> cat={cat}, sac={sac:?}, sic={sic:?}");
     }
 }
-

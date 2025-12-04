@@ -227,13 +227,37 @@ def parse_with_offset(data: bytes, offset: int = 0, blocks_count: int = 1000, ve
 
 
 def describeXML(parsed, descriptions=False):
-    """ Describe all elements in Asterix data in a lxml ElementTree.
-    Content is identical to the command "./asterix --xml filename".
+    """Describe all elements in ASTERIX data as an lxml ElementTree.
+
+    This function converts parsed ASTERIX data into an XML representation using
+    lxml's ElementTree. The output format is identical to the command-line tool's
+    `--xml` flag output. Useful for XML-based processing workflows and integration
+    with XML parsers.
+
     Args:
-        parsed: Parsed Asterix packet returned by asterix.parse
+        parsed (list): Parsed ASTERIX packet(s) returned by asterix.parse().
+            Each element should be a dictionary containing ASTERIX record data.
+        descriptions (bool, optional): If True, include human-readable descriptions
+            for categories, items, and field values as XML attributes. Defaults to False.
+
     Returns:
-         lxml ElementTree describing all Asterix data
-         None if lxml module is not installed
+        lxml.etree.Element: Root element of XML tree describing all ASTERIX data.
+            Returns None if lxml module is not installed.
+
+    Raises:
+        ImportError: If lxml is not available (returns None instead of raising).
+
+    Example:
+        >>> import asterix
+        >>> data = bytes([0x30, 0x00, 0x30, 0xfd, 0xf7, 0x02, 0x19])
+        >>> parsed = asterix.parse(data)
+        >>> xml_tree = asterix.describeXML(parsed, descriptions=True)
+        >>> if xml_tree is not None:
+        ...     from lxml import etree
+        ...     print(etree.tostring(xml_tree, pretty_print=True).decode())
+
+    Note:
+        Requires lxml package to be installed. Install with: pip install lxml
     """
     if lxml_found:
         xml = etree.Element('ASTERIXSTART')
@@ -293,11 +317,43 @@ def describeXML(parsed, descriptions=False):
     return None
 
 def describe(parsed):
-    """ Describe all elements in Asterix data in textual format.
+    """Describe all elements in ASTERIX data as human-readable text.
+
+    This function converts parsed ASTERIX data into a formatted text representation
+    with detailed descriptions of all categories, items, fields, and values. Useful
+    for debugging, logging, and human review of ASTERIX data.
+
     Args:
-        parsed: Parsed Asterix packet returned by ateris.parse
+        parsed (list): Parsed ASTERIX packet(s) returned by asterix.parse().
+            Each element should be a dictionary containing ASTERIX record data
+            with category, timestamp, length, CRC, and data items.
+
     Returns:
-         Formatted string describing all Asterix data
+        str: Multi-line formatted string describing all ASTERIX data. Includes:
+            - Record metadata (category, length, CRC, timestamp)
+            - Hexadecimal dump of raw data
+            - Item-by-item breakdown with descriptions
+            - Field values with units and meanings
+
+    Example:
+        >>> import asterix
+        >>> # Parse CAT048 data
+        >>> data = bytes([0x30, 0x00, 0x30, 0xfd, 0xf7, 0x02, 0x19])
+        >>> parsed = asterix.parse(data)
+        >>> # Get human-readable description
+        >>> description = asterix.describe(parsed)
+        >>> print(description)
+
+        Asterix record: 1
+        Len: 48
+        CRC: 0x1234
+        Timestamp: 1234567890 (2009-02-13 23:31:30)
+        Category: 48 (Monoradar Target Reports)
+        ...
+
+    Note:
+        For verbose output, ensure asterix.parse() was called with verbose=True
+        (the default). Non-verbose parsing will result in limited descriptions.
     """
     i = 0
     txt = ''
@@ -345,11 +401,34 @@ def describe(parsed):
 
 
 def list_sample_files():
-    """ Return the list of Asterix format sample files from the package
+    """Return the list of ASTERIX sample data files included with the package.
+
+    This function lists all sample ASTERIX data files bundled with the asterix
+    package for testing and demonstration purposes. Sample files include various
+    ASTERIX categories and formats (PCAP, raw binary, FINAL, etc.).
+
     Returns:
-         list of Asterix sample files
+        list[str]: Sorted list of absolute file paths to sample ASTERIX files.
+            Typically includes files like:
+            - cat048_sample.pcap
+            - cat062_raw.asterix
+            - multicast_stream.pcap
+            - final_format.final
+
     Example:
-        >>> list_sample_files()
+        >>> import asterix
+        >>> # List all available sample files
+        >>> sample_files = asterix.list_sample_files()
+        >>> for f in sample_files:
+        ...     print(f)
+        /path/to/asterix/sample_data/cat048.pcap
+        /path/to/asterix/sample_data/cat062.asterix
+        ...
+        >>> # Use first sample file for testing
+        >>> if sample_files:
+        ...     with open(sample_files[0], 'rb') as f:
+        ...         data = f.read()
+        ...     records = asterix.parse(data)
     """
     sample_files = []
     filepath = os.path.join(os.path.dirname(__file__), 'sample_data')
@@ -361,11 +440,35 @@ def list_sample_files():
 
 
 def get_sample_file(match):
-    """ Returns first Asterix sample file matching the parameter string
+    """Get the first ASTERIX sample file matching the search string.
+
+    This function searches through the package's sample data directory and
+    returns the path to the first file whose name contains the search string.
+    Useful for quickly accessing specific sample files without knowing the
+    full path.
+
     Args:
-        match: Search string for sample file
+        match (str): Search string to match against sample file names.
+            Matching is case-sensitive and performs substring matching.
+            Examples: 'cat048', 'pcap', '062', 'multicast'
+
     Returns:
-         Sample file path
+        str or None: Absolute path to the first matching sample file, or None
+            if no files match the search string.
+
+    Example:
+        >>> import asterix
+        >>> # Get CAT048 sample file
+        >>> cat048_file = asterix.get_sample_file('cat048')
+        >>> if cat048_file:
+        ...     print(f"Found: {cat048_file}")
+        ...     with open(cat048_file, 'rb') as f:
+        ...         data = f.read()
+        ...     records = asterix.parse(data)
+        >>> # Get any PCAP file
+        >>> pcap_file = asterix.get_sample_file('pcap')
+        >>> # Get CAT062 sample
+        >>> cat062_file = asterix.get_sample_file('062')
     """
     filepath = os.path.join(os.path.dirname(__file__), 'sample_data')
     for fn in sorted(os.listdir(filepath)):
@@ -375,9 +478,37 @@ def get_sample_file(match):
 
 
 def list_configuration_files():
-    """ Return the list of Asterix configuration files from the package
+    """Return the list of ASTERIX category configuration (XML) files from the package.
+
+    This function lists all ASTERIX category definition files (XML format)
+    bundled with the package. These XML files define the structure and format
+    of each ASTERIX category (CAT001-CAT252) according to EUROCONTROL specifications.
+
     Returns:
-        list of Asterix configuration files
+        list[str]: Sorted list of absolute file paths to XML configuration files.
+            Includes files like:
+            - asterix_cat048_1_30.xml
+            - asterix_cat062_1_18.xml
+            - asterix_bds.xml (BDS register definitions)
+            - asterix.dtd (Document Type Definition)
+
+    Example:
+        >>> import asterix
+        >>> # List all configuration files
+        >>> config_files = asterix.list_configuration_files()
+        >>> for f in config_files:
+        ...     print(f)
+        /path/to/asterix/config/asterix.dtd
+        /path/to/asterix/config/asterix_bds.xml
+        /path/to/asterix/config/asterix_cat001_1_2.xml
+        ...
+        >>> # Count supported categories
+        >>> cat_files = [f for f in config_files if 'cat' in f and '.xml' in f]
+        >>> print(f"Categories defined: {len(cat_files)}")
+
+    Note:
+        These configuration files are automatically loaded on module import.
+        Custom configurations can be loaded using asterix.init().
     """
     sample_files = []
     filepath = os.path.join(os.path.dirname(__file__), 'config')
@@ -389,11 +520,43 @@ def list_configuration_files():
 
 
 def get_configuration_file(match):
-    """ Returns first Asterix configuration file matching the parameter string
+    """Get the first ASTERIX configuration file matching the search string.
+
+    This function searches through the package's configuration directory and
+    returns the path to the first XML configuration file whose name contains
+    the search string. Useful for accessing specific category definitions or
+    the DTD file.
+
     Args:
-        match: Search string for configuration file
+        match (str): Search string to match against configuration file names.
+            Matching is case-sensitive and performs substring matching.
+            Examples: 'cat048', 'cat062', 'dtd', 'bds'
+
     Returns:
-         Configuration file path
+        str or None: Absolute path to the first matching configuration file,
+            or None if no files match the search string.
+
+    Example:
+        >>> import asterix
+        >>> # Get CAT048 configuration file
+        >>> cat048_config = asterix.get_configuration_file('cat048')
+        >>> if cat048_config:
+        ...     with open(cat048_config, 'r') as f:
+        ...         config_xml = f.read()
+        ...     print(f"CAT048 config: {len(config_xml)} bytes")
+        >>> # Get DTD file for custom category development
+        >>> dtd_file = asterix.get_configuration_file('dtd')
+        >>> if dtd_file:
+        ...     print(f"DTD file: {dtd_file}")
+        >>> # Get BDS register definitions
+        >>> bds_config = asterix.get_configuration_file('bds')
+        >>> # Initialize with custom configuration
+        >>> custom_config = asterix.get_configuration_file('cat062')
+        >>> asterix.init(custom_config)  # Reinitialize with specific category
+
+    Note:
+        To create custom category definitions, use the DTD file as a reference:
+        dtd = asterix.get_configuration_file('dtd')
     """
     filepath = os.path.join(os.path.dirname(__file__), 'config')
     for fn in sorted(os.listdir(filepath)):
