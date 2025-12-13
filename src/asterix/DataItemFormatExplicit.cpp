@@ -76,7 +76,7 @@ bool DataItemFormatExplicit::getText(std::string &strResult, std::string &strHea
         return false;
     }
 
-    std::string tmpStr = "";
+    std::string tmpStr;
 
     if (nFullLength != bodyLength) {
         switch (formatType) {
@@ -126,7 +126,7 @@ bool DataItemFormatExplicit::getText(std::string &strResult, std::string &strHea
 }
 
 std::string DataItemFormatExplicit::printDescriptors(std::string header) {
-    std::string strDef = "";
+    std::string strDef;
 
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {

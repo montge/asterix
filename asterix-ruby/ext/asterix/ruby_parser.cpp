@@ -41,7 +41,7 @@ static std::unique_ptr<AsterixDefinition> pDefinition;
 static std::unique_ptr<InputParser> inputParser;
 bool gFiltering = false;
 bool gSynchronous = false;
-const char *gAsterixDefinitionsFile = NULL;
+const char *gAsterixDefinitionsFile = nullptr;
 bool gVerbose = false;
 bool gForceRouting = false;
 int gHeartbeat = 0;
@@ -97,7 +97,7 @@ extern "C" VALUE ruby_parse(const unsigned char *pBuf, size_t len, int verbose) 
     try {
         // get current timestamp in ms since epoch
         struct timeval tp;
-        gettimeofday(&tp, NULL);
+        gettimeofday(&tp, nullptr);
         unsigned long nTimestamp = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
         if (inputParser) {
@@ -135,7 +135,7 @@ extern "C" VALUE ruby_parse_with_offset(const unsigned char *pBuf, size_t len,
 
         // get current timestamp in ms since epoch
         struct timeval tp;
-        gettimeofday(&tp, NULL);
+        gettimeofday(&tp, nullptr);
         unsigned long nTimestamp = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
         if (inputParser) {
@@ -199,7 +199,7 @@ extern "C" VALUE ruby_describe(int category, const char *item, const char *field
             return rb_str_new_cstr("Not initialized");
 
         const char *description = pDefinition->getDescription(category, item, field, value);
-        if (description == NULL)
+        if (description == nullptr)
             return rb_str_new_cstr("");
         return rb_str_new_cstr(description);
 
