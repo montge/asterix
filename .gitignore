@@ -101,6 +101,8 @@ install/*.json
 # Rust build artifacts
 asterix-rs/target/
 asterix-rs/Cargo.lock
+asterix-rs/tarpaulin-report.html
+asterix-rs/coverage/
 *.rlib
 
 # Ada build artifacts
