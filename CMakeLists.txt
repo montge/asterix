@@ -669,7 +669,7 @@ install(DIRECTORY asterix/sample_output/
 install(FILES
     README.md
     CLAUDE.md
-    DO-278_IMPLEMENTATION_GUIDE.md
+    docs/DO-278_IMPLEMENTATION_GUIDE.md
     DESTINATION share/doc/asterix
 )
 
