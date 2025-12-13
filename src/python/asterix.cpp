@@ -59,7 +59,7 @@ static PyMethodDef asterixMethods[] = {
         {"parse_with_offset", (PyCFunction) parse_with_offset, METH_VARARGS |
                                                                METH_KEYWORDS,                "Parse ASTERIX data with bytes offset" ENCODER_HELP_TEXT},
         {"set_callback",      (PyCFunction) set_callback,      METH_VARARGS,                 "Set callback function" ENCODER_HELP_TEXT},
-        {NULL,                NULL,                            0,                            NULL}       /* Sentinel */
+        {nullptr,                nullptr,                            0,                            nullptr}       /* Sentinel */
 };
 
 #if PY_MAJOR_VERSION >= 3
@@ -70,14 +70,14 @@ static struct PyModuleDef moduledef = {
   0,              /* m_doc */
   -1,             /* m_size */
   asterixMethods,   /* m_methods */
-  NULL,           /* m_reload */
-  NULL,           /* m_traverse */
-  NULL,           /* m_clear */
-  NULL            /* m_free */
+  nullptr,           /* m_reload */
+  nullptr,           /* m_traverse */
+  nullptr,           /* m_clear */
+  nullptr            /* m_free */
 };
 
 #define PYMODULE_CREATE()   PyModule_Create(&moduledef)
-#define MODINITERROR        return NULL
+#define MODINITERROR        return nullptr
 
 extern "C" {
 #ifdef _WIN32
@@ -103,7 +103,7 @@ PYMODINITFUNC {
 #endif
     PyObject *module = PYMODULE_CREATE();
 
-    if (module == NULL) {
+    if (module == nullptr) {
         MODINITERROR;
     }
 

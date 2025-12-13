@@ -220,7 +220,7 @@ bool CAsterixGPSSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor
     // delete old data
     if (Descriptor.m_pAsterixData) {
         delete Descriptor.m_pAsterixData;
-        Descriptor.m_pAsterixData = NULL;
+        Descriptor.m_pAsterixData = nullptr;
     }
 
     // parse packet
@@ -228,7 +228,7 @@ bool CAsterixGPSSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor
 
         // get current timstamp in ms since midnight
         struct timeval tp;
-        gettimeofday(&tp, NULL);
+        gettimeofday(&tp, nullptr);
 	double dTimestamp = tp.tv_sec + (1.0/1000000) * tp.tv_usec;
 
         unsigned char *pPacketPtr = (unsigned char *) Descriptor.GetBuffer();
@@ -259,7 +259,7 @@ bool CAsterixGPSSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor
             AsterixData *m_ptmpAsterixData = Descriptor.m_InputParser.parsePacket(pPacketPtr, byteCount - 6,
                                                                                   dTimestamp);
 
-            if (Descriptor.m_pAsterixData == NULL) {
+            if (Descriptor.m_pAsterixData == nullptr) {
                 Descriptor.m_pAsterixData = m_ptmpAsterixData;
             } else {
                 Descriptor.m_pAsterixData->m_lDataBlocks.splice(Descriptor.m_pAsterixData->m_lDataBlocks.end(),

@@ -129,7 +129,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
 
     if (gSynchronous) { // In synchronous mode make delays between packets to simulate real tempo
         struct timeval currTime;
-        if (gettimeofday(&currTime, NULL) == 0) {
+        if (gettimeofday(&currTime, nullptr) == 0) {
             if (lastMyTimeSec != 0 && lastFileTimeSec != 0) {
                 unsigned int diffFile =
                         (m_ePcapRecHeader.ts_sec - lastFileTimeSec) * 1000000 + m_ePcapRecHeader.ts_usec -
@@ -266,7 +266,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
     // parse packet
     if (Descriptor.m_pAsterixData) {
         delete Descriptor.m_pAsterixData;
-        Descriptor.m_pAsterixData = NULL;
+        Descriptor.m_pAsterixData = nullptr;
     }
 
     if (oradis) {
@@ -295,7 +295,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
             AsterixData *m_ptmpAsterixData = Descriptor.m_InputParser.parsePacket(pPacketPtr, byteCount - 6,
                                                                                   nTimestamp);
 
-            if (Descriptor.m_pAsterixData == NULL) {
+            if (Descriptor.m_pAsterixData == nullptr) {
                 Descriptor.m_pAsterixData = m_ptmpAsterixData;
             } else {
                 Descriptor.m_pAsterixData->m_lDataBlocks.splice(Descriptor.m_pAsterixData->m_lDataBlocks.end(),

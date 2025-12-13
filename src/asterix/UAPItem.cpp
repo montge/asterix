@@ -77,7 +77,7 @@ fulliautomatix_definitions* UAPItem::getWiresharkDefinitions()
 
   def->strings = (fulliautomatix_value_string*)malloc(3 * sizeof(fulliautomatix_value_string));
   // Security fix: Check malloc return value to prevent null pointer dereference
-  if (def->strings == NULL) {
+  if (def->strings == nullptr) {
     return def;
   }
   def->strings[0].value = 0;
@@ -85,10 +85,10 @@ fulliautomatix_definitions* UAPItem::getWiresharkDefinitions()
   def->strings[1].value = 1;
   def->strings[1].strptr = strdup(" Present");
   def->strings[2].value = 0;
-  def->strings[2].strptr = NULL;
+  def->strings[2].strptr = nullptr;
 
-  def->blurb = NULL;
-  def->next = NULL;
+  def->blurb = nullptr;
+  def->next = nullptr;
   return def;
 }
 
@@ -96,7 +96,7 @@ fulliautomatix_data* UAPItem::getData(unsigned char* pData, long len, int byteof
 {
   int byteShift = m_nBit/8;
   if (byteShift<len)
-    return newDataUL(NULL, getPID(), byteoffset+byteShift, 1, *(pData+byteShift));
-  return NULL;
+    return newDataUL(nullptr, getPID(), byteoffset+byteShift, 1, *(pData+byteShift));
+  return nullptr;
 }
 #endif

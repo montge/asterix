@@ -79,7 +79,7 @@ CTcpDevice::CTcpDevice(CDescriptor &descriptor) {
     bool isServer = false;
 
     // Server argument
-    if ((server == NULL) || (strlen(server) == 0)) {
+    if ((server == nullptr) || (strlen(server) == 0)) {
         LOGERROR(1, "Server flag not specified\n");
     } else {
         if (toupper(server[0]) == 'S') {
@@ -101,7 +101,7 @@ CTcpDevice::CTcpDevice(CDescriptor &descriptor) {
 
     // Server address argument may be null only in server mode
     // In that case INADDR_ANY is used.
-    if ((serverAddress == NULL) || (strlen(serverAddress) == 0)) {
+    if ((serverAddress == nullptr) || (strlen(serverAddress) == 0)) {
         if (isServer) {
             LOGINFO(gVerbose, "INADDR_ANY used as server interface\n");
         } else {
@@ -113,7 +113,7 @@ CTcpDevice::CTcpDevice(CDescriptor &descriptor) {
     }
 
     // Server port argument may be 0 only in client mode
-    if ((serverPort == NULL) || (strlen(serverPort) == 0)) {
+    if ((serverPort == nullptr) || (strlen(serverPort) == 0)) {
         if (isServer) {
             LOGERROR(1, "Server port not specified\n");
         } else {
@@ -126,14 +126,14 @@ CTcpDevice::CTcpDevice(CDescriptor &descriptor) {
 
     // Client address argument may be null
     // In that case INADDR_ANY is used.
-    if ((clientAddress == NULL) || (strlen(clientAddress) == 0)) {
+    if ((clientAddress == nullptr) || (strlen(clientAddress) == 0)) {
         LOGINFO(gVerbose, "INADDR_ANY used as client address\n");
     } else {
         LOGINFO(gVerbose, "Client address: %s\n", clientAddress);
     }
 
     // Client port argument
-    if ((clientPort == NULL) || (strlen(clientPort) == 0)) {
+    if ((clientPort == nullptr) || (strlen(clientPort) == 0)) {
         LOGINFO(gVerbose, "Client port not specified (%d by default)\n", clientPortNo);
     } else {
         clientPortNo = atoi(clientPort);
@@ -316,10 +316,10 @@ bool CTcpDevice::Select(const unsigned int secondsToWait) {
         timeout.tv_sec = secondsToWait;
         timeout.tv_usec = 0;
 
-        selectVal = select(socketToSelect + 1, &descToRead, NULL, NULL, &timeout);
+        selectVal = select(socketToSelect + 1, &descToRead, nullptr, nullptr, &timeout);
     } else {
         // secondsToWait is zero => Wait indefinitely
-        selectVal = select(socketToSelect + 1, &descToRead, NULL, NULL, NULL);
+        selectVal = select(socketToSelect + 1, &descToRead, nullptr, nullptr, nullptr);
     }
 
     if (selectVal < 0) {
@@ -512,7 +512,7 @@ bool CTcpDevice::Disconnect(bool bLinger) {
 
 bool CTcpDevice::InitServer(const char *serverAddress, const int serverPort) {
 
-    if ((serverAddress == NULL) || (strlen(serverAddress) == 0)) {
+    if ((serverAddress == nullptr) || (strlen(serverAddress) == 0)) {
         // Bind any server address
         _serverAddr.sin_family = AF_INET;
         _serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -522,7 +522,7 @@ bool CTcpDevice::InitServer(const char *serverAddress, const int serverPort) {
         struct hostent *host;
 
         host = gethostbyname(serverAddress);
-        if (host == NULL) {
+        if (host == nullptr) {
             LOGERROR(1, "Unknown server address '%s'\n", serverAddress);
             return false;
         }
@@ -557,7 +557,7 @@ bool CTcpDevice::InitClient(const char *serverAddress, const int serverPort, con
     // Server address/port
     ASSERT(serverAddress);
     host = gethostbyname(serverAddress);
-    if (host == NULL) {
+    if (host == nullptr) {
         LOGERROR(1, "Unknown server address '%s'\n", serverAddress);
         return false;
     }
@@ -572,7 +572,7 @@ bool CTcpDevice::InitClient(const char *serverAddress, const int serverPort, con
         LOGWARNING(1, "Error %d on setsockopt(). %s\n", errno, strerror(errno));
     }
 
-    if ((clientAddress == NULL) || (strlen(clientAddress) == 0)) {
+    if ((clientAddress == nullptr) || (strlen(clientAddress) == 0)) {
         // Bind any client address
         _clientAddr.sin_family = AF_INET;
         _clientAddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -580,7 +580,7 @@ bool CTcpDevice::InitClient(const char *serverAddress, const int serverPort, con
     } else {
         // Bind specified client address
         host = gethostbyname(clientAddress);
-        if (host == NULL) {
+        if (host == nullptr) {
             LOGERROR(1, "Unknown client address '%s'\n", clientAddress);
             return false;
         }

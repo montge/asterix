@@ -67,7 +67,7 @@ bool DataItemFormatFixed::isLastPart(const unsigned char *pData) {
     std::list<DataItemFormat *>::iterator bitit;
     for (bitit = m_lSubItems.begin(); bitit != m_lSubItems.end(); bitit++) {
         DataItemBits *bit = (DataItemBits *) (*bitit);
-        if (bit == NULL) {
+        if (bit == nullptr) {
             Tracer::Error("Missing bits format!");
             return true;
         }
@@ -110,7 +110,7 @@ std::string &DataItemFormatFixed::getPartName(int part) {
     std::list<DataItemFormat *>::iterator bitit;
     for (bitit = m_lSubItems.begin(); bitit != m_lSubItems.end(); bitit++) {
         DataItemBits *bit = (DataItemBits *) (*bitit);
-        if (bit != NULL && bit->m_nPresenceOfField == part) { // found
+        if (bit != nullptr && bit->m_nPresenceOfField == part) { // found
             if (bit->m_strShortName.empty())
                 return bit->m_strName;
             return bit->m_strShortName;
@@ -125,7 +125,7 @@ bool DataItemFormatFixed::isSecondaryPartPresent(const unsigned char *pData, int
     std::list<DataItemFormat *>::iterator bitit;
     for (bitit = m_lSubItems.begin(); bitit != m_lSubItems.end(); bitit++) {
         DataItemBits *bit = (DataItemBits *) (*bitit);
-        if (bit == NULL) {
+        if (bit == nullptr) {
             Tracer::Error("Missing bits format!");
             return true;
         }
@@ -174,7 +174,7 @@ bool DataItemFormatFixed::getText(std::string &strResult, std::string &strHeader
 
     bool ret = false;
     std::list<DataItemFormat *>::iterator it;
-    DataItemBits *bv = NULL;
+    DataItemBits *bv = nullptr;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
         bv = (DataItemBits *) (*it);
         ret |= bv->getText(strResult, strHeader, formatType, pData, m_nLength);
@@ -199,7 +199,7 @@ std::string DataItemFormatFixed::printDescriptors(std::string header) {
     std::string strDef = "";
 
     std::list<DataItemFormat *>::iterator it;
-    DataItemBits *bv = NULL;
+    DataItemBits *bv = nullptr;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
         bv = (DataItemBits *) (*it);
         strDef += bv->printDescriptors(header);
@@ -209,7 +209,7 @@ std::string DataItemFormatFixed::printDescriptors(std::string header) {
 
 bool DataItemFormatFixed::filterOutItem(const char *name) {
     std::list<DataItemFormat *>::iterator it;
-    DataItemBits *bv = NULL;
+    DataItemBits *bv = nullptr;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
         bv = (DataItemBits *) (*it);
         if (true == bv->filterOutItem(name))
@@ -220,7 +220,7 @@ bool DataItemFormatFixed::filterOutItem(const char *name) {
 
 bool DataItemFormatFixed::isFiltered(const char *name) {
     std::list<DataItemFormat *>::iterator it;
-    DataItemBits *bv = NULL;
+    DataItemBits *bv = nullptr;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
         bv = (DataItemBits *) (*it);
         if (true == bv->isFiltered(name))
@@ -229,23 +229,23 @@ bool DataItemFormatFixed::isFiltered(const char *name) {
     return false;
 }
 
-const char *DataItemFormatFixed::getDescription(const char *field, const char *value = NULL) {
+const char *DataItemFormatFixed::getDescription(const char *field, const char *value = nullptr) {
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
         DataItemBits *bv = (DataItemBits *) (*it);
         const char *desc = bv->getDescription(field, value);
-        if (desc != NULL)
+        if (desc != nullptr)
             return desc;
     }
-    return NULL;
+    return nullptr;
 }
 
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_definitions* DataItemFormatFixed::getWiresharkDefinitions()
 {
-  fulliautomatix_definitions *def = NULL, *startDef = NULL;
+  fulliautomatix_definitions *def = nullptr, *startDef = nullptr;
   std::list<DataItemFormat*>::iterator it;
-  DataItemBits* bv = NULL;
+  DataItemBits* bv = nullptr;
   for ( it=m_lSubItems.begin() ; it != m_lSubItems.end(); it++ )
   {
     bv = (DataItemBits*)(*it);
@@ -264,9 +264,9 @@ fulliautomatix_definitions* DataItemFormatFixed::getWiresharkDefinitions()
 
 fulliautomatix_data* DataItemFormatFixed::getData(unsigned char* pData, long len, int byteoffset)
 {
-  fulliautomatix_data *lastData = NULL, *firstData = NULL;
+  fulliautomatix_data *lastData = nullptr, *firstData = nullptr;
   std::list<DataItemFormat*>::iterator it;
-  DataItemBits* bv = NULL;
+  DataItemBits* bv = nullptr;
   for ( it=m_lSubItems.begin() ; it != m_lSubItems.end(); it++ )
   {
     bv = (DataItemBits*)(*it);
@@ -295,7 +295,7 @@ PyObject* DataItemFormatFixed::getObject(unsigned char* pData, long nLength, int
 void DataItemFormatFixed::insertToDict(PyObject* p, unsigned char* pData, long nLength, int description)
 {
     std::list<DataItemFormat*>::iterator it;
-    DataItemBits* bv = NULL;
+    DataItemBits* bv = nullptr;
     for ( it=m_lSubItems.begin() ; it != m_lSubItems.end(); it++ )
     {
         bv = (DataItemBits*)(*it);

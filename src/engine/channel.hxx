@@ -69,7 +69,7 @@ public:
               _HeartbeatMode(heartbeatMode) { _LastHeartbeatTime = 0; }
 
     ~CChannel() {
-        // if (_FormatDescriptor != NULL) delete _FormatDescriptor;
+        // if (_FormatDescriptor != nullptr) delete _FormatDescriptor;
     }
 
     unsigned int GetDeviceNo() { return _DeviceNo; }
@@ -88,13 +88,13 @@ public:
 
     void SetLastHeartbeatTime(time_t newTime) { _LastHeartbeatTime = newTime; };
 
-    void ResetHeartbeatTime() { _LastHeartbeatTime = time(NULL); }
+    void ResetHeartbeatTime() { _LastHeartbeatTime = time(nullptr); }
 
     int GetHeartbeatMode() { return _HeartbeatMode; }
 
     bool Reset() {
         CBaseDevice *pDevice = CDeviceFactory::Instance()->GetDevice(GetDeviceNo());
-        if (pDevice == NULL) {
+        if (pDevice == nullptr) {
             LOGERROR(1, "Reset() - Device not installed.\n");
             return false;
         }

@@ -61,7 +61,7 @@ CSerialDevice::CSerialDevice(CDescriptor &descriptor) {
 
 
     // Device name argument
-    if (sdevice == NULL) {
+    if (sdevice == nullptr) {
         LOGERROR(1, "Serial device name not specified\n");
     } else {
         LOGINFO(gVerbose, "Opening serial device %s\n", sdevice);
@@ -70,7 +70,7 @@ CSerialDevice::CSerialDevice(CDescriptor &descriptor) {
     // Baud rate argument
 
     ConvertSpeed(_defaultBaudRate, _baudRate);  // Firstly, set the baud rate to default
-    if (sbaudRate == NULL) {
+    if (sbaudRate == nullptr) {
         LOGWARNING(gVerbose, "Serial port baud rate not specified. Using default: %d\n", _defaultBaudRate);
     } else {
         speed = atoi(sbaudRate);
@@ -198,10 +198,10 @@ bool CSerialDevice::Select(const unsigned int secondsToWait) {
         timeout.tv_sec = secondsToWait;
         timeout.tv_usec = 0;
 
-        selectVal = select(_fileDesc + 1, &descToRead, NULL, NULL, &timeout);
+        selectVal = select(_fileDesc + 1, &descToRead, nullptr, nullptr, &timeout);
     } else {
         // secondsToWait is zero => Wait indefinitely
-        selectVal = select(_fileDesc + 1, &descToRead, NULL, NULL, NULL);
+        selectVal = select(_fileDesc + 1, &descToRead, nullptr, nullptr, nullptr);
     }
 
     return (selectVal == 1);

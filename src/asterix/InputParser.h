@@ -301,7 +301,7 @@ public:
      *                      to reflect bytes consumed.
      *
      * @return Pointer to new DataBlock object if parsing succeeds, or
-     *         NULL if parsing fails (invalid data, insufficient bytes, etc.).
+     *         nullptr if parsing fails (invalid data, insufficient bytes, etc.).
      *         **Caller must delete** the returned pointer.
      *
      * @par Difference from parsePacket()
@@ -310,8 +310,8 @@ public:
      * - parse_next_data_block() gives caller control over iteration
      *
      * @par Error Handling
-     * - Returns NULL if data length < 3 (insufficient for header)
-     * - Returns NULL if block length exceeds available data
+     * - Returns nullptr if data length < 3 (insufficient for header)
+     * - Returns nullptr if block length exceeds available data
      * - Logs errors via Tracer::Error()
      * - Position and length are NOT updated if parsing fails
      *

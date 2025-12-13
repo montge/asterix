@@ -95,8 +95,8 @@ bool DataItem::getText(std::string &strResult, std::string &strHeader, const uns
 }
 
 long DataItem::parse(const unsigned char *pData, long len) {
-    if (m_pDescription == NULL || m_pDescription->m_pFormat == NULL) {
-        Tracer::Error("DataItem::parse NULL pointer");
+    if (m_pDescription == nullptr || m_pDescription->m_pFormat == nullptr) {
+        Tracer::Error("DataItem::parse nullptr pointer");
         return 0;
     }
 
@@ -128,14 +128,14 @@ fulliautomatix_data* DataItem::getData(int byteoffset)
   snprintf(tmp, 20, "Data item %s - ", m_pDescription->m_strID.c_str());
   strDesc = tmp;
   strDesc += m_pDescription->m_strName;
-  lastData = firstData = newDataTree(NULL, byteoffset, m_nLength, (char*)strDesc.c_str());
+  lastData = firstData = newDataTree(nullptr, byteoffset, m_nLength, (char*)strDesc.c_str());
   if (m_pDescription && m_pDescription->m_pFormat && m_pData)
   {
     lastData->next = m_pDescription->m_pFormat->getData(m_pData.get(), m_nLength, byteoffset);
   }
   else
   {
-    lastData->next = newDataMessage(NULL, byteoffset, m_nLength, 2, (char*)"Error: Unknown item format.");
+    lastData->next = newDataMessage(nullptr, byteoffset, m_nLength, 2, (char*)"Error: Unknown item format.");
   }
   while (lastData->next)
   {
