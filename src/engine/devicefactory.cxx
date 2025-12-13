@@ -56,7 +56,7 @@ CSingleton<CDeviceFactory> CDeviceFactory::_Instance;
 
 CDeviceFactory::CDeviceFactory() {
     for (unsigned int i = 0; i < MAX_DEVICES; i++) {
-        _Device[i] = NULL;
+        _Device[i] = nullptr;
     }
 
     _nDevices = 0;
@@ -64,12 +64,7 @@ CDeviceFactory::CDeviceFactory() {
 
 
 CDeviceFactory::~CDeviceFactory() {
-    for (unsigned int i = 0; i < MAX_DEVICES; i++) {
-        if (_Device[i]) {
-            delete _Device[i];
-        }
-    }
-
+    // Smart pointers automatically clean up, no manual deletion needed
 }
 
 
@@ -84,48 +79,48 @@ bool CDeviceFactory::CreateDevice(const char *deviceName, const char *deviceDesc
     // Search for specified device and create it
     if (strcasecmp(deviceName, "tcp") == 0) {
         CDescriptor descriptor(deviceDescriptor, ":");
-        _Device[_nDevices] = new CTcpDevice(descriptor);
+        _Device[_nDevices] = std::make_unique<CTcpDevice>(descriptor);
     } else if (strcasecmp(deviceName, "udp") == 0) {
         CDescriptor descriptor(deviceDescriptor, "@");
-        _Device[_nDevices] = new CUdpDevice(descriptor);
+        _Device[_nDevices] = std::make_unique<CUdpDevice>(descriptor);
     } else if (strcasecmp(deviceName, "std") == 0) {
-        _Device[_nDevices] = new CStdDevice();  // no need for descriptor currently
+        _Device[_nDevices] = std::make_unique<CStdDevice>();  // no need for descriptor currently
     } else if (strcasecmp(deviceName, "disk") == 0) {
         CDescriptor descriptor(deviceDescriptor, "|");
-        _Device[_nDevices] = new CDiskDevice(descriptor);
+        _Device[_nDevices] = std::make_unique<CDiskDevice>(descriptor);
 #ifndef _WIN32
     } else if (strcasecmp(deviceName, "serial") == 0) {
         CDescriptor descriptor(deviceDescriptor, ":");
-        _Device[_nDevices] = new CSerialDevice(descriptor);
+        _Device[_nDevices] = std::make_unique<CSerialDevice>(descriptor);
 #endif
 #ifdef HAVE_ZEROMQ
     } else if (strcasecmp(deviceName, "zmq") == 0 || strcasecmp(deviceName, "zeromq") == 0) {
         CDescriptor descriptor(deviceDescriptor, ":");
-        _Device[_nDevices] = new CZeromqDevice(descriptor);
+        _Device[_nDevices] = std::make_unique<CZeromqDevice>(descriptor);
 #endif
 #ifdef HAVE_MQTT
     } else if (strcasecmp(deviceName, "mqtt") == 0) {
         CDescriptor descriptor(deviceDescriptor, ":");
-        _Device[_nDevices] = new CMqttDevice(descriptor);
+        _Device[_nDevices] = std::make_unique<CMqttDevice>(descriptor);
 #endif
 #ifdef HAVE_GRPC
     } else if (strcasecmp(deviceName, "grpc") == 0) {
         CDescriptor descriptor(deviceDescriptor, ":");
-        _Device[_nDevices] = new CGrpcDevice(descriptor);
+        _Device[_nDevices] = std::make_unique<CGrpcDevice>(descriptor);
 #endif
 #ifdef HAVE_CYCLONEDDS
     } else if (strcasecmp(deviceName, "dds") == 0 || strcasecmp(deviceName, "cyclonedds") == 0) {
         CDescriptor descriptor(deviceDescriptor, ":");
-        _Device[_nDevices] = new CCycloneDdsDevice(descriptor);
+        _Device[_nDevices] = std::make_unique<CCycloneDdsDevice>(descriptor);
 #endif
     } else {
         LOGERROR(1, "Unknown device '%s'\n", deviceName);
-        _Device[_nDevices] = NULL; // redundant since it already must have that value
+        _Device[_nDevices] = nullptr; // redundant since it already must have that value
     }
 
 
     // Check for memory allocation failure
-    if (_Device[_nDevices] == NULL) {
+    if (!_Device[_nDevices]) {
         return false;
     }
 
