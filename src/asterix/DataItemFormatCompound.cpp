@@ -206,29 +206,29 @@ bool DataItemFormatCompound::getText(std::string &strResult, std::string &strHea
 std::string DataItemFormatCompound::printDescriptors(std::string header) {
     std::string strDef;
 
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(), it++; it != m_lSubItems.end(); it++) {
-        DataItemFormat *dip = (DataItemFormat *) (*it);
+    // Skip first element (primary subfield) - secondary subfields start at index 1
+    for (auto it = std::next(m_lSubItems.begin()); it != m_lSubItems.end(); ++it) {
+        DataItemFormat *dip = *it;
         strDef += dip->printDescriptors(header);
     }
     return strDef;
 }
 
 bool DataItemFormatCompound::filterOutItem(const char *name) {
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(), it++; it != m_lSubItems.end(); it++) {
-        DataItemFormat *dip = (DataItemFormat *) (*it);
-        if (true == dip->filterOutItem(name))
+    // Skip first element (primary subfield) - secondary subfields start at index 1
+    for (auto it = std::next(m_lSubItems.begin()); it != m_lSubItems.end(); ++it) {
+        DataItemFormat *dip = *it;
+        if (dip->filterOutItem(name))
             return true;
     }
     return false;
 }
 
 bool DataItemFormatCompound::isFiltered(const char *name) {
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(), it++; it != m_lSubItems.end(); it++) {
-        DataItemFormat *dip = (DataItemFormat *) (*it);
-        if (true == dip->isFiltered(name))
+    // Skip first element (primary subfield) - secondary subfields start at index 1
+    for (auto it = std::next(m_lSubItems.begin()); it != m_lSubItems.end(); ++it) {
+        DataItemFormat *dip = *it;
+        if (dip->isFiltered(name))
             return true;
     }
     return false;
