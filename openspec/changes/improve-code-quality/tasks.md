@@ -130,6 +130,8 @@ SonarCloud Analysis Summary:
 - [x] 6.3.1 Identified root cause: disk space exhaustion on GitHub runners
 - [x] 6.3.2 Added disk cleanup to rust-ci.yml (removes ~23GB: dotnet, android, ghc, CodeQL, docker)
 - [x] 6.3.3 Updated all failing PRs to trigger CI re-runs with fix
+- [x] 6.3.4 Fixed CMakeLists.txt DO-278 path bug (docs/ prefix missing after repo reorg) - commit 1d4a0cd
+- [x] 6.3.5 Updated all 10 open PRs to include CI fix (131-136, 119, 121-123)
 
 ## 7. Verification - Priority: REQUIRED
 
