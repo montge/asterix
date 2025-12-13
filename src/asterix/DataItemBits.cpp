@@ -493,32 +493,9 @@ char *DataItemBits::getASCII(unsigned char *pData, int bytes, int frombit, int t
  * @param nLength Data buffer length in bytes
  * @return true if formatted successfully, false if filtered out
  */
-bool DataItemBits::getText(std::string &strResult, std::string &strHeader, const unsigned int formatType,
-                           unsigned char *pData, long nLength) {
-    if (gFiltering && !m_bFiltered)
-        return false;
-
-    if (m_nFrom > m_nTo) { // just in case
-        int tmp = m_nFrom;
-        m_nFrom = m_nTo;
-        m_nTo = tmp;
-    }
-
-    if (m_nFrom < 1 || m_nTo > nLength * 8) {
-        Tracer::Error("Wrong bit format!");
-        return true;
-    }
-
-    if (m_strName.empty())
-        m_strName = m_strShortName;
-    else if (m_strShortName.empty())
-        m_strShortName = m_strName;
-
-    // PERFORMANCE: Use ostringstream to eliminate O(n²) string concatenation
-    // This reduces ~70 string reallocations to a single final append
-    std::ostringstream ss;
-
-    std::string indent("    ");  // 4 spaces make an indent.
+// Helper function to write opening tag based on format type
+void DataItemBits::appendOpeningTag(std::ostringstream& ss, const unsigned int formatType) const {
+    std::string indent("    ");
 
     switch (formatType) {
         case CAsterixFormat::EJSON:
@@ -534,385 +511,14 @@ bool DataItemBits::getText(std::string &strResult, std::string &strHeader, const
             ss << format("<%s>", m_strShortName.c_str());
             break;
         case CAsterixFormat::EXMLH:
-            ss << format("\n%s%s", indent.c_str(), indent.c_str());  // New line and indent 2 levels (8 spaces).
+            ss << format("\n%s%s", indent.c_str(), indent.c_str());
             ss << format("<%s>", m_strShortName.c_str());
             break;
     }
+}
 
-    switch (m_eEncoding) {
-        case DATAITEM_ENCODING_UNSIGNED: {
-            int numberOfBits = (m_nTo - m_nFrom + 1);
-            unsigned long long value64 = 0;
-            unsigned long value = 0;
-
-            // Use 64-bit extraction for fields > 32 bits
-            if (numberOfBits > 32) {
-                value64 = getUnsigned64(pData, nLength, m_nFrom, m_nTo);
-                value = (unsigned long) value64;  // Truncate for backward compatibility with existing format strings
-            } else {
-                value = getUnsigned(pData, nLength, m_nFrom, m_nTo);
-                value64 = value;  // Promote to 64-bit for consistent handling
-            }
-
-            switch (formatType) {
-                case CAsterixFormat::ETxt: {
-                    // Use appropriate format specifier based on bit count
-                    if (numberOfBits > 32) {
-                        ss << format("\n\t%s: %llu", m_strName.c_str(), value64);
-                    } else {
-                        ss << format("\n\t%s: %ld", m_strName.c_str(), value);
-                    }
-
-                    if (m_dScale != 0) {
-                        double scaled = value64 * m_dScale;
-                        ss << format(" (%.7lf %s)", scaled, m_strUnit.c_str());
-
-                        if (m_bMaxValueSet && scaled > m_dMaxValue) {
-                            ss << format("\n\tWarning: Value larger than max (%.7lf)", m_dMaxValue);
-                        }
-                        if (m_bMinValueSet && scaled < m_dMinValue) {
-                            ss << format("\n\tWarning: Value smaller than min (%.7lf)", m_dMinValue);
-                        }
-                    } else if (m_bIsConst) {
-                        if ((int) value64 != m_nConst) {
-                            ss << format("\n\tWarning: Value should be set to %d", m_nConst);
-                        }
-                    } else if (!m_lValue.empty()) { // check values
-                        std::list<BitsValue *>::iterator it;
-                        for (it = m_lValue.begin(); it != m_lValue.end(); it++) {
-                            BitsValue *bv = (BitsValue *) (*it);
-                            if (bv->m_nVal == (int) value64) {
-                                ss << format(" (%s)", bv->m_strDescription.c_str());
-                                break;
-                            }
-                        }
-                        if (it == m_lValue.end()) {
-                            ss << format(" ( ?????? )");
-                        }
-                    }
-                }
-                    break;
-                case CAsterixFormat::EOut: {
-                    // Use appropriate format specifier based on bit count
-                    if (numberOfBits > 32) {
-                        ss << format("\n%s.%s %llu", strHeader.c_str(), m_strShortName.c_str(), value64);
-                    } else {
-                        ss << format("\n%s.%s %ld", strHeader.c_str(), m_strShortName.c_str(), value);
-                    }
-
-                    if (m_dScale != 0) {
-                        double scaled = value64 * m_dScale;
-                        ss << format(" (%.7lf %s)", scaled, m_strUnit.c_str());
-
-                        if (m_bMaxValueSet && scaled > m_dMaxValue) {
-                            ss << format(" tWarning: Value larger than max (%.7lf)", m_dMaxValue);
-                        }
-                        if (m_bMinValueSet && scaled < m_dMinValue) {
-                            ss << format(" Warning: Value smaller than min (%.7lf)", m_dMinValue);
-                        }
-                    } else if (m_bIsConst) {
-                        if ((int) value64 != m_nConst) {
-                            ss << format(" Warning: Value should be set to %d", m_nConst);
-                        }
-                    } else if (!m_lValue.empty()) { // check values
-                        std::list<BitsValue *>::iterator it;
-                        for (it = m_lValue.begin(); it != m_lValue.end(); it++) {
-                            BitsValue *bv = (BitsValue *) (*it);
-                            if (bv->m_nVal == (int) value64) {
-                                ss << format(" (%s)", bv->m_strDescription.c_str());
-                                break;
-                            }
-                        }
-                        if (it == m_lValue.end()) {
-                            ss << format(" ( ?????? )");
-                        }
-                    }
-                }
-                    break;
-                case CAsterixFormat::EJSONE: {
-                    if (m_dScale != 0) {
-                        double scaled = value64 * m_dScale;
-                        ss << format("\"val\"=%.7lf", scaled);
-                    } else {
-                        if (numberOfBits > 32) {
-                            ss << format("\"val\"=%llu", value64);
-                        } else {
-                            ss << format("\"val\"=%ld", value);
-                        }
-                    }
-
-                    unsigned char *hexstr = getHexBitStringFullByte(pData, nLength, m_nFrom, m_nTo);
-                    ss << format(", \"hex\"=\"%s\"", hexstr);
-                    delete[] hexstr;
-
-                    if ((m_nTo - m_nFrom + 1) % 8) {
-                        unsigned char *maskstr = getHexBitStringMask(nLength, m_nFrom, m_nTo);
-                        ss << format(", \"mask\"=\"%s\"", maskstr);
-                        delete[] maskstr;
-                    }
-
-                    ss << format(", \"name\"=\"%s\"", m_strName.c_str());
-
-                    if (!m_lValue.empty()) { // check values
-                        std::list<BitsValue *>::iterator it;
-                        for (it = m_lValue.begin(); it != m_lValue.end(); it++) {
-                            BitsValue *bv = (BitsValue *) (*it);
-                            if (bv->m_nVal == (int) value64) {
-                                ss << format(", \"meaning\"=\"%s\"", bv->m_strDescription.c_str());
-                                break;
-                            }
-                        }
-                        if (it == m_lValue.end()) {
-                            ss << format(" ( ?????? )");
-                        }
-                    }
-                }
-                    break;
-                default: {
-                    if (m_dScale != 0) {
-                        double scaled = value64 * m_dScale;
-                        ss << format("%.7lf", scaled);
-                    } else {
-                        if (numberOfBits > 32) {
-                            ss << format("%llu", value64);
-                        } else {
-                            ss << format("%ld", value);
-                        }
-                    }
-                }
-            }
-        }
-            break;
-
-        case DATAITEM_ENCODING_SIGNED: {
-            signed long value = getSigned(pData, nLength, m_nFrom, m_nTo);
-
-            switch (formatType) {
-                case CAsterixFormat::ETxt: {
-                    ss << format("\n\t%s: %ld", m_strName.c_str(), value);
-
-                    if (m_dScale != 0) {
-                        double scaled = (double) value * m_dScale;
-                        ss << format(" (%.7lf %s)", scaled, m_strUnit.c_str());
-
-                        if (m_bMaxValueSet && scaled > m_dMaxValue) {
-                            ss << format("\n\tWarning: Value larger than max (%.7lf)", m_dMaxValue);
-                        }
-                        if (m_bMinValueSet && scaled < m_dMinValue) {
-                            ss << format("\n\tWarning: Value smaller than min (%.7lf)", m_dMinValue);
-                        }
-                    }
-                }
-                    break;
-                case CAsterixFormat::EOut: {
-                    ss << format("\n%s.%s %ld", strHeader.c_str(), m_strShortName.c_str(), value);
-
-                    if (m_dScale != 0) {
-                        double scaled = (double) value * m_dScale;
-                        ss << format(" (%.7lf %s)", scaled, m_strUnit.c_str());
-
-                        if (m_bMaxValueSet && scaled > m_dMaxValue) {
-                            ss << format(" Warning: Value larger than max (%.7lf)", m_dMaxValue);
-                        }
-                        if (m_bMinValueSet && scaled < m_dMinValue) {
-                            ss << format(" Warning: Value smaller than min (%.7lf)", m_dMinValue);
-                        }
-                    }
-                }
-                    break;
-                case CAsterixFormat::EJSONE: {
-                    if (m_dScale != 0) {
-                        double scaled = value * m_dScale;
-                        ss << format("\"val\"=%.7lf", scaled);
-                    } else {
-                        ss << format("\"val\"=%ld", value);
-                    }
-
-                    unsigned char *hexstr = getHexBitStringFullByte(pData, nLength, m_nFrom, m_nTo);
-                    ss << format(", \"hex\"=\"%s\"", hexstr);
-                    delete[] hexstr;
-
-                    if ((m_nTo - m_nFrom + 1) % 8) {
-                        unsigned char *maskstr = getHexBitStringMask(nLength, m_nFrom, m_nTo);
-                        ss << format(", \"mask\"=\"%s\"", maskstr);
-                        delete[] maskstr;
-                    }
-
-                    ss << format(", \"name\"=\"%s\"", m_strName.c_str());
-
-                    if (!m_lValue.empty()) { // check values
-                        std::list<BitsValue *>::iterator it;
-                        for (it = m_lValue.begin(); it != m_lValue.end(); it++) {
-                            BitsValue *bv = (BitsValue *) (*it);
-                            if (bv->m_nVal == (int) value) {
-                                ss << format(", \"meaning\"=\"%s\"", bv->m_strDescription.c_str());
-                                break;
-                            }
-                        }
-                        if (it == m_lValue.end()) {
-                            ss << format(" ( ?????? )");
-                        }
-                    }
-                }
-                    break;
-                default: {
-                    if (m_dScale != 0) {
-                        double scaled = (double) value * m_dScale;
-                        ss << format("%.7lf", scaled);
-                    } else {
-                        ss << format("%ld", value);
-                    }
-                }
-            }
-        }
-            break;
-
-        case DATAITEM_ENCODING_SIX_BIT_CHAR: {
-            unsigned char *str = getSixBitString(pData, nLength, m_nFrom, m_nTo);
-
-            switch (formatType) {
-                case CAsterixFormat::ETxt:
-                    ss << format("\n\t%s: %s", m_strName.c_str(), str);
-                    break;
-                case CAsterixFormat::EOut:
-                    ss << format("\n%s.%s %s", strHeader.c_str(), m_strShortName.c_str(), str);
-                    break;
-                case CAsterixFormat::EJSON:
-                case CAsterixFormat::EJSONH:
-                    ss << format("\"%s\"", str);
-                    break;
-                case CAsterixFormat::EJSONE: {
-                    ss << format("\"val\"=\"%s\"", str);
-
-                    unsigned char *hexstr = getHexBitStringFullByte(pData, nLength, m_nFrom, m_nTo);
-                    ss << format(", \"hex\"=\"%s\"", hexstr);
-                    delete[] hexstr;
-
-                    if ((m_nTo - m_nFrom + 1) % 8) {
-                        unsigned char *maskstr = getHexBitStringMask(nLength, m_nFrom, m_nTo);
-                        ss << format(", \"mask\"=\"%s\"", maskstr);
-                        delete[] maskstr;
-                    }
-
-                    ss << format(", \"name\"=\"%s\"", m_strName.c_str());
-                    break;
-                }
-                default:
-                    ss << format("%s", str);
-                    break;
-            }
-            delete[] str;
-        }
-            break;
-
-        case DATAITEM_ENCODING_HEX_BIT_CHAR: {
-            unsigned char *str = getHexBitString(pData, nLength, m_nFrom, m_nTo);
-
-            switch (formatType) {
-                case CAsterixFormat::ETxt:
-                    ss << format("\n\t%s: %s", m_strName.c_str(), str);
-                    break;
-                case CAsterixFormat::EOut:
-                    ss << format("\n%s.%s %s", strHeader.c_str(), m_strShortName.c_str(), str);
-                    break;
-                case CAsterixFormat::EJSON:
-                case CAsterixFormat::EJSONH:
-                    ss << format("\"%s\"", str);
-                    break;
-                case CAsterixFormat::EJSONE: {
-                    ss << format("\"val\"=\"%s\"", str);
-                    unsigned char *hexstr = getHexBitStringFullByte(pData, nLength, m_nFrom, m_nTo);
-                    ss << format(", \"hex\"=\"%s\"", hexstr);
-                    delete[] hexstr;
-
-                    if ((m_nTo - m_nFrom + 1) % 8) {
-                        unsigned char *maskstr = getHexBitStringMask(nLength, m_nFrom, m_nTo);
-                        ss << format(", \"mask\"=\"%s\"", maskstr);
-                        delete[] maskstr;
-                    }
-                    ss << format(", \"name\"=\"%s\"", m_strName.c_str());
-                }
-                    break;
-                default:
-                    ss << format("%s", str);
-                    break;
-            }
-            delete[] str;
-        }
-            break;
-
-        case DATAITEM_ENCODING_OCTAL: {
-            unsigned char *str = getOctal(pData, nLength, m_nFrom, m_nTo);
-            switch (formatType) {
-                case CAsterixFormat::ETxt:
-                    ss << format("\n\t%s: %s", m_strName.c_str(), str);
-                    break;
-                case CAsterixFormat::EOut:
-                    ss << format("\n%s.%s %s", strHeader.c_str(), m_strShortName.c_str(), str);
-                    break;
-                case CAsterixFormat::EJSON:
-                case CAsterixFormat::EJSONH:
-                    ss << format("\"%s\"", str);
-                    break;
-                case CAsterixFormat::EJSONE: {
-                    ss << format("\"val\"=\"%s\"", str);
-                    unsigned char *hexstr = getHexBitStringFullByte(pData, nLength, m_nFrom, m_nTo);
-                    ss << format(", \"hex\"=\"%s\"", hexstr);
-                    delete[] hexstr;
-
-                    if ((m_nTo - m_nFrom + 1) % 8) {
-                        unsigned char *maskstr = getHexBitStringMask(nLength, m_nFrom, m_nTo);
-                        ss << format(", \"mask\"=\"%s\"", maskstr);
-                        delete[] maskstr;
-                    }
-                    ss << format(", \"name\"=\"%s\"", m_strName.c_str());
-                }
-                    break;
-                default:
-                    ss << format("%s", str);
-                    break;
-            }
-            delete[] str;
-        }
-            break;
-        case DATAITEM_ENCODING_ASCII: {
-            char *pStr = getASCII(pData, nLength, m_nFrom, m_nTo);
-            switch (formatType) {
-                case CAsterixFormat::ETxt:
-                    ss << format("\n\t%s: %s", m_strName.c_str(), pStr);
-                    break;
-                case CAsterixFormat::EOut:
-                    ss << format("\n%s.%s %s", strHeader.c_str(), m_strShortName.c_str(), pStr);
-                    break;
-                case CAsterixFormat::EJSON:
-                case CAsterixFormat::EJSONH:
-                    ss << format("\"%s\"", pStr);
-                    break;
-                case CAsterixFormat::EJSONE: {
-                    ss << format("\"val\"=\"%s\"", pStr);
-                    unsigned char *hexstr = getHexBitStringFullByte(pData, nLength, m_nFrom, m_nTo);
-                    ss << format(", \"hex\"=\"%s\"", hexstr);
-                    delete[] hexstr;
-
-                    if ((m_nTo - m_nFrom + 1) % 8) {
-                        unsigned char *maskstr = getHexBitStringMask(nLength, m_nFrom, m_nTo);
-                        ss << format(", \"mask\"=\"%s\"", maskstr);
-                        delete[] maskstr;
-                    }
-                    ss << format(", \"name\"=\"%s\"", m_strName.c_str());
-                }
-                    break;
-                default:
-                    break;
-            }
-            delete[] pStr;
-        }
-            break;
-        default:
-            Tracer::Error("Unknown encoding");
-            break;
-    }
-
+// Helper function to write closing tag based on format type
+void DataItemBits::appendClosingTag(std::ostringstream& ss, const unsigned int formatType) const {
     switch (formatType) {
         case CAsterixFormat::EJSON:
         case CAsterixFormat::EJSONH:
@@ -926,10 +532,292 @@ bool DataItemBits::getText(std::string &strResult, std::string &strHeader, const
             ss << format("</%s>", m_strShortName.c_str());
             break;
     }
+}
 
-    // PERFORMANCE: Single final append instead of ~70 individual concatenations
+// Helper function to find value description
+const char* DataItemBits::findValueDescription(unsigned long long value, bool& found) const {
+    for (auto it = m_lValue.begin(); it != m_lValue.end(); ++it) {
+        BitsValue* bv = *it;
+        if (bv->m_nVal == (int)value) {
+            found = true;
+            return bv->m_strDescription.c_str();
+        }
+    }
+    found = false;
+    return "??????";
+}
+
+// Helper function to format unsigned value with metadata
+void DataItemBits::formatUnsignedWithMeta(std::ostringstream& ss, unsigned long long value64,
+                                          const unsigned int formatType, const std::string& strHeader) {
+    bool descFound = false;
+    const char* desc = nullptr;
+
+    if (!m_lValue.empty()) {
+        desc = findValueDescription(value64, descFound);
+    }
+
+    switch (formatType) {
+        case CAsterixFormat::ETxt:
+        case CAsterixFormat::EOut: {
+            bool isOut = (formatType == CAsterixFormat::EOut);
+            const char* prefix = isOut ? "\n" : "\n\t";
+            const char* nameFormat = isOut ? "%s.%s" : "%s";
+
+            if (isOut) {
+                ss << format("%s%s.%s %llu", prefix, strHeader.c_str(), m_strShortName.c_str(), value64);
+            } else {
+                ss << format("%s%s: %llu", prefix, m_strName.c_str(), value64);
+            }
+
+            if (m_dScale != 0) {
+                double scaled = value64 * m_dScale;
+                ss << format(" (%.7lf %s)", scaled, m_strUnit.c_str());
+
+                if (m_bMaxValueSet && scaled > m_dMaxValue) {
+                    ss << format("%sWarning: Value larger than max (%.7lf)",
+                                isOut ? " " : "\n\t", m_dMaxValue);
+                }
+                if (m_bMinValueSet && scaled < m_dMinValue) {
+                    ss << format("%sWarning: Value smaller than min (%.7lf)",
+                                isOut ? " " : "\n\t", m_dMinValue);
+                }
+            } else if (m_bIsConst && (int)value64 != m_nConst) {
+                ss << format("%sWarning: Value should be set to %d",
+                            isOut ? " " : "\n\t", m_nConst);
+            } else if (descFound) {
+                ss << format(" (%s)", desc);
+            } else if (!m_lValue.empty()) {
+                ss << format(" ( ?????? )");
+            }
+            break;
+        }
+        case CAsterixFormat::EJSONE: {
+            if (m_dScale != 0) {
+                ss << format("\"val\"=%.7lf", value64 * m_dScale);
+            } else {
+                ss << format("\"val\"=%llu", value64);
+            }
+
+            unsigned char* hexstr = getHexBitStringFullByte((unsigned char*)nullptr, 0, m_nFrom, m_nTo);
+            ss << format(", \"hex\"=\"%s\"", hexstr);
+            delete[] hexstr;
+
+            if ((m_nTo - m_nFrom + 1) % 8) {
+                unsigned char* maskstr = getHexBitStringMask(0, m_nFrom, m_nTo);
+                ss << format(", \"mask\"=\"%s\"", maskstr);
+                delete[] maskstr;
+            }
+
+            ss << format(", \"name\"=\"%s\"", m_strName.c_str());
+
+            if (descFound) {
+                ss << format(", \"meaning\"=\"%s\"", desc);
+            } else if (!m_lValue.empty()) {
+                ss << format(" ( ?????? )");
+            }
+            break;
+        }
+        default: {
+            if (m_dScale != 0) {
+                ss << format("%.7lf", value64 * m_dScale);
+            } else {
+                ss << format("%llu", value64);
+            }
+            break;
+        }
+    }
+}
+
+// Helper function to format signed value with metadata
+void DataItemBits::formatSignedWithMeta(std::ostringstream& ss, signed long value,
+                                        const unsigned int formatType, const std::string& strHeader) {
+    bool descFound = false;
+    const char* desc = nullptr;
+
+    if (!m_lValue.empty()) {
+        desc = findValueDescription((unsigned long long)value, descFound);
+    }
+
+    switch (formatType) {
+        case CAsterixFormat::ETxt:
+            ss << format("\n\t%s: %ld", m_strName.c_str(), value);
+            break;
+        case CAsterixFormat::EOut:
+            ss << format("\n%s.%s %ld", strHeader.c_str(), m_strShortName.c_str(), value);
+            break;
+        case CAsterixFormat::EJSONE:
+            if (m_dScale != 0) {
+                ss << format("\"val\"=%.7lf", value * m_dScale);
+            } else {
+                ss << format("\"val\"=%ld", value);
+            }
+            break;
+        default:
+            if (m_dScale != 0) {
+                ss << format("%.7lf", value * m_dScale);
+            } else {
+                ss << format("%ld", value);
+            }
+            return;
+    }
+
+    // Add scaling/warnings for detailed formats
+    if (formatType == CAsterixFormat::ETxt || formatType == CAsterixFormat::EOut) {
+        if (m_dScale != 0) {
+            double scaled = value * m_dScale;
+            ss << format(" (%.7lf %s)", scaled, m_strUnit.c_str());
+
+            bool isOut = (formatType == CAsterixFormat::EOut);
+            if (m_bMaxValueSet && scaled > m_dMaxValue) {
+                ss << format("%sWarning: Value larger than max (%.7lf)",
+                            isOut ? " " : "\n\t", m_dMaxValue);
+            }
+            if (m_bMinValueSet && scaled < m_dMinValue) {
+                ss << format("%sWarning: Value smaller than min (%.7lf)",
+                            isOut ? " " : "\n\t", m_dMinValue);
+            }
+        }
+    } else if (formatType == CAsterixFormat::EJSONE) {
+        unsigned char* hexstr = getHexBitStringFullByte((unsigned char*)nullptr, 0, m_nFrom, m_nTo);
+        ss << format(", \"hex\"=\"%s\"", hexstr);
+        delete[] hexstr;
+
+        if ((m_nTo - m_nFrom + 1) % 8) {
+            unsigned char* maskstr = getHexBitStringMask(0, m_nFrom, m_nTo);
+            ss << format(", \"mask\"=\"%s\"", maskstr);
+            delete[] maskstr;
+        }
+
+        ss << format(", \"name\"=\"%s\"", m_strName.c_str());
+
+        if (descFound) {
+            ss << format(", \"meaning\"=\"%s\"", desc);
+        } else if (!m_lValue.empty()) {
+            ss << format(" ( ?????? )");
+        }
+    }
+}
+
+// Helper function to format string encodings
+void DataItemBits::formatStringEncoding(std::ostringstream& ss, const unsigned char* str,
+                                        unsigned char* pData, long nLength,
+                                        const unsigned int formatType, const std::string& strHeader) {
+    switch (formatType) {
+        case CAsterixFormat::ETxt:
+            ss << format("\n\t%s: %s", m_strName.c_str(), str);
+            break;
+        case CAsterixFormat::EOut:
+            ss << format("\n%s.%s %s", strHeader.c_str(), m_strShortName.c_str(), str);
+            break;
+        case CAsterixFormat::EJSON:
+        case CAsterixFormat::EJSONH:
+            ss << format("\"%s\"", str);
+            break;
+        case CAsterixFormat::EJSONE: {
+            ss << format("\"val\"=\"%s\"", str);
+
+            unsigned char* hexstr = getHexBitStringFullByte(pData, nLength, m_nFrom, m_nTo);
+            ss << format(", \"hex\"=\"%s\"", hexstr);
+            delete[] hexstr;
+
+            if ((m_nTo - m_nFrom + 1) % 8) {
+                unsigned char* maskstr = getHexBitStringMask(nLength, m_nFrom, m_nTo);
+                ss << format(", \"mask\"=\"%s\"", maskstr);
+                delete[] maskstr;
+            }
+
+            ss << format(", \"name\"=\"%s\"", m_strName.c_str());
+            break;
+        }
+        default:
+            ss << format("%s", str);
+            break;
+    }
+}
+
+bool DataItemBits::getText(std::string &strResult, std::string &strHeader, const unsigned int formatType,
+                           unsigned char *pData, long nLength) {
+    // Early returns for filtering and validation
+    if (gFiltering && !m_bFiltered) {
+        return false;
+    }
+
+    // Ensure bit range is properly ordered
+    if (m_nFrom > m_nTo) {
+        std::swap(m_nFrom, m_nTo);
+    }
+
+    // Validate bit range
+    if (m_nFrom < 1 || m_nTo > nLength * 8) {
+        Tracer::Error("Wrong bit format!");
+        return true;
+    }
+
+    // Ensure names are populated
+    if (m_strName.empty()) {
+        m_strName = m_strShortName;
+    } else if (m_strShortName.empty()) {
+        m_strShortName = m_strName;
+    }
+
+    std::ostringstream ss;
+
+    appendOpeningTag(ss, formatType);
+
+    // Process encoding types
+    switch (m_eEncoding) {
+        case DATAITEM_ENCODING_UNSIGNED: {
+            int numberOfBits = (m_nTo - m_nFrom + 1);
+            unsigned long long value64 = (numberOfBits > 32)
+                ? getUnsigned64(pData, nLength, m_nFrom, m_nTo)
+                : getUnsigned(pData, nLength, m_nFrom, m_nTo);
+            formatUnsignedWithMeta(ss, value64, formatType, strHeader);
+            break;
+        }
+        case DATAITEM_ENCODING_SIGNED: {
+            signed long value = getSigned(pData, nLength, m_nFrom, m_nTo);
+            formatSignedWithMeta(ss, value, formatType, strHeader);
+            break;
+        }
+        case DATAITEM_ENCODING_SIX_BIT_CHAR: {
+            unsigned char* str = getSixBitString(pData, nLength, m_nFrom, m_nTo);
+            formatStringEncoding(ss, str, pData, nLength, formatType, strHeader);
+            delete[] str;
+            break;
+        }
+        case DATAITEM_ENCODING_HEX_BIT_CHAR: {
+            unsigned char* str = getHexBitString(pData, nLength, m_nFrom, m_nTo);
+            formatStringEncoding(ss, str, pData, nLength, formatType, strHeader);
+            delete[] str;
+            break;
+        }
+        case DATAITEM_ENCODING_OCTAL: {
+            unsigned char* str = getOctal(pData, nLength, m_nFrom, m_nTo);
+            formatStringEncoding(ss, str, pData, nLength, formatType, strHeader);
+            delete[] str;
+            break;
+        }
+        case DATAITEM_ENCODING_ASCII: {
+            char* pStr = getASCII(pData, nLength, m_nFrom, m_nTo);
+            if (formatType != CAsterixFormat::EJSONE && formatType != CAsterixFormat::ETxt &&
+                formatType != CAsterixFormat::EOut && formatType != CAsterixFormat::EJSON &&
+                formatType != CAsterixFormat::EJSONH) {
+                // Default case - do nothing
+            } else {
+                formatStringEncoding(ss, (const unsigned char*)pStr, pData, nLength, formatType, strHeader);
+            }
+            delete[] pStr;
+            break;
+        }
+        default:
+            Tracer::Error("Unknown encoding");
+            break;
+    }
+
+    appendClosingTag(ss, formatType);
+
     strResult += ss.str();
-
     return true;
 }
 
@@ -1165,139 +1053,152 @@ break;
 return def;
 }
 
+// Helper function to create value description for Wireshark
+char* DataItemBits::createWiresharkValueDescription(double scaled, unsigned long long value64) {
+    char tmp[128];
+    bool isOutOfRange = (m_bMaxValueSet && scaled > m_dMaxValue) || (m_bMinValueSet && scaled < m_dMinValue);
+    bool isWrongConst = m_bIsConst && (int)value64 != m_nConst;
+
+    if (isOutOfRange) {
+        snprintf(tmp, 128, " (%.7lf %s) Warning! Value out of range (%.7lf to %.7lf)",
+                 scaled, m_strUnit.c_str(), m_dMinValue, m_dMaxValue);
+    } else if (isWrongConst) {
+        snprintf(tmp, 128, " (%.7lf %s) Warning! Value should be %d",
+                 scaled, m_strUnit.c_str(), m_nConst);
+    } else {
+        snprintf(tmp, 128, " (%.7lf %s)", scaled, m_strUnit.c_str());
+    }
+
+    return strdup(tmp);
+}
+
+// Helper function to process unsigned encoding for Wireshark
+fulliautomatix_data* DataItemBits::createWiresharkUnsignedData(unsigned char* pData, long nLength,
+                                                               int byteoffset, int firstByte,
+                                                               int numberOfBits, int numberOfBytes) {
+    unsigned long long value64 = (numberOfBits > 32)
+        ? getUnsigned64(pData, nLength, m_nFrom, m_nTo)
+        : getUnsigned(pData, nLength, m_nFrom, m_nTo);
+
+    unsigned long value = (unsigned long)value64;
+
+    // Adjust for bitmask presentation in Wireshark
+    if (value && m_nFrom > 1 && numberOfBits % 8) {
+        value <<= ((m_nFrom - 1) % (numberOfBytes * 8));
+        value64 <<= ((m_nFrom - 1) % (numberOfBytes * 8));
+    }
+
+    fulliautomatix_data* pOutData = newDataUL(NULL, getPID(), byteoffset + firstByte, numberOfBytes, value);
+
+    if (m_dScale != 0 || m_bIsConst) {
+        double scaled = value64 * m_dScale;
+        pOutData->value_description = createWiresharkValueDescription(scaled, value64);
+
+        bool hasError = (m_bMaxValueSet && scaled > m_dMaxValue) ||
+                       (m_bMinValueSet && scaled < m_dMinValue) ||
+                       (m_bIsConst && (int)value64 != m_nConst);
+        if (hasError) {
+            pOutData->err = 1;
+        }
+    }
+
+    return pOutData;
+}
+
+// Helper function to process signed encoding for Wireshark
+fulliautomatix_data* DataItemBits::createWiresharkSignedData(unsigned char* pData, long nLength,
+                                                             int byteoffset, int firstByte,
+                                                             int numberOfBytes) {
+    signed long value = getSigned(pData, nLength, m_nFrom, m_nTo);
+    fulliautomatix_data* pOutData = newDataSL(NULL, getPID(), byteoffset + firstByte, numberOfBytes, value);
+
+    if (m_dScale != 0) {
+        double scaled = value * m_dScale;
+        pOutData->value_description = createWiresharkValueDescription(scaled, (unsigned long long)value);
+
+        bool hasError = (m_bMaxValueSet && scaled > m_dMaxValue) ||
+                       (m_bMinValueSet && scaled < m_dMinValue) ||
+                       (m_bIsConst && (int)value != m_nConst);
+        if (hasError) {
+            pOutData->err = 1;
+        }
+    }
+
+    return pOutData;
+}
+
+// Helper function to process string encoding for Wireshark
+fulliautomatix_data* DataItemBits::createWiresharkStringData(_eEncoding encoding, unsigned char* pData,
+                                                             long nLength, int byteoffset,
+                                                             int firstByte, int numberOfBytes) {
+    char* str = nullptr;
+
+    switch (encoding) {
+        case DATAITEM_ENCODING_SIX_BIT_CHAR:
+            str = (char*)getSixBitString(pData, nLength, m_nFrom, m_nTo);
+            break;
+        case DATAITEM_ENCODING_HEX_BIT_CHAR:
+            str = (char*)getHexBitString(pData, nLength, m_nFrom, m_nTo);
+            break;
+        case DATAITEM_ENCODING_OCTAL:
+            str = (char*)getOctal(pData, nLength, m_nFrom, m_nTo);
+            break;
+        case DATAITEM_ENCODING_ASCII:
+            str = getASCII(pData, nLength, m_nFrom, m_nTo);
+            break;
+        default:
+            return nullptr;
+    }
+
+    fulliautomatix_data* data = newDataString(NULL, getPID(), byteoffset + firstByte, numberOfBytes, str);
+    delete[] str;
+    return data;
+}
+
 fulliautomatix_data* DataItemBits::getData(unsigned char* pData, long nLength, int byteoffset)
 {
-    if (m_nFrom > m_nTo)
-    { // just in case
-        int tmp = m_nFrom;
-        m_nFrom = m_nTo;
-        m_nTo = tmp;
+    // Ensure bit range is properly ordered
+    if (m_nFrom > m_nTo) {
+        std::swap(m_nFrom, m_nTo);
     }
 
-    int firstByte = nLength - (m_nTo-1)/8 - 1;
-    int numberOfBits = (m_nTo-m_nFrom+1);
-    int numberOfBytes = (numberOfBits+7)/8;
+    int firstByte = nLength - (m_nTo - 1) / 8 - 1;
+    int numberOfBits = (m_nTo - m_nFrom + 1);
+    int numberOfBytes = (numberOfBits + 7) / 8;
 
-    if (m_strName.empty())
+    // Ensure name is populated
+    if (m_strName.empty()) {
         m_strName = m_strShortName;
+    }
 
-    switch(m_eEncoding)
-    {
-    case DATAITEM_ENCODING_UNSIGNED:
-    {
-        fulliautomatix_data* pOutData;
-        unsigned long long value64;
-        unsigned long value;
+    // Process based on encoding type
+    switch (m_eEncoding) {
+        case DATAITEM_ENCODING_UNSIGNED:
+            return createWiresharkUnsignedData(pData, nLength, byteoffset, firstByte, numberOfBits, numberOfBytes);
 
-        // Use 64-bit extraction for fields > 32 bits
-        if (numberOfBits > 32) {
-            value64 = getUnsigned64(pData, nLength, m_nFrom, m_nTo);
-            value = (unsigned long) value64;  // Truncate for Wireshark compatibility
-        } else {
-            value = getUnsigned(pData, nLength, m_nFrom, m_nTo);
-            value64 = value;
+        case DATAITEM_ENCODING_SIGNED:
+            return createWiresharkSignedData(pData, nLength, byteoffset, firstByte, numberOfBytes);
+
+        case DATAITEM_ENCODING_SIX_BIT_CHAR:
+        case DATAITEM_ENCODING_HEX_BIT_CHAR:
+        case DATAITEM_ENCODING_OCTAL:
+        case DATAITEM_ENCODING_ASCII: {
+            fulliautomatix_data* result = createWiresharkStringData(m_eEncoding, pData, nLength,
+                                                                     byteoffset, firstByte, numberOfBytes);
+            if (result) {
+                return result;
+            }
+            break;
         }
 
-        if (value && m_nFrom>1 && numberOfBits%8)
-        { // this is because of bitmask presentation in Wireshark
-            value <<= ((m_nFrom-1)%(numberOfBytes*8));
-            value64 <<= ((m_nFrom-1)%(numberOfBytes*8));
-        }
-        pOutData = newDataUL(NULL, getPID(), byteoffset+firstByte, numberOfBytes, value);
-
-        if (m_dScale != 0 || m_bIsConst)
-        {
-            double scaled = value64*m_dScale;
-            char tmp[128];
-            if ((m_bMaxValueSet && scaled > m_dMaxValue) || (m_bMinValueSet && scaled < m_dMinValue))
-            {
-                snprintf(tmp, 128, " (%.7lf %s) Warning! Value out of range (%.7lf to %.7lf)", scaled, m_strUnit.c_str(), m_dMinValue, m_dMaxValue);
-                pOutData->err = 1;
-            }
-            else if (m_bIsConst && (int)value64 != m_nConst)
-            {
-                snprintf(tmp, 128, " (%.7lf %s) Warning! Value should be %d", scaled, m_strUnit.c_str(), m_nConst);
-                pOutData->err = 1;
-            }
-            else
-            {
-                snprintf(tmp, 128, " (%.7lf %s)", scaled, m_strUnit.c_str());
-            }
-            pOutData->value_description = strdup(tmp);
-        }
-        return pOutData;
-    }
-    break;
-
-    case DATAITEM_ENCODING_SIGNED:
-    {
-        fulliautomatix_data* pOutData;
-        signed long value = getSigned(pData, nLength, m_nFrom, m_nTo);
-        pOutData = newDataSL(NULL, getPID(), byteoffset+firstByte, numberOfBytes, value);
-
-        if (m_dScale != 0)
-        {
-            double scaled = value*m_dScale;
-            char tmp[128];
-            if ((m_bMaxValueSet && scaled > m_dMaxValue) || (m_bMinValueSet && scaled < m_dMinValue))
-            {
-                snprintf(tmp, 128, " (%.7lf %s) Warning! Value out of range (%.7lf to %.7lf)", scaled, m_strUnit.c_str(), m_dMinValue, m_dMaxValue);
-                pOutData->err = 1;
-            }
-            else if (m_bIsConst && (int)value != m_nConst)
-            {
-                snprintf(tmp, 128, " (%.7lf %s) Warning! Value should be %d", scaled, m_strUnit.c_str(), m_nConst);
-                pOutData->err = 1;
-            }
-            else
-            {
-                snprintf(tmp, 128, " (%.7lf %s)", scaled, m_strUnit.c_str());
-            }
-            pOutData->value_description = strdup(tmp);
-        }
-        return pOutData;
-    }
-    break;
-
-    case DATAITEM_ENCODING_SIX_BIT_CHAR:
-    {
-        unsigned char* str = getSixBitString(pData, nLength, m_nFrom, m_nTo);
-        fulliautomatix_data* data = newDataString(NULL, getPID(), byteoffset+firstByte, numberOfBytes, (char*)str);
-        delete[] str;
-        return data;
-    }
-    break;
-    case DATAITEM_ENCODING_HEX_BIT_CHAR:
-    {
-        unsigned char* str = getHexBitString(pData, nLength, m_nFrom, m_nTo);
-        fulliautomatix_data* data = newDataString(NULL, getPID(), byteoffset+firstByte, numberOfBytes, (char*)str);
-        delete[] str;
-        return data;
-    }
-    break;
-    case DATAITEM_ENCODING_OCTAL:
-    {
-        unsigned char* str = getOctal(pData, nLength, m_nFrom, m_nTo);
-        fulliautomatix_data* data = newDataString(NULL, getPID(), byteoffset+firstByte, numberOfBytes, (char*)str);
-        delete[] str;
-        return data;
-    }
-    break;
-    case DATAITEM_ENCODING_ASCII:
-    {
-        char* pStr = getASCII(pData, nLength, m_nFrom, m_nTo);
-        fulliautomatix_data* data = newDataString(NULL, getPID(), byteoffset+firstByte, numberOfBytes, pStr);
-        delete pStr;
-        return data;
-    }
-    break;
-    default:
-        Tracer::Error("Unknown encoding");
-        break;
+        default:
+            Tracer::Error("Unknown encoding");
+            break;
     }
 
-    fulliautomatix_data* data = newDataMessage(NULL, byteoffset+firstByte, numberOfBytes, 2, (char*)"Error: Unknown encoding.");
-    return data;
+    // Error case - unknown encoding
+    return newDataMessage(NULL, byteoffset + firstByte, numberOfBytes, 2,
+                          (char*)"Error: Unknown encoding.");
 }
 #endif
 
@@ -1310,274 +1211,151 @@ PyObject* DataItemBits::getObject(unsigned char* pData, long nLength, int verbos
     return p;
 }
 
+// Helper function to add a key-value pair to Python dictionary and handle reference counting
+void DataItemBits::addPyDictItem(PyObject* dict, const char* key, PyObject* value) {
+    PyObject* k = Py_BuildValue("s", key);
+    PyDict_SetItem(dict, k, value);
+    Py_DECREF(k);
+    Py_DECREF(value);
+}
+
+// Helper function to process unsigned value for Python dict
+void DataItemBits::insertUnsignedToDict(PyObject* pValue, unsigned long long value64, int verbose) {
+    if (m_dScale != 0) {
+        double scaled = value64 * m_dScale;
+        addPyDictItem(pValue, "val", Py_BuildValue("d", scaled));
+
+        if (verbose) {
+            if (m_bMaxValueSet) {
+                addPyDictItem(pValue, "max", Py_BuildValue("d", m_dMaxValue));
+            }
+            if (m_bMinValueSet) {
+                addPyDictItem(pValue, "min", Py_BuildValue("d", m_dMinValue));
+            }
+        }
+    } else if (m_bIsConst) {
+        addPyDictItem(pValue, "val", Py_BuildValue("K", value64));
+        if (verbose) {
+            addPyDictItem(pValue, "const", Py_BuildValue("k", m_nConst));
+        }
+    } else if (!m_lValue.empty()) {
+        bool descFound = false;
+        const char* desc = findValueDescription(value64, descFound);
+
+        addPyDictItem(pValue, "val", Py_BuildValue("K", value64));
+
+        if (verbose) {
+            addPyDictItem(pValue, "meaning", Py_BuildValue("s", descFound ? desc : "???"));
+        }
+    } else {
+        addPyDictItem(pValue, "val", Py_BuildValue("K", value64));
+    }
+}
+
+// Helper function to process signed value for Python dict
+void DataItemBits::insertSignedToDict(PyObject* pValue, signed long value, int verbose) {
+    if (m_dScale != 0) {
+        double scaled = value * m_dScale;
+        addPyDictItem(pValue, "val", Py_BuildValue("d", scaled));
+
+        if (verbose) {
+            if (m_bMaxValueSet) {
+                addPyDictItem(pValue, "max", Py_BuildValue("d", m_dMaxValue));
+            }
+            if (m_bMinValueSet) {
+                addPyDictItem(pValue, "min", Py_BuildValue("d", m_dMinValue));
+            }
+        }
+    } else if (m_bIsConst) {
+        addPyDictItem(pValue, "val", Py_BuildValue("d", value));
+        if (verbose) {
+            addPyDictItem(pValue, "const", Py_BuildValue("k", m_nConst));
+        }
+    } else if (!m_lValue.empty()) {
+        bool descFound = false;
+        const char* desc = findValueDescription((unsigned long long)value, descFound);
+
+        addPyDictItem(pValue, "val", Py_BuildValue("d", value));
+
+        if (verbose) {
+            addPyDictItem(pValue, "meaning", Py_BuildValue("s", descFound ? desc : "???"));
+        }
+    } else {
+        addPyDictItem(pValue, "val", Py_BuildValue("l", value));
+    }
+}
+
+// Helper function to process string encodings for Python dict
+void DataItemBits::insertStringToDict(PyObject* pValue, _eEncoding encoding,
+                                      unsigned char* pData, long nLength) {
+    char* str = nullptr;
+
+    switch (encoding) {
+        case DATAITEM_ENCODING_SIX_BIT_CHAR:
+            str = (char*)getSixBitString(pData, nLength, m_nFrom, m_nTo);
+            break;
+        case DATAITEM_ENCODING_HEX_BIT_CHAR:
+            str = (char*)getHexBitString(pData, nLength, m_nFrom, m_nTo);
+            break;
+        case DATAITEM_ENCODING_OCTAL:
+            str = (char*)getOctal(pData, nLength, m_nFrom, m_nTo);
+            break;
+        case DATAITEM_ENCODING_ASCII:
+            str = getASCII(pData, nLength, m_nFrom, m_nTo);
+            break;
+        default:
+            addPyDictItem(pValue, "val", Py_BuildValue("s", "???"));
+            return;
+    }
+
+    if (str) {
+        addPyDictItem(pValue, "val", Py_BuildValue("s", str));
+        delete[] str;
+    }
+}
+
 void DataItemBits::insertToDict(PyObject* p, unsigned char* pData, long nLength, int verbose)
 {
-    // Add item name
+    // Create new dictionary for this item
     PyObject* pValue = PyDict_New();
-    PyObject* k2 = Py_BuildValue("s", m_strShortName.c_str());
-    PyDict_SetItem(p, k2, pValue);
-    Py_DECREF(k2);
-    Py_DECREF(pValue);
+    addPyDictItem(p, m_strShortName.c_str(), pValue);
+    // Note: addPyDictItem already DECREF'd pValue, but PyDict_SetItem incremented it, so we still have a reference
 
-    if (verbose)
-    {
-        // Add item description - use short name as fallback if long name is empty
-        PyObject* k1 = Py_BuildValue("s", "desc");
+    // Add description if verbose
+    if (verbose) {
         const char* desc = m_strName.empty() ? m_strShortName.c_str() : m_strName.c_str();
-        PyObject* v1 = Py_BuildValue("s", desc);
-        PyDict_SetItem(pValue, k1, v1);
-        Py_DECREF(k1);
-        Py_DECREF(v1);
+        addPyDictItem(pValue, "desc", Py_BuildValue("s", desc));
     }
 
-    if (m_nFrom > m_nTo)
-    { // just in case
-        int tmp = m_nFrom;
-        m_nFrom = m_nTo;
-        m_nTo = tmp;
+    // Ensure bit range is properly ordered
+    if (m_nFrom > m_nTo) {
+        std::swap(m_nFrom, m_nTo);
     }
 
-    //int firstByte = nLength - (m_nTo-1)/8 - 1;
-    //int numberOfBits = (m_nTo-m_nFrom+1);
-    //int numberOfBytes = (numberOfBits+7)/8;
-
-    switch(m_eEncoding)
-    {
-    case DATAITEM_ENCODING_UNSIGNED:
-    {
-        int numberOfBits = (m_nTo - m_nFrom + 1);
-        unsigned long long value64;
-        unsigned long value;
-
-        // Use 64-bit extraction for fields > 32 bits
-        if (numberOfBits > 32) {
-            value64 = getUnsigned64(pData, nLength, m_nFrom, m_nTo);
-            value = (unsigned long) value64;  // Truncate for backward compatibility
-        } else {
-            value = getUnsigned(pData, nLength, m_nFrom, m_nTo);
-            value64 = value;
+    // Process based on encoding type
+    switch (m_eEncoding) {
+        case DATAITEM_ENCODING_UNSIGNED: {
+            int numberOfBits = (m_nTo - m_nFrom + 1);
+            unsigned long long value64 = (numberOfBits > 32)
+                ? getUnsigned64(pData, nLength, m_nFrom, m_nTo)
+                : getUnsigned(pData, nLength, m_nFrom, m_nTo);
+            insertUnsignedToDict(pValue, value64, verbose);
+            break;
         }
-
-        if (m_dScale != 0) {
-            double scaled = value64 * m_dScale;
-            PyObject* k1 = Py_BuildValue("s", "val");
-            PyObject* v1 = Py_BuildValue("d", scaled);
-            PyDict_SetItem(pValue, k1, v1);
-            Py_DECREF(k1);
-            Py_DECREF(v1);
-
-            if (verbose && m_bMaxValueSet) {
-                PyObject* k1 = Py_BuildValue("s", "max");
-                PyObject* v1 = Py_BuildValue("d", m_dMaxValue);
-                PyDict_SetItem(pValue, k1, v1);
-                Py_DECREF(k1);
-                Py_DECREF(v1);
-            }
-            if (verbose && m_bMinValueSet) {
-                PyObject* k1 = Py_BuildValue("s", "min");
-                PyObject* v1 = Py_BuildValue("d", m_dMinValue);
-                PyDict_SetItem(pValue, k1, v1);
-                Py_DECREF(k1);
-                Py_DECREF(v1);
-            }
-        } else if (m_bIsConst) {
-            PyObject* k1 = Py_BuildValue("s", "val");
-            PyObject* v1 = Py_BuildValue("K", value64);  // "K" for unsigned long long
-            PyDict_SetItem(pValue, k1, v1);
-            Py_DECREF(k1);
-            Py_DECREF(v1);
-            if (verbose) {
-                PyObject* k2 = Py_BuildValue("s", "const");
-                PyObject* v2 = Py_BuildValue("k", m_nConst);
-                PyDict_SetItem(pValue, k2, v2);
-                Py_DECREF(k2);
-                Py_DECREF(v2);
-            }
-        } else if (!m_lValue.empty()) { // check values
-            std::list<BitsValue*>::iterator it;
-            for (it = m_lValue.begin(); it != m_lValue.end(); it++) {
-                BitsValue* bv = (BitsValue*) (*it);
-                if (bv->m_nVal == (int) value64) {
-                    PyObject* k1 = Py_BuildValue("s", "val");
-                    PyObject* v1 = Py_BuildValue("K", value64);  // "K" for unsigned long long
-                    PyDict_SetItem(pValue, k1, v1);
-                    Py_DECREF(k1);
-                    Py_DECREF(v1);
-                    if (verbose && !bv->m_strDescription.empty()) {
-                        PyObject* k2 = Py_BuildValue("s", "meaning");
-                        PyObject* v2 = Py_BuildValue("s", bv->m_strDescription.c_str());
-                        PyDict_SetItem(pValue, k2, v2);
-                        Py_DECREF(k2);
-                        Py_DECREF(v2);
-                    }
-                    break;
-                }
-            }
-            if (it == m_lValue.end()) {
-                PyObject* k1 = Py_BuildValue("s", "val");
-                PyObject* v1 = Py_BuildValue("K", value64);  // "K" for unsigned long long
-                PyDict_SetItem(pValue, k1, v1);
-                Py_DECREF(k1);
-                Py_DECREF(v1);
-                if (verbose) {
-                    PyObject* k2 = Py_BuildValue("s", "meaning");
-                    PyObject* v2 = Py_BuildValue("s", "???");
-                    PyDict_SetItem(pValue, k2, v2);
-                    Py_DECREF(k2);
-                    Py_DECREF(v2);
-                }
-            }
+        case DATAITEM_ENCODING_SIGNED: {
+            signed long value = getSigned(pData, nLength, m_nFrom, m_nTo);
+            insertSignedToDict(pValue, value, verbose);
+            break;
         }
-        else
-        {
-            PyObject* k1 = Py_BuildValue("s", "val");
-            PyObject* v1 = Py_BuildValue("K", value64);  // "K" for unsigned long long
-            PyDict_SetItem(pValue, k1, v1);
-            Py_DECREF(k1);
-            Py_DECREF(v1);
-        }
-    }
-    break;
-
-    case DATAITEM_ENCODING_SIGNED:
-    {
-        signed long value = getSigned(pData, nLength, m_nFrom, m_nTo);
-
-        if (m_dScale != 0) {
-            double scaled = value * m_dScale;
-            PyObject* k1 = Py_BuildValue("s", "val");
-            PyObject* v1 = Py_BuildValue("d", scaled);
-            PyDict_SetItem(pValue, k1, v1);
-            Py_DECREF(k1);
-            Py_DECREF(v1);
-
-            if (verbose && m_bMaxValueSet) {
-                PyObject* k1 = Py_BuildValue("s", "max");
-                PyObject* v1 = Py_BuildValue("d", m_dMaxValue);
-                PyDict_SetItem(pValue, k1, v1);
-                Py_DECREF(k1);
-                Py_DECREF(v1);
-            }
-            if (verbose && m_bMinValueSet) {
-                PyObject* k1 = Py_BuildValue("s", "min");
-                PyObject* v1 = Py_BuildValue("d", m_dMinValue);
-                PyDict_SetItem(pValue, k1, v1);
-                Py_DECREF(k1);
-                Py_DECREF(v1);
-            }
-        } else if (m_bIsConst) {
-            PyObject* k1 = Py_BuildValue("s", "val");
-            PyObject* v1 = Py_BuildValue("d", value);
-            PyDict_SetItem(pValue, k1, v1);
-            Py_DECREF(k1);
-            Py_DECREF(v1);
-            if (verbose) {
-                PyObject* k2 = Py_BuildValue("s", "const");
-                PyObject* v2 = Py_BuildValue("k", m_nConst);
-                PyDict_SetItem(pValue, k2, v2);
-                Py_DECREF(k2);
-                Py_DECREF(v2);
-            }
-        } else if (!m_lValue.empty()) { // check values
-            std::list<BitsValue*>::iterator it;
-            for (it = m_lValue.begin(); it != m_lValue.end(); it++) {
-                BitsValue* bv = (BitsValue*) (*it);
-                if (bv->m_nVal == (int) value) {
-                    PyObject* k1 = Py_BuildValue("s", "val");
-                    PyObject* v1 = Py_BuildValue("d", value);
-                    PyDict_SetItem(pValue, k1, v1);
-                    Py_DECREF(k1);
-                    Py_DECREF(v1);
-                    if (verbose && !bv->m_strDescription.empty()) {
-                        PyObject* k2 = Py_BuildValue("s", "meaning");
-                        PyObject* v2 = Py_BuildValue("s", bv->m_strDescription.c_str());
-                        PyDict_SetItem(pValue, k2, v2);
-                        Py_DECREF(k2);
-                        Py_DECREF(v2);
-                    }
-                    break;
-                }
-            }
-            if (it == m_lValue.end()) {
-                PyObject* k1 = Py_BuildValue("s", "val");
-                PyObject* v1 = Py_BuildValue("d", value);
-                PyDict_SetItem(pValue, k1, v1);
-                Py_DECREF(k1);
-                Py_DECREF(v1);
-                if (verbose) {
-                    PyObject* k2 = Py_BuildValue("s", "meaning");
-                    PyObject* v2 = Py_BuildValue("s", "???");
-                    PyDict_SetItem(pValue, k2, v2);
-                    Py_DECREF(k2);
-                    Py_DECREF(v2);
-                }
-            }
-        }
-        else
-        {
-            PyObject* k1 = Py_BuildValue("s", "val");
-            PyObject* v1 = Py_BuildValue("l", value);
-            PyDict_SetItem(pValue, k1, v1);
-            Py_DECREF(k1);
-            Py_DECREF(v1);
-        }
-    }
-    break;
-
-    case DATAITEM_ENCODING_SIX_BIT_CHAR:
-    {
-        unsigned char* str = getSixBitString(pData, nLength, m_nFrom, m_nTo);
-        PyObject* k1 = Py_BuildValue("s", "val");
-        PyObject* v1 = Py_BuildValue("s", str);
-        PyDict_SetItem(pValue, k1, v1);
-        Py_DECREF(k1);
-        Py_DECREF(v1);
-        delete[] str;
-    }
-    break;
-
-    case DATAITEM_ENCODING_HEX_BIT_CHAR:
-    {
-        unsigned char* str = getHexBitString(pData, nLength, m_nFrom, m_nTo);
-        PyObject* k1 = Py_BuildValue("s", "val");
-        PyObject* v1 = Py_BuildValue("s", str);
-        PyDict_SetItem(pValue, k1, v1);
-        Py_DECREF(k1);
-        Py_DECREF(v1);
-        delete[] str;
-    }
-    break;
-
-    case DATAITEM_ENCODING_OCTAL:
-    {
-        unsigned char* str = getOctal(pData, nLength, m_nFrom, m_nTo);
-        PyObject* k1 = Py_BuildValue("s", "val");
-        PyObject* v1 = Py_BuildValue("s", str);
-        PyDict_SetItem(pValue, k1, v1);
-        Py_DECREF(k1);
-        Py_DECREF(v1);
-        delete[] str;
-    }
-    break;
-
-    case DATAITEM_ENCODING_ASCII:
-    {
-        char* pStr = getASCII(pData, nLength, m_nFrom, m_nTo);
-        PyObject* k1 = Py_BuildValue("s", "val");
-        PyObject* v1 = Py_BuildValue("s", pStr);
-        PyDict_SetItem(pValue, k1, v1);
-        Py_DECREF(k1);
-        Py_DECREF(v1);
-        delete[] pStr;
-    }
-    break;
-    default:
-        PyObject* k1 = Py_BuildValue("s", "val");
-        PyObject* v1 = Py_BuildValue("s", "???");
-        PyDict_SetItem(pValue, k1, v1);
-        Py_DECREF(k1);
-        Py_DECREF(v1);
-        break;
+        case DATAITEM_ENCODING_SIX_BIT_CHAR:
+        case DATAITEM_ENCODING_HEX_BIT_CHAR:
+        case DATAITEM_ENCODING_OCTAL:
+        case DATAITEM_ENCODING_ASCII:
+            insertStringToDict(pValue, m_eEncoding, pData, nLength);
+            break;
+        default:
+            addPyDictItem(pValue, "val", Py_BuildValue("s", "???"));
+            break;
     }
 }
 #endif
