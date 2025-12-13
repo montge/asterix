@@ -31,10 +31,10 @@ DataItemFormatExplicit::DataItemFormatExplicit(int id)
 
 DataItemFormatExplicit::DataItemFormatExplicit(const DataItemFormatExplicit &obj)
         : DataItemFormat(obj.m_nID) {
-    std::list<DataItemFormat *>::iterator it = ((DataItemFormat &) obj).m_lSubItems.begin();
+    std::list<DataItemFormat *>::iterator it = const_cast<std::list<DataItemFormat *>&>(obj.m_lSubItems).begin();
 
     while (it != obj.m_lSubItems.end()) {
-        DataItemFormat *di = (DataItemFormat *) (*it);
+        DataItemFormat *di = *it;
         m_lSubItems.push_back(di->clone());
         it++;
     }
@@ -64,7 +64,7 @@ bool DataItemFormatExplicit::getText(std::string &strResult, std::string &strHea
 
     // calculate the size of all sub items
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormat *di = (DataItemFormat *) (*it);
+        DataItemFormat *di = *it;
         bodyLength += di->getLength(pData + bodyLength); // calculate length of body
     }
 
@@ -90,7 +90,7 @@ bool DataItemFormatExplicit::getText(std::string &strResult, std::string &strHea
 
     for (int i = 0; i < nFullLength; i += bodyLength) {
         for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-            DataItemFormat *di = (DataItemFormat *) (*it);
+            DataItemFormat *di = *it;
             ret |= di->getText(tmpStr, strHeader, formatType, pData, bodyLength);
             pData += bodyLength;
 
@@ -130,7 +130,7 @@ std::string DataItemFormatExplicit::printDescriptors(std::string header) {
 
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormat *dip = (DataItemFormat *) (*it);
+        DataItemFormat *dip = *it;
         strDef += dip->printDescriptors(header);
     }
     return strDef;
@@ -139,7 +139,7 @@ std::string DataItemFormatExplicit::printDescriptors(std::string header) {
 bool DataItemFormatExplicit::filterOutItem(const char *name) {
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormat *dip = (DataItemFormat *) (*it);
+        DataItemFormat *dip = *it;
         if (true == dip->filterOutItem(name))
             return true;
     }
@@ -149,7 +149,7 @@ bool DataItemFormatExplicit::filterOutItem(const char *name) {
 bool DataItemFormatExplicit::isFiltered(const char *name) {
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormat *dip = (DataItemFormat *) (*it);
+        DataItemFormat *dip = *it;
         if (true == dip->isFiltered(name))
             return true;
     }
@@ -159,7 +159,7 @@ bool DataItemFormatExplicit::isFiltered(const char *name) {
 const char *DataItemFormatExplicit::getDescription(const char *field, const char *value = nullptr) {
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemBits *bv = (DataItemBits *) (*it);
+        auto *bv = static_cast<DataItemBits *>(*it);
         const char *desc = bv->getDescription(field, value);
         if (desc != nullptr)
             return desc;
@@ -170,7 +170,7 @@ const char *DataItemFormatExplicit::getDescription(const char *field, const char
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_definitions* DataItemFormatExplicit::getWiresharkDefinitions()
 {
-    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : nullptr;
+    auto* pFixed = m_lSubItems.size() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
     if (pFixed == nullptr)
     {
         Tracer::Error("Wrong format of explicit item");
@@ -182,7 +182,7 @@ fulliautomatix_definitions* DataItemFormatExplicit::getWiresharkDefinitions()
 fulliautomatix_data* DataItemFormatExplicit::getData(unsigned char* pData, long, int byteoffset)
 {
     fulliautomatix_data *lastData = nullptr, *firstData = nullptr;
-    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : nullptr;
+    auto* pFixed = m_lSubItems.size() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
     if (pFixed == nullptr)
     {
         Tracer::Error("Wrong format of explicit item");
@@ -225,7 +225,7 @@ PyObject* DataItemFormatExplicit::getObject(unsigned char* pData, long nLength, 
 
     // calculate the size of all sub items
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormat *di = (DataItemFormat *) (*it);
+        DataItemFormat *di = *it;
         bodyLength += di->getLength(pData + bodyLength); // calculate length of body
     }
 
@@ -240,7 +240,7 @@ PyObject* DataItemFormatExplicit::getObject(unsigned char* pData, long nLength, 
 
     if (nFullLength == bodyLength) {
         PyObject* p = PyDict_New();
-        DataItemFormat *di = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : nullptr;
+        auto *di = m_lSubItems.size() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
         if (di != nullptr) {
             di->insertToDict(p, pData, bodyLength, verbose);
         }
@@ -250,7 +250,7 @@ PyObject* DataItemFormatExplicit::getObject(unsigned char* pData, long nLength, 
         PyObject* p = PyList_New(0);
         for (int i = 0; i < nFullLength; i += bodyLength) {
             for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-                DataItemFormat *di = (DataItemFormat *) (*it);
+                DataItemFormat *di = *it;
                 PyObject* p1 = di->getObject(pData, bodyLength, verbose);
                 PyList_Append(p, p1);
                 Py_DECREF(p1);

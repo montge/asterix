@@ -41,9 +41,9 @@ DataItemFormatCompound::DataItemFormatCompound(const DataItemFormatCompound &obj
     );
 #else
     // C++17: Traditional iterator-based approach
-    std::list<DataItemFormat *>::iterator it = ((DataItemFormat &) obj).m_lSubItems.begin();
+    std::list<DataItemFormat *>::iterator it = const_cast<DataItemFormat &>(obj).m_lSubItems.begin();
     while (it != obj.m_lSubItems.end()) {
-        DataItemFormat *di = (DataItemFormat *) (*it);
+        DataItemFormat *di = *it;
         m_lSubItems.push_back(di->clone());
         it++;
     }
@@ -60,7 +60,7 @@ long DataItemFormatCompound::getLength(const unsigned char *pData) {
     std::list<DataItemFormat *>::iterator it;
     std::list<DataItemFormat *>::iterator it2;
     it2 = m_lSubItems.begin();
-    DataItemFormatVariable *pCompoundPrimary = (DataItemFormatVariable *) (*it2);
+    auto *pCompoundPrimary = static_cast<DataItemFormatVariable *>(*it2);
     if (pCompoundPrimary == nullptr) {
         Tracer::Error("Missing primary subfield of Compound");
         return 0;
@@ -80,12 +80,12 @@ long DataItemFormatCompound::getLength(const unsigned char *pData) {
         it2 = m_lSubItems.begin();
         it2++; // skip primary part
 
-        DataItemFormatFixed *dip = (DataItemFormatFixed *) (*it);
+        auto *dip = static_cast<DataItemFormatFixed *>(*it);
         bool lastPart = dip->isLastPart(pData);
 
         while (it2 != m_lSubItems.end()) { // parse secondary parts
             if (dip->isSecondaryPartPresent(pData, secondaryPart)) {
-                DataItemFormat *dip2 = (DataItemFormat *) (*it2);
+                DataItemFormat *dip2 = *it2;
                 int skip = dip2->getLength(pSecData);
                 pSecData += skip;
                 totalLength += skip;
@@ -108,7 +108,7 @@ bool DataItemFormatCompound::getText(std::string &strResult, std::string &strHea
     std::list<DataItemFormat *>::iterator it;
     std::list<DataItemFormat *>::iterator it2;
     it2 = m_lSubItems.begin();
-    DataItemFormatVariable *pCompoundPrimary = (DataItemFormatVariable *) (*it2);
+    auto *pCompoundPrimary = static_cast<DataItemFormatVariable *>(*it2);
     if (pCompoundPrimary == nullptr) {
         Tracer::Error("Missing primary subfield of Compound");
         return false;
@@ -136,12 +136,12 @@ bool DataItemFormatCompound::getText(std::string &strResult, std::string &strHea
         it2 = m_lSubItems.begin();
         it2++; // skip primary part
 
-        DataItemFormatFixed *dip = (DataItemFormatFixed *) (*it);
+        auto *dip = static_cast<DataItemFormatFixed *>(*it);
         bool lastPart = dip->isLastPart(pData);
 
         while (it2 != m_lSubItems.end()) { // parse secondary parts
             if (dip->isSecondaryPartPresent(pData, secondaryPart)) {
-                DataItemFormat *dip2 = (DataItemFormat *) (*it2);
+                DataItemFormat *dip2 = *it2;
                 int skip = 0;
                 std::string tmpStr;
 
@@ -208,7 +208,7 @@ std::string DataItemFormatCompound::printDescriptors(std::string header) {
 
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(), it++; it != m_lSubItems.end(); it++) {
-        DataItemFormat *dip = (DataItemFormat *) (*it);
+        DataItemFormat *dip = *it;
         strDef += dip->printDescriptors(header);
     }
     return strDef;
@@ -217,7 +217,7 @@ std::string DataItemFormatCompound::printDescriptors(std::string header) {
 bool DataItemFormatCompound::filterOutItem(const char *name) {
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(), it++; it != m_lSubItems.end(); it++) {
-        DataItemFormat *dip = (DataItemFormat *) (*it);
+        DataItemFormat *dip = *it;
         if (true == dip->filterOutItem(name))
             return true;
     }
@@ -227,7 +227,7 @@ bool DataItemFormatCompound::filterOutItem(const char *name) {
 bool DataItemFormatCompound::isFiltered(const char *name) {
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(), it++; it != m_lSubItems.end(); it++) {
-        DataItemFormat *dip = (DataItemFormat *) (*it);
+        DataItemFormat *dip = *it;
         if (true == dip->isFiltered(name))
             return true;
     }
@@ -237,7 +237,7 @@ bool DataItemFormatCompound::isFiltered(const char *name) {
 const char *DataItemFormatCompound::getDescription(const char *field, const char *value = nullptr) {
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemBits *bv = (DataItemBits *) (*it);
+        auto *bv = static_cast<DataItemBits *>(*it);
         const char *desc = bv->getDescription(field, value);
         if (desc != nullptr)
             return desc;
@@ -252,7 +252,7 @@ fulliautomatix_definitions* DataItemFormatCompound::getWiresharkDefinitions()
 
     std::list<DataItemFormat*>::iterator it;
     it = m_lSubItems.begin();
-    DataItemFormatVariable* pCompoundPrimary = (DataItemFormatVariable*)(*it);
+    auto* pCompoundPrimary = static_cast<DataItemFormatVariable*>(*it);
     it++;
     if (pCompoundPrimary == nullptr)
     {
@@ -266,7 +266,7 @@ fulliautomatix_definitions* DataItemFormatCompound::getWiresharkDefinitions()
 
     for (; it != m_lSubItems.end(); it++ )
     {
-        DataItemFormat* dip = (DataItemFormat*)(*it);
+        DataItemFormat* dip = *it;
         def->next = dip->getWiresharkDefinitions();
         while(def->next)
         def = def->next;
@@ -281,7 +281,7 @@ fulliautomatix_data* DataItemFormatCompound::getData(unsigned char* pData, long,
     std::list<DataItemFormat*>::iterator it;
     std::list<DataItemFormat*>::iterator it2;
     it2 = m_lSubItems.begin();
-    DataItemFormatVariable* pCompoundPrimary = (DataItemFormatVariable*)(*it2);
+    auto* pCompoundPrimary = static_cast<DataItemFormatVariable*>(*it2);
     if (pCompoundPrimary == nullptr)
     {
         Tracer::Error("Missing primary subfield of Compound");
@@ -297,7 +297,7 @@ fulliautomatix_data* DataItemFormatCompound::getData(unsigned char* pData, long,
     int primaryPartLength = pCompoundPrimary->getLength(pData);
     unsigned char* pSecData = pData + primaryPartLength;
 
-    lastData = firstData = newDataTree(nullptr, byteoffset, primaryPartLength, (char*)"Compound item header");
+    lastData = firstData = newDataTree(nullptr, byteoffset, primaryPartLength, const_cast<char*>("Compound item header"));
 
     lastData->next = pCompoundPrimary->getData(pData, primaryPartLength, byteoffset);
     while(lastData->next)
@@ -313,14 +313,14 @@ fulliautomatix_data* DataItemFormatCompound::getData(unsigned char* pData, long,
         it2 = m_lSubItems.begin();
         it2++; // skip primary part
 
-        DataItemFormatFixed* dip = (DataItemFormatFixed*)(*it);
+        auto* dip = static_cast<DataItemFormatFixed*>(*it);
         bool lastPart = dip->isLastPart(pData);
 
         while (it2 != m_lSubItems.end())
         { // parse secondary parts
             if (dip->isSecondaryPartPresent(pData, secondaryPart))
             {
-                DataItemFormat* dip2 = (DataItemFormat*)(*it2);
+                DataItemFormat* dip2 = *it2;
                 int skip = dip2->getLength(pSecData);
                 lastData->next = dip2->getData(pSecData, skip, byteoffset);
                 while(lastData->next)
@@ -355,7 +355,7 @@ void DataItemFormatCompound::insertToDict(PyObject* p, unsigned char* pData, lon
     std::list<DataItemFormat*>::iterator it;
     std::list<DataItemFormat*>::iterator it2;
     it2 = m_lSubItems.begin();
-    DataItemFormatVariable* pCompoundPrimary = (DataItemFormatVariable*)(*it2);
+    auto* pCompoundPrimary = static_cast<DataItemFormatVariable*>(*it2);
     if (pCompoundPrimary == nullptr)
     {
         Tracer::Error("Missing primary subfield of Compound");
@@ -377,7 +377,7 @@ void DataItemFormatCompound::insertToDict(PyObject* p, unsigned char* pData, lon
         it2 = m_lSubItems.begin();
         it2++; // skip primary part
 
-        DataItemFormatFixed* dip = (DataItemFormatFixed*)(*it);
+        auto* dip = static_cast<DataItemFormatFixed*>(*it);
         bool lastPart = dip->isLastPart(pData);
 
         while (it2 != m_lSubItems.end())
@@ -389,7 +389,7 @@ void DataItemFormatCompound::insertToDict(PyObject* p, unsigned char* pData, lon
                 PyObject* k1 = Py_BuildValue("s", tmpStr.c_str());
 
                 // get dictionary from secondary part
-                DataItemFormat* dip2 = (DataItemFormat*)(*it2);
+                DataItemFormat* dip2 = *it2;
                 int skip = dip2->getLength(pSecData);
                 PyObject* p1 = dip2->getObject(pSecData, skip, description);
 

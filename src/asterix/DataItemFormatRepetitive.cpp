@@ -32,10 +32,10 @@ DataItemFormatRepetitive::DataItemFormatRepetitive(int id)
 
 DataItemFormatRepetitive::DataItemFormatRepetitive(const DataItemFormatRepetitive &obj)
         : DataItemFormat(obj.m_nID) {
-    std::list<DataItemFormat *>::iterator it = ((DataItemFormat &) obj).m_lSubItems.begin();
+    std::list<DataItemFormat *>::iterator it = const_cast<std::list<DataItemFormat *>&>(obj.m_lSubItems).begin();
 
     while (it != obj.m_lSubItems.end()) {
-        DataItemFormat *di = (DataItemFormat *) (*it);
+        DataItemFormat *di = *it;
         m_lSubItems.push_back(di->clone());
         it++;
     }
@@ -47,7 +47,7 @@ DataItemFormatRepetitive::~DataItemFormatRepetitive() {
 }
 
 long DataItemFormatRepetitive::getLength(const unsigned char *pData) {
-    DataItemFormat *pF = m_lSubItems.size() ? (DataItemFormatFixed *) m_lSubItems.front() : nullptr;
+    auto *pF = m_lSubItems.size() ? static_cast<DataItemFormatFixed *>(m_lSubItems.front()) : nullptr;
     if (pF == nullptr) {
         Tracer::Error("Wrong data in Repetitive");
         return 0;
@@ -79,7 +79,7 @@ long DataItemFormatRepetitive::getLength(const unsigned char *pData) {
 bool DataItemFormatRepetitive::getText(std::string &strResult, std::string &strHeader, const unsigned int formatType,
                                        unsigned char *pData, long nLength) {
     bool ret = false;
-    DataItemFormatFixed *pF = m_lSubItems.size() ? (DataItemFormatFixed *) m_lSubItems.front() : nullptr;
+    auto *pF = m_lSubItems.size() ? static_cast<DataItemFormatFixed *>(m_lSubItems.front()) : nullptr;
     if (pF == nullptr) {
         Tracer::Error("Wrong data in Repetitive");
         return true;
@@ -134,7 +134,7 @@ bool DataItemFormatRepetitive::getText(std::string &strResult, std::string &strH
 }
 
 std::string DataItemFormatRepetitive::printDescriptors(std::string header) {
-    DataItemFormatFixed *pFixed = m_lSubItems.size() ? (DataItemFormatFixed *) m_lSubItems.front() : nullptr;
+    auto *pFixed = m_lSubItems.size() ? static_cast<DataItemFormatFixed *>(m_lSubItems.front()) : nullptr;
     if (pFixed == nullptr) {
         Tracer::Error("Wrong data in Repetitive");
         return "Wrong data in Repetitive";
@@ -144,7 +144,7 @@ std::string DataItemFormatRepetitive::printDescriptors(std::string header) {
 }
 
 bool DataItemFormatRepetitive::filterOutItem(const char *name) {
-    DataItemFormatFixed *pFixed = m_lSubItems.size() ? (DataItemFormatFixed *) m_lSubItems.front() : nullptr;
+    auto *pFixed = m_lSubItems.size() ? static_cast<DataItemFormatFixed *>(m_lSubItems.front()) : nullptr;
     if (pFixed == nullptr) {
         Tracer::Error("Wrong data in Repetitive");
         return false;
@@ -154,7 +154,7 @@ bool DataItemFormatRepetitive::filterOutItem(const char *name) {
 }
 
 bool DataItemFormatRepetitive::isFiltered(const char *name) {
-    DataItemFormatFixed *pFixed = m_lSubItems.size() ? (DataItemFormatFixed *) m_lSubItems.front() : nullptr;
+    auto *pFixed = m_lSubItems.size() ? static_cast<DataItemFormatFixed *>(m_lSubItems.front()) : nullptr;
     if (pFixed == nullptr) {
         Tracer::Error("Wrong data in Repetitive");
         return false;
@@ -166,7 +166,7 @@ bool DataItemFormatRepetitive::isFiltered(const char *name) {
 const char *DataItemFormatRepetitive::getDescription(const char *field, const char *value = nullptr) {
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemBits *bv = (DataItemBits *) (*it);
+        auto *bv = static_cast<DataItemBits *>(*it);
         const char *desc = bv->getDescription(field, value);
         if (desc != nullptr)
             return desc;
@@ -177,7 +177,7 @@ const char *DataItemFormatRepetitive::getDescription(const char *field, const ch
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_definitions* DataItemFormatRepetitive::getWiresharkDefinitions()
 {
-    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : nullptr;
+    auto* pFixed = m_lSubItems.size() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
     if (!pFixed)
     {
         Tracer::Error("Wring format of repetitive item");
@@ -189,7 +189,7 @@ fulliautomatix_definitions* DataItemFormatRepetitive::getWiresharkDefinitions()
 fulliautomatix_data* DataItemFormatRepetitive::getData(unsigned char* pData, long len, int byteoffset)
 {
     fulliautomatix_data *lastData = nullptr, *firstData = nullptr;
-    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : nullptr;
+    auto* pFixed = m_lSubItems.size() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
     if (!pFixed)
     {
         Tracer::Error("Wrong format of repetitive item");
@@ -230,7 +230,7 @@ PyObject* DataItemFormatRepetitive::getObject(unsigned char* pData, long nLength
 {
     PyObject* p = PyList_New(0);
 
-     DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : nullptr;
+     auto* pFixed = m_lSubItems.size() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
       if (!pFixed)
       {
         PyObject* p1 = Py_BuildValue("s", "Wrong format of Repetitive item");
