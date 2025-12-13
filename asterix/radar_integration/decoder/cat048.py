@@ -283,15 +283,15 @@ class CAT048Decoder(AsterixDecoder):
 
         value = decode_uint(data, offset, 2)
 
-        v = bool(value & 0x8000)  # Bit 16
-        g = bool(value & 0x4000)  # Bit 15
-        l = bool(value & 0x2000)  # Bit 14
+        valid_flag = bool(value & 0x8000)  # Bit 16 - V (validated)
+        garbled_flag = bool(value & 0x4000)  # Bit 15 - G (garbled)
+        local_flag = bool(value & 0x2000)  # Bit 14 - L (local/temporary)
         code = value & 0x0FFF  # Bits 12-1
 
         result = {
-            'V': v,
-            'G': g,
-            'L': l,
+            'V': valid_flag,
+            'G': garbled_flag,
+            'L': local_flag,
             'code': code,
         }
 
@@ -300,9 +300,9 @@ class CAT048Decoder(AsterixDecoder):
             octal_str = f"{code:04o}"
             result['octal'] = octal_str
             result['description'] = f"Mode 3/A: {octal_str}"
-            if not v:
+            if not valid_flag:
                 result['description'] += " (not validated)"
-            if g:
+            if garbled_flag:
                 result['description'] += " (garbled)"
 
         return result, 2

@@ -38,7 +38,6 @@ import sys
 # Try to import matplotlib - optional dependency
 try:
     import matplotlib.pyplot as plt
-    import matplotlib.patches as patches
     from matplotlib.collections import LineCollection
     import numpy as np
     HAS_MATPLOTLIB = True

@@ -387,7 +387,6 @@ class TestCAT062RecordDecoding(unittest.TestCase):
         """Helper to encode a CAT062 record for testing."""
         # Encode FSPEC
         fspec = bytearray()
-        octet_index = 0
         max_frn = max(frn_list) if frn_list else 0
         num_octets = (max_frn + 6) // 7
 

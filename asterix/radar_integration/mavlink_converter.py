@@ -197,7 +197,7 @@ class MAVLinkToAsterixConverter:
 
         # Convert speeds to knots
         airspeed_kt = self.state.airspeed * 1.94384
-        groundspeed_kt = self.state.groundspeed * 1.94384
+        self.state.groundspeed * 1.94384
 
         return {
             'lat': self.state.lat,

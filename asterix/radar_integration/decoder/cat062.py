@@ -290,7 +290,6 @@ class CAT062Decoder(AsterixDecoder):
             raise DecoderError("I390 truncated")
 
         primary = data[offset]
-        bytes_consumed = 1
         result = {}
 
         # Simplified: just track which subfields are present
