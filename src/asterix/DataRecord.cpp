@@ -87,7 +87,7 @@ DataRecord::DataRecord(Category *cat, int nID, unsigned long len, const unsigned
     for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {
         DataItem *di = (DataItem *) (*it);
 
-        if (di->m_pDescription == NULL || di->m_pDescription->m_pFormat == NULL) {
+        if (di->m_pDescription == nullptr || di->m_pDescription->m_pFormat == nullptr) {
             Tracer::Error("DataItem format not defined for CAT%03d/I%s", cat->m_id,
                           di->m_pDescription->m_strID.c_str());
             errorReported = true;
@@ -204,7 +204,7 @@ bool DataRecord::getText(std::string &strResult, std::string &strHeader, const u
     std::list<DataItem *>::iterator it;
     for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {
         DataItem *di = (DataItem *) (*it);
-        if (di != NULL) {
+        if (di != nullptr) {
             if (di->getText(strNewResult, strHeader, formatType)) {
                 if (!ret) {
                     ret = true;
@@ -255,13 +255,13 @@ DataItem *DataRecord::getItem(std::string itemid) {
             return di;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_data* DataRecord::getData(int byteoffset)
 {
-  fulliautomatix_data *firstData = NULL, *lastData=NULL;
+  fulliautomatix_data *firstData = nullptr, *lastData=nullptr;
   int endOffset = byteoffset+m_nLength;
 
   char tmp[64];
@@ -378,7 +378,7 @@ PyObject* DataRecord::getData(int verbose)
             if (di)
             {
                 PyObject* v1 = di->getData(verbose);
-                if (v1 == NULL) {
+                if (v1 == nullptr) {
                     v1 = Py_BuildValue("s", "Error");
                 }
                 char tmp[20];

@@ -103,7 +103,7 @@ bool DataBlock::getText(std::string &strResult, const unsigned int formatType) {
         std::list<DataRecord *>::iterator it;
         for (it = m_lDataRecords.begin(); it != m_lDataRecords.end(); it++) {
             DataRecord *dr = (DataRecord *) (*it);
-            if (dr != NULL) {
+            if (dr != nullptr) {
                 dr->getText(strResult, strHeader, formatType);
             }
         }
@@ -114,12 +114,12 @@ bool DataBlock::getText(std::string &strResult, const unsigned int formatType) {
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_data* DataBlock::getData(int byteoffset)
 {
-  fulliautomatix_data *firstData = NULL, *lastData=NULL;
+  fulliautomatix_data *firstData = nullptr, *lastData=nullptr;
   int endOffset = byteoffset+m_nLength+3;
   char tmp[256];
   snprintf(tmp, 256, "Data Block Cat%03d - %.200s", m_pCategory->m_id, m_pCategory->m_strName.c_str());
 
-  firstData = lastData = newDataTree(NULL, byteoffset, m_nLength+3, tmp);
+  firstData = lastData = newDataTree(nullptr, byteoffset, m_nLength+3, tmp);
 
   lastData = newDataUL(lastData, PID_CATEGORY, byteoffset, 1, m_pCategory->m_id);
   byteoffset+=1;
@@ -131,7 +131,7 @@ fulliautomatix_data* DataBlock::getData(int byteoffset)
   for ( it=m_lDataRecords.begin() ; it != m_lDataRecords.end(); it++ )
   {
     DataRecord* dr = (DataRecord*)(*it);
-    if (dr != NULL)
+    if (dr != nullptr)
     {
       lastData->next = dr->getData(byteoffset);
       while(lastData->next)
@@ -154,7 +154,7 @@ void DataBlock::getData(PyObject* plist, int verbose)
     for ( it=m_lDataRecords.begin() ; it != m_lDataRecords.end(); it++ )
     {
         DataRecord* dr = (DataRecord*)(*it);
-        if (dr != NULL)
+        if (dr != nullptr)
         {
             PyObject* p = dr->getData(verbose);
             PyList_Append(plist, p);

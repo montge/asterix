@@ -256,7 +256,7 @@ public:
      * @brief Get human-readable description for a specific field value
      * @param field Field name (e.g., "TYP")
      * @param value String representation of value (e.g., "1")
-     * @return Description string from m_lValue lookup, or NULL if not found
+     * @return Description string from m_lValue lookup, or nullptr if not found
      *
      * @par Example
      * @code

@@ -53,14 +53,14 @@ CChannelFactory::CChannelFactory() {
     _formatEngine = (CBaseFormat *) new CAsterixFormat;
     LOGDEBUG(_formatEngine, "CChannelFactory successfully initialized with CAsterixFormat.\n");
 
-    if (_formatEngine == NULL) {
+    if (_formatEngine == nullptr) {
         LOGERROR(1, "Fatal error - Could not initialize format engine.\n");
     }
 
     // Make sure that all channels are put to uninitialized state.
-    _inputChannel = NULL;
+    _inputChannel = nullptr;
     for (unsigned int i = 0; i < MAX_OUTPUT_CHANNELS; i++) {
-        _outputChannel[i] = NULL;
+        _outputChannel[i] = nullptr;
     }
 
     _nOutputChannels = 0;
@@ -116,7 +116,7 @@ bool CChannelFactory::CreateInputChannel(const char *sDeviceName, const char *sD
     // Activate input channel
     _inputChannel = new CChannel(deviceNo, formatNo, formatDesc, false, false, 0, 0);
 
-    return (_inputChannel != NULL);
+    return (_inputChannel != nullptr);
 }
 
 
@@ -151,16 +151,16 @@ bool CChannelFactory::CreateOutputChannel(const char *sDeviceName, const char *s
     bool bHeartbeat = false;
     unsigned int heartbeatInterval = 0;
     unsigned int heartbeatMode = CChannel::EAlways;
-    if ((sHeartbeat != NULL) && (strlen(sHeartbeat) > 0)) {
+    if ((sHeartbeat != nullptr) && (strlen(sHeartbeat) > 0)) {
         CDescriptor heartbeatDescriptor(sHeartbeat, ":");
         const char *sHeartbeatInterval = heartbeatDescriptor.GetFirst();
         const char *sHeartbeatMode = heartbeatDescriptor.GetNext();
 
-        if ((sHeartbeatInterval != NULL) && (strlen(sHeartbeatInterval) > 0)) {
+        if ((sHeartbeatInterval != nullptr) && (strlen(sHeartbeatInterval) > 0)) {
             heartbeatInterval = abs(atoi(sHeartbeatInterval));
             bHeartbeat = true;
             // N mode means that heartbeat works only when there are no packets on output
-            if ((sHeartbeatMode != NULL) && (sHeartbeatMode[0] == 'N')) {
+            if ((sHeartbeatMode != nullptr) && (sHeartbeatMode[0] == 'N')) {
                 heartbeatMode = CChannel::ENoTraffic;
             }
             LOGINFO(gVerbose, "%d seconds heartbeat (mode %d) set on device '%s' with format '%s'.\n",
@@ -174,7 +174,7 @@ bool CChannelFactory::CreateOutputChannel(const char *sDeviceName, const char *s
             new CChannel(deviceNo, formatNo, formatDesc,
                          bFailover, bHeartbeat, heartbeatInterval, heartbeatMode);
 
-    if (_outputChannel[_nOutputChannels] == NULL) {
+    if (_outputChannel[_nOutputChannels] == nullptr) {
         // Cannot allocate memory
         LOGERROR(1, "Not enough memory to create output device '%s'.\n", sDeviceName);
         return false;
@@ -201,7 +201,7 @@ bool CChannelFactory::AttachFormatter(const char *sFormatName, const char *sForm
     }
 
     // Create format descriptor
-    if ((*formatDesc = _formatEngine->CreateFormatDescriptor(formatNo, sFormatDescriptor)) == NULL) {
+    if ((*formatDesc = _formatEngine->CreateFormatDescriptor(formatNo, sFormatDescriptor)) == nullptr) {
         LOGERROR(1, "Couldn't create format descriptor'%s' for '%s'.\n", sFormatDescriptor, sFormatName);
         return false;
     }
@@ -213,7 +213,7 @@ bool CChannelFactory::AttachFormatter(const char *sFormatName, const char *sForm
 bool CChannelFactory::WaitForPacket(const unsigned int secondsToWait) {
     ASSERT(_formatEngine);
 
-    if (_inputChannel == NULL) {
+    if (_inputChannel == nullptr) {
         LOGERROR(1, "Select() - Input device not installed.\n");
         return false;
     }
@@ -221,7 +221,7 @@ bool CChannelFactory::WaitForPacket(const unsigned int secondsToWait) {
     // Get the reference to the input device
     CBaseDevice *inputDevice = CDeviceFactory::Instance()->GetDevice(_inputChannel->GetDeviceNo());
 
-    if (inputDevice == NULL) {
+    if (inputDevice == nullptr) {
         LOGERROR(1, "Select() - Cannot get the input device.\n");
         return false;
     }
@@ -233,7 +233,7 @@ bool CChannelFactory::WaitForPacket(const unsigned int secondsToWait) {
 bool CChannelFactory::ReadPacket() {
     ASSERT(_formatEngine);
 
-    if (_inputChannel == NULL) {
+    if (_inputChannel == nullptr) {
         LOGERROR(1, "ReadPacket() - Input device not installed.\n");
         return false;
     }
@@ -241,14 +241,14 @@ bool CChannelFactory::ReadPacket() {
     // Get the reference to the input device
     CBaseDevice *inputDevice = CDeviceFactory::Instance()->GetDevice(_inputChannel->GetDeviceNo());
 
-    if (inputDevice == NULL) {
+    if (inputDevice == nullptr) {
         LOGERROR(1, "ReadPacket() - Cannot get the input device.\n");
         return false;
     }
 
     // Get thr format descriptor and number
     CBaseFormatDescriptor *formatDescriptor = _inputChannel->GetFormatDescriptor();
-    if (formatDescriptor == NULL) {
+    if (formatDescriptor == nullptr) {
         LOGERROR(1, "ReadPacket() - Cannot get the format descriptor.\n");
         return false;
     }
@@ -264,7 +264,7 @@ bool CChannelFactory::ReadPacket() {
 bool CChannelFactory::WritePacket(const unsigned int outputChannel) {
     ASSERT(_formatEngine);
 
-    if (_outputChannel[outputChannel] == NULL) {
+    if (_outputChannel[outputChannel] == nullptr) {
         LOGERROR(1, "WritePacket() - Output device not installed.\n");
         return false;
     }
@@ -273,14 +273,14 @@ bool CChannelFactory::WritePacket(const unsigned int outputChannel) {
     CBaseDevice *outputDevice =
             CDeviceFactory::Instance()->GetDevice(_outputChannel[outputChannel]->GetDeviceNo());
 
-    if (outputDevice == NULL) {
+    if (outputDevice == nullptr) {
         LOGERROR(1, "WritePacket() - Cannot get the input device.\n");
         return false;
     }
 
     // Get the format descriptor and number
     CBaseFormatDescriptor *formatDescriptor = _outputChannel[outputChannel]->GetFormatDescriptor();
-    if (formatDescriptor == NULL) {
+    if (formatDescriptor == nullptr) {
         LOGERROR(1, "WritePacket() - Cannot get the format descriptor.\n");
         return false;
     }
@@ -303,7 +303,7 @@ bool CChannelFactory::WritePacket(const unsigned int outputChannel) {
 bool CChannelFactory::ProcessPacket(bool &discard) {
     ASSERT(_formatEngine);
 
-    if (_inputChannel == NULL) {
+    if (_inputChannel == nullptr) {
         LOGERROR(1, "ProcessPacket() - Input device not installed.\n");
         return false;
     }
@@ -311,14 +311,14 @@ bool CChannelFactory::ProcessPacket(bool &discard) {
     // Get the reference to the input device
     CBaseDevice *inputDevice = CDeviceFactory::Instance()->GetDevice(_inputChannel->GetDeviceNo());
 
-    if (inputDevice == NULL) {
+    if (inputDevice == nullptr) {
         LOGERROR(1, "ProcessPacket() - Cannot get the input device.\n");
         return false;
     }
 
     // Get the format descriptor and number
     CBaseFormatDescriptor *formatDescriptor = _inputChannel->GetFormatDescriptor();
-    if (formatDescriptor == NULL) {
+    if (formatDescriptor == nullptr) {
         LOGERROR(1, "ProcessPacket() - Cannot get the format descriptor.\n");
         return false;
     }
@@ -332,7 +332,7 @@ bool CChannelFactory::ProcessPacket(bool &discard) {
 bool CChannelFactory::HeartbeatProcessing(const unsigned int outputChannel) {
     ASSERT(_formatEngine);
 
-    if (_outputChannel[outputChannel] == NULL) {
+    if (_outputChannel[outputChannel] == nullptr) {
         LOGERROR(1, "HeartbeatProcessing() - Output device not installed.\n");
         return false;
     }
@@ -344,7 +344,7 @@ bool CChannelFactory::HeartbeatProcessing(const unsigned int outputChannel) {
     }
 
     // Get current time and calculate if heartbeat interval expired
-    time_t currentTime = time(NULL);
+    time_t currentTime = time(nullptr);
     time_t lastHeartbeatTime = _outputChannel[outputChannel]->GetLastHeartbeatTime();
     if (currentTime < 0) {
         LOGERROR(1, "HeartbeatProcessing() - Cannot get the current time with system call time().\n");
@@ -366,14 +366,14 @@ bool CChannelFactory::HeartbeatProcessing(const unsigned int outputChannel) {
     CBaseDevice *outputDevice =
             CDeviceFactory::Instance()->GetDevice(_outputChannel[outputChannel]->GetDeviceNo());
 
-    if (outputDevice == NULL) {
+    if (outputDevice == nullptr) {
         LOGERROR(1, "HeartbeatProcessing() - Cannot get the input device.\n");
         return false;
     }
 
     // Get the format descriptor and number
     CBaseFormatDescriptor *formatDescriptor = _outputChannel[outputChannel]->GetFormatDescriptor();
-    if (formatDescriptor == NULL) {
+    if (formatDescriptor == nullptr) {
         LOGERROR(1, "HeartbeatProcessing() - Cannot get the format descriptor.\n");
         return false;
     }
@@ -395,7 +395,7 @@ int CChannelFactory::GetStatus(int query) {
     // Get the reference to the input device
     CBaseDevice *inputDevice = CDeviceFactory::Instance()->GetDevice(_inputChannel->GetDeviceNo());
 
-    if (inputDevice == NULL) {
+    if (inputDevice == nullptr) {
         LOGERROR(1, "GetStatus() - Cannot get the input device.\n");
         return false;
     }
@@ -411,7 +411,7 @@ int CChannelFactory::GetStatus(int query) {
         // Get the reference to the active output device
         CBaseDevice *outputDevice = CDeviceFactory::Instance()->GetDevice(_outputChannel[_activeFailoverOutputChannel]->GetDeviceNo());
 
-        if (outputDevice == NULL)
+        if (outputDevice == nullptr)
         {
             LOGERROR(1, "GetStatus() - Cannot get the active failover output device.\n");
             return false;
@@ -461,13 +461,13 @@ bool CChannelFactory::IsFailoverOutputChannel(const unsigned int ch) {
 bool CChannelFactory::ResetInputChannel() {
     ASSERT(_formatEngine);
 
-    if (_inputChannel == NULL) {
+    if (_inputChannel == nullptr) {
         LOGERROR(1, "ResetInputChannel() - Input device not installed.\n");
         return false;
     }
 
     CBaseFormatDescriptor *formatDescriptor = _inputChannel->GetFormatDescriptor();
-    if (formatDescriptor == NULL) {
+    if (formatDescriptor == nullptr) {
         LOGERROR(1, "ResetInputChannel() - Cannot get the format descriptor.\n");
         return false;
     }
@@ -482,13 +482,13 @@ bool CChannelFactory::ResetInputChannel() {
 bool CChannelFactory::ResetOutputChannel(const unsigned int outputChannel) {
     // Get the reference to the output device
 
-    if (_outputChannel[outputChannel] == NULL) {
+    if (_outputChannel[outputChannel] == nullptr) {
         LOGERROR(1, "ResetOutputChannel() - Output device not installed.\n");
         return false;
     }
 
     CBaseFormatDescriptor *formatDescriptor = _outputChannel[outputChannel]->GetFormatDescriptor();
-    if (formatDescriptor == NULL) {
+    if (formatDescriptor == nullptr) {
         LOGERROR(1, "ResetOutputChannel() - Cannot get the format descriptor.\n");
         return false;
     }
@@ -501,11 +501,11 @@ bool CChannelFactory::ResetOutputChannel(const unsigned int outputChannel) {
 
 
 bool CChannelFactory::IoCtrl(const int channel, const unsigned int command, const void *data, size_t len) {
-    CBaseDevice *pDev = NULL;
+    CBaseDevice *pDev = nullptr;
 
     if (channel == -1) {
         // input channel
-        if (_inputChannel == NULL) {
+        if (_inputChannel == nullptr) {
             LOGERROR(1, "IoCtrl() - Input device not installed.\n");
             return false;
         }
@@ -513,7 +513,7 @@ bool CChannelFactory::IoCtrl(const int channel, const unsigned int command, cons
         pDev = CDeviceFactory::Instance()->GetDevice(_inputChannel->GetDeviceNo());
     } else {
         // output channel
-        if (_outputChannel[channel] == NULL) {
+        if (_outputChannel[channel] == nullptr) {
             LOGERROR(1, "IoCtrl() - Output device not installed.\n");
             return false;
         }
@@ -521,7 +521,7 @@ bool CChannelFactory::IoCtrl(const int channel, const unsigned int command, cons
         pDev = CDeviceFactory::Instance()->GetDevice(_outputChannel[channel]->GetDeviceNo());
     }
 
-    if (pDev == NULL) {
+    if (pDev == nullptr) {
         LOGERROR(1, "IoCtrl() - Cannot get the device.\n");
         return false;
     }

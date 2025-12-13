@@ -104,10 +104,10 @@ AsterixParseResult* asterix_parse_with_offset(
 /**
  * Get description for ASTERIX category/item/field
  * @param category ASTERIX category (1-255)
- * @param item Item ID (e.g., "I010") or NULL
- * @param field Field name or NULL
- * @param value Field value or NULL
- * @return Description string (caller must free) or NULL
+ * @param item Item ID (e.g., "I010") or nullptr
+ * @param field Field name or nullptr
+ * @param value Field value or nullptr
+ * @return Description string (caller must free) or nullptr
  */
 char* asterix_describe(int category, const char* item, const char* field, const char* value);
 
@@ -138,7 +138,7 @@ const char* asterix_version(void);
 
 /**
  * Get last error message
- * @return Error message (do not free) or NULL
+ * @return Error message (do not free) or nullptr
  */
 const char* asterix_get_last_error(void);
 

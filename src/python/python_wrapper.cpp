@@ -26,12 +26,12 @@
 
 static int bInitialized = 0;
 
-//static python_definitions* pListOfDefinitions = NULL;
+//static python_definitions* pListOfDefinitions = nullptr;
 
 //static python_data* getList(python_data* p, PyObject* head);
 
 static char *ini_filename;
-PyObject *my_callback = NULL;
+PyObject *my_callback = nullptr;
 
 // Safety limits for FFI boundary validation
 #define MAX_ASTERIX_MESSAGE_SIZE (65536)  // 64 KB - reasonable max for ASTERIX message
@@ -42,7 +42,7 @@ say_hello(PyObject *self, PyObject *args, PyObject *kwargs) {
     const char *name;
 
     if (!PyArg_ParseTuple(args, "s", &name))
-        return NULL;
+        return nullptr;
 
     /* Time to call the callback */
     PyObject *arglist;
@@ -50,8 +50,8 @@ say_hello(PyObject *self, PyObject *args, PyObject *kwargs) {
     arglist = Py_BuildValue("(s)", "Hello world!!!");
     result = PyObject_CallObject(my_callback, arglist);
     Py_DECREF(arglist);
-    if (result == NULL)
-        return NULL; /* Pass error back */
+    if (result == nullptr)
+        return nullptr; /* Pass error back */
     /// use result...
     Py_DECREF(result);
 
@@ -62,13 +62,13 @@ PyObject *
 init(PyObject *self, PyObject *args, PyObject *kwargs) {
     if (!PyArg_ParseTuple(args, "s", &ini_filename)) {
         PyErr_SetString(PyExc_ValueError, "Parameter must be string containing path to XML configuration file");
-        return NULL;
+        return nullptr;
     }
 
     // MEDIUM-004 FIX: Validate filename parameter
-    if (ini_filename == NULL || strlen(ini_filename) == 0) {
+    if (ini_filename == nullptr || strlen(ini_filename) == 0) {
         PyErr_SetString(PyExc_ValueError, "Filename cannot be empty");
-        return NULL;
+        return nullptr;
     }
 
     // MEDIUM-004 FIX: Check for path traversal attacks (Windows + Unix)
@@ -81,14 +81,14 @@ init(PyObject *self, PyObject *args, PyObject *kwargs) {
         strcmp(ini_filename, "..") == 0) {
         PyErr_SetString(PyExc_ValueError,
             "Invalid filename: path traversal detected (..)");
-        return NULL;
+        return nullptr;
     }
 
     // MEDIUM-004 FIX: Validate filename length
     if (strlen(ini_filename) > 4096) {
         PyErr_SetString(PyExc_ValueError,
             "Filename too long (maximum 4096 characters)");
-        return NULL;
+        return nullptr;
     }
 
     int ret = python_init(ini_filename);
@@ -97,32 +97,32 @@ init(PyObject *self, PyObject *args, PyObject *kwargs) {
         return Py_BuildValue("i", 0);
     }
 
-    // Return NULL to let python_init's error propagate (IOError or SyntaxError)
+    // Return nullptr to let python_init's error propagate (IOError or SyntaxError)
     // Do not override with RuntimeError
-    return NULL;
+    return nullptr;
 }
 
 
 PyObject *
 describe(PyObject *self, PyObject *args, PyObject *kwargs) {
     int category;
-    const char *item = NULL;
-    const char *field = NULL;
-    const char *value = NULL;
+    const char *item = nullptr;
+    const char *field = nullptr;
+    const char *value = nullptr;
 
     Py_ssize_t TupleSize = PyTuple_Size(args);
     if (TupleSize == 1) {
         if (!PyArg_ParseTuple(args, "i", &category))
-            return NULL;
+            return nullptr;
     } else if (TupleSize == 2) {
         if (!PyArg_ParseTuple(args, "is", &category, &item))
-            return NULL;
+            return nullptr;
     } else if (TupleSize == 3) {
         if (!PyArg_ParseTuple(args, "iss", &category, &item, &field))
-            return NULL;
+            return nullptr;
     } else {
         if (!PyArg_ParseTuple(args, "isss", &category, &item, &field, &value))
-            return NULL;
+            return nullptr;
     }
 
     // MEDIUM-003 FIX: Validate category is within valid ASTERIX range
@@ -130,7 +130,7 @@ describe(PyObject *self, PyObject *args, PyObject *kwargs) {
         PyErr_Format(PyExc_ValueError,
             "Invalid ASTERIX category: %d (valid range: 1-255)",
             category);
-        return NULL;
+        return nullptr;
     }
 
     return python_describe(category, item, field, value);
@@ -142,42 +142,42 @@ parse(PyObject *self, PyObject *args, PyObject *kwargs) {
 /*
 	const char* filename;
 	if (!PyArg_ParseTuple(args, "s", &filename))
-	        return NULL;
+	        return nullptr;
 
 	asterix_start(ini_filename, filename);
-	return NULL;
+	return nullptr;
 */
     const char *data;
     Py_ssize_t len;
     int verbose;
 
     if (!PyArg_ParseTuple(args, "s#i", &data, &len, &verbose))
-        return NULL;
+        return nullptr;
 
     // CRITICAL-003 FIX: Validate buffer length
     if (len <= 0) {
         PyErr_SetString(PyExc_ValueError, "Empty input data");
-        return NULL;
+        return nullptr;
     }
 
     if (len > MAX_ASTERIX_MESSAGE_SIZE) {
         PyErr_Format(PyExc_ValueError,
             "Input data too large: %zd bytes (maximum %d bytes)",
             len, MAX_ASTERIX_MESSAGE_SIZE);
-        return NULL;
+        return nullptr;
     }
 
     // HIGH-001 FIX: Use PyErr_SetString instead of printf
     if (!bInitialized) {
         PyErr_SetString(PyExc_RuntimeError,
             "ASTERIX parser not initialized. Call init() first.");
-        return NULL;
+        return nullptr;
     }
 
     PyObject *lstBlocks = python_parse((const unsigned char *) data, len, verbose);
     if (PyErr_Occurred())
-        return NULL;
-    if (lstBlocks == NULL)
+        return nullptr;
+    if (lstBlocks == nullptr)
         return PyList_New(0);
     return lstBlocks;
 }
@@ -196,19 +196,19 @@ parse_with_offset(PyObject *self, PyObject *args, PyObject *kwargs)
     int verbose;
 
     if (!PyArg_ParseTuple(args, "s#IIi", &data, &len, &offset, &blocks_count, &verbose))
-        return NULL;
+        return nullptr;
 
     // CRITICAL-003 FIX: Validate buffer length (same as parse())
     if (len <= 0) {
         PyErr_SetString(PyExc_ValueError, "Empty input data");
-        return NULL;
+        return nullptr;
     }
 
     if (len > MAX_ASTERIX_MESSAGE_SIZE) {
         PyErr_Format(PyExc_ValueError,
             "Input data too large: %zd bytes (maximum %d bytes)",
             len, MAX_ASTERIX_MESSAGE_SIZE);
-        return NULL;
+        return nullptr;
     }
 
     // CRITICAL-001 FIX: Validate offset is within bounds
@@ -216,7 +216,7 @@ parse_with_offset(PyObject *self, PyObject *args, PyObject *kwargs)
         PyErr_Format(PyExc_ValueError,
             "Offset %u exceeds data length %zd",
             offset, len);
-        return NULL;
+        return nullptr;
     }
 
     // HIGH-002 FIX: Validate blocks_count is reasonable
@@ -224,7 +224,7 @@ parse_with_offset(PyObject *self, PyObject *args, PyObject *kwargs)
         PyErr_Format(PyExc_ValueError,
             "blocks_count %u exceeds maximum (%d)",
             blocks_count, MAX_BLOCKS_PER_CALL);
-        return NULL;
+        return nullptr;
     }
 
     // CRITICAL-002 FIX: Prevent integer overflow in offset arithmetic
@@ -236,7 +236,7 @@ parse_with_offset(PyObject *self, PyObject *args, PyObject *kwargs)
         if (estimated_end > (unsigned long long)UINT_MAX) {
             PyErr_SetString(PyExc_ValueError,
                 "Offset + blocks_count range would cause integer overflow");
-            return NULL;
+            return nullptr;
         }
     }
 
@@ -244,13 +244,13 @@ parse_with_offset(PyObject *self, PyObject *args, PyObject *kwargs)
     if (!bInitialized) {
         PyErr_SetString(PyExc_RuntimeError,
             "ASTERIX parser not initialized. Call init() first.");
-        return NULL;
+        return nullptr;
     }
 
     PyObject *py_output = python_parse_with_offset((const unsigned char *) data, len, offset, blocks_count, verbose);
     if (PyErr_Occurred())
-        return NULL;
-    if (py_output == NULL) {
+        return nullptr;
+    if (py_output == nullptr) {
         PyObject *empty_list = PyList_New(0);
         PyObject *offset_value = Py_BuildValue("l", offset);
         return PyTuple_Pack(2, empty_list, offset_value);
@@ -261,13 +261,13 @@ parse_with_offset(PyObject *self, PyObject *args, PyObject *kwargs)
 
 PyObject *
 set_callback(PyObject *self, PyObject *args) {
-    PyObject *result = NULL;
+    PyObject *result = nullptr;
     PyObject *temp;
 
     if (PyArg_ParseTuple(args, "O:set_callback", &temp)) {
         if (!PyCallable_Check(temp)) {
             PyErr_SetString(PyExc_TypeError, "parameter must be callable");
-            return NULL;
+            return nullptr;
         }
         Py_XINCREF(temp);         /* Add a reference to new callback */
         Py_XDECREF(my_callback);  /* Dispose of previous callback */

@@ -328,7 +328,7 @@ int main(int argc, const char *argv[]) {
 
     // check for definitions file
     FILE *tmp = fopen(gAsterixDefinitionsFile, "r");
-    if (tmp == NULL) {
+    if (tmp == nullptr) {
         std::cerr << "Error: Asterix definitions file " + strDefinitions + " not found." << std::endl;
         exit(2);
     }
@@ -403,7 +403,7 @@ int main(int argc, const char *argv[]) {
     // Create output string
     std::string strOutput = "std 0 " + strOutputFormat;
 
-    const char *inputChannel = NULL;
+    const char *inputChannel = nullptr;
     const char *outputChannel[CChannelFactory::MAX_OUTPUT_CHANNELS];
     unsigned int chFailover = 0;
     unsigned int nOutput = 1; // Total number of output channels
@@ -425,13 +425,13 @@ int main(int argc, const char *argv[]) {
     if (CConverterEngine::Instance()->Initialize(inputChannel, outputChannel, nOutput, chFailover)) {
         if (strFilterFile.empty() == false) { // read filter file and configure items
             CBaseFormatDescriptor *desc = CChannelFactory::Instance()->GetInputChannel()->GetFormatDescriptor();
-            if (desc == NULL) {
+            if (desc == nullptr) {
                 std::cerr << "Error: Format description not found." << std::endl;
                 exit(2);
             }
 
             FILE *ff = fopen(strFilterFile.c_str(), "r");
-            if (ff == NULL) {
+            if (ff == nullptr) {
                 std::cerr << "Error: Filter file " + strFilterFile + " not found." << std::endl;
                 exit(2);
             }
@@ -481,7 +481,7 @@ int main(int argc, const char *argv[]) {
 
         if (bListDefinitions) { // Parse definitions file and print all items
             CBaseFormatDescriptor *desc = CChannelFactory::Instance()->GetInputChannel()->GetFormatDescriptor();
-            if (desc == NULL) {
+            if (desc == nullptr) {
                 std::cerr << "Error: Format description not found." << std::endl;
                 exit(2);
             }

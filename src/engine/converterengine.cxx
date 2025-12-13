@@ -47,7 +47,7 @@ bool CConverterEngine::Initialize(const char *inputChannel, const char *outputCh
     LOGDEBUG(1, "inputFormatDescriptor(%s)", inputFormatDescriptor);
 
     // Check input channel parameters consistency
-    if ((inputDevice == NULL) || (inputDeviceDescriptor == NULL) || (inputFormat == NULL)) {
+    if ((inputDevice == nullptr) || (inputDeviceDescriptor == nullptr) || (inputFormat == nullptr)) {
         LOGERROR(1, "Input channel descriptor must be in the following format: \n\""
                     "<device> <device_descriptor> <format> [format_descriptor]\"\n");
         return false;
@@ -75,7 +75,7 @@ bool CConverterEngine::Initialize(const char *inputChannel, const char *outputCh
         const char *outputHeartbeat = outputDescriptor.GetNext();
 
         // Check output channel parameters consistency
-        if ((outputDevice == NULL) || (outputDeviceDescriptor == NULL) || (outputFormat == NULL)) {
+        if ((outputDevice == nullptr) || (outputDeviceDescriptor == nullptr) || (outputFormat == nullptr)) {
             LOGERROR(1, "Output channel descriptor must be in the following format: \n\""
                         "<device> <device_descriptor> <format> [format_descriptor] [heartbeat]\"\n");
             return false;

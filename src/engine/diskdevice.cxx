@@ -92,18 +92,18 @@ CDiskDevice::CDiskDevice(CDescriptor &descriptor)
     _delayOpen = true;
 
     // Path argument
-    if (spath == NULL) {
+    if (spath == nullptr) {
         LOGERROR(1, "Path not specified\n");
     }
 
     // Input delay, for testing: specifies the delay between consequent Read() or Write() operations
-    if ((inputDelay != NULL) && (strlen(inputDelay) > 0)) {
+    if ((inputDelay != nullptr) && (strlen(inputDelay) > 0)) {
         _inputDelay = atoi(inputDelay);
         _input = true;
     }
 
     // specifies the mode of operation on files, directories or groups of files
-    if ((smode != NULL) && (strlen(smode) > 0)) {
+    if ((smode != nullptr) && (strlen(smode) > 0)) {
         _mode = atoi(smode);
     }
 
@@ -172,7 +172,7 @@ bool CDiskDevice::Write(const void *data, size_t len) {
         return false;
     }
 
-    if (_fileStream == NULL) {
+    if (_fileStream == nullptr) {
         if (_delayOpen) {
             if (!OpenOutputFile(_fileName, true)) {
                 LOGERROR(1, "Cannot write: opening of file '%s' failed.\n", _fileName);
@@ -231,7 +231,7 @@ bool CDiskDevice::Select(const unsigned int secondsToWait) {
             }
 
             // wait...
-            select(0, NULL, NULL, NULL, &tv);
+            select(0, nullptr, nullptr, nullptr, &tv);
 
             timeElapsed += tv.tv_sec + (tv.tv_usec / 1000000.0);
 
@@ -255,7 +255,7 @@ bool CDiskDevice::Select(const unsigned int secondsToWait) {
     // This is only dummy select to simulate delay between reading/writing messages from/to file
     tv.tv_sec = (_inputDelay * 1000) / 1000000;
     tv.tv_usec = (_inputDelay * 1000) % 1000000;
-    select(0, NULL, NULL, NULL, &tv);
+    select(0, nullptr, nullptr, nullptr, &tv);
 //    sleep(_inputDelay);
 
     if (_input && _opened) {
@@ -270,7 +270,7 @@ bool CDiskDevice::Select(const unsigned int secondsToWait) {
 
 bool CDiskDevice::Init(const char *path) {
     _opened = false;
-    _fileStream = NULL;
+    _fileStream = nullptr;
     ResetAllErrors();
 
     char *fname = (char *) path;
@@ -287,7 +287,7 @@ bool CDiskDevice::Init(const char *path) {
 /*
         if( _mode & DD_MODE_TEMPNAME )
         {
-            if( (_tempName == NULL) || (strlen(_tempName) == 0) )
+            if( (_tempName == nullptr) || (strlen(_tempName) == 0) )
             {
                 strncpy(_tempName, fname, MAXPATHLEN); // store actual name in _tempName
                 _tempName[MAXPATHLEN] = '\0'; // Ensure null termination
@@ -297,7 +297,7 @@ bool CDiskDevice::Init(const char *path) {
                 // Security fix: Use strncat to prevent buffer overflow
                 strncat(tn, ".tmp.XXXXXX", 10);
                 fname = mktemp(tn);
-                if((fname == NULL) || (strlen(fname) == 0))
+                if((fname == nullptr) || (strlen(fname) == 0))
                 {
                     LOGERROR(1, "Cannot initialize temporary file name.\n");
                     return false;
@@ -309,7 +309,7 @@ bool CDiskDevice::Init(const char *path) {
         _opened = OpenOutputFile(fname);
     }
 
-    if (_fileStream == NULL) {
+    if (_fileStream == nullptr) {
         // special case when DD_MODE_WAITFILE is set and we're waiting for a file to appear
         // in this case we never fail here
         if (_input && (_mode & DD_MODE_WAITFILE)) {
@@ -332,7 +332,7 @@ bool CDiskDevice::Init(const char *path) {
     }
 
     if (_input)
-        _opened = (_fileStream != NULL);
+        _opened = (_fileStream != nullptr);
 
     LOGDEBUG((_input && ZONE_DISKDEVICE), "Opened input file '%s'\n", _fileName);
 
@@ -344,8 +344,8 @@ bool CDiskDevice::OpenOutputFile(const char *path, bool openNow) {
     char *fname = (char *) path;
 
     ASSERT(!_input);
-    ASSERT(_fileStream == NULL);
-    ASSERT(fname != NULL);
+    ASSERT(_fileStream == nullptr);
+    ASSERT(fname != nullptr);
 
     // initialize first file name for packeted files
     if (_mode & DD_MODE_PACKETFILE) {
@@ -359,7 +359,7 @@ bool CDiskDevice::OpenOutputFile(const char *path, bool openNow) {
     if (openNow || (!_delayOpen)) {
         // open the file
         _fileStream = fopen(fname, (_mode & DD_MODE_WRITENEW) ? "w" : "a");
-        if (_fileStream == NULL) {
+        if (_fileStream == nullptr) {
             LOGERROR(1, "Cannot open file '%s'\n", fname);
             return false;
         } else {
@@ -418,7 +418,7 @@ bool CDiskDevice::DoneWithFile(bool allDone) {
             // Security fix: Use snprintf to prevent buffer overflow
             snprintf(sfxFormat, sizeof(sfxFormat), sfxBase, (int) getpid());
 
-            time_t t = time(NULL);
+            time_t t = time(nullptr);
             struct tm tmBuf;
             struct tm *stm;
 #ifdef _WIN32
@@ -527,11 +527,11 @@ char *CDiskDevice::NextFileName() {
 
 
 void CDiskDevice::Close() {
-    if (_fileStream != NULL) {
+    if (_fileStream != nullptr) {
         ASSERT(_opened);
         fflush(_fileStream);
         fclose(_fileStream);
-        _fileStream = NULL;
+        _fileStream = nullptr;
 /*
         if(_mode & DD_MODE_TEMPNAME)
         {
@@ -619,7 +619,7 @@ bool CDiskDevice::IoCtrl(const unsigned int command, const void *data, size_t le
             ResetAllErrors();
             break;
         case EPacketDone:
-            if ((data != NULL) && (len == sizeof(unsigned int)))
+            if ((data != nullptr) && (len == sizeof(unsigned int)))
                 _seqNo = *(unsigned int *) data;
 
             if ((!_input) && (_mode & DD_MODE_PACKETFILE))

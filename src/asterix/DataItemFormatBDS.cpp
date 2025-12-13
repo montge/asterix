@@ -91,7 +91,7 @@ std::string DataItemFormatBDS::printDescriptors(std::string header) {
     std::list<DataItemFormat *>::iterator it = m_lSubItems.begin();
     while (it != m_lSubItems.end()) {
         DataItemFormatFixed *pFixed = (DataItemFormatFixed *) (*it);
-        if (pFixed == NULL) {
+        if (pFixed == nullptr) {
             Tracer::Error("Wrong data in BDS");
         } else {
             std::string bds_header = format("%sBDS%x:", header.c_str(), pFixed->m_nID);
@@ -123,8 +123,8 @@ bool DataItemFormatBDS::filterOutItem(const char *name) {
 }
 
 bool DataItemFormatBDS::isFiltered(const char *name) {// TODO
-    DataItemFormatFixed *pFixed = m_lSubItems.size() ? (DataItemFormatFixed *) m_lSubItems.front() : NULL;
-    if (pFixed == NULL) {
+    DataItemFormatFixed *pFixed = m_lSubItems.size() ? (DataItemFormatFixed *) m_lSubItems.front() : nullptr;
+    if (pFixed == nullptr) {
         Tracer::Error("Wrong data in BDS");
         return false;
     }
@@ -132,43 +132,43 @@ bool DataItemFormatBDS::isFiltered(const char *name) {// TODO
     return pFixed->isFiltered(name);
 }
 
-const char *DataItemFormatBDS::getDescription(const char *field, const char *value = NULL) {
+const char *DataItemFormatBDS::getDescription(const char *field, const char *value = nullptr) {
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
         DataItemBits *bv = (DataItemBits *) (*it);
         const char *desc = bv->getDescription(field, value);
-        if (desc != NULL)
+        if (desc != nullptr)
             return desc;
     }
-    return NULL;
+    return nullptr;
 }
 
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_definitions* DataItemFormatBDS::getWiresharkDefinitions()
 {// TODO
-    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : NULL;
+    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : nullptr;
     if (!pFixed)
     {
         Tracer::Error("Wrong format of BDS item");
-        return NULL;
+        return nullptr;
     }
     return pFixed->getWiresharkDefinitions();
 }
 
 fulliautomatix_data* DataItemFormatBDS::getData(unsigned char* pData, long len, int byteoffset)
 {// TODO
-    fulliautomatix_data *lastData = NULL, *firstData = NULL;
-    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : NULL;
+    fulliautomatix_data *lastData = nullptr, *firstData = nullptr;
+    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : nullptr;
     if (!pFixed)
     {
         Tracer::Error("Wrong format of BDS item");
-        return NULL;
+        return nullptr;
     }
 
     int fixedLength = pFixed->getLength(pData);
     unsigned char nRepetition = *pData;
 
-    firstData = lastData = newDataUL(NULL, PID_REP, byteoffset, 1, nRepetition);
+    firstData = lastData = newDataUL(nullptr, PID_REP, byteoffset, 1, nRepetition);
     byteoffset+=1;
 
     if (1+nRepetition*fixedLength != len)

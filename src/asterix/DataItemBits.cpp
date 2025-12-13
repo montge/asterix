@@ -849,7 +849,7 @@ bool DataItemBits::filterOutItem(const char *name) {
     return false;
 }
 
-const char *DataItemBits::getDescription(const char *field, const char *value = NULL) {
+const char *DataItemBits::getDescription(const char *field, const char *value = nullptr) {
     if (m_strName.empty() && !m_strShortName.empty())
         m_strName = m_strShortName;
     else if (!m_strName.empty() && m_strShortName.empty())
@@ -857,7 +857,7 @@ const char *DataItemBits::getDescription(const char *field, const char *value = 
 
 
     if (m_strShortName.compare(field) == 0) {
-        if (value == NULL) {
+        if (value == nullptr) {
             return m_strName.c_str();
         } else {
             int val = atoi(value);
@@ -871,7 +871,7 @@ const char *DataItemBits::getDescription(const char *field, const char *value = 
             }
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
@@ -896,18 +896,18 @@ strAbbrev = "asterix." + strAbbrev;
 
 def->abbrev = strdup(strAbbrev.c_str());
 
-def->strings = NULL;
+def->strings = nullptr;
 
 if (m_lValue.size() > 0)
 {
 def->strings = (fulliautomatix_value_string*)malloc((1+m_lValue.size()) * sizeof(fulliautomatix_value_string));
 // Security fix: Check malloc return value to prevent null pointer dereference
-if (def->strings == NULL) {
+if (def->strings == nullptr) {
     return def;
 }
 
 std::list<BitsValue*>::iterator it;
-BitsValue* bv = NULL;
+BitsValue* bv = nullptr;
 int i=0;
 for ( it=m_lValue.begin() ; it != m_lValue.end(); it++ )
 {
@@ -917,7 +917,7 @@ for ( it=m_lValue.begin() ; it != m_lValue.end(); it++ )
     i++;
 }
 def->strings[i].value = 0;
-def->strings[i].strptr = NULL;
+def->strings[i].strptr = nullptr;
 }
 
 if (m_nFrom > m_nTo)
@@ -1088,7 +1088,7 @@ fulliautomatix_data* DataItemBits::createWiresharkUnsignedData(unsigned char* pD
         value64 <<= ((m_nFrom - 1) % (numberOfBytes * 8));
     }
 
-    fulliautomatix_data* pOutData = newDataUL(NULL, getPID(), byteoffset + firstByte, numberOfBytes, value);
+    fulliautomatix_data* pOutData = newDataUL(nullptr, getPID(), byteoffset + firstByte, numberOfBytes, value);
 
     if (m_dScale != 0 || m_bIsConst) {
         double scaled = value64 * m_dScale;
@@ -1110,7 +1110,7 @@ fulliautomatix_data* DataItemBits::createWiresharkSignedData(unsigned char* pDat
                                                              int byteoffset, int firstByte,
                                                              int numberOfBytes) {
     signed long value = getSigned(pData, nLength, m_nFrom, m_nTo);
-    fulliautomatix_data* pOutData = newDataSL(NULL, getPID(), byteoffset + firstByte, numberOfBytes, value);
+    fulliautomatix_data* pOutData = newDataSL(nullptr, getPID(), byteoffset + firstByte, numberOfBytes, value);
 
     if (m_dScale != 0) {
         double scaled = value * m_dScale;
@@ -1150,7 +1150,7 @@ fulliautomatix_data* DataItemBits::createWiresharkStringData(_eEncoding encoding
             return nullptr;
     }
 
-    fulliautomatix_data* data = newDataString(NULL, getPID(), byteoffset + firstByte, numberOfBytes, str);
+    fulliautomatix_data* data = newDataString(nullptr, getPID(), byteoffset + firstByte, numberOfBytes, str);
     delete[] str;
     return data;
 }
@@ -1197,7 +1197,7 @@ fulliautomatix_data* DataItemBits::getData(unsigned char* pData, long nLength, i
     }
 
     // Error case - unknown encoding
-    return newDataMessage(NULL, byteoffset + firstByte, numberOfBytes, 2,
+    return newDataMessage(nullptr, byteoffset + firstByte, numberOfBytes, 2,
                           (char*)"Error: Unknown encoding.");
 }
 #endif

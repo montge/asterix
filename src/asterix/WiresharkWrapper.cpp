@@ -34,7 +34,7 @@
 #include "InputParser.h"
 
 
-static AsterixDefinition* pDefinition = NULL;
+static AsterixDefinition* pDefinition = nullptr;
 // These globals are defined in globals.cpp - use extern here
 extern bool gFiltering;
 extern bool gSynchronous;
@@ -113,8 +113,8 @@ static fulliautomatix_definitions* newDefinition(fulliautomatix_definitions* pre
 {
   fulliautomatix_definitions* newdef = (fulliautomatix_definitions*)malloc(sizeof(fulliautomatix_definitions));
   // Security fix: Check malloc return value to prevent null pointer dereference
-  if (newdef == NULL) {
-    return NULL;
+  if (newdef == nullptr) {
+    return nullptr;
   }
   memset(newdef,0,sizeof(fulliautomatix_definitions));
 
@@ -133,14 +133,14 @@ static fulliautomatix_definitions* newDefinition(fulliautomatix_definitions* pre
 
 fulliautomatix_definitions* fulliautomatix_get_definitions()
 {
-  fulliautomatix_definitions* first_def = NULL;
-  fulliautomatix_definitions* def = NULL;
+  fulliautomatix_definitions* first_def = nullptr;
+  fulliautomatix_definitions* def = nullptr;
 
-  first_def = def = newDefinition(NULL, PID_CATEGORY, (char*)"Category       ",(char*)"asterix.category", FA_FT_UINT32, FA_BASE_DEC, NULL, 0, (char*)"category");
-  def = newDefinition(def, PID_LENGTH, (char*)"Payload length ", (char*)"asterix.payload_len", FA_FT_UINT32, FA_BASE_DEC, NULL, 0, (char*)"Payload length");
-  def = newDefinition(def, PID_FSPEC, (char*)"FSPEC ", (char*)"asterix.fspec", FA_FT_BYTES, FA_FT_NONE, NULL, 0, (char*)"FSPEC");
-  def = newDefinition(def, PID_REP, (char*)"Repetition factor ", (char*)"asterix.rep", FA_FT_UINT32, FA_BASE_DEC, NULL, 0, (char*)"REP");
-  def = newDefinition(def, PID_LEN, (char*)"Data Item Length ", (char*)"asterix.len", FA_FT_UINT32, FA_BASE_DEC, NULL, 0, (char*)"LEN");
+  first_def = def = newDefinition(nullptr, PID_CATEGORY, (char*)"Category       ",(char*)"asterix.category", FA_FT_UINT32, FA_BASE_DEC, nullptr, 0, (char*)"category");
+  def = newDefinition(def, PID_LENGTH, (char*)"Payload length ", (char*)"asterix.payload_len", FA_FT_UINT32, FA_BASE_DEC, nullptr, 0, (char*)"Payload length");
+  def = newDefinition(def, PID_FSPEC, (char*)"FSPEC ", (char*)"asterix.fspec", FA_FT_BYTES, FA_FT_NONE, nullptr, 0, (char*)"FSPEC");
+  def = newDefinition(def, PID_REP, (char*)"Repetition factor ", (char*)"asterix.rep", FA_FT_UINT32, FA_BASE_DEC, nullptr, 0, (char*)"REP");
+  def = newDefinition(def, PID_LEN, (char*)"Data Item Length ", (char*)"asterix.len", FA_FT_UINT32, FA_BASE_DEC, nullptr, 0, (char*)"LEN");
 
   for (int i=0; i<MAX_CATEGORIES; i++)
   {
@@ -187,8 +187,8 @@ fulliautomatix_data* newDataString(fulliautomatix_data* prev, int pid, int byten
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
   // Security fix: Check malloc return value to prevent null pointer dereference
-  if (newdata == NULL) {
-    return NULL;
+  if (newdata == nullptr) {
+    return nullptr;
   }
   memset(newdata,0,sizeof(fulliautomatix_data));
 
@@ -209,8 +209,8 @@ fulliautomatix_data* newDataMessage(fulliautomatix_data* prev, int bytenr, int l
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
   // Security fix: Check malloc return value to prevent null pointer dereference
-  if (newdata == NULL) {
-    return NULL;
+  if (newdata == nullptr) {
+    return nullptr;
   }
   memset(newdata,0,sizeof(fulliautomatix_data));
 
@@ -230,8 +230,8 @@ fulliautomatix_data* newDataBytes(fulliautomatix_data* prev, int pid, int bytenr
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
   // Security fix: Check malloc return value to prevent null pointer dereference
-  if (newdata == NULL) {
-    return NULL;
+  if (newdata == nullptr) {
+    return nullptr;
   }
   memset(newdata,0,sizeof(fulliautomatix_data));
 
@@ -246,7 +246,7 @@ fulliautomatix_data* newDataBytes(fulliautomatix_data* prev, int pid, int bytenr
   newdata->type = FA_FT_BYTES;
   newdata->val.str = (char*)malloc(length);
   // Security fix: Check malloc return value to prevent null pointer dereference
-  if (newdata->val.str != NULL) {
+  if (newdata->val.str != nullptr) {
     memcpy(newdata->val.str, val, length);
   }
   return newdata;
@@ -256,8 +256,8 @@ fulliautomatix_data* newDataUL(fulliautomatix_data* prev, int pid, int bytenr, i
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
   // Security fix: Check malloc return value to prevent null pointer dereference
-  if (newdata == NULL) {
-    return NULL;
+  if (newdata == nullptr) {
+    return nullptr;
   }
   memset(newdata,0,sizeof(fulliautomatix_data));
 
@@ -278,8 +278,8 @@ fulliautomatix_data* newDataSL(fulliautomatix_data* prev, int pid, int bytenr, i
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
   // Security fix: Check malloc return value to prevent null pointer dereference
-  if (newdata == NULL) {
-    return NULL;
+  if (newdata == nullptr) {
+    return nullptr;
   }
   memset(newdata,0,sizeof(fulliautomatix_data));
 
@@ -300,8 +300,8 @@ fulliautomatix_data* newDataTree(fulliautomatix_data* prev, int bytenr, int leng
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
   // Security fix: Check malloc return value to prevent null pointer dereference
-  if (newdata == NULL) {
-    return NULL;
+  if (newdata == nullptr) {
+    return nullptr;
   }
   memset(newdata,0,sizeof(fulliautomatix_data));
 
@@ -320,8 +320,8 @@ fulliautomatix_data* newDataTreeEnd(fulliautomatix_data* prev, int offset)
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
   // Security fix: Check malloc return value to prevent null pointer dereference
-  if (newdata == NULL) {
-    return NULL;
+  if (newdata == nullptr) {
+    return nullptr;
   }
   memset(newdata,0,sizeof(fulliautomatix_data));
 
@@ -347,7 +347,7 @@ fulliautomatix_data* fulliautomatix_parse(const unsigned char* pBuf, unsigned in
 
     return data;
   }
-  return NULL;
+  return nullptr;
 }
 
 void fulliautomatix_data_destroy(fulliautomatix_data* pData)

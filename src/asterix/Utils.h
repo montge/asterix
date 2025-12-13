@@ -106,7 +106,7 @@ std::string format(const char *fmt, ...);
  * The function supports incremental CRC calculation by accepting a previous CRC value,
  * allowing checksum computation across multiple data chunks without buffering.
  *
- * @param pBuffer Pointer to data buffer to checksum. Must not be NULL if nLength > 0.
+ * @param pBuffer Pointer to data buffer to checksum. Must not be nullptr if nLength > 0.
  * @param nLength Length of data buffer in bytes. Can be 0 (returns inverted nPreviousCrc32).
  * @param nPreviousCrc32 Previous CRC32 value for incremental calculation (default: 0 for new checksum)
  *
@@ -150,7 +150,7 @@ std::string format(const char *fmt, ...);
  * }
  * @endcode
  *
- * @warning pBuffer must be valid if nLength > 0. Passing NULL with non-zero length
+ * @warning pBuffer must be valid if nLength > 0. Passing nullptr with non-zero length
  *          causes undefined behavior (likely segmentation fault).
  * @warning This CRC32 is for integrity checking, NOT cryptographic security.
  *          Do not use for authentication or tamper detection in adversarial contexts.

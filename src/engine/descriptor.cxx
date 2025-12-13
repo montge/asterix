@@ -55,7 +55,7 @@ const char *CDescriptor::GetFirst(const char *empty_chars) {
         return nullptr;
     }
 
-    // Advance the iterator over all NULL characters just before the next item
+    // Advance the iterator over all nullptr characters just before the next item
     // in case multiple delimiters are allowed
     if (_bMultipleDelimiters) {
         while (_iteratorPos < _description.size() && _description[_iteratorPos] == '\0') {
@@ -84,12 +84,12 @@ const char *CDescriptor::GetNext(const char *empty_chars) {
         return nullptr;
     }
 
-    // Advance the iterator till the first NULL character
+    // Advance the iterator till the first nullptr character
     while (_iteratorPos < _description.size() && _description[_iteratorPos] != '\0') {
         _iteratorPos++;
     }
 
-    // Advance the iterator over all NULL characters just before the next item
+    // Advance the iterator over all nullptr characters just before the next item
     // in multiple delimiters mode
     if (_bMultipleDelimiters) {
         while (_iteratorPos < _description.size() && _description[_iteratorPos] == '\0') {
