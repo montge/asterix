@@ -320,6 +320,41 @@ public:
     long getLength(const unsigned char *pData);
 
 private:
+    // Helper methods for getText() to reduce cognitive complexity
+    void appendOpeningTag(std::ostringstream& ss, const unsigned int formatType) const;
+    void appendClosingTag(std::ostringstream& ss, const unsigned int formatType) const;
+    const char* findValueDescription(unsigned long long value, bool& found) const;
+    void formatUnsignedWithMeta(std::ostringstream& ss, unsigned long long value64,
+                                const unsigned int formatType, const std::string& strHeader);
+    void formatSignedWithMeta(std::ostringstream& ss, signed long value,
+                              const unsigned int formatType, const std::string& strHeader);
+    void formatStringEncoding(std::ostringstream& ss, const unsigned char* str,
+                              unsigned char* pData, long nLength,
+                              const unsigned int formatType, const std::string& strHeader);
+
+#if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
+    // Helper methods for getData() (Wireshark) to reduce cognitive complexity
+    char* createWiresharkValueDescription(double scaled, unsigned long long value64);
+    fulliautomatix_data* createWiresharkUnsignedData(unsigned char* pData, long nLength,
+                                                     int byteoffset, int firstByte,
+                                                     int numberOfBits, int numberOfBytes);
+    fulliautomatix_data* createWiresharkSignedData(unsigned char* pData, long nLength,
+                                                   int byteoffset, int firstByte,
+                                                   int numberOfBytes);
+    fulliautomatix_data* createWiresharkStringData(_eEncoding encoding, unsigned char* pData,
+                                                   long nLength, int byteoffset,
+                                                   int firstByte, int numberOfBytes);
+#endif
+
+#if defined(PYTHON_WRAPPER)
+    // Helper methods for insertToDict() (Python) to reduce cognitive complexity
+    void addPyDictItem(PyObject* dict, const char* key, PyObject* value);
+    void insertUnsignedToDict(PyObject* pValue, unsigned long long value64, int verbose);
+    void insertSignedToDict(PyObject* pValue, signed long value, int verbose);
+    void insertStringToDict(PyObject* pValue, _eEncoding encoding,
+                            unsigned char* pData, long nLength);
+#endif
+
     /**
      * @brief Extract raw bits from binary data
      * @param pData Pointer to binary data buffer
