@@ -84,8 +84,8 @@ DataRecord::DataRecord(Category *cat, int nID, unsigned long len, const unsigned
 
     // parse DataItems
     std::list<DataItem *>::iterator it;
-    for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {
-        DataItem *di = (DataItem *) (*it);
+    for (it = m_lDataItems.begin(); it != m_lDataItems.end(); ++it) {
+        auto *di = *it;
 
         if (di->m_pDescription == nullptr || di->m_pDescription->m_pFormat == nullptr) {
             Tracer::Error("DataItem format not defined for CAT%03d/I%s", cat->m_id,
@@ -117,7 +117,7 @@ DataRecord::DataRecord(Category *cat, int nID, unsigned long len, const unsigned
         }
 
         while (it != m_lDataItems.end()) {
-            DataItem *di = (DataItem *) (*it);
+            auto *di = *it;
             delete di;
             it = m_lDataItems.erase(it);
         }
@@ -153,9 +153,9 @@ DataRecord::DataRecord(Category *cat, int nID, unsigned long len, const unsigned
 
 DataRecord::~DataRecord() {
     // go through all present data items in this block
-    std::list<DataItem *>::iterator it = m_lDataItems.begin();
+    auto it = m_lDataItems.begin();
     while (it != m_lDataItems.end()) {
-        delete (DataItem *) (*it);
+        delete *it;
         it = m_lDataItems.erase(it);
     }
 
@@ -201,9 +201,8 @@ bool DataRecord::getText(std::string &strResult, std::string &strHeader, const u
     // go through all present data items in this block
     bool ret = false;
 
-    std::list<DataItem *>::iterator it;
-    for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {
-        DataItem *di = (DataItem *) (*it);
+    for (auto it = m_lDataItems.begin(); it != m_lDataItems.end(); ++it) {
+        auto *di = *it;
         if (di != nullptr) {
             if (di->getText(strNewResult, strHeader, formatType)) {
                 if (!ret) {
@@ -248,9 +247,8 @@ bool DataRecord::getText(std::string &strResult, std::string &strHeader, const u
 
 DataItem *DataRecord::getItem(std::string itemid) {
     // go through all present data items in this block
-    std::list<DataItem *>::iterator it;
-    for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {
-        DataItem *di = (DataItem *) (*it);
+    for (auto it = m_lDataItems.begin(); it != m_lDataItems.end(); ++it) {
+        auto *di = *it;
         if (di && di->m_pDescription && di->m_pDescription->m_strID == itemid) {
             return di;
         }
@@ -277,13 +275,13 @@ fulliautomatix_data* DataRecord::getData(int byteoffset)
   }
   else
   {
-    lastData = newDataTree(lastData, byteoffset, m_nFSPECLength, (char*)"FSPEC");
+    char fspec_label[] = "FSPEC";
+    lastData = newDataTree(lastData, byteoffset, m_nFSPECLength, fspec_label);
 
     // go through all UAPitems items in this record
-    std::list<UAPItem*>::iterator uapit;
-    for ( uapit=pUAP->m_lUAPItems.begin(); uapit != pUAP->m_lUAPItems.end(); uapit++ )
+    for (auto uapit = pUAP->m_lUAPItems.begin(); uapit != pUAP->m_lUAPItems.end(); ++uapit)
     {
-      UAPItem* uap = (UAPItem*)(*uapit);
+      auto *uap = *uapit;
       lastData->next = uap->getData(m_pFSPECData.get(), m_nFSPECLength, byteoffset);
 
       if(lastData->next)
@@ -300,10 +298,9 @@ fulliautomatix_data* DataRecord::getData(int byteoffset)
     lastData = newDataTreeEnd(lastData, byteoffset);
 
     // go through all present data items in this record
-    std::list<DataItem*>::iterator it;
-    for ( it=m_lDataItems.begin() ; it != m_lDataItems.end(); it++ )
+    for (auto it = m_lDataItems.begin(); it != m_lDataItems.end(); ++it)
     {
-      DataItem* di = (DataItem*)(*it);
+      auto *di = *it;
       if (di)
       {
         lastData->next = di->getData(byteoffset);
@@ -371,10 +368,9 @@ PyObject* DataRecord::getData(int verbose)
     if (m_bFormatOK)
     {
         // go through all present data items in this record
-        std::list<DataItem*>::iterator it;
-        for ( it=m_lDataItems.begin() ; it != m_lDataItems.end(); it++ )
+        for (auto it = m_lDataItems.begin(); it != m_lDataItems.end(); ++it)
         {
-            DataItem* di = (DataItem*)(*it);
+            auto *di = *it;
             if (di)
             {
                 PyObject* v1 = di->getData(verbose);
