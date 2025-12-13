@@ -11,7 +11,6 @@ import unittest
 import struct
 import time
 from asterix.radar_integration.encoder.cat034 import (
-    encode_fspec,
     encode_i010,
     encode_i000,
     encode_i020,

@@ -167,7 +167,7 @@ class SenderThread(threading.Thread):
             time.sleep(0.1)
 
             # Send ASTERIX packet to multicast group
-            print("%d. Sender sending : %s" % (self.counter, str(asterix_packet)))
+            print(f"{self.counter}. Sender sending : {asterix_packet}")
             self.sock.sendto(asterix_packet, ("224.51.105.104", 5000))
 
             self.counter -= 1

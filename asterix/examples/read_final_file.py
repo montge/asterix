@@ -218,9 +218,7 @@ def main():
             timestamp = datetime.timedelta(milliseconds=timems)
 
             # Display packet metadata
-            print("%d.\ttime=%s\tSize=%d\tboard=%d\tline=%d\tday=%d)" % (
-                packetnr, timestamp, packet_size, board_nr, line_nr, rec_day
-            ))
+            print(f"{packetnr}.\ttime={timestamp}\tSize={packet_size}\tboard={board_nr}\tline={line_nr}\tday={rec_day})")
             packetnr += 1
 
             # Read ASTERIX payload

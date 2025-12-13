@@ -24,13 +24,11 @@ Usage:
 License: GPL-3.0
 """
 
-import sys
 import argparse
-import struct
 from asterix.radar_integration import MockRadar
 from asterix.radar_integration.encoder import (
-    encode_cat001, encode_cat020, encode_cat021,
-    encode_cat034_north_marker, encode_cat048, encode_cat062
+    encode_cat001, encode_cat021,
+    encode_cat048, encode_cat062
 )
 from asterix.radar_integration.visualization import plot_radar_ascii
 from asterix.radar_integration.statistics import compute_scenario_stats
@@ -85,7 +83,7 @@ def cmd_generate(args):
     # Show stats
     if args.stats:
         stats = compute_scenario_stats(plots)
-        print(f"\nStatistics:")
+        print("\nStatistics:")
         print(f"  Range: {stats['range_stats']['mean']/1000:.1f} km avg "
               f"({stats['range_stats']['min']/1000:.1f}-{stats['range_stats']['max']/1000:.1f} km)")
         print(f"  SNR: {stats['snr_stats']['mean']:.1f} dB avg")

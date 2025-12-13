@@ -23,7 +23,7 @@ Date: 2025-11-23
 
 import struct
 import time
-from typing import List, Tuple, Optional, Dict
+from typing import List, Optional, Dict
 from dataclasses import dataclass
 
 
@@ -659,7 +659,7 @@ if __name__ == "__main__":
 
         if parsed:
             rec = parsed[0]
-            print(f"\n   Record 0:")
+            print("\n   Record 0:")
             print(f"     Category: {rec.get('category')}")
             print(f"     SAC/SIC: {rec.get('I010', {}).get('SAC')}/{rec.get('I010', {}).get('SIC')}")
 
@@ -703,17 +703,17 @@ if __name__ == "__main__":
     print(f"     Length: {len(fspec)} octets")
 
     # Verify individual encodings
-    print(f"\n   I105 encoding (48.8584°, 2.2945°):")
+    print("\n   I105 encoding (48.8584°, 2.2945°):")
     lat_scaled = int(48.8584 * 33554432.0 / 180.0)
     lon_scaled = int(2.2945 * 33554432.0 / 180.0)
     print(f"     Latitude scaled: {lat_scaled} (0x{lat_scaled:08x})")
     print(f"     Longitude scaled: {lon_scaled} (0x{lon_scaled:08x})")
 
-    print(f"\n   I135 encoding (35000 ft = FL350):")
+    print("\n   I135 encoding (35000 ft = FL350):")
     fl_025 = int(350.0 / 0.25)
     print(f"     0.25 FL units: {fl_025} (0x{fl_025:04x})")
 
-    print(f"\n   I185 encoding (Vx=100, Vy=200 m/s):")
+    print("\n   I185 encoding (Vx=100, Vy=200 m/s):")
     vx_scaled = int(100.0 / 0.25)
     vy_scaled = int(200.0 / 0.25)
     print(f"     Vx scaled: {vx_scaled} (0x{vx_scaled:04x})")

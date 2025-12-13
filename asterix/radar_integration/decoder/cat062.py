@@ -24,7 +24,6 @@ Author: ASTERIX Integration Team
 Date: 2025-11-23
 """
 
-import struct
 import math
 from typing import Dict, Any, Tuple
 
