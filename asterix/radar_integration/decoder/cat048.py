@@ -24,16 +24,13 @@ Author: ASTERIX Integration Team
 Date: 2025-11-23
 """
 
-import struct
-import math
-from typing import Dict, Any, Tuple, Optional
+from typing import Dict, Any, Tuple
 
 from .base import (
     AsterixDecoder,
     DecoderError,
     decode_uint,
     decode_int,
-    decode_octal,
     decode_6bit_ascii,
 )
 

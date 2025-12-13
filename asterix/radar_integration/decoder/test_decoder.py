@@ -333,6 +333,16 @@ class TestDecodeAsterix(unittest.TestCase):
 class TestCompareWithCppDecoder(unittest.TestCase):
     """Test comparison with C++ decoder (if available)."""
 
+    def _get_cpp_value(self, cpp_field):
+        """Extract value from C++ decoder output.
+
+        The C++ decoder returns {'desc': ..., 'val': ...} for verbose mode,
+        while the Python decoder returns just the value.
+        """
+        if isinstance(cpp_field, dict) and 'val' in cpp_field:
+            return cpp_field['val']
+        return cpp_field
+
     def test_compare_with_cpp_decoder(self):
         """Compare Python decoder with C++ decoder."""
         try:
@@ -361,18 +371,24 @@ class TestCompareWithCppDecoder(unittest.TestCase):
             # Check category
             self.assertEqual(py_rec['category'], cpp_rec['category'])
 
-            # Check I010
-            self.assertEqual(py_rec['I010']['SAC'], cpp_rec['I010']['SAC'])
-            self.assertEqual(py_rec['I010']['SIC'], cpp_rec['I010']['SIC'])
+            # Check I010 - C++ decoder uses {'desc': ..., 'val': ...} format
+            self.assertEqual(
+                py_rec['I010']['SAC'],
+                self._get_cpp_value(cpp_rec['I010']['SAC'])
+            )
+            self.assertEqual(
+                py_rec['I010']['SIC'],
+                self._get_cpp_value(cpp_rec['I010']['SIC'])
+            )
 
             # Check I040 (position) - allow small differences due to float precision
             if 'I040' in py_rec and 'I040' in cpp_rec:
                 py_rho = py_rec['I040']['RHO']
-                cpp_rho = cpp_rec['I040']['RHO']
+                cpp_rho = self._get_cpp_value(cpp_rec['I040']['RHO'])
                 self.assertAlmostEqual(py_rho, cpp_rho, places=2)
 
                 py_theta = py_rec['I040']['THETA']
-                cpp_theta = cpp_rec['I040']['THETA']
+                cpp_theta = self._get_cpp_value(cpp_rec['I040']['THETA'])
                 self.assertAlmostEqual(py_theta, cpp_theta, places=2)
 
 

@@ -192,7 +192,7 @@ def main():
             parsed = asterix.parse(asterix_packet)
 
             # Display packet counter and parsed data
-            print('%d. Receiver received = %s' % (counter, parsed))
+            print(f'{counter}. Receiver received = {parsed}')
             counter += 1
 
     except KeyboardInterrupt:

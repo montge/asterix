@@ -9,14 +9,8 @@ License: GPL-3.0
 
 import unittest
 import struct
-import time
 from asterix.radar_integration.encoder.cat021 import (
-    encode_fspec,
     encode_i010,
-    encode_i040,
-    encode_i161,
-    encode_i015,
-    encode_i071,
     encode_i130,
     encode_i080,
     encode_i170,
@@ -26,7 +20,6 @@ from asterix.radar_integration.encoder.cat021 import (
     encode_i150,
     encode_i151,
     encode_i152,
-    encode_i200,
     encode_cat021_record,
     encode_cat021_datablock,
     encode_cat021,

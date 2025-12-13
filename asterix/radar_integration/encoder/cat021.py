@@ -32,7 +32,7 @@ Date: 2025-11-23
 
 import struct
 import time
-from typing import List, Tuple, Optional, Dict
+from typing import List, Optional, Dict
 
 
 def encode_fspec(items: List[int]) -> bytes:

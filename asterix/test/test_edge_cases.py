@@ -3,7 +3,6 @@
 import asterix
 import unittest
 import os
-import sys
 
 
 class AsterixEdgeCasesTest(unittest.TestCase):

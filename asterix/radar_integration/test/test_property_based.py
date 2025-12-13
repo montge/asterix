@@ -80,14 +80,13 @@ except ImportError:
 from asterix.radar_integration.encoder.cat001 import encode_cat001
 from asterix.radar_integration.encoder.cat019 import encode_cat019_status
 from asterix.radar_integration.encoder.cat020 import encode_cat020
-from asterix.radar_integration.encoder.cat021 import encode_cat021, encode_i130 as cat021_encode_i130
+from asterix.radar_integration.encoder.cat021 import encode_cat021
 from asterix.radar_integration.encoder.cat034 import encode_cat034_north_marker
 from asterix.radar_integration.encoder.cat048 import (
     encode_cat048, encode_fspec, encode_i040, encode_i140,
     encode_i010, encode_i070, encode_i220
 )
 from asterix.radar_integration.encoder.cat062 import encode_cat062
-from asterix.radar_integration.mock_radar import RadarPlot
 
 
 # ============================================================================
@@ -623,10 +622,10 @@ def count_property_tests():
 if __name__ == '__main__':
     if HYPOTHESIS_AVAILABLE:
         print(f"\n{'='*70}")
-        print(f"Property-Based Testing with Hypothesis")
+        print("Property-Based Testing with Hypothesis")
         print(f"{'='*70}")
         print(f"Tests created: {count_property_tests()}")
-        print(f"Each test runs 50-200 examples (configurable)")
+        print("Each test runs 50-200 examples (configurable)")
         print(f"{'='*70}\n")
 
     unittest.main()
