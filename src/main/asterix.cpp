@@ -446,31 +446,22 @@ int main(int argc, const char *argv[]) {
                 if (line[0] == '#' || strlen(line) <= 0)
                     continue;
 
-                char *p = strtok(line, ":");
+                // Thread-safe parsing using std::string instead of strtok
+                std::string lineStr(line);
+                size_t firstColon = lineStr.find(':');
+                size_t secondColon = (firstColon != std::string::npos) ? lineStr.find(':', firstColon + 1) : std::string::npos;
+
                 int ret = 0;
-                while (p) {
-                    if (sscanf(p, "CAT%03d", &cat) != 1)
-                        break;
-                    p = strtok(NULL, ":");
-                    if (NULL == p) {
-                        std::cerr <<
-                                  "Warning: Wrong Filter format. Shall be: \"CATxxx:Ixxx:NAME  DESCRIPTION\" or start with \"#\" for comment . It is: " +
-                                  std::string(line) << std::endl;
-                        exit(3);
+                if (firstColon != std::string::npos && secondColon != std::string::npos) {
+                    std::string catPart = lineStr.substr(0, firstColon);
+                    std::string itemPart = lineStr.substr(firstColon + 1, secondColon - firstColon - 1);
+                    std::string namePart = lineStr.substr(secondColon + 1);
+
+                    if (sscanf(catPart.c_str(), "CAT%03d", &cat) == 1 &&
+                        sscanf(itemPart.c_str(), "I%128s", item) == 1 &&
+                        sscanf(namePart.c_str(), "%128s", name) == 1) {
+                        ret = 1;
                     }
-                    if (sscanf(p, "I%128s", item) != 1)
-                        break;
-                    p = strtok(NULL, "");
-                    if (NULL == p) {
-                        std::cerr <<
-                                  "Warning: Wrong Filter format. Shall be: \"CATxxx:Ixxx:NAME  DESCRIPTION\" or start with \"#\" for comment . It is: " +
-                                  std::string(line) << std::endl;
-                        exit(3);
-                    }
-                    if (sscanf(p, "%128s", name) != 1)
-                        break;
-                    ret = 1;
-                    break;
                 }
 
                 if (ret == 0) {

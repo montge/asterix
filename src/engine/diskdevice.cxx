@@ -419,7 +419,16 @@ bool CDiskDevice::DoneWithFile(bool allDone) {
             snprintf(sfxFormat, sizeof(sfxFormat), sfxBase, (int) getpid());
 
             time_t t = time(NULL);
-            struct tm *stm = gmtime(&t);
+            struct tm tmBuf;
+            struct tm *stm;
+#ifdef _WIN32
+            // Windows: gmtime_s has different parameter order than POSIX gmtime_r
+            gmtime_s(&tmBuf, &t);
+            stm = &tmBuf;
+#else
+            // POSIX: use thread-safe gmtime_r
+            stm = gmtime_r(&t, &tmBuf);
+#endif
             strftime(suffix, 25, sfxFormat, stm);
 
             strncpy(newName, _fileName, MAXPATHLEN);

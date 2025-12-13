@@ -119,7 +119,7 @@ public:
      * @param name Name string (e.g., "System Area Code / System Identification Code")
      *             Copied into m_strName. The pointer is not retained.
      */
-    void setName(char *name) { m_strName = name; }
+    void setName(const char *name) { m_strName = name; }
 
     /**
      * @brief Set the detailed definition/description for this data item
@@ -127,7 +127,7 @@ public:
      * @param definition Description string from XML definition
      *                   Copied into m_strDefinition. The pointer is not retained.
      */
-    void setDefinition(char *definition) { m_strDefinition = definition; }
+    void setDefinition(const char *definition) { m_strDefinition = definition; }
 
     /**
      * @brief Set the format type string for this data item
@@ -135,7 +135,7 @@ public:
      * @param format Format type string (e.g., "fixed", "variable", "compound")
      *               Copied into m_strFormat. The pointer is not retained.
      */
-    void setFormat(char *format) { m_strFormat = format; }
+    void setFormat(const char *format) { m_strFormat = format; }
 
     /**
      * @brief Parse and format data item (delegates to m_pFormat)

@@ -64,16 +64,14 @@ std::string format(const char *fmt, ...) {
 
     // Uncommon case: result doesn't fit, allocate exact size on heap
     // Note: size is the number of characters that would be written (excluding null)
-    char *heap_buffer = new char[size + 1];
+    // Use std::unique_ptr for automatic memory management (RAII)
+    auto heap_buffer = std::make_unique<char[]>(size + 1);
 
     va_start(args, fmt);
-    vsnprintf(heap_buffer, size + 1, fmt, args);
+    vsnprintf(heap_buffer.get(), size + 1, fmt, args);
     va_end(args);
 
-    std::string result(heap_buffer, size);
-    delete[] heap_buffer;
-
-    return result;
+    return std::string(heap_buffer.get(), size);
 }
 
 uint32_t crc32(const void *pBuffer, size_t nLength, uint32_t nPreviousCrc32) {
