@@ -109,13 +109,13 @@ class TestCAT048I010(unittest.TestCase):
         """Test I010 with boundary values (0 and 255)."""
         # Min values
         data = bytes([0, 0])
-        result, consumed = self.decoder._decode_i010(data, 0)
+        result, _ = self.decoder._decode_i010(data, 0)
         self.assertEqual(result['SAC'], 0)
         self.assertEqual(result['SIC'], 0)
 
         # Max values
         data = bytes([255, 255])
-        result, consumed = self.decoder._decode_i010(data, 0)
+        result, _ = self.decoder._decode_i010(data, 0)
         self.assertEqual(result['SAC'], 255)
         self.assertEqual(result['SIC'], 255)
 
@@ -172,7 +172,7 @@ class TestCAT048I140(unittest.TestCase):
         time_128 = 0
         data = struct.pack('>I', time_128)[1:]
 
-        result, consumed = self.decoder_nv._decode_i140(data, 0)
+        result, _ = self.decoder_nv._decode_i140(data, 0)
         self.assertEqual(result, 0.0)
 
     def test_decode_i140_end_of_day(self):
@@ -181,7 +181,7 @@ class TestCAT048I140(unittest.TestCase):
         time_128 = int(time_seconds * 128)
         data = struct.pack('>I', time_128)[1:]
 
-        result, consumed = self.decoder_nv._decode_i140(data, 0)
+        result, _ = self.decoder_nv._decode_i140(data, 0)
         self.assertAlmostEqual(result, time_seconds, places=1)
 
     def test_decode_i140_fractional_seconds(self):
@@ -190,7 +190,7 @@ class TestCAT048I140(unittest.TestCase):
         time_128 = int(time_seconds * 128)
         data = struct.pack('>I', time_128)[1:]
 
-        result, consumed = self.decoder_nv._decode_i140(data, 0)
+        result, _ = self.decoder_nv._decode_i140(data, 0)
         self.assertEqual(result, time_seconds)
 
     def test_decode_i140_truncated(self):
@@ -231,7 +231,7 @@ class TestCAT048I020(unittest.TestCase):
         byte1 = (typ << 5)
         data = bytes([byte1])
 
-        result, consumed = self.decoder._decode_i020(data, 0)
+        result, _ = self.decoder._decode_i020(data, 0)
         self.assertEqual(result['TYP'], 3)
 
     def test_decode_i020_with_flags(self):
@@ -240,7 +240,7 @@ class TestCAT048I020(unittest.TestCase):
         byte1 = (1 << 5) | 0b00010100
         data = bytes([byte1])
 
-        result, consumed = self.decoder._decode_i020(data, 0)
+        result, _ = self.decoder._decode_i020(data, 0)
 
         self.assertEqual(result['TYP'], 1)
         self.assertTrue(result['SIM'])
@@ -254,7 +254,7 @@ class TestCAT048I020(unittest.TestCase):
         byte1 = (typ << 5)
         data = bytes([byte1])
 
-        result, consumed = self.decoder._decode_i020(data, 0)
+        result, _ = self.decoder._decode_i020(data, 0)
 
         self.assertIn('TYP_description', result)
         self.assertEqual(result['TYP_description'], 'Single ModeS All-Call')
@@ -275,7 +275,7 @@ class TestCAT048I020(unittest.TestCase):
         for typ, expected_desc in expected_descriptions.items():
             byte1 = (typ << 5)
             data = bytes([byte1])
-            result, consumed = self.decoder._decode_i020(data, 0)
+            result, _ = self.decoder._decode_i020(data, 0)
             self.assertEqual(result['TYP'], typ)
             self.assertEqual(result['TYP_description'], expected_desc)
 
@@ -286,7 +286,7 @@ class TestCAT048I020(unittest.TestCase):
         byte2 = 0b00000000  # Extension byte
         data = bytes([byte1, byte2])
 
-        result, consumed = self.decoder._decode_i020(data, 0)
+        _, consumed = self.decoder._decode_i020(data, 0)
         self.assertEqual(consumed, 2)
 
     def test_decode_i020_extension_truncated(self):
@@ -296,7 +296,7 @@ class TestCAT048I020(unittest.TestCase):
         data = bytes([byte1])  # No extension byte
 
         # This should still decode the first byte successfully
-        result, consumed = self.decoder._decode_i020(data, 0)
+        _, consumed = self.decoder._decode_i020(data, 0)
         self.assertEqual(consumed, 1)  # No extension byte added
 
     def test_decode_i020_truncated(self):

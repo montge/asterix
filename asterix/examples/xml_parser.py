@@ -374,9 +374,9 @@ def getVariable(Variable, **kwargs):
         if type(Fixed) is not Element:
             continue
         if Fixed.nodeName == "Fixed":
-            FixedResult = gitFixed(Fixed, **kwargs)
-            for key in FixedResult.keys():
-                Variables[key] = FixedResult[key]
+            fixed_result = gitFixed(Fixed, **kwargs)
+            for key in fixed_result.keys():
+                Variables[key] = fixed_result[key]
     return Variables
 
 
