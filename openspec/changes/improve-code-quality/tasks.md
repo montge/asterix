@@ -76,7 +76,7 @@ SonarCloud Analysis Summary:
 - [x] 4.2.2 Address cognitive complexity issues (commit 6a18fab - DataItemBits refactored)
 - [ ] 4.2.3 Address code duplication
 - [ ] 4.2.4 Address long methods/functions
-- [x] 4.2.5 Address unused imports/variables (commits f4608c6, bd61fe1)
+- [x] 4.2.5 Address unused imports/variables (commits f4608c6, bd61fe1, 217aeb2)
 - [x] 4.2.6 Fix string initialization issues - cpp:S4962 (commit 78d3621)
 - [x] 4.2.7 Replace NULL with nullptr in bindings (commit 78d3621)
 
@@ -168,6 +168,13 @@ SonarCloud Analysis Summary:
 **Python Fixes (2025-12-13):**
 - test_cat048.py: Replaced 11 unused variables with '_' (commit 0e4491f)
 - xml_parser.py: Fixed naming convention (FixedResult → fixed_result)
+
+**Compiler Warning Fixes (2025-12-13):**
+- stddevice.hxx, udpdevice.hxx: Added [[maybe_unused]] to IoCtrl params (commit 217aeb2)
+- serialdevice.cxx, tcpdevice.cxx: Added [[maybe_unused]] to unused IoCtrl params
+- asterix.h: Removed redundant const qualifier from time_t casts
+- InputParser.cpp, DataItemBits.cpp: Added [[maybe_unused]] to unused params
+- diskdevice.cxx: Added braces around empty else body
 
 ## Configuration Status
 
