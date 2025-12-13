@@ -103,7 +103,7 @@ public:
 
     virtual bool Select(const unsigned int secondsToWait);
 
-    virtual bool IoCtrl(const unsigned int command, const void *data = 0, size_t len = 0) { return false; }
+    virtual bool IoCtrl([[maybe_unused]] const unsigned int command, [[maybe_unused]] const void *data = 0, [[maybe_unused]] size_t len = 0) { return false; }
 
     virtual bool IsPacketDevice() { return true; }
 

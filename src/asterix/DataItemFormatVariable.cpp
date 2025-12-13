@@ -176,7 +176,7 @@ bool DataItemFormatVariable::getText(std::string &strResult, std::string &strHea
 }
 
 std::string DataItemFormatVariable::printDescriptors(std::string header) {
-    std::string strDef = "";
+    std::string strDef;
 
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {

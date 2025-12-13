@@ -531,7 +531,7 @@ class TestBenchmarkIntegration(unittest.TestCase):
 
         # Run a single benchmark
         def simple_func():
-            sum(range(100))
+            return sum(range(100))
 
         result = suite.run_benchmark(
             name="Simple Sum",

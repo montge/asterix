@@ -46,7 +46,7 @@ DataItemFormatBDS::DataItemFormatBDS(const DataItemFormatBDS &obj)
 }
 
 
-long DataItemFormatBDS::getLength(const unsigned char *pData) {
+long DataItemFormatBDS::getLength([[maybe_unused]] const unsigned char *pData) {
     return 8; // BDS length is always 8 bytes
 }
 

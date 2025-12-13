@@ -364,7 +364,7 @@ unsigned char *DataItemBits::getHexBitStringFullByte(unsigned char *pData, int b
     return str;
 }
 
-unsigned char *DataItemBits::getHexBitStringMask(int bytes, int frombit, int tobit) {
+unsigned char *DataItemBits::getHexBitStringMask([[maybe_unused]] int bytes, int frombit, int tobit) {
     int numberOfBits = (tobit - frombit + 1);
     if (!numberOfBits) {
         Tracer::Error("Hex representation not valid");
@@ -562,7 +562,6 @@ void DataItemBits::formatUnsignedWithMeta(std::ostringstream& ss, unsigned long 
         case CAsterixFormat::EOut: {
             bool isOut = (formatType == CAsterixFormat::EOut);
             const char* prefix = isOut ? "\n" : "\n\t";
-            const char* nameFormat = isOut ? "%s.%s" : "%s";
 
             if (isOut) {
                 ss << format("%s%s.%s %llu", prefix, strHeader.c_str(), m_strShortName.c_str(), value64);
