@@ -41,15 +41,15 @@ private:
 
 public:
     /**
-     * Empty constructor
+     * Constructor
      */
-    CAsterixFormatDescriptor(AsterixDefinition *pDefinition) :
+    explicit CAsterixFormatDescriptor(AsterixDefinition *pDefinition) :
             m_pDefinition(pDefinition),
             m_InputParser(pDefinition),
-            m_pAsterixData(NULL),
+            m_pAsterixData(nullptr),
             m_ePcapNetworkType(CAsterixFormatDescriptor::ePcapNetworkType(0)),
             m_bInvertByteOrder(true),
-            m_pBuffer(NULL),
+            m_pBuffer(nullptr),
             m_nBufferSize(0),
             m_nDataSize(0),
             m_nTimeStamp(0) {

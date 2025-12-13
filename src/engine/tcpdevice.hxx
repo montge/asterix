@@ -92,7 +92,7 @@ public:
     /**
      * Class constructor which uses descriptor
      */
-    CTcpDevice(CDescriptor &descriptor);
+    explicit CTcpDevice(CDescriptor &descriptor);
 
     /**
      * Class destructor.

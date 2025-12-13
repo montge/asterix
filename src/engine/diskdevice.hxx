@@ -108,7 +108,7 @@ public:
     /**
      * Class constructor which uses descriptor
      */
-    CDiskDevice(CDescriptor &descriptor);
+    explicit CDiskDevice(CDescriptor &descriptor);
 
 
     /**
