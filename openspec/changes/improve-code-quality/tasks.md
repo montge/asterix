@@ -34,17 +34,15 @@ SonarCloud Analysis Summary:
 
 ## 2. Major Issues (31 issues) - Priority: HIGH
 
-### 2.1 Categorize Major Issues
-- [ ] 2.1.1 Export full list of major issues from SonarCloud
-- [ ] 2.1.2 Group by rule type (memory, complexity, security, style)
-- [ ] 2.1.3 Prioritize by file importance and fix effort
+### 2.1 Python Dead Code Issues (Fixed 2025-12-13)
+- [x] 2.1.1 jsbsim_converter.py:246-247 - Remove unused velocity conversions (commit 007e373)
+- [x] 2.1.2 mavlink_converter.py:200 - Remove unused groundspeed calculation (commit 007e373)
+- [x] 2.1.3 test_benchmark.py:534 - Return sum() result (commit 007e373)
+- [x] 2.1.4 visualization.py:135 - False positive (grid is list, not dict)
 
-### 2.2 Fix Major Issues by Category
-- [ ] 2.2.1 Memory management major issues
-- [ ] 2.2.2 Cognitive complexity major issues
-- [ ] 2.2.3 Code duplication major issues
-- [ ] 2.2.4 Security-related major issues
-- [ ] 2.2.5 Type safety major issues
+### 2.2 Remaining Major Issues
+- [ ] 2.2.1 Export remaining major issues from SonarCloud
+- [ ] 2.2.2 Review and fix remaining issues
 
 ## 3. Minor Issues (13 issues) - Priority: MEDIUM
 
@@ -129,13 +127,13 @@ SonarCloud Analysis Summary:
 | Category | Total | Fixed/Excluded | Remaining |
 |----------|-------|----------------|-----------|
 | Critical | 16 | 16 | 0 |
-| Major | 31 | 0 | 31 |
+| Major (Bugs) | 5 | 4 | 1 (false positive) |
 | Minor | 13 | 0 | 13 |
 | Code Smells | ~5,135 | 0 | ~5,135 |
-| Bugs | 238 | 0 | 238 |
+| Bugs (SonarCloud) | 238 | 4 | 234 |
 | Security Hotspots | 112 | 0 | 112 |
-| Dependency PRs | 11 | 6 | 5 |
-| **Total** | **5,545** | **22** | **5,529** |
+| Dependency PRs | 11 | 7 | 4 |
+| **Total** | **5,530** | **31** | **5,499** |
 
 **SonarCloud Status (2025-12-13):**
 - Critical: 0 (generated reports removed)
