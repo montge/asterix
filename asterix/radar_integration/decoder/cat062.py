@@ -24,7 +24,6 @@ Author: ASTERIX Integration Team
 Date: 2025-11-23
 """
 
-import struct
 import math
 from typing import Dict, Any, Tuple
 
@@ -291,7 +290,6 @@ class CAT062Decoder(AsterixDecoder):
             raise DecoderError("I390 truncated")
 
         primary = data[offset]
-        bytes_consumed = 1
         result = {}
 
         # Simplified: just track which subfields are present

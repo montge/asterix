@@ -26,13 +26,13 @@
 
 AsterixDefinition::AsterixDefinition() {
     for (int i = 0; i < MAX_CATEGORIES; i++) {
-        m_pCategory[i] = NULL;
+        m_pCategory[i] = nullptr;
     }
 }
 
 AsterixDefinition::~AsterixDefinition() {
     for (int i = 0; i < MAX_CATEGORIES; i++) {
-        if (m_pCategory[i] != NULL) {
+        if (m_pCategory[i] != nullptr) {
             delete m_pCategory[i];
         }
     }
@@ -40,9 +40,9 @@ AsterixDefinition::~AsterixDefinition() {
 
 Category *AsterixDefinition::getCategory(int i) {
     if (i >= MAX_CATEGORIES)
-        return NULL;
+        return nullptr;
 
-    if (m_pCategory[i] == NULL) {
+    if (m_pCategory[i] == nullptr) {
         m_pCategory[i] = new Category(i);
     }
 
@@ -50,8 +50,8 @@ Category *AsterixDefinition::getCategory(int i) {
 }
 
 void AsterixDefinition::setCategory(Category *newCategory) {
-    if (newCategory != NULL) {
-        if (m_pCategory[newCategory->m_id] != NULL) {
+    if (newCategory != nullptr) {
+        if (m_pCategory[newCategory->m_id] != nullptr) {
             delete m_pCategory[newCategory->m_id];
         }
         m_pCategory[newCategory->m_id] = newCategory;
@@ -59,7 +59,7 @@ void AsterixDefinition::setCategory(Category *newCategory) {
 }
 
 bool AsterixDefinition::CategoryDefined(int i) {
-    return (i < MAX_CATEGORIES && m_pCategory[i] != NULL) ? true : false;
+    return (i < MAX_CATEGORIES && m_pCategory[i] != nullptr) ? true : false;
 }
 
 std::string AsterixDefinition::printDescriptors() {
@@ -88,12 +88,12 @@ bool AsterixDefinition::isFiltered(int cat, std::string item, const char *name) 
     return false;
 }
 
-const char *AsterixDefinition::getDescription(int category, const char *item = NULL, const char *field = NULL,
-                                              const char *value = NULL) {
-    if (m_pCategory[category] != NULL) {
-        if (item == NULL && field == NULL && value == NULL)
+const char *AsterixDefinition::getDescription(int category, const char *item = nullptr, const char *field = nullptr,
+                                              const char *value = nullptr) {
+    if (m_pCategory[category] != nullptr) {
+        if (item == nullptr && field == nullptr && value == nullptr)
             return m_pCategory[category]->m_strName.c_str();
         return m_pCategory[category]->getDescription(item, field, value);
     }
-    return NULL;
+    return nullptr;
 }

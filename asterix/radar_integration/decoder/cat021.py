@@ -27,8 +27,6 @@ Author: ASTERIX Integration Team
 Date: 2025-11-23
 """
 
-import struct
-import math
 from typing import Dict, Any, Tuple
 
 from .base import (
@@ -93,6 +91,12 @@ class CAT021Decoder(AsterixDecoder):
             return self._decode_i010(data, offset)
         elif frn == 2:  # I040
             return self._decode_i040(data, offset)
+        elif frn == 3:  # I161
+            return self._decode_i161(data, offset)
+        elif frn == 4:  # I015
+            return self._decode_i015(data, offset)
+        elif frn == 5:  # I071
+            return self._decode_i071(data, offset)
         elif frn == 6:  # I130
             return self._decode_i130(data, offset)
         elif frn == 11:  # I080
@@ -119,6 +123,53 @@ class CAT021Decoder(AsterixDecoder):
         sic = data[offset + 1]
 
         return {'SAC': sac, 'SIC': sic}, 2
+
+    def _decode_i161(self, data: bytes, offset: int) -> Tuple[Dict[str, int], int]:
+        """
+        Decode I161: Track Number.
+
+        Format: 2 bytes (12-bit track number + 4-bit spare)
+        """
+        if offset + 2 > len(data):
+            raise DecoderError("I161 truncated")
+
+        value = decode_uint(data, offset, 2)
+        track_number = value >> 4  # Upper 12 bits
+
+        result = {'track_number': track_number}
+        return result, 2
+
+    def _decode_i015(self, data: bytes, offset: int) -> Tuple[int, int]:
+        """
+        Decode I015: Service Identification.
+
+        Format: 1 byte
+        """
+        if offset >= len(data):
+            raise DecoderError("I015 truncated")
+
+        service_id = data[offset]
+        return service_id, 1
+
+    def _decode_i071(self, data: bytes, offset: int) -> Tuple[float, int]:
+        """
+        Decode I071: Time of Applicability for Position.
+
+        Format: 3 bytes (1/128 seconds since midnight)
+        """
+        if offset + 3 > len(data):
+            raise DecoderError("I071 truncated")
+
+        time_128 = decode_uint(data, offset, 3)
+        time_seconds = time_128 / 128.0
+
+        if self.verbose:
+            return {
+                'value': time_seconds,
+                'time_128': time_128,
+            }, 3
+        else:
+            return time_seconds, 3
 
     def _decode_i040(self, data: bytes, offset: int) -> Tuple[Dict[str, Any], int]:
         """
@@ -158,17 +209,24 @@ class CAT021Decoder(AsterixDecoder):
         """
         Decode I130: Position in WGS-84 Coordinates (High Precision).
 
-        Format: 8 bytes
-        - Bytes 1-4: Latitude (two's complement, 180/2^23 degrees LSB)
-        - Bytes 5-8: Longitude (two's complement, 180/2^23 degrees LSB)
+        Format: 6 bytes
+        - Bytes 1-3: Latitude (two's complement, 180/2^23 degrees LSB)
+        - Bytes 4-6: Longitude (two's complement, 180/2^23 degrees LSB)
 
         Note: CAT021 uses higher precision than CAT062 (2^23 vs 2^25)
         """
-        if offset + 8 > len(data):
+        if offset + 6 > len(data):
             raise DecoderError("I130 truncated")
 
-        lat_raw = decode_int(data, offset, 4)
-        lon_raw = decode_int(data, offset + 4, 4)
+        # Decode 24-bit signed integers
+        lat_raw = decode_uint(data, offset, 3)
+        lon_raw = decode_uint(data, offset + 3, 3)
+
+        # Convert from unsigned to signed 24-bit
+        if lat_raw >= 0x800000:
+            lat_raw -= 0x1000000
+        if lon_raw >= 0x800000:
+            lon_raw -= 0x1000000
 
         # Convert to degrees (180/2^23 LSB)
         lat = lat_raw * 180.0 / (2 ** 23)
@@ -182,7 +240,7 @@ class CAT021Decoder(AsterixDecoder):
         if self.verbose:
             result['description'] = f"WGS-84: {lat:.7f}°, {lon:.7f}°"
 
-        return result, 8
+        return result, 6
 
     def _decode_i080(self, data: bytes, offset: int) -> Tuple[int, int]:
         """

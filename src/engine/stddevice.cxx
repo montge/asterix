@@ -118,10 +118,10 @@ bool CStdDevice::Select(const unsigned int secondsToWait) {
             timeout.tv_sec = secondsToWait;
             timeout.tv_usec = 0;
 
-            selectVal = select(STDIN_FILENO + 1, &descToRead, NULL, NULL, &timeout);
+            selectVal = select(STDIN_FILENO + 1, &descToRead, nullptr, nullptr, &timeout);
         } else {
             // secondsToWait is zero => Wait indefinitely
-            selectVal = select(STDIN_FILENO + 1, &descToRead, NULL, NULL, NULL);
+            selectVal = select(STDIN_FILENO + 1, &descToRead, nullptr, nullptr, nullptr);
         }
 
         if (selectVal <= 0 || FD_ISSET(STDIN_FILENO, &descToRead)) {

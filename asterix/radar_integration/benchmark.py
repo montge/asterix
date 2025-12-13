@@ -21,7 +21,6 @@ License: GPL-3.0
 """
 
 import time
-import sys
 import json
 import argparse
 from typing import Dict, List, Callable

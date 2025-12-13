@@ -97,7 +97,7 @@ public:
      *
      * @param descriptor Descriptor with format: type:endpoint[:bind]
      */
-    CZeromqDevice(CDescriptor &descriptor);
+    explicit CZeromqDevice(CDescriptor &descriptor);
 
     /**
      * Class destructor.

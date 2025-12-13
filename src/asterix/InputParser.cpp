@@ -145,13 +145,13 @@ InputParser::parse_next_data_block(const unsigned char *m_pData, unsigned int &m
     // SECURITY FIX (VULN-004): Validate ASTERIX data length strictly
     if (dataLen <= 3) {
         Tracer::Error("Invalid ASTERIX data length (%d) - too small", dataLen);
-        return NULL;  // Stop processing, don't continue with corrupted data
+        return nullptr;  // Stop processing, don't continue with corrupted data
     }
 
     if (dataLen > m_nDataLength) {
         Tracer::Error("Invalid ASTERIX data length (%d) exceeds available data (%d)",
                      dataLen, m_nDataLength);
-        return NULL;  // Stop processing instead of attempting to recover
+        return nullptr;  // Stop processing instead of attempting to recover
     }
 
     m_nDataLength -= 3;

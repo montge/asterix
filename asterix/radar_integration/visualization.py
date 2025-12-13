@@ -38,7 +38,6 @@ import sys
 # Try to import matplotlib - optional dependency
 try:
     import matplotlib.pyplot as plt
-    import matplotlib.patches as patches
     from matplotlib.collections import LineCollection
     import numpy as np
     HAS_MATPLOTLIB = True
@@ -210,7 +209,7 @@ def plot_radar_ascii(
     if show_legend:
         footer_lines.append("")
         footer_lines.append("Legend:")
-        footer_lines.append(f"  R = Radar position")
+        footer_lines.append("  R = Radar position")
         footer_lines.append(f"  * = High SNR target (SNR > 30 dB): {high_snr_count}")
         footer_lines.append(f"  + = Low SNR target (SNR ≤ 30 dB): {low_snr_count}")
         footer_lines.append(f"  · = Range ring ({', '.join(f'{r:.0f}km' for r in ring_ranges)})")

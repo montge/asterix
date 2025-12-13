@@ -412,7 +412,7 @@ public:
      */
     void GetCData(int *pint) {
         m_pintCData = pint;
-        m_pstrCData = NULL;
+        m_pstrCData = nullptr;
     }
 
     /**

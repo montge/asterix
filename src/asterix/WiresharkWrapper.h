@@ -193,16 +193,16 @@ extern "C" {
  *     {2, "Start of Update Cycle"},
  *     {3, "Periodic Status Message"},
  *     {4, "Event-triggered Status Message"},
- *     {0, NULL}  // Null terminator
+ *     {0, nullptr}  // Null terminator
  * };
  * @endcode
  *
- * @note The array must be null-terminated (strptr == NULL for last entry)
+ * @note The array must be null-terminated (strptr == nullptr for last entry)
  * @see fulliautomatix_definitions::strings for usage in field definitions
  */
 typedef struct _fulliautomatix_value_string {
     unsigned long value;  /**< Numeric value from protocol field */
-    char *strptr;         /**< Human-readable description (NULL for array terminator) */
+    char *strptr;         /**< Human-readable description (nullptr for array terminator) */
 } fulliautomatix_value_string;
 
 /**
@@ -245,13 +245,13 @@ struct _fulliautomatix_definitions {
     int display;   /**< Display format (one of FA_BASE_* for numeric types,
                         or bit count for FA_FT_BOOLEAN) */
     fulliautomatix_value_string *strings;
-                   /**< Value-to-string mappings for enumerations, or NULL.
+                   /**< Value-to-string mappings for enumerations, or nullptr.
                         For FA_FT_PROTOCOL, points to associated protocol_t structure. */
     unsigned long bitmask;
                    /**< Bitmask for extracting field from larger value (0 if N/A) */
     char *blurb;   /**< Brief description shown in status bar */
     struct _fulliautomatix_definitions *next;
-                   /**< Pointer to next field definition (NULL if last) */
+                   /**< Pointer to next field definition (nullptr if last) */
 };
 
 /**
@@ -327,7 +327,7 @@ struct _fulliautomatix_data {
                     /**< Additional text appended after value (e.g., units, meaning) */
     int err;        /**< Packet correctness indicator: 0=OK, 1=Warning, 2=Error */
     struct _fulliautomatix_data *next;
-                    /**< Pointer to next node in tree (NULL if last) */
+                    /**< Pointer to next node in tree (nullptr if last) */
 };
 
 /**
@@ -389,7 +389,7 @@ void fulliautomatix_set_tracer(ptExtVoidPrintf pPrintFunc);
  * Wireshark. Includes standard ASTERIX fields (category, length, FSPEC) plus
  * category-specific data items loaded from XML.
  *
- * @return Pointer to head of definitions linked list, or NULL on error
+ * @return Pointer to head of definitions linked list, or nullptr on error
  *
  * @par Usage Pattern
  * @code
@@ -421,9 +421,9 @@ fulliautomatix_definitions *fulliautomatix_get_definitions(void);
  * Recursively frees all nodes in the definitions linked list, including
  * dynamically allocated strings (name, abbrev, blurb) and value_string arrays.
  *
- * @param pDef Pointer to head of definitions list (may be NULL)
+ * @param pDef Pointer to head of definitions list (may be nullptr)
  *
- * @note Safe to call with NULL pointer (no-op)
+ * @note Safe to call with nullptr pointer (no-op)
  * @note After calling, pDef is invalid (dangling pointer)
  * @see fulliautomatix_get_definitions() for allocation
  */
@@ -439,7 +439,7 @@ void fulliautomatix_destroy_definitions(fulliautomatix_definitions *pDef);
  * @param pBuf Pointer to raw ASTERIX binary data
  * @param len Length of data buffer in bytes
  *
- * @return Pointer to head of protocol tree (linked list), or NULL on parse error
+ * @return Pointer to head of protocol tree (linked list), or nullptr on parse error
  *
  * @par Example
  * @code
@@ -482,9 +482,9 @@ fulliautomatix_data *fulliautomatix_parse(const unsigned char *pBuf, unsigned in
  * Recursively frees all nodes in the protocol tree linked list, including
  * dynamically allocated strings (description, value_description, string values).
  *
- * @param pData Pointer to head of protocol tree (may be NULL)
+ * @param pData Pointer to head of protocol tree (may be nullptr)
  *
- * @note Safe to call with NULL pointer (no-op)
+ * @note Safe to call with nullptr pointer (no-op)
  * @note After calling, pData is invalid (dangling pointer)
  * @see fulliautomatix_parse() for allocation
  */
@@ -497,12 +497,12 @@ void fulliautomatix_data_destroy(fulliautomatix_data *pData);
  * Tree nodes represent hierarchical groupings (e.g., "Data Record", "I048/010")
  * and can contain child nodes.
  *
- * @param prev Pointer to previous node in list (will set prev->next), or NULL if first
+ * @param prev Pointer to previous node in list (will set prev->next), or nullptr if first
  * @param bytenr Byte offset of this tree node in the packet
  * @param length Total length in bytes covered by this tree node
  * @param description Human-readable label for the tree node
  *
- * @return Pointer to newly allocated tree node, or NULL on allocation failure
+ * @return Pointer to newly allocated tree node, or nullptr on allocation failure
  *
  * @note Internal function used by DataItem::getWiresharkData() implementations
  * @note Caller must eventually free via fulliautomatix_data_destroy()
@@ -532,13 +532,13 @@ fulliautomatix_data *newDataTreeEnd(fulliautomatix_data *prev, int offset);
  * Allocates and initializes a leaf item node containing an unsigned integer value.
  * Used for protocol fields like counters, identifiers, bitmasks.
  *
- * @param prev Pointer to previous node in list (will set prev->next), or NULL if first
+ * @param prev Pointer to previous node in list (will set prev->next), or nullptr if first
  * @param pid Protocol field ID (from PID_NRS or category-specific IDs)
  * @param bytenr Byte offset of this field in the packet
  * @param length Length of this field in bytes
  * @param val Unsigned integer value
  *
- * @return Pointer to newly allocated leaf node, or NULL on allocation failure
+ * @return Pointer to newly allocated leaf node, or nullptr on allocation failure
  *
  * @note Sets type=FA_FT_UINT32, tree=0, val.ul=val
  * @note Internal function used by DataItemBits::getWiresharkValue()
@@ -552,13 +552,13 @@ fulliautomatix_data *newDataUL(fulliautomatix_data *prev, int pid, int bytenr, i
  * Allocates and initializes a leaf item node containing a signed integer value.
  * Used for protocol fields representing positions, velocities, measurements.
  *
- * @param prev Pointer to previous node in list (will set prev->next), or NULL if first
+ * @param prev Pointer to previous node in list (will set prev->next), or nullptr if first
  * @param pid Protocol field ID (from PID_NRS or category-specific IDs)
  * @param bytenr Byte offset of this field in the packet
  * @param length Length of this field in bytes
  * @param val Signed integer value
  *
- * @return Pointer to newly allocated leaf node, or NULL on allocation failure
+ * @return Pointer to newly allocated leaf node, or nullptr on allocation failure
  *
  * @note Sets type=FA_FT_INT32, tree=0, val.sl=val
  * @note Internal function used by DataItemBits::getWiresharkValue()
@@ -572,13 +572,13 @@ fulliautomatix_data *newDataSL(fulliautomatix_data *prev, int pid, int bytenr, i
  * Allocates and initializes a leaf item node containing a string value.
  * The string is duplicated (caller retains ownership of original).
  *
- * @param prev Pointer to previous node in list (will set prev->next), or NULL if first
+ * @param prev Pointer to previous node in list (will set prev->next), or nullptr if first
  * @param pid Protocol field ID (from PID_NRS or category-specific IDs)
  * @param bytenr Byte offset of this field in the packet
  * @param length Length of this field in bytes
  * @param val Null-terminated string value (will be copied)
  *
- * @return Pointer to newly allocated leaf node, or NULL on allocation failure
+ * @return Pointer to newly allocated leaf node, or nullptr on allocation failure
  *
  * @note Sets type=FA_FT_STRINGZ, tree=0, val.str=strdup(val)
  * @note Internal function used by DataItemFormatFixed::getWiresharkData()
@@ -592,13 +592,13 @@ fulliautomatix_data *newDataString(fulliautomatix_data *prev, int pid, int byten
  * Allocates and initializes a leaf item node containing binary data (e.g., FSPEC bytes).
  * The byte array is duplicated (caller retains ownership of original).
  *
- * @param prev Pointer to previous node in list (will set prev->next), or NULL if first
+ * @param prev Pointer to previous node in list (will set prev->next), or nullptr if first
  * @param pid Protocol field ID (from PID_NRS or category-specific IDs)
  * @param bytenr Byte offset of this field in the packet
  * @param length Length of this field in bytes
  * @param val Pointer to byte array (will be copied)
  *
- * @return Pointer to newly allocated leaf node, or NULL on allocation failure
+ * @return Pointer to newly allocated leaf node, or nullptr on allocation failure
  *
  * @note Sets type=FA_FT_BYTES, tree=0, val.str=(copy of byte array)
  * @note Internal function used by DataRecord::getWiresharkData() for FSPEC
@@ -613,13 +613,13 @@ fulliautomatix_data *newDataBytes(fulliautomatix_data *prev, int pid, int bytenr
  * or warnings in the protocol tree. Wireshark can highlight these with appropriate
  * severity colors.
  *
- * @param prev Pointer to previous node in list (will set prev->next), or NULL if first
+ * @param prev Pointer to previous node in list (will set prev->next), or nullptr if first
  * @param bytenr Byte offset where error occurred
  * @param length Length of problematic data
  * @param err Severity level: 0=OK, 1=Warning, 2=Error
  * @param val Error/warning message text (will be copied)
  *
- * @return Pointer to newly allocated message node, or NULL on allocation failure
+ * @return Pointer to newly allocated message node, or nullptr on allocation failure
  *
  * @note Sets type=FA_FT_NONE, tree=0, err=err, val.str=strdup(val)
  * @note Internal function used by parsing error handlers

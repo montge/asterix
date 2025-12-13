@@ -284,9 +284,9 @@ extern unsigned short test_hdlc_fcs(int iF, int iL);
  * @param[out] len Pointer to integer receiving ASTERIX data length
  *                 (frame length minus 4 bytes for header and FCS)
  *
- * @return Pointer to ASTERIX payload data, or NULL if no complete frame available
- * @retval non-NULL Pointer to ASTERIX data in Frame buffer (&Frame[2])
- * @retval NULL No complete valid frame available yet
+ * @return Pointer to ASTERIX payload data, or nullptr if no complete frame available
+ * @retval non-nullptr Pointer to ASTERIX data in Frame buffer (&Frame[2])
+ * @retval nullptr No complete valid frame available yet
  *
  * @par Usage Pattern
  * @code
@@ -297,7 +297,7 @@ extern unsigned short test_hdlc_fcs(int iF, int iL);
  * // Extract all available frames
  * int frame_len;
  * unsigned char* asterix_data;
- * while ((asterix_data = get_next_hdlc_frame(&frame_len)) != NULL) {
+ * while ((asterix_data = get_next_hdlc_frame(&frame_len)) != nullptr) {
  *     // Process ASTERIX data
  *     parse_asterix_records(asterix_data, frame_len);
  * }

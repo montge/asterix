@@ -12,14 +12,12 @@ import struct
 import time
 import math
 from asterix.radar_integration.encoder.cat001 import (
-    encode_fspec,
     encode_i010,
     encode_i020,
     encode_i040,
     encode_i042,
     encode_i070,
     encode_i090,
-    encode_i130,
     encode_i141,
     polar_to_cartesian,
     encode_cat001_record,

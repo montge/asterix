@@ -79,35 +79,47 @@ typedef unsigned char *PUINT8;
 /* Print timestamp before each message */
 #include <time.h>
 
+/* Thread-safe time function compatibility wrappers */
+#ifdef _WIN32
+  /* Windows: Use _s versions with different parameter order */
+  #define ASTERIX_GMTIME_R(timep, result) (gmtime_s((result), (timep)) == 0 ? (result) : nullptr)
+  #define ASTERIX_CTIME_R(timep, buf) (ctime_s((buf), 26, (timep)) == 0 ? (buf) : nullptr)
+#else
+  /* POSIX: Use standard _r functions */
+  #define ASTERIX_GMTIME_R(timep, result) gmtime_r((timep), (result))
+  #define ASTERIX_CTIME_R(timep, buf) ctime_r((timep), (buf))
+#endif
+
 #if _DEBUG
-#define LOGDEBUG(cond, ...)  {if (cond) {const time_t currTime=(const time_t)time(NULL); char *sTime=ctime(&currTime); sTime[24]='\0'; fprintf(FD_LOGDEBUG, "\nDEBUG:   %s (%s) ", &sTime[4], __FILE__); fprintf(FD_LOGDEBUG, __VA_ARGS__); fflush(FD_LOGDEBUG);} }
+#define LOGDEBUG(cond, ...)  {if (cond) {const time_t currTime=(const time_t)time(nullptr); char sTime[26]; \
+    ASTERIX_CTIME_R(&currTime, sTime); sTime[24]='\0'; fprintf(FD_LOGDEBUG, "\nDEBUG:   %s (%s) ", &sTime[4], __FILE__); fprintf(FD_LOGDEBUG, __VA_ARGS__); fflush(FD_LOGDEBUG);} }
 #else
 #define LOGDEBUG(cond, ...)
 #endif
 
 #if TRACE_FILENAME
 #if LOG_TIME_IN_UTC
-#define LOGINFO(cond, ...)     {if (cond) {const time_t currTime=(const time_t)time(NULL); tm * ptm = gmtime ( &currTime ); fprintf(FD_LOGINFO,    "\nINFO:    %02d.%02d.%02d.%02d:%02d:%02d (%s) : ", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, __FILE__); fprintf(FD_LOGINFO, __VA_ARGS__);   fflush(FD_LOGINFO);} }
-#define LOGNOTIFY(cond, ...)   {if (cond) {const time_t currTime=(const time_t)time(NULL); tm * ptm = gmtime ( &currTime ); fprintf(FD_LOGNOTIFY,  "\nNOTIFY:  %02d.%02d.%02d.%02d:%02d:%02d (%s) : ", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, __FILE__); fprintf(FD_LOGNOTIFY, __VA_ARGS__); fflush(FD_LOGNOTIFY);} }
-#define LOGWARNING(cond, ...)  {if (cond) {const time_t currTime=(const time_t)time(NULL); tm * ptm = gmtime ( &currTime ); fprintf(FD_LOGWARNING, "\nWARNING: %02d.%02d.%02d.%02d:%02d:%02d (%s) : ", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, __FILE__); fprintf(FD_LOGWARNING, __VA_ARGS__);fflush(FD_LOGWARNING);} }
-#define LOGERROR(cond, ...)    {if (cond) {const time_t currTime=(const time_t)time(NULL); tm * ptm = gmtime ( &currTime ); fprintf(FD_LOGERROR,   "\nERROR:   %02d.%02d.%02d.%02d:%02d:%02d (%s) : ", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, __FILE__); fprintf(FD_LOGERROR, __VA_ARGS__);  fflush(FD_LOGERROR);} }
+#define LOGINFO(cond, ...)     {if (cond) {const time_t currTime=(const time_t)time(nullptr); struct tm tmBuf; tm * ptm = ASTERIX_GMTIME_R ( &currTime, &tmBuf ); fprintf(FD_LOGINFO,    "\nINFO:    %02d.%02d.%02d.%02d:%02d:%02d (%s) : ", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, __FILE__); fprintf(FD_LOGINFO, __VA_ARGS__);   fflush(FD_LOGINFO);} }
+#define LOGNOTIFY(cond, ...)   {if (cond) {const time_t currTime=(const time_t)time(nullptr); struct tm tmBuf; tm * ptm = ASTERIX_GMTIME_R ( &currTime, &tmBuf ); fprintf(FD_LOGNOTIFY,  "\nNOTIFY:  %02d.%02d.%02d.%02d:%02d:%02d (%s) : ", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, __FILE__); fprintf(FD_LOGNOTIFY, __VA_ARGS__); fflush(FD_LOGNOTIFY);} }
+#define LOGWARNING(cond, ...)  {if (cond) {const time_t currTime=(const time_t)time(nullptr); struct tm tmBuf; tm * ptm = ASTERIX_GMTIME_R ( &currTime, &tmBuf ); fprintf(FD_LOGWARNING, "\nWARNING: %02d.%02d.%02d.%02d:%02d:%02d (%s) : ", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, __FILE__); fprintf(FD_LOGWARNING, __VA_ARGS__);fflush(FD_LOGWARNING);} }
+#define LOGERROR(cond, ...)    {if (cond) {const time_t currTime=(const time_t)time(nullptr); struct tm tmBuf; tm * ptm = ASTERIX_GMTIME_R ( &currTime, &tmBuf ); fprintf(FD_LOGERROR,   "\nERROR:   %02d.%02d.%02d.%02d:%02d:%02d (%s) : ", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, __FILE__); fprintf(FD_LOGERROR, __VA_ARGS__);  fflush(FD_LOGERROR);} }
 #else
-#define LOGINFO(cond, ...)     {if (cond) {const time_t currTime=(const time_t)time(NULL); char *sTime=ctime(&currTime); sTime[24]='\0'; fprintf(FD_LOGINFO,    "INFO:    %s (%s) ", &sTime[4], __FILE__); fprintf(FD_LOGINFO, __VA_ARGS__);   fflush(FD_LOGINFO);} }
-#define LOGNOTIFY(cond, ...)   {if (cond) {const time_t currTime=(const time_t)time(NULL); char *sTime=ctime(&currTime); sTime[24]='\0'; fprintf(FD_LOGNOTIFY,  "NOTIFY:  %s (%s) ", &sTime[4], __FILE__); fprintf(FD_LOGNOTIFY, __VA_ARGS__); fflush(FD_LOGNOTIFY);} }
-#define LOGWARNING(cond, ...)  {if (cond) {const time_t currTime=(const time_t)time(NULL); char *sTime=ctime(&currTime); sTime[24]='\0'; fprintf(FD_LOGWARNING, "WARNING: %s (%s) ", &sTime[4], __FILE__); fprintf(FD_LOGWARNING, __VA_ARGS__);fflush(FD_LOGWARNING);} }
-#define LOGERROR(cond, ...)    {if (cond) {const time_t currTime=(const time_t)time(NULL); char *sTime=ctime(&currTime); sTime[24]='\0'; fprintf(FD_LOGERROR,   "ERROR:   %s (%s) ", &sTime[4], __FILE__); fprintf(FD_LOGERROR, __VA_ARGS__);  fflush(FD_LOGERROR);} }
+#define LOGINFO(cond, ...)     {if (cond) {const time_t currTime=(const time_t)time(nullptr); char sTime[26]; ASTERIX_CTIME_R(&currTime, sTime); sTime[24]='\0'; fprintf(FD_LOGINFO,    "INFO:    %s (%s) ", &sTime[4], __FILE__); fprintf(FD_LOGINFO, __VA_ARGS__);   fflush(FD_LOGINFO);} }
+#define LOGNOTIFY(cond, ...)   {if (cond) {const time_t currTime=(const time_t)time(nullptr); char sTime[26]; ASTERIX_CTIME_R(&currTime, sTime); sTime[24]='\0'; fprintf(FD_LOGNOTIFY,  "NOTIFY:  %s (%s) ", &sTime[4], __FILE__); fprintf(FD_LOGNOTIFY, __VA_ARGS__); fflush(FD_LOGNOTIFY);} }
+#define LOGWARNING(cond, ...)  {if (cond) {const time_t currTime=(const time_t)time(nullptr); char sTime[26]; ASTERIX_CTIME_R(&currTime, sTime); sTime[24]='\0'; fprintf(FD_LOGWARNING, "WARNING: %s (%s) ", &sTime[4], __FILE__); fprintf(FD_LOGWARNING, __VA_ARGS__);fflush(FD_LOGWARNING);} }
+#define LOGERROR(cond, ...)    {if (cond) {const time_t currTime=(const time_t)time(nullptr); char sTime[26]; ASTERIX_CTIME_R(&currTime, sTime); sTime[24]='\0'; fprintf(FD_LOGERROR,   "ERROR:   %s (%s) ", &sTime[4], __FILE__); fprintf(FD_LOGERROR, __VA_ARGS__);  fflush(FD_LOGERROR);} }
 #endif
 #else
 #if LOG_TIME_IN_UTC
-#define LOGINFO(cond, ...)     {if (cond) {const time_t currTime=(const time_t)time(NULL); tm * ptm = gmtime ( &currTime ); fprintf(FD_LOGINFO,    "INFO:    %02d.%02d.%02d.%02d:%02d:%02d : ", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec); fprintf(FD_LOGINFO, __VA_ARGS__);   fflush(FD_LOGINFO);} }
-#define LOGNOTIFY(cond, ...)   {if (cond) {const time_t currTime=(const time_t)time(NULL); tm * ptm = gmtime ( &currTime ); fprintf(FD_LOGNOTIFY,  "NOTIFY:  %02d.%02d.%02d.%02d:%02d:%02d : ", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec); fprintf(FD_LOGNOTIFY, __VA_ARGS__); fflush(FD_LOGNOTIFY);} }
-#define LOGWARNING(cond, ...)  {if (cond) {const time_t currTime=(const time_t)time(NULL); tm * ptm = gmtime ( &currTime ); fprintf(FD_LOGWARNING, "WARNING: %02d.%02d.%02d.%02d:%02d:%02d : ", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec); fprintf(FD_LOGWARNING, __VA_ARGS__);fflush(FD_LOGWARNING);} }
-#define LOGERROR(cond, ...)    {if (cond) {const time_t currTime=(const time_t)time(NULL); tm * ptm = gmtime ( &currTime ); fprintf(FD_LOGERROR,   "ERROR:   %02d.%02d.%02d.%02d:%02d:%02d :", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec); fprintf(FD_LOGERROR, __VA_ARGS__);  fflush(FD_LOGERROR);} }
+#define LOGINFO(cond, ...)     {if (cond) {const time_t currTime=(const time_t)time(nullptr); struct tm tmBuf; tm * ptm = ASTERIX_GMTIME_R ( &currTime, &tmBuf ); fprintf(FD_LOGINFO,    "INFO:    %02d.%02d.%02d.%02d:%02d:%02d : ", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec); fprintf(FD_LOGINFO, __VA_ARGS__);   fflush(FD_LOGINFO);} }
+#define LOGNOTIFY(cond, ...)   {if (cond) {const time_t currTime=(const time_t)time(nullptr); struct tm tmBuf; tm * ptm = ASTERIX_GMTIME_R ( &currTime, &tmBuf ); fprintf(FD_LOGNOTIFY,  "NOTIFY:  %02d.%02d.%02d.%02d:%02d:%02d : ", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec); fprintf(FD_LOGNOTIFY, __VA_ARGS__); fflush(FD_LOGNOTIFY);} }
+#define LOGWARNING(cond, ...)  {if (cond) {const time_t currTime=(const time_t)time(nullptr); struct tm tmBuf; tm * ptm = ASTERIX_GMTIME_R ( &currTime, &tmBuf ); fprintf(FD_LOGWARNING, "WARNING: %02d.%02d.%02d.%02d:%02d:%02d : ", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec); fprintf(FD_LOGWARNING, __VA_ARGS__);fflush(FD_LOGWARNING);} }
+#define LOGERROR(cond, ...)    {if (cond) {const time_t currTime=(const time_t)time(nullptr); struct tm tmBuf; tm * ptm = ASTERIX_GMTIME_R ( &currTime, &tmBuf ); fprintf(FD_LOGERROR,   "ERROR:   %02d.%02d.%02d.%02d:%02d:%02d :", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year+1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec); fprintf(FD_LOGERROR, __VA_ARGS__);  fflush(FD_LOGERROR);} }
 #else
-#define LOGINFO(cond, ...)     {if (cond) {const time_t currTime=(const time_t)time(NULL); char *sTime=ctime(&currTime); sTime[24]='\0'; fprintf(FD_LOGINFO,    "INFO:    %s ", &sTime[4]); fprintf(FD_LOGINFO, __VA_ARGS__);   fflush(FD_LOGINFO);} }
-#define LOGNOTIFY(cond, ...)   {if (cond) {const time_t currTime=(const time_t)time(NULL); char *sTime=ctime(&currTime); sTime[24]='\0'; fprintf(FD_LOGNOTIFY,  "NOTIFY:  %s ", &sTime[4]); fprintf(FD_LOGNOTIFY, __VA_ARGS__); fflush(FD_LOGNOTIFY);} }
-#define LOGWARNING(cond, ...)  {if (cond) {const time_t currTime=(const time_t)time(NULL); char *sTime=ctime(&currTime); sTime[24]='\0'; fprintf(FD_LOGWARNING, "WARNING: %s ", &sTime[4]); fprintf(FD_LOGWARNING, __VA_ARGS__);fflush(FD_LOGWARNING);} }
-#define LOGERROR(cond, ...)    {if (cond) {const time_t currTime=(const time_t)time(NULL); char *sTime=ctime(&currTime); sTime[24]='\0'; fprintf(FD_LOGERROR,   "ERROR:   %s ", &sTime[4]); fprintf(FD_LOGERROR, __VA_ARGS__);  fflush(FD_LOGERROR);} }
+#define LOGINFO(cond, ...)     {if (cond) {const time_t currTime=(const time_t)time(nullptr); char sTime[26]; ASTERIX_CTIME_R(&currTime, sTime); sTime[24]='\0'; fprintf(FD_LOGINFO,    "INFO:    %s ", &sTime[4]); fprintf(FD_LOGINFO, __VA_ARGS__);   fflush(FD_LOGINFO);} }
+#define LOGNOTIFY(cond, ...)   {if (cond) {const time_t currTime=(const time_t)time(nullptr); char sTime[26]; ASTERIX_CTIME_R(&currTime, sTime); sTime[24]='\0'; fprintf(FD_LOGNOTIFY,  "NOTIFY:  %s ", &sTime[4]); fprintf(FD_LOGNOTIFY, __VA_ARGS__); fflush(FD_LOGNOTIFY);} }
+#define LOGWARNING(cond, ...)  {if (cond) {const time_t currTime=(const time_t)time(nullptr); char sTime[26]; ASTERIX_CTIME_R(&currTime, sTime); sTime[24]='\0'; fprintf(FD_LOGWARNING, "WARNING: %s ", &sTime[4]); fprintf(FD_LOGWARNING, __VA_ARGS__);fflush(FD_LOGWARNING);} }
+#define LOGERROR(cond, ...)    {if (cond) {const time_t currTime=(const time_t)time(nullptr); char sTime[26]; ASTERIX_CTIME_R(&currTime, sTime); sTime[24]='\0'; fprintf(FD_LOGERROR,   "ERROR:   %s ", &sTime[4]); fprintf(FD_LOGERROR, __VA_ARGS__);  fflush(FD_LOGERROR);} }
 #endif
 #endif
 

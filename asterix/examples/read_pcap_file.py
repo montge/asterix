@@ -102,8 +102,8 @@ def main():
             data = eth.ip.udp.data
 
             # Format packet data as hex string for display (colon-separated)
-            hexdata = ":".join("{:02x}".format(ord(c)) for c in str(data))
-            print('Parsing packet %d : %s' % (cntr, hexdata))
+            hexdata = ":".join(f"{ord(c):02x}" for c in str(data))
+            print(f'Parsing packet {cntr} : {hexdata}')
             cntr += 1
 
             # Parse the ASTERIX data from UDP payload

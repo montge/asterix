@@ -61,7 +61,7 @@ long DataItemFormatCompound::getLength(const unsigned char *pData) {
     std::list<DataItemFormat *>::iterator it2;
     it2 = m_lSubItems.begin();
     DataItemFormatVariable *pCompoundPrimary = (DataItemFormatVariable *) (*it2);
-    if (pCompoundPrimary == NULL) {
+    if (pCompoundPrimary == nullptr) {
         Tracer::Error("Missing primary subfield of Compound");
         return 0;
     }
@@ -109,7 +109,7 @@ bool DataItemFormatCompound::getText(std::string &strResult, std::string &strHea
     std::list<DataItemFormat *>::iterator it2;
     it2 = m_lSubItems.begin();
     DataItemFormatVariable *pCompoundPrimary = (DataItemFormatVariable *) (*it2);
-    if (pCompoundPrimary == NULL) {
+    if (pCompoundPrimary == nullptr) {
         Tracer::Error("Missing primary subfield of Compound");
         return false;
     }
@@ -234,30 +234,30 @@ bool DataItemFormatCompound::isFiltered(const char *name) {
     return false;
 }
 
-const char *DataItemFormatCompound::getDescription(const char *field, const char *value = NULL) {
+const char *DataItemFormatCompound::getDescription(const char *field, const char *value = nullptr) {
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
         DataItemBits *bv = (DataItemBits *) (*it);
         const char *desc = bv->getDescription(field, value);
-        if (desc != NULL)
+        if (desc != nullptr)
             return desc;
     }
-    return NULL;
+    return nullptr;
 }
 
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_definitions* DataItemFormatCompound::getWiresharkDefinitions()
 {
-    fulliautomatix_definitions *def = NULL, *startDef = NULL;
+    fulliautomatix_definitions *def = nullptr, *startDef = nullptr;
 
     std::list<DataItemFormat*>::iterator it;
     it = m_lSubItems.begin();
     DataItemFormatVariable* pCompoundPrimary = (DataItemFormatVariable*)(*it);
     it++;
-    if (pCompoundPrimary == NULL)
+    if (pCompoundPrimary == nullptr)
     {
         Tracer::Error("Missing primary subfield of Compound");
-        return NULL;
+        return nullptr;
     }
 
     startDef = def = pCompoundPrimary->getWiresharkDefinitions();
@@ -276,13 +276,13 @@ fulliautomatix_definitions* DataItemFormatCompound::getWiresharkDefinitions()
 
 fulliautomatix_data* DataItemFormatCompound::getData(unsigned char* pData, long, int byteoffset)
 {
-    fulliautomatix_data *lastData = NULL, *firstData = NULL;
+    fulliautomatix_data *lastData = nullptr, *firstData = nullptr;
 
     std::list<DataItemFormat*>::iterator it;
     std::list<DataItemFormat*>::iterator it2;
     it2 = m_lSubItems.begin();
     DataItemFormatVariable* pCompoundPrimary = (DataItemFormatVariable*)(*it2);
-    if (pCompoundPrimary == NULL)
+    if (pCompoundPrimary == nullptr)
     {
         Tracer::Error("Missing primary subfield of Compound");
         return 0;
@@ -297,7 +297,7 @@ fulliautomatix_data* DataItemFormatCompound::getData(unsigned char* pData, long,
     int primaryPartLength = pCompoundPrimary->getLength(pData);
     unsigned char* pSecData = pData + primaryPartLength;
 
-    lastData = firstData = newDataTree(NULL, byteoffset, primaryPartLength, (char*)"Compound item header");
+    lastData = firstData = newDataTree(nullptr, byteoffset, primaryPartLength, (char*)"Compound item header");
 
     lastData->next = pCompoundPrimary->getData(pData, primaryPartLength, byteoffset);
     while(lastData->next)
@@ -356,7 +356,7 @@ void DataItemFormatCompound::insertToDict(PyObject* p, unsigned char* pData, lon
     std::list<DataItemFormat*>::iterator it2;
     it2 = m_lSubItems.begin();
     DataItemFormatVariable* pCompoundPrimary = (DataItemFormatVariable*)(*it2);
-    if (pCompoundPrimary == NULL)
+    if (pCompoundPrimary == nullptr)
     {
         Tracer::Error("Missing primary subfield of Compound");
         return;

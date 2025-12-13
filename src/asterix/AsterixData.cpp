@@ -47,7 +47,7 @@ bool AsterixData::getText(std::string &strResult, const unsigned int formatType)
     std::list<DataBlock *>::iterator it;
     for (it = m_lDataBlocks.begin(); it != m_lDataBlocks.end(); it++) {
         DataBlock *db = (DataBlock *) (*it);
-        if (db != NULL) {
+        if (db != nullptr) {
             switch (formatType) {
                 case CAsterixFormat::ETxt:
                     strResult += format("\n\n-------------------------\nData Block %d", i++);
@@ -63,14 +63,14 @@ bool AsterixData::getText(std::string &strResult, const unsigned int formatType)
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_data* AsterixData::getData()
 {
-  fulliautomatix_data *firstData=NULL,*lastData=NULL;
+  fulliautomatix_data *firstData=nullptr,*lastData=nullptr;
   int byteoffset = 0;
 
   std::list<DataBlock*>::iterator it;
   for ( it=m_lDataBlocks.begin() ; it != m_lDataBlocks.end(); it++ )
   {
     DataBlock* db = (DataBlock*)(*it);
-    if (db != NULL)
+    if (db != nullptr)
     {
       if (!lastData)
       {
@@ -100,7 +100,7 @@ PyObject* AsterixData::getData(int verbose)
     for ( it=m_lDataBlocks.begin() ; it != m_lDataBlocks.end(); it++ )
     {
         DataBlock* db = (DataBlock*)(*it);
-        if (db != NULL)
+        if (db != nullptr)
         {
             db->getData(hp, verbose);
         }

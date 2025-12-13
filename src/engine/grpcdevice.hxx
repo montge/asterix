@@ -131,7 +131,7 @@ public:
      *
      * @param descriptor Descriptor with format: mode:endpoint[:tls]
      */
-    CGrpcDevice(CDescriptor &descriptor);
+    explicit CGrpcDevice(CDescriptor &descriptor);
 
     /**
      * Class destructor.

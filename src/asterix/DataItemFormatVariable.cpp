@@ -206,21 +206,21 @@ bool DataItemFormatVariable::isFiltered(const char *name) {
     return false;
 }
 
-const char *DataItemFormatVariable::getDescription(const char *field, const char *value = NULL) {
+const char *DataItemFormatVariable::getDescription(const char *field, const char *value = nullptr) {
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
         DataItemFormatFixed *dip = (DataItemFormatFixed *) (*it);
         const char *desc = dip->getDescription(field, value);
-        if (desc != NULL)
+        if (desc != nullptr)
             return desc;
     }
-    return NULL;
+    return nullptr;
 }
 
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_definitions* DataItemFormatVariable::getWiresharkDefinitions()
 {
-  fulliautomatix_definitions *def = NULL, *startDef = NULL;
+  fulliautomatix_definitions *def = nullptr, *startDef = nullptr;
 
   std::list<DataItemFormat*>::iterator it;
   for ( it=m_lSubItems.begin() ; it != m_lSubItems.end(); it++ )
@@ -242,7 +242,7 @@ fulliautomatix_definitions* DataItemFormatVariable::getWiresharkDefinitions()
 
 fulliautomatix_data* DataItemFormatVariable::getData(unsigned char* pData, long len, int byteoffset)
 {
-  fulliautomatix_data *lastData = NULL, *firstData = NULL;
+  fulliautomatix_data *lastData = nullptr, *firstData = nullptr;
   std::list<DataItemFormat*>::iterator it;
   bool lastPart = false;
 
@@ -287,7 +287,7 @@ fulliautomatix_data* DataItemFormatVariable::getData(unsigned char* pData, long 
 #if defined(PYTHON_WRAPPER)
 PyObject* DataItemFormatVariable::getObject(unsigned char* pData, long nLength, int verbose)
 {
-    PyObject* p = NULL;
+    PyObject* p = nullptr;
     std::list<DataItemFormat*>::iterator it;
     bool lastPart = false;
 
