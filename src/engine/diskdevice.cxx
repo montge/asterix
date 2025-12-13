@@ -633,8 +633,9 @@ bool CDiskDevice::IoCtrl(const unsigned int command, const void *data, size_t le
         case EIsLastPacket:
             if (_input)
                 return !_opened;
-            else
+            else {
                     ASSERT(0);
+            }
             break;
         default:
             result = false;
