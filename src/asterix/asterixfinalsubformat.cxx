@@ -66,7 +66,7 @@
 
 extern bool gSynchronous;
 
-bool CAsterixFinalSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard) {
+bool CAsterixFinalSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, [[maybe_unused]] bool &discard) {
     struct sFinalRecordHeader finalRecordHeader;
     char padding[4];
     static unsigned long lastFileTimeMSec = 0;
@@ -139,16 +139,16 @@ bool CAsterixFinalSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor,
     return true;
 }
 
-bool CAsterixFinalSubformat::WritePacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard) {
+bool CAsterixFinalSubformat::WritePacket([[maybe_unused]] CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool &discard) {
     return false; //TODO
 }
 
 bool
-CAsterixFinalSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard) {
+CAsterixFinalSubformat::ProcessPacket([[maybe_unused]] CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool &discard) {
     return true;
 }
 
-bool CAsterixFinalSubformat::Heartbeat(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device) {
+bool CAsterixFinalSubformat::Heartbeat([[maybe_unused]] CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device) {
     return true;
 }
 

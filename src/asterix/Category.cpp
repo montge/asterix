@@ -131,7 +131,7 @@ UAP *Category::getUAP(const unsigned char *data, unsigned long len) const {
 }
 
 std::string Category::printDescriptors() const {
-    std::string strDef = "";
+    std::string strDef;
     char header[32];
 
     std::list<DataItemDescription *>::const_iterator it;

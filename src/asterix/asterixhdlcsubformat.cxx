@@ -59,7 +59,7 @@
  * 7. Move the rest of unparsed data to beginning of input buffer
  */
 
-bool CAsterixHDLCSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard) {
+bool CAsterixHDLCSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, [[maybe_unused]] bool &discard) {
     CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
 
     // read available data to read buffer
@@ -99,14 +99,14 @@ bool CAsterixHDLCSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
     return true;
 }
 
-bool CAsterixHDLCSubformat::WritePacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard) {
+bool CAsterixHDLCSubformat::WritePacket([[maybe_unused]] CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool &discard) {
     return false; //TODO
 }
 
 /*
  * Parse packet read from input channel and stored to Descriptor.m_pBuffer
  */
-bool CAsterixHDLCSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard) {
+bool CAsterixHDLCSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool &discard) {
     CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
 
     if (Descriptor.GetDataLen() < 3) {
@@ -124,7 +124,7 @@ bool CAsterixHDLCSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescripto
     return true;
 }
 
-bool CAsterixHDLCSubformat::Heartbeat(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device) {
+bool CAsterixHDLCSubformat::Heartbeat([[maybe_unused]] CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device) {
     // nothing to do
     return true;
 }

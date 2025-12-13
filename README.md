@@ -88,7 +88,7 @@ This decoder is optimized for high-throughput, real-time processing of ASTERIX s
 
 **Documentation**:
 - [BENCHMARK_RESULTS_2025-10-20.md](BENCHMARK_RESULTS_2025-10-20.md) - Validated performance benchmarks
-- [PERFORMANCE_OPTIMIZATIONS.md](PERFORMANCE_OPTIMIZATIONS.md) - Detailed optimization strategies and results
+- [PERFORMANCE_OPTIMIZATIONS.md](docs/PERFORMANCE_OPTIMIZATIONS.md) - Detailed optimization strategies and results
 
 ## Quick Start
 
@@ -194,7 +194,7 @@ cargo test
   - AppleClang 15.0+ / Xcode 15+
 - **Rust**: 1.70+ (for Rust bindings)
 - Linux/macOS: `libexpat-devel` (XML parsing)
-- Windows: See [BUILD_WINDOWS.md](BUILD_WINDOWS.md)
+- Windows: See [BUILD_WINDOWS.md](docs/build/BUILD_WINDOWS.md)
 
 **Note:** The project uses C++23 features with automatic fallback to C++17/20 when C++23 is not available. For best performance, use a C++23-capable compiler.
 
@@ -202,7 +202,7 @@ cargo test
 
 - **Build & Installation Guide**: [docs/BUILD.md](https://montge.github.io/asterix/BUILD.html) - Multi-platform build instructions
 - **Complete Documentation**: [montge.github.io/asterix](https://montge.github.io/asterix/) - Full documentation site
-- **Language Bindings Comparison**: [LANGUAGE_BINDINGS_COMPARISON.md](LANGUAGE_BINDINGS_COMPARISON.md) - Feature comparison, performance, use cases
+- **Language Bindings Comparison**: [LANGUAGE_BINDINGS_COMPARISON.md](docs/bindings/LANGUAGE_BINDINGS_COMPARISON.md) - Feature comparison, performance, use cases
 - **Rust Bindings**: [RUST_BINDINGS_INDEX.md](RUST_BINDINGS_INDEX.md) - Complete Rust documentation
 - **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md)
 - **Architecture Overview**: [CLAUDE.md](CLAUDE.md) - Technical architecture
