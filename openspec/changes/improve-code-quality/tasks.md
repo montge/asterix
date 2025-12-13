@@ -50,12 +50,25 @@ SonarCloud Analysis Summary:
 - [ ] 3.2 Fix minor issues during related refactoring
 - [ ] 3.3 Verify all minor issues resolved
 
-## 4. Code Smells (~5,873 issues) - Priority: PHASED
+## 4. Code Smells (~5,135 issues) - Priority: PHASED
 
-### 4.1 Analysis and Triage
-- [ ] 4.1.1 Export complete code smell breakdown by rule
-- [ ] 4.1.2 Identify top 10 rules by issue count
-- [ ] 4.1.3 Identify hotspot files (files with most issues)
+### 4.1 Analysis and Triage (Completed 2025-12-13)
+- [x] 4.1.1 Export complete code smell breakdown by rule
+- [x] 4.1.2 Identify top 10 rules by issue count:
+  - cpp:S5025 (578) - Use smart pointers instead of raw new/delete
+  - cpp:S4962 (516) - std::vector/string initialization issues
+  - cpp:S5945 (441) - Functions return values not used
+  - javascript:S2681 (319) - In tarpaulin-report.html (removed)
+  - cpp:S5827 (248) - Use "auto" to avoid type repetition
+  - cpp:S3471 (176) - Pass by const reference
+  - javascript:* (600+) - All in tarpaulin-report.html (removed)
+  - python:S3457 (79) - String formatting issues
+  - python:S1481 (76) - Unused local variables
+- [x] 4.1.3 Hotspot files identified:
+  - asterix-node/src/parser_wrapper.cpp (6 issues)
+  - asterix-ruby/ext/asterix/ruby_parser.cpp (5 issues)
+  - src/go/asterix_wrapper.cpp (3 issues)
+  - src/engine/devicefactory.cxx (4 issues)
 - [ ] 4.1.4 Create prioritized remediation plan
 
 ### 4.2 High-Impact Code Smells (Top Rules)
@@ -64,6 +77,8 @@ SonarCloud Analysis Summary:
 - [ ] 4.2.3 Address code duplication
 - [ ] 4.2.4 Address long methods/functions
 - [x] 4.2.5 Address unused imports/variables (commits f4608c6, bd61fe1)
+- [x] 4.2.6 Fix string initialization issues - cpp:S4962 (commit 78d3621)
+- [x] 4.2.7 Replace NULL with nullptr in bindings (commit 78d3621)
 
 ### 4.3 File-by-File Remediation
 - [ ] 4.3.1 Fix issues in src/asterix/*.cpp (core parsing)
@@ -129,11 +144,11 @@ SonarCloud Analysis Summary:
 | Critical | 16 | 16 | 0 |
 | Major (Bugs) | 5 | 4 | 1 (false positive) |
 | Minor | 13 | 0 | 13 |
-| Code Smells | ~5,135 | 0 | ~5,135 |
+| Code Smells | ~5,135 | ~20 | ~5,115 |
 | Bugs (SonarCloud) | 238 | 4 | 234 |
 | Security Hotspots | 112 | 0 | 112 |
 | Dependency PRs | 11 | 7 | 4 |
-| **Total** | **5,530** | **31** | **5,499** |
+| **Total** | **5,530** | **51** | **5,479** |
 
 **SonarCloud Status (2025-12-13):**
 - Critical: 0 (generated reports removed)
