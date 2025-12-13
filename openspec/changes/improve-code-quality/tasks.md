@@ -84,7 +84,7 @@ SonarCloud Analysis Summary:
 - [ ] 4.3.1 Fix issues in src/asterix/*.cpp (core parsing)
 - [x] 4.3.2 Fix issues in src/engine/*.cpp (device layer) - devicefactory.cxx uses std::make_unique
 - [x] 4.3.3 Fix issues in asterix/*.py (Python bindings) - unused vars, naming conventions
-- [ ] 4.3.4 Fix issues in asterix-rs/src/*.rs (Rust bindings)
+- [x] 4.3.4 Fix issues in asterix-rs/src/*.rs (Rust bindings) - clippy shows 0 warnings
 - [x] 4.3.5 Fix issues in asterix-node/*.cpp (Node.js bindings) - smart pointers added
 - [x] 4.3.6 Fix issues in src/go/*.cpp (Go bindings) - smart pointers added
 

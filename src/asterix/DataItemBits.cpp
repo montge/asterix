@@ -364,7 +364,7 @@ unsigned char *DataItemBits::getHexBitStringFullByte(unsigned char *pData, int b
     return str;
 }
 
-unsigned char *DataItemBits::getHexBitStringMask(int bytes, int frombit, int tobit) {
+unsigned char *DataItemBits::getHexBitStringMask([[maybe_unused]] int bytes, int frombit, int tobit) {
     int numberOfBits = (tobit - frombit + 1);
     if (!numberOfBits) {
         Tracer::Error("Hex representation not valid");
