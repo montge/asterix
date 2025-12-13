@@ -62,7 +62,7 @@ long DataItemFormatRepetitive::getLength(const unsigned char *pData) {
         return 0;
     }
 
-    long totalLength = 1 + (long)nRepetition * fixedLength;
+    long totalLength = 1 + static_cast<long>(nRepetition) * fixedLength;
 
     // SECURITY FIX (VULN-001): Additional sanity check - maximum reasonable ASTERIX item size
     // ASTERIX data blocks are limited to 64KB, individual items should be much smaller
