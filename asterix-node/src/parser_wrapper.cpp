@@ -48,8 +48,8 @@
 #endif
 
 // Global state (singleton pattern, matches Python implementation)
-static AsterixDefinition *pDefinition = NULL;
-static InputParser *inputParser = NULL;
+static AsterixDefinition *pDefinition = nullptr;
+static InputParser *inputParser = nullptr;
 
 // Error callback for Tracer (captures errors during parsing)
 static char last_error_buffer[512] = {0};
@@ -64,7 +64,7 @@ static void error_trace_callback(char const *format, ...) {
 // Helper: Get current timestamp in milliseconds
 static unsigned long get_timestamp_ms() {
     struct timeval tp;
-    gettimeofday(&tp, NULL);
+    gettimeofday(&tp, nullptr);
     return tp.tv_sec * 1000 + tp.tv_usec / 1000;
 }
 
@@ -94,7 +94,7 @@ static bool convert_asterix_data_to_records(
         if (!*out_records) {
             return false;
         }
-        (*out_records)->records = NULL;
+        (*out_records)->records = nullptr;
         (*out_records)->count = 0;
         return true;
     }
@@ -140,7 +140,7 @@ static bool convert_asterix_data_to_records(
 
             // Generate JSON representation using getText
             std::string json_str;
-            std::string header = "";
+            std::string header;
             bool success = dr->getText(json_str, header, CAsterixFormat::EJSON);
 
             if (success && !json_str.empty()) {
@@ -607,7 +607,7 @@ char* asterix_wrapper_describe(
         const char *description = pDefinition->getDescription(
             (int)category, item, field, value);
 
-        if (description == NULL) {
+        if (description == nullptr) {
             return strdup("");
         }
 
@@ -647,18 +647,18 @@ void asterix_wrapper_free_records(AsterixRecords* records) {
 
             if (rec->hex_data) {
                 free(rec->hex_data);
-                rec->hex_data = NULL;
+                rec->hex_data = nullptr;
             }
 
             if (rec->json_data) {
                 free(rec->json_data);
-                rec->json_data = NULL;
+                rec->json_data = nullptr;
             }
         }
 
         // Free the records array
         free(records->records);
-        records->records = NULL;
+        records->records = nullptr;
     }
 
     // Free the AsterixRecords structure itself

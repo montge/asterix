@@ -143,7 +143,7 @@ bool DataItemFormatCompound::getText(std::string &strResult, std::string &strHea
             if (dip->isSecondaryPartPresent(pData, secondaryPart)) {
                 DataItemFormat *dip2 = (DataItemFormat *) (*it2);
                 int skip = 0;
-                std::string tmpStr = "";
+                std::string tmpStr;
 
                 switch (formatType) {
                     case CAsterixFormat::EJSONH:
@@ -204,7 +204,7 @@ bool DataItemFormatCompound::getText(std::string &strResult, std::string &strHea
 }
 
 std::string DataItemFormatCompound::printDescriptors(std::string header) {
-    std::string strDef = "";
+    std::string strDef;
 
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(), it++; it != m_lSubItems.end(); it++) {
