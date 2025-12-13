@@ -238,7 +238,7 @@ if __name__ == "__main__":
     )
     print(f"   Length: {len(nm_data)} bytes")
     print(f"   CAT: {nm_data[0]}")
-    print(f"   Message Type: North Marker (1)")
+    print("   Message Type: North Marker (1)")
     print(f"   Hex: {nm_data.hex()}\n")
 
     # Test 2: Sector Crossing (simulating 8-sector radar)

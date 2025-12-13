@@ -100,7 +100,7 @@ bool CAsterixFinalSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor,
 
     if (gSynchronous) { // In synchronous mode make delays between packets to simulate real tempo
         struct timeval currTime;
-        if (gettimeofday(&currTime, NULL) == 0) {
+        if (gettimeofday(&currTime, nullptr) == 0) {
             unsigned int currTimeMsec = currTime.tv_sec * 1000 + currTime.tv_usec / 1000;
             if (lastMyTimeMSec != 0 && lastFileTimeMSec != 0) {
                 unsigned int diffFile = nTimestamp - lastFileTimeMSec;

@@ -29,7 +29,7 @@ Date: 2025-11-23
 
 import struct
 import time
-from typing import List, Optional, Dict
+from typing import List, Optional
 
 
 def encode_fspec(items: List[int]) -> bytes:
@@ -290,8 +290,8 @@ if __name__ == "__main__":
     )
     print(f"   Length: {len(status)} bytes")
     print(f"   CAT: {status[0]}")
-    print(f"   Message: Periodic Status")
-    print(f"   Sensors: 4 active")
+    print("   Message: Periodic Status")
+    print("   Sensors: 4 active")
     print(f"   Hex: {status.hex()}\n")
 
     # Test 2: Start of update cycle

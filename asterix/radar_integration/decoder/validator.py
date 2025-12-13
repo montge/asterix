@@ -20,8 +20,7 @@ Author: ASTERIX Integration Team
 Date: 2025-11-23
 """
 
-import math
-from typing import List, Dict, Any, Tuple, Optional, Union
+from typing import List, Dict, Any, Tuple, Optional
 from dataclasses import dataclass, field
 
 

@@ -88,7 +88,7 @@ public:
     /**
      * Class constructor which uses descriptor
      */
-    CUdpDevice(CDescriptor &descriptor);
+    explicit CUdpDevice(CDescriptor &descriptor);
 
     /**
      * Class destructor.

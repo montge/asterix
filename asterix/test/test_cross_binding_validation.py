@@ -21,7 +21,6 @@ import unittest
 import subprocess  # nosec B404 - subprocess is required for cross-binding validation tests
 import json
 import os
-import sys
 import logging
 
 # Configure logging for test diagnostics

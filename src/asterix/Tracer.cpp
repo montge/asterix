@@ -29,7 +29,7 @@
 
 using namespace std;
 
-Tracer *Tracer::g_TracerInstance = NULL;
+Tracer *Tracer::g_TracerInstance = nullptr;
 
 Tracer &Tracer::instance() {
     if (!Tracer::g_TracerInstance) {
@@ -39,7 +39,7 @@ Tracer &Tracer::instance() {
 }
 
 Tracer::Tracer()
-        : pPrintFunc(NULL), pPrintFunc2(NULL), m_logLevel(1) {
+        : pPrintFunc(nullptr), pPrintFunc2(nullptr), m_logLevel(1) {
     // Default log level is 1 (errors only)
 }
 
@@ -54,7 +54,7 @@ void Tracer::Configure(ptExtVoidPrintf pFunc) {
 void Tracer::Delete() {
     if (Tracer::g_TracerInstance)
         delete Tracer::g_TracerInstance;
-    Tracer::g_TracerInstance = NULL;
+    Tracer::g_TracerInstance = nullptr;
 }
 
 void Tracer::Error(const char *format, ...) {

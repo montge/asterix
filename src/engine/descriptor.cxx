@@ -20,135 +20,132 @@
  * AUTHORS: Jurica Baricevic, Croatia Control Ltd.
  *
  */
-#include <string.h>
+#include <cstring>
 
 #include "descriptor.hxx"
 
 
-CDescriptor::CDescriptor(const char *description, const char *delimiters, bool multiMode) {
-    unsigned int size = 0;
+CDescriptor::CDescriptor(const char *description, const char *delimiters, bool multiMode)
+    : _description(description ? description : ""),
+      _iteratorPos(0),
+      _bMultipleDelimiters(multiMode) {
 
-    // 1. Allocate the memory for the description string and initialize it
-    if (description) {
-        size = strlen(description);
+    // If empty, ensure we have at least an empty string
+    if (_description.empty()) {
+        return;
     }
 
-    if (size != 0) {
-        size++; // Null terminator
-        _description = new char[size];
-        // Security fix: Use strncpy to prevent buffer overflow
-        strncpy(_description, description, size - 1);
-        _description[size - 1] = '\0';
-    } else {
-        // Make an empty string to avoid special handling with NULL pointers.
-        _description = new char[1];
-        _description[0] = '\0';
-        size = 1;
-    }
-
-
-    // 2. Initialize the rest of members    
-    _iterator = _description;
-    _end = _description + size;
-    *(_end - 1) = '\0'; // safety precaution
-    _bMultipleDelimiters = multiMode;
-
-
-    // 3. Delimit parameters with '\0' to get a list of strings
-    if (delimiters) {
-        do {
-            if (strchr(delimiters, *_iterator)) {
-                *_iterator = '\0';
+    // Delimit parameters with '\0' to get a list of strings
+    if (delimiters != nullptr) {
+        for (char& c : _description) {
+            if (std::strchr(delimiters, c) != nullptr) {
+                c = '\0';
             }
-        } while (++_iterator < _end);
-
-        _iterator = _description; // reset iterator
-    }
-}
-
-
-CDescriptor::~CDescriptor() {
-    if (_description) {
-        delete[] _description;
+        }
     }
 }
 
 
 const char *CDescriptor::GetFirst(const char *empty_chars) {
     // Reset iterator first
-    _iterator = _description;
+    _iteratorPos = 0;
 
+    // Handle empty string case
+    if (_description.empty()) {
+        return nullptr;
+    }
 
-    // Advance the iterator over all NULL characters just before the next item
+    // Advance the iterator over all nullptr characters just before the next item
     // in case multiple delimiters are allowed
     if (_bMultipleDelimiters) {
-        while ((_iterator < _end) && (*_iterator == '\0')) {
-            _iterator++;
+        while (_iteratorPos < _description.size() && _description[_iteratorPos] == '\0') {
+            _iteratorPos++;
         }
     }
 
     // Check for reaching the end
-    if (_iterator >= _end) {
-        _iterator--; // Get back within boundary for the next call to GetNext()
-        return NULL;
-    } else {
-        // Removing empty chars allowed only in multiple delimiter mode
-        if (_bMultipleDelimiters)
-            RemoveEmptyChars(empty_chars);
-        return _iterator;
+    if (_iteratorPos >= _description.size()) {
+        _iteratorPos = _description.size() - 1; // Get back within boundary
+        return nullptr;
     }
+
+    // Removing empty chars allowed only in multiple delimiter mode
+    if (_bMultipleDelimiters) {
+        RemoveEmptyChars(empty_chars);
+    }
+
+    return _description.data() + _iteratorPos;
 }
 
 
 const char *CDescriptor::GetNext(const char *empty_chars) {
-    // Advance the iterator till the first NULL character
-    while ((_iterator < _end) && (*_iterator != '\0')) {
-        _iterator++;
+    // Handle empty string case
+    if (_description.empty()) {
+        return nullptr;
     }
 
-    // Advance the iterator over all NULL characters just before the next item
+    // Advance the iterator till the first nullptr character
+    while (_iteratorPos < _description.size() && _description[_iteratorPos] != '\0') {
+        _iteratorPos++;
+    }
+
+    // Advance the iterator over all nullptr characters just before the next item
     // in multiple delimiters mode
     if (_bMultipleDelimiters) {
-        while ((_iterator < _end) && (*_iterator == '\0')) {
-            _iterator++;
+        while (_iteratorPos < _description.size() && _description[_iteratorPos] == '\0') {
+            _iteratorPos++;
         }
     } else {
         // Advance to a start of new parameter
-        _iterator++;
+        _iteratorPos++;
     }
-
 
     // Check for reaching the end
-    if (_iterator >= _end) {
-        _iterator--; // Get back within boundary for the next call to GetNext()
-        return NULL;
-    } else {
-        // Removing empty chars allowed only in multiple delimiter mode
-        if (_bMultipleDelimiters)
-            RemoveEmptyChars(empty_chars);
-        return _iterator;
+    if (_iteratorPos >= _description.size()) {
+        _iteratorPos = _description.size() - 1; // Get back within boundary
+        return nullptr;
     }
+
+    // Removing empty chars allowed only in multiple delimiter mode
+    if (_bMultipleDelimiters) {
+        RemoveEmptyChars(empty_chars);
+    }
+
+    return _description.data() + _iteratorPos;
 }
 
 
 void CDescriptor::RemoveEmptyChars(const char *empty_chars) {
-    if (empty_chars) {
-        // Ignore leading empty chars
-        while (strchr(empty_chars, *_iterator) && (*_iterator != '\0')) {
-            _iterator++;
-        }
-
-        char *word_start = _iterator;
-
-        // Move to the end
-        while (*_iterator++ != '\0');
-
-        // Remove trailing empty chars (up to the first null char)
-        while (strchr(empty_chars, *--_iterator)) {
-            *_iterator = '\0';
-        }
-
-        // Reset iterator
-        _iterator = word_start;
+    if (empty_chars == nullptr) {
+        return;
     }
+
+    // Ignore leading empty chars
+    while (_iteratorPos < _description.size() &&
+           _description[_iteratorPos] != '\0' &&
+           std::strchr(empty_chars, _description[_iteratorPos]) != nullptr) {
+        _iteratorPos++;
+    }
+
+    std::size_t word_start = _iteratorPos;
+
+    // Move to the end of this word (find the null terminator)
+    std::size_t word_end = _iteratorPos;
+    while (word_end < _description.size() && _description[word_end] != '\0') {
+        word_end++;
+    }
+
+    // Remove trailing empty chars (working backwards from end)
+    if (word_end > word_start) {
+        std::size_t trim_pos = word_end - 1;
+        while (trim_pos >= word_start &&
+               std::strchr(empty_chars, _description[trim_pos]) != nullptr) {
+            _description[trim_pos] = '\0';
+            if (trim_pos == 0) break;
+            trim_pos--;
+        }
+    }
+
+    // Reset iterator to word start
+    _iteratorPos = word_start;
 }

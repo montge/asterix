@@ -23,39 +23,61 @@
 #ifndef DESCRIPTOR_HXX__
 #define DESCRIPTOR_HXX__
 
+#include <string>
+
 /**
  * @class CDescriptor
- * 
+ *
  * @brief The descriptor class for simplified parameters handling from string.
  *
+ * This class parses a delimited string into individual parameters that can
+ * be iterated over. The string is modified in place, with delimiters replaced
+ * by null characters.
  */
 class CDescriptor {
 private:
-    char *_description;
-    char *_iterator;
-    char *_end;
-    int _bMultipleDelimiters;
+    std::string _description;      ///< Owned string buffer (modified in place)
+    std::size_t _iteratorPos;      ///< Current position in string
+    bool _bMultipleDelimiters;     ///< Treat multiple delimiters as one
 
     void RemoveEmptyChars(const char *empty_chars);
 
 public:
 
     /**
-     * Default class constructors
-     * @param <multiMode> When <true> multiple consecutive delimiters are considered as 
-     *        one. When <false> multiple consecutive delimiters are considered 
-     *        each separately (single mode - default).
+     * @brief Construct a descriptor from a delimited string
+     *
+     * @param description The string to parse (copied internally)
+     * @param delimiters Characters to use as parameter separators
+     * @param multiMode When true, multiple consecutive delimiters are treated as one.
+     *                  When false (default), each delimiter separates parameters.
      */
-    CDescriptor(const char *description, const char *delimiters, bool multiMode = false);
+    explicit CDescriptor(const char *description, const char *delimiters, bool multiMode = false);
 
     /**
-     * Class destructor.
+     * @brief Default destructor (std::string handles cleanup)
      */
-    ~CDescriptor();
+    ~CDescriptor() = default;
 
-    const char *GetFirst(const char *empty_chars = NULL);
+    // Prevent copying (maintains iterator validity)
+    CDescriptor(const CDescriptor&) = delete;
+    CDescriptor& operator=(const CDescriptor&) = delete;
 
-    const char *GetNext(const char *empty_chars = NULL);
+    /**
+     * @brief Get the first parameter
+     *
+     * @param empty_chars Characters to trim from parameter (only in multi-delimiter mode)
+     * @return Pointer to first parameter, or nullptr if empty
+     */
+    const char *GetFirst(const char *empty_chars = nullptr);
+
+    /**
+     * @brief Get the next parameter
+     *
+     * @param empty_chars Characters to trim from parameter (only in multi-delimiter mode)
+     * @return Pointer to next parameter, or nullptr if no more parameters
+     */
+    const char *GetNext(const char *empty_chars = nullptr);
 };
 
 #endif

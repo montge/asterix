@@ -108,7 +108,7 @@ CMqttDevice::CMqttDevice(CDescriptor &descriptor) {
     } else {
         // Generate unique client ID
         char buf[64];
-        snprintf(buf, sizeof(buf), "asterix-%d-%ld", getpid(), time(NULL));
+        snprintf(buf, sizeof(buf), "asterix-%d-%ld", getpid(), time(nullptr));
         _clientId = buf;
     }
 

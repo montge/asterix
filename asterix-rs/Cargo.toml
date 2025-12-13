@@ -28,7 +28,7 @@ serde_json = { version = "1.0", optional = true }
 log = "0.4"
 
 # Zenoh pub/sub transport (optional)
-zenoh = { version = "1.6", optional = true }
+zenoh = { version = "1.7", optional = true }
 tokio = { version = "1.0", features = ["rt-multi-thread", "macros", "sync", "time"], optional = true }
 
 # DDS transport using RustDDS (optional)

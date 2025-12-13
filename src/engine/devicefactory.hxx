@@ -24,6 +24,7 @@
 #define DEVICEFACTORY_HXX__
 
 #include "singleton.hxx"
+#include <memory>
 
 class CBaseDevice;
 
@@ -49,7 +50,7 @@ private:
     // To access private Ctor...
     friend class CSingleton<CDeviceFactory>;
 
-    CBaseDevice *_Device[MAX_DEVICES];
+    std::unique_ptr<CBaseDevice> _Device[MAX_DEVICES];
     unsigned int _nDevices;
 
 public:
@@ -81,7 +82,7 @@ public:
 
     unsigned int GetNDevices() { return _nDevices; }
 
-    CBaseDevice *GetDevice(unsigned int DeviceNo) { return _Device[DeviceNo]; }
+    CBaseDevice *GetDevice(unsigned int DeviceNo) { return _Device[DeviceNo].get(); }
 
 };
 

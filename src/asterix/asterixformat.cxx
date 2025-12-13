@@ -68,7 +68,7 @@ const char *CAsterixFormat::_FormatName[CAsterixFormat::ETotalFormats] =
                 "ASTERIX_GPS"
         };
 
-//CBaseFormatDescriptor* CAsterixFormat::m_pFormatDescriptor = NULL;
+//CBaseFormatDescriptor* CAsterixFormat::m_pFormatDescriptor = nullptr;
 
 
 bool
@@ -132,7 +132,7 @@ CAsterixFormat::WritePacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice
         case EOut: {
             CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
 
-            if (Descriptor.m_pAsterixData == NULL) {
+            if (Descriptor.m_pAsterixData == nullptr) {
                 LOGERROR(1, "Asterix data packet not present\n");
                 return true;
             }
@@ -250,7 +250,7 @@ CBaseFormatDescriptor *CAsterixFormat::CreateFormatDescriptor
         FILE *fpini = fopen(gAsterixDefinitionsFile, "rt");
         if (!fpini) {
             LOGERROR(1, "Failed to open definitions file");
-            return NULL;
+            return nullptr;
         }
 
         // extract ini file path

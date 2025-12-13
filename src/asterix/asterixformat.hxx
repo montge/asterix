@@ -72,7 +72,7 @@ public:
     /**
      * Default class constructor
      */
-    CAsterixFormat() : m_pFormatDescriptor(NULL) {}
+    CAsterixFormat() : m_pFormatDescriptor(nullptr) {}
 
     /**
      * Default class destructor.
