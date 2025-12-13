@@ -184,6 +184,7 @@ SonarCloud Analysis Summary:
 - PR #131: Made valgrind tests conditional (prevents CI failures when valgrind not installed)
 - PR #132: Fixed unsafe comma operator pattern with std::next() in DataItemFormatCompound.cpp
 - PR #133: Eliminated code duplication with getEncodedString() helper in DataItemBits.cpp
+- PR #134: Replaced C-style casts with static_cast in DataItemBits.cpp
 
 ## Configuration Status
 
