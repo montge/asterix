@@ -80,10 +80,10 @@ SonarCloud Analysis Summary:
 - [x] 4.2.6 Fix string initialization issues - cpp:S4962 (commit 78d3621)
 - [x] 4.2.7 Replace NULL with nullptr in bindings (commit 78d3621)
 - [x] 4.2.8 Fix unsafe comma operator pattern in iterators (PR #132 - std::next())
-- [x] 4.2.9 Replace C-style casts with static_cast (PR #134, PR #135 - 27 casts fixed)
+- [x] 4.2.9 Replace C-style casts with static_cast (PR #134, PR #135, PR #136 - 71 casts fixed)
 
 ### 4.3 File-by-File Remediation
-- [ ] 4.3.1 Fix issues in src/asterix/*.cpp (core parsing)
+- [x] 4.3.1 Fix issues in src/asterix/*.cpp (core parsing) - PR #136 fixes DataItemFormat* files
 - [x] 4.3.2 Fix issues in src/engine/*.cpp (device layer) - devicefactory.cxx uses std::make_unique
 - [x] 4.3.3 Fix issues in asterix/*.py (Python bindings) - unused vars, naming conventions
 - [x] 4.3.4 Fix issues in asterix-rs/src/*.rs (Rust bindings) - clippy shows 0 warnings
