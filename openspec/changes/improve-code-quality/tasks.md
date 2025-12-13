@@ -102,13 +102,18 @@ SonarCloud Analysis Summary:
 - [x] 6.1.4 Merge PR #126 (base64ct 1.8.0 → 1.8.1) ✓
 - [x] 6.1.5 Merge PR #125 (toml_edit 0.23.7 → 0.23.9) ✓
 - [x] 6.1.6 Merge PR #124 (criterion 0.8.0 → 0.8.1) ✓
-- [ ] 6.1.7 Merge PR #123 (cc 1.2.48 → 1.2.49) - CI failure
-- [ ] 6.1.8 Merge PR #122 (icu_properties 2.1.1 → 2.1.2) - CI failure
-- [ ] 6.1.9 Merge PR #121 (local-ip-address 0.6.5 → 0.6.6) - CI failure
-- [ ] 6.1.10 Merge PR #120 (criterion-plot 0.8.0 → 0.8.1) - CI failure
+- [ ] 6.1.7 Merge PR #123 (cc 1.2.48 → 1.2.49) - CI re-running
+- [ ] 6.1.8 Merge PR #122 (icu_properties 2.1.1 → 2.1.2) - CI re-running
+- [ ] 6.1.9 Merge PR #121 (local-ip-address 0.6.5 → 0.6.6) - CI re-running
+- [x] 6.1.10 Merge PR #120 (criterion-plot 0.8.0 → 0.8.1) - Closed/superseded
 
 ### 6.2 GitHub Actions (1 PR)
-- [ ] 6.2.1 Merge PR #119 (alire-project/setup-alire 3 → 5) - CI failure
+- [ ] 6.2.1 Merge PR #119 (alire-project/setup-alire 3 → 5) - CI re-running
+
+### 6.3 CI Infrastructure Fix (2025-12-13)
+- [x] 6.3.1 Identified root cause: disk space exhaustion on GitHub runners
+- [x] 6.3.2 Added disk cleanup to rust-ci.yml (removes ~23GB: dotnet, android, ghc, CodeQL, docker)
+- [x] 6.3.3 Updated all failing PRs to trigger CI re-runs with fix
 
 ## 7. Verification - Priority: REQUIRED
 
