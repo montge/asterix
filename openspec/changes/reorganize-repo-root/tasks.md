@@ -58,9 +58,9 @@
 ## 7. Verification
 
 - [x] 7.1 Run full test suite (C++, Python, Rust) - 12/12 C++ tests pass
-- [ ] 7.2 Verify documentation builds correctly (pending)
-- [ ] 7.3 Verify CI workflows pass (pending)
-- [ ] 7.4 Test build from clean clone (pending)
+- [x] 7.2 Verify documentation builds correctly (Doxygen builds OK locally)
+- [ ] 7.3 Verify CI workflows pass (pending - GitHub Actions backlog)
+- [x] 7.4 Test build from clean clone (verified - cmake build works)
 - [x] 7.5 Update docs navigation/index (docs/README.md created)
 
 ## Progress Tracking
@@ -73,8 +73,8 @@
 | Move Files | 17 | 17 |
 | Remove Legacy | 4 | 4 |
 | Update References | 5 | 4 |
-| Verification | 5 | 2 |
-| **Total** | **44** | **40** |
+| Verification | 5 | 4 |
+| **Total** | **44** | **42** |
 
 ## Commit History
 
