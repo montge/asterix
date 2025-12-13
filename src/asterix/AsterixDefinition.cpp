@@ -63,7 +63,7 @@ bool AsterixDefinition::CategoryDefined(int i) {
 }
 
 std::string AsterixDefinition::printDescriptors() {
-    std::string strDef = "";
+    std::string strDef;
     int i = 1;
 
     for (i = 1; i < MAX_CATEGORIES - 1; i++) {

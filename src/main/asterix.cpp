@@ -336,7 +336,7 @@ int main(int argc, const char *argv[]) {
 
     // Create input string
     std::string strInput = "std;0;";
-    std::string strInputFixed = "";
+    std::string strInputFixed;
     if (!strFileInput.empty() && !strIPInput.empty()) {
         strInput = "std;0;ASTERIX_RAW";
     }
