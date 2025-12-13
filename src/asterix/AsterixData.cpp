@@ -31,9 +31,9 @@ AsterixData::AsterixData() {
 
 AsterixData::~AsterixData() {
     // go through all present data blocks and delete them
-    std::list<DataBlock *>::iterator it = m_lDataBlocks.begin();
+    auto it = m_lDataBlocks.begin();
     while (it != m_lDataBlocks.end()) {
-        delete (DataBlock *) (*it);
+        delete *it;
         it = m_lDataBlocks.erase(it);
     }
 }
@@ -44,9 +44,8 @@ AsterixData::~AsterixData() {
 bool AsterixData::getText(std::string &strResult, const unsigned int formatType) {
     static int i = 1;
 
-    std::list<DataBlock *>::iterator it;
-    for (it = m_lDataBlocks.begin(); it != m_lDataBlocks.end(); it++) {
-        DataBlock *db = (DataBlock *) (*it);
+    for (auto it = m_lDataBlocks.begin(); it != m_lDataBlocks.end(); ++it) {
+        auto *db = *it;
         if (db != nullptr) {
             switch (formatType) {
                 case CAsterixFormat::ETxt:
@@ -66,10 +65,9 @@ fulliautomatix_data* AsterixData::getData()
   fulliautomatix_data *firstData=nullptr,*lastData=nullptr;
   int byteoffset = 0;
 
-  std::list<DataBlock*>::iterator it;
-  for ( it=m_lDataBlocks.begin() ; it != m_lDataBlocks.end(); it++ )
+  for (auto it = m_lDataBlocks.begin(); it != m_lDataBlocks.end(); ++it)
   {
-    DataBlock* db = (DataBlock*)(*it);
+    auto *db = *it;
     if (db != nullptr)
     {
       if (!lastData)
@@ -96,10 +94,9 @@ PyObject* AsterixData::getData(int verbose)
 {
     PyObject* hp = PyList_New(0);
 
-    std::list<DataBlock*>::iterator it;
-    for ( it=m_lDataBlocks.begin() ; it != m_lDataBlocks.end(); it++ )
+    for (auto it = m_lDataBlocks.begin(); it != m_lDataBlocks.end(); ++it)
     {
-        DataBlock* db = (DataBlock*)(*it);
+        auto *db = *it;
         if (db != nullptr)
         {
             db->getData(hp, verbose);

@@ -29,26 +29,25 @@ Category::Category(int id)
 
 Category::~Category() {
     // destroy data items
-    std::list<DataItemDescription *>::iterator it = m_lDataItems.begin();
+    auto it = m_lDataItems.begin();
     while (it != m_lDataItems.end()) {
-        delete (DataItemDescription *) (*it);
+        delete *it;
         it = m_lDataItems.erase(it);
     }
 
     // destroy UAPs
-    std::list<UAP *>::iterator it2 = m_lUAPs.begin();
+    auto it2 = m_lUAPs.begin();
     while (it2 != m_lUAPs.end()) {
-        delete (UAP *) (*it2);
+        delete *it2;
         it2 = m_lUAPs.erase(it2);
     }
 }
 
 DataItemDescription *Category::getDataItemDescription(std::string id) {
-    std::list<DataItemDescription *>::iterator it;
     DataItemDescription *di = nullptr;
 
-    for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {
-        di = (DataItemDescription *) (*it);
+    for (auto it = m_lDataItems.begin(); it != m_lDataItems.end(); ++it) {
+        di = *it;
         if (di->m_strID == id) {
             return di;
         }
@@ -62,13 +61,12 @@ DataItemDescription *Category::getDataItemDescription(std::string id) {
 }
 
 const char *Category::getDescription(const char *item, const char *field, const char *value) const {
-    std::list<DataItemDescription *>::const_iterator it;
     DataItemDescription *di = nullptr;
 
     std::string item_number = format("%s", &item[1]);
 
-    for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {
-        di = (DataItemDescription *) (*it);
+    for (auto it = m_lDataItems.begin(); it != m_lDataItems.end(); ++it) {
+        di = *it;
         if (di->m_strID.compare(item_number) == 0) {
             if (field == nullptr)
                 return di->m_strName.c_str();
@@ -85,9 +83,8 @@ UAP *Category::newUAP() {
 }
 
 UAP *Category::getUAP(const unsigned char *data, unsigned long len) const {
-    std::list<UAP *>::const_iterator uapit;
-    for (uapit = m_lUAPs.begin(); uapit != m_lUAPs.end(); uapit++) {
-        UAP *uap = (UAP *) (*uapit);
+    for (auto uapit = m_lUAPs.begin(); uapit != m_lUAPs.end(); ++uapit) {
+        auto *uap = *uapit;
 
         if (uap) {
             if (uap->m_nUseIfBitSet) { // check if bit matches
@@ -134,11 +131,8 @@ std::string Category::printDescriptors() const {
     std::string strDef;
     char header[32];
 
-    std::list<DataItemDescription *>::const_iterator it;
-    DataItemDescription *di = nullptr;
-
-    for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {
-        di = (DataItemDescription *) (*it);
+    for (auto it = m_lDataItems.begin(); it != m_lDataItems.end(); ++it) {
+        auto *di = *it;
 
         snprintf(header, 32, "CAT%03d:I%s:", m_id, di->m_strID.c_str());
 
@@ -149,14 +143,11 @@ std::string Category::printDescriptors() const {
 }
 
 bool Category::filterOutItem(std::string item, const char *name) {
-    std::list<DataItemDescription *>::iterator it;
-    DataItemDescription *di = nullptr;
-
     // At least one item of category shall be printed when filter is applied
     m_bFiltered = true;
 
-    for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {
-        di = (DataItemDescription *) (*it);
+    for (auto it = m_lDataItems.begin(); it != m_lDataItems.end(); ++it) {
+        auto *di = *it;
         if (di->m_strID == item) {
             return di->m_pFormat->filterOutItem(name);
         }
@@ -165,11 +156,8 @@ bool Category::filterOutItem(std::string item, const char *name) {
 }
 
 bool Category::isFiltered(std::string item, const char *name) {
-    std::list<DataItemDescription *>::iterator it;
-    DataItemDescription *di = nullptr;
-
-    for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {
-        di = (DataItemDescription *) (*it);
+    for (auto it = m_lDataItems.begin(); it != m_lDataItems.end(); ++it) {
+        auto *di = *it;
         if (di->m_strID == item) {
             if (true == di->m_pFormat->isFiltered(name))
                 return true;
@@ -185,10 +173,9 @@ fulliautomatix_definitions* Category::getWiresharkDefinitions()
   fulliautomatix_definitions* def = nullptr;
 
   // get definitions for UAPs
-  std::list<UAP*>::iterator uapit;
-  for ( uapit=m_lUAPs.begin() ; uapit != m_lUAPs.end(); uapit++ )
+  for (auto uapit = m_lUAPs.begin(); uapit != m_lUAPs.end(); ++uapit)
   {
-    UAP* ui = (UAP*)(*uapit);
+    auto *ui = *uapit;
     if (def)
     {
       def->next = ui->getWiresharkDefinitions();
@@ -202,12 +189,9 @@ fulliautomatix_definitions* Category::getWiresharkDefinitions()
   }
 
   // get definitions for items
-  std::list<DataItemDescription*>::iterator it;
-  DataItemDescription* di = nullptr;
-
-  for ( it=m_lDataItems.begin() ; it != m_lDataItems.end(); it++ )
+  for (auto it = m_lDataItems.begin(); it != m_lDataItems.end(); ++it)
   {
-    di = (DataItemDescription*)(*it);
+    auto *di = *it;
     if (def)
     {
       def->next = di->m_pFormat->getWiresharkDefinitions();

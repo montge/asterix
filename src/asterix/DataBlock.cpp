@@ -67,9 +67,9 @@ DataBlock::DataBlock(Category *cat, unsigned long len, const unsigned char *data
 
 DataBlock::~DataBlock() {
     // go through all present data items in this block
-    std::list<DataRecord *>::iterator it = m_lDataRecords.begin();
+    auto it = m_lDataRecords.begin();
     while (it != m_lDataRecords.end()) {
-        delete (DataRecord *) (*it);
+        delete *it;
         it = m_lDataRecords.erase(it);
     }
 }
@@ -100,9 +100,8 @@ bool DataBlock::getText(std::string &strResult, const unsigned int formatType) {
 
     if (m_lDataRecords.size() > 0) {
         // go through all present data items in this block
-        std::list<DataRecord *>::iterator it;
-        for (it = m_lDataRecords.begin(); it != m_lDataRecords.end(); it++) {
-            DataRecord *dr = (DataRecord *) (*it);
+        for (auto it = m_lDataRecords.begin(); it != m_lDataRecords.end(); ++it) {
+            auto *dr = *it;
             if (dr != nullptr) {
                 dr->getText(strResult, strHeader, formatType);
             }
@@ -127,10 +126,9 @@ fulliautomatix_data* DataBlock::getData(int byteoffset)
   byteoffset+=2;
 
   // go through all present data items in this block
-  std::list<DataRecord*>::iterator it;
-  for ( it=m_lDataRecords.begin() ; it != m_lDataRecords.end(); it++ )
+  for (auto it = m_lDataRecords.begin(); it != m_lDataRecords.end(); ++it)
   {
-    DataRecord* dr = (DataRecord*)(*it);
+    auto *dr = *it;
     if (dr != nullptr)
     {
       lastData->next = dr->getData(byteoffset);
@@ -150,10 +148,9 @@ fulliautomatix_data* DataBlock::getData(int byteoffset)
 void DataBlock::getData(PyObject* plist, int verbose)
 {
     // go through all present data items in this block and insert them to list
-    std::list<DataRecord*>::iterator it;
-    for ( it=m_lDataRecords.begin() ; it != m_lDataRecords.end(); it++ )
+    for (auto it = m_lDataRecords.begin(); it != m_lDataRecords.end(); ++it)
     {
-        DataRecord* dr = (DataRecord*)(*it);
+        auto *dr = *it;
         if (dr != nullptr)
         {
             PyObject* p = dr->getData(verbose);

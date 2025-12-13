@@ -29,9 +29,9 @@ UAP::UAP()
 
 UAP::~UAP() {
     // destroy UAP items
-    std::list<UAPItem *>::iterator it = m_lUAPItems.begin();
+    auto it = m_lUAPItems.begin();
     while (it != m_lUAPItems.end()) {
-        delete (UAPItem *) (*it);
+        delete *it;
         it = m_lUAPItems.erase(it);
     }
 }
@@ -49,10 +49,9 @@ fulliautomatix_definitions* UAP::getWiresharkDefinitions()
   fulliautomatix_definitions* def = nullptr;
 
   // get definitions for UAPs
-  std::list<UAPItem*>::iterator uapit;
-  for ( uapit=m_lUAPItems.begin() ; uapit != m_lUAPItems.end(); uapit++ )
+  for (auto uapit = m_lUAPItems.begin(); uapit != m_lUAPItems.end(); ++uapit)
   {
-    UAPItem* ui = (UAPItem*)(*uapit);
+    auto *ui = *uapit;
     if (def)
     {
       def->next = ui->getWiresharkDefinitions();
@@ -70,9 +69,8 @@ fulliautomatix_definitions* UAP::getWiresharkDefinitions()
 #endif
 
 std::string UAP::getDataItemIDByUAPfrn(int uapfrn) const {
-    std::list<UAPItem *>::const_iterator uapit;
-    for (uapit = m_lUAPItems.begin(); uapit != m_lUAPItems.end(); uapit++) {
-        UAPItem *ui = (UAPItem *) (*uapit);
+    for (auto uapit = m_lUAPItems.begin(); uapit != m_lUAPItems.end(); ++uapit) {
+        auto *ui = *uapit;
         if (ui != nullptr && ui->m_nFRN == uapfrn) {
             return ui->m_strItemID;
         }
