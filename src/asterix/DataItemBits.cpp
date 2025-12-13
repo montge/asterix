@@ -562,7 +562,6 @@ void DataItemBits::formatUnsignedWithMeta(std::ostringstream& ss, unsigned long 
         case CAsterixFormat::EOut: {
             bool isOut = (formatType == CAsterixFormat::EOut);
             const char* prefix = isOut ? "\n" : "\n\t";
-            const char* nameFormat = isOut ? "%s.%s" : "%s";
 
             if (isOut) {
                 ss << format("%s%s.%s %llu", prefix, strHeader.c_str(), m_strShortName.c_str(), value64);

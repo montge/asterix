@@ -237,7 +237,7 @@ static void debug_trace(char const *format, ...) {
 }
 
 CBaseFormatDescriptor *CAsterixFormat::CreateFormatDescriptor
-        (const unsigned int formatType, const char *sFormatDescriptor) {
+        ([[maybe_unused]] const unsigned int formatType, [[maybe_unused]] const char *sFormatDescriptor) {
     if (!m_pFormatDescriptor) {
         char inputFile[256];
 
@@ -323,7 +323,7 @@ bool CAsterixFormat::GetFormatNo(const char *formatName, unsigned int &formatTyp
     return found;
 }
 
-int CAsterixFormat::GetStatus(CBaseDevice &device, const unsigned int formatType, int query) {
+int CAsterixFormat::GetStatus(CBaseDevice &device, [[maybe_unused]] const unsigned int formatType, [[maybe_unused]] int query) {
     if (device.IsOpened() == false)
         return STS_NO_DATA;
 
@@ -331,12 +331,12 @@ int CAsterixFormat::GetStatus(CBaseDevice &device, const unsigned int formatType
 }
 
 
-bool CAsterixFormat::OnResetInputChannel(CBaseFormatDescriptor &formatDescriptor) {
+bool CAsterixFormat::OnResetInputChannel([[maybe_unused]] CBaseFormatDescriptor &formatDescriptor) {
     return false;
 }
 
 
-bool CAsterixFormat::OnResetOutputChannel(unsigned int channel, CBaseFormatDescriptor &formatDescriptor) {
+bool CAsterixFormat::OnResetOutputChannel([[maybe_unused]] unsigned int channel, [[maybe_unused]] CBaseFormatDescriptor &formatDescriptor) {
     return true;
 }
 
