@@ -198,7 +198,7 @@ public:
      * // For CAT062: returns "070" (Time of Track Information)
      * @endcode
      */
-    std::string getDataItemIDByUAPfrn(int uapfrn);
+    std::string getDataItemIDByUAPfrn(int uapfrn) const;
 };
 
 #endif /* UAP_H_ */

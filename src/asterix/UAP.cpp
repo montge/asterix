@@ -69,8 +69,8 @@ fulliautomatix_definitions* UAP::getWiresharkDefinitions()
 }
 #endif
 
-std::string UAP::getDataItemIDByUAPfrn(int uapfrn) {
-    std::list<UAPItem *>::iterator uapit;
+std::string UAP::getDataItemIDByUAPfrn(int uapfrn) const {
+    std::list<UAPItem *>::const_iterator uapit;
     for (uapit = m_lUAPItems.begin(); uapit != m_lUAPItems.end(); uapit++) {
         UAPItem *ui = (UAPItem *) (*uapit);
         if (ui != NULL && ui->m_nFRN == uapfrn) {

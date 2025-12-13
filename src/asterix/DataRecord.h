@@ -34,6 +34,7 @@
 #define DATARECORD_H_
 
 #include "DataItem.h"
+#include <memory>  // For std::unique_ptr
 
 /**
  * @class DataRecord
@@ -169,10 +170,10 @@ public:
     /**
      * @brief Copy of the FSPEC bitmap bytes
      *
-     * Allocated buffer containing a copy of the FSPEC bytes from the record.
-     * Size is m_nFSPECLength bytes. Owned by DataRecord and freed in destructor.
+     * Smart pointer to allocated buffer containing a copy of the FSPEC bytes from the record.
+     * Size is m_nFSPECLength bytes. Owned by DataRecord and automatically freed.
      */
-    unsigned char *m_pFSPECData;
+    std::unique_ptr<unsigned char[]> m_pFSPECData;
 
     /**
      * @brief Capture timestamp in Unix epoch seconds
@@ -195,10 +196,10 @@ public:
      * @brief Hexadecimal string representation of the record data
      *
      * Human-readable hex dump of the binary record data (FSPEC + items).
-     * Allocated buffer owned by DataRecord and freed in destructor.
+     * Smart pointer to allocated buffer owned by DataRecord and automatically freed.
      * Used for debug output and logging.
      */
-    char *m_pHexData;
+    std::unique_ptr<char[]> m_pHexData;
 
     /**
      * @brief Parse status flag
@@ -223,7 +224,7 @@ public:
      *
      * @note Convenience method to avoid null pointer checks on m_pCategory.
      */
-    int getCategory() { return (m_pCategory) ? m_pCategory->m_id : 0; }
+    int getCategory() const { return (m_pCategory) ? m_pCategory->m_id : 0; }
 
     /**
      * @brief Generate formatted output for all items in this record

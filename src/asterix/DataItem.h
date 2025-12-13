@@ -35,6 +35,7 @@
 
 #include "DataItemDescription.h"
 #include <string>
+#include <memory>  // For std::unique_ptr
 
 /**
  * @class DataItem
@@ -188,7 +189,7 @@ public:
      * @note This is the actual length from the binary stream, which may differ
      *       from the declared length in the XML definition for variable-length items.
      */
-    long getLength() { return m_nLength; }
+    long getLength() const { return m_nLength; }
 
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
     /**
@@ -219,10 +220,11 @@ private:
     /**
      * @brief Binary data buffer containing the raw ASTERIX bytes
      *
-     * Allocated and populated during parse() call. Contains exactly
-     * m_nLength bytes copied from the input stream.
+     * Smart pointer to allocated buffer populated during parse() call.
+     * Contains exactly m_nLength bytes copied from the input stream.
+     * Automatically freed when DataItem is destroyed.
      */
-    unsigned char *m_pData;
+    std::unique_ptr<unsigned char[]> m_pData;
 
     /**
      * @brief Length in bytes of the parsed data item

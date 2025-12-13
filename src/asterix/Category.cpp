@@ -61,8 +61,8 @@ DataItemDescription *Category::getDataItemDescription(std::string id) {
     return di;
 }
 
-const char *Category::getDescription(const char *item, const char *field = NULL, const char *value = NULL) {
-    std::list<DataItemDescription *>::iterator it;
+const char *Category::getDescription(const char *item, const char *field, const char *value) const {
+    std::list<DataItemDescription *>::const_iterator it;
     DataItemDescription *di = NULL;
 
     std::string item_number = format("%s", &item[1]);
@@ -84,8 +84,8 @@ UAP *Category::newUAP() {
     return uap;
 }
 
-UAP *Category::getUAP(const unsigned char *data, unsigned long len) {
-    std::list<UAP *>::iterator uapit;
+UAP *Category::getUAP(const unsigned char *data, unsigned long len) const {
+    std::list<UAP *>::const_iterator uapit;
     for (uapit = m_lUAPs.begin(); uapit != m_lUAPs.end(); uapit++) {
         UAP *uap = (UAP *) (*uapit);
 
@@ -130,11 +130,11 @@ UAP *Category::getUAP(const unsigned char *data, unsigned long len) {
     return NULL;
 }
 
-std::string Category::printDescriptors() {
+std::string Category::printDescriptors() const {
     std::string strDef = "";
     char header[32];
 
-    std::list<DataItemDescription *>::iterator it;
+    std::list<DataItemDescription *>::const_iterator it;
     DataItemDescription *di = NULL;
 
     for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {

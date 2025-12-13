@@ -41,6 +41,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <string>
+#include <memory>  // For std::unique_ptr
 
 /**
  * @brief Printf-style string formatter with performance optimization
