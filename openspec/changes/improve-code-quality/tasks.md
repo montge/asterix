@@ -193,7 +193,7 @@ SonarCloud Analysis Summary:
 - PR #137: Replaced C-style casts in Fixed/Repetitive/Explicit formats (34 casts)
 - PR #138: Replaced C-style casts in DataBlock/Category/UAP/AsterixData (23 casts)
 - PR #139: Replaced C-style casts in DataRecord.cpp (12 casts)
-- PR #140: Replaced C-style casts in remaining format files (43 casts)
+- PR #140: Replaced C-style casts in remaining format files (48 casts, incl. 5 additional DataItemBits fixes)
 
 ## Configuration Status
 
