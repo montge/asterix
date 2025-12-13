@@ -153,15 +153,15 @@ bool CAsterixRawSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, C
     return true;
 }
 
-bool CAsterixRawSubformat::WritePacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard,
-                                       bool oradis) {
+bool CAsterixRawSubformat::WritePacket([[maybe_unused]] CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool &discard,
+                                       [[maybe_unused]] bool oradis) {
     return false; //TODO
 }
 
 /*
  * Parse packet read from UDP and stored to Descriptor.m_pBuffer
  */
-bool CAsterixRawSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard,
+bool CAsterixRawSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool &discard,
                                          bool oradis) {
     CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
 
@@ -230,7 +230,7 @@ bool CAsterixRawSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor
     return true;
 }
 
-bool CAsterixRawSubformat::Heartbeat(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool oradis) {
+bool CAsterixRawSubformat::Heartbeat([[maybe_unused]] CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool oradis) {
     // nothing to do
     return true;
 }
