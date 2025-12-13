@@ -72,8 +72,8 @@
 
 extern bool gSynchronous;
 
-bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard,
-                                       bool oradis) {
+bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, [[maybe_unused]] bool &discard,
+                                       [[maybe_unused]] bool oradis) {
     CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
     unsigned short m_nDataLength = 0;
     static time_t lastFileTimeSec = 0;
@@ -313,16 +313,16 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
     return true; //TODO
 }
 
-bool CAsterixPcapSubformat::WritePacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard,
-                                        bool oradis) {
+bool CAsterixPcapSubformat::WritePacket([[maybe_unused]] CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool &discard,
+                                        [[maybe_unused]] bool oradis) {
     return false; //TODO
 }
 
-bool CAsterixPcapSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard,
-                                          bool oradis) {
+bool CAsterixPcapSubformat::ProcessPacket([[maybe_unused]] CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool &discard,
+                                          [[maybe_unused]] bool oradis) {
     return true;
 }
 
-bool CAsterixPcapSubformat::Heartbeat(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool oradis) {
+bool CAsterixPcapSubformat::Heartbeat([[maybe_unused]] CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool oradis) {
     return true;
 }

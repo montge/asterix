@@ -55,8 +55,8 @@
 /*
  * Read packet and store it in Descriptor.m_pBuffer
  */
-bool CAsterixGPSSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard,
-                                      bool oradis) {
+bool CAsterixGPSSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, [[maybe_unused]] bool &discard,
+                                      [[maybe_unused]] bool oradis) {
     CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
     size_t readSize = 0;
 
@@ -199,15 +199,15 @@ bool CAsterixGPSSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, C
     return true;
 }
 
-bool CAsterixGPSSubformat::WritePacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard,
-                                       bool oradis) {
+bool CAsterixGPSSubformat::WritePacket([[maybe_unused]] CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool &discard,
+                                       [[maybe_unused]] bool oradis) {
     return false; //TODO
 }
 
 /*
  * Parse packet read from UDP and stored to Descriptor.m_pBuffer
  */
-bool CAsterixGPSSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard,
+bool CAsterixGPSSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool &discard,
                                          bool oradis) {
     CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
 
@@ -278,7 +278,7 @@ bool CAsterixGPSSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor
     return true;
 }
 
-bool CAsterixGPSSubformat::Heartbeat(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool oradis) {
+bool CAsterixGPSSubformat::Heartbeat([[maybe_unused]] CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool oradis) {
     // nothing to do
     return true;
 }
