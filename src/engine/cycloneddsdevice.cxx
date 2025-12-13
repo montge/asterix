@@ -282,7 +282,11 @@ void CCycloneDdsDevice::ListenerLoop() {
 
 
 bool CCycloneDdsDevice::Read(void *data, size_t len) {
-    return Read(data, &len);
+    // Delegate to the variable-length Read implementation
+    // Note: data is void* to match CBaseDevice interface - actual type is unsigned char*
+    unsigned char* buffer = static_cast<unsigned char*>(data);
+    size_t bytesToRead = len;
+    return Read(buffer, &bytesToRead);
 }
 
 

@@ -29,6 +29,7 @@
 #include "../../src/asterix/XMLParser.h"
 #include "../../src/asterix/InputParser.h"
 #include "../../src/asterix/Tracer.h"
+#include <memory>
 
 #ifdef _WIN32
   #include <time.h>
@@ -36,8 +37,8 @@
   #include <sys/time.h>
 #endif
 
-static AsterixDefinition *pDefinition = NULL;
-static InputParser *inputParser = NULL;
+static std::unique_ptr<AsterixDefinition> pDefinition;
+static std::unique_ptr<InputParser> inputParser;
 bool gFiltering = false;
 bool gSynchronous = false;
 const char *gAsterixDefinitionsFile = NULL;
@@ -45,9 +46,10 @@ bool gVerbose = false;
 bool gForceRouting = false;
 int gHeartbeat = 0;
 
-static void debug_trace(char const *format, ...) {
+static void debug_trace([[maybe_unused]] char const *format, ...) {
     // Error tracing callback for Asterix library
     // Errors are set via rb_raise instead
+    // Intentionally empty - Ruby uses rb_raise for error reporting
 }
 
 /*
@@ -58,10 +60,10 @@ extern "C" int ruby_init_asterix(const char *xml_config_file) {
         Tracer::Configure(debug_trace);
 
         if (!pDefinition)
-            pDefinition = new AsterixDefinition();
+            pDefinition = std::make_unique<AsterixDefinition>();
 
         if (!inputParser)
-            inputParser = new InputParser(pDefinition);
+            inputParser = std::make_unique<InputParser>(pDefinition.get());
 
         FILE *fp = fopen(xml_config_file, "rt");
         if (!fp) {
@@ -71,7 +73,7 @@ extern "C" int ruby_init_asterix(const char *xml_config_file) {
 
         // parse format file
         XMLParser Parser;
-        if (!Parser.Parse(fp, pDefinition, xml_config_file)) {
+        if (!Parser.Parse(fp, pDefinition.get(), xml_config_file)) {
             fclose(fp);
             rb_raise(rb_eSyntaxError, "Failed to parse XML configuration file: %s", xml_config_file);
             return -2;
@@ -99,11 +101,10 @@ extern "C" VALUE ruby_parse(const unsigned char *pBuf, size_t len, int verbose) 
         unsigned long nTimestamp = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
         if (inputParser) {
-            AsterixData *pData = inputParser->parsePacket(pBuf, len, nTimestamp);
+            std::unique_ptr<AsterixData> pData(inputParser->parsePacket(pBuf, len, nTimestamp));
             if (pData) {
                 // Convert to Ruby format - AsterixData has a getRubyData method
                 VALUE rb_result = pData->getRubyData(verbose);
-                delete pData;
                 return rb_result;
             }
         }
@@ -138,7 +139,7 @@ extern "C" VALUE ruby_parse_with_offset(const unsigned char *pBuf, size_t len,
         unsigned long nTimestamp = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
         if (inputParser) {
-            AsterixData *pData = new AsterixData();
+            auto pData = std::make_unique<AsterixData>();
             unsigned int m_nPos = offset;
             unsigned int current_blocks_count = 0;
 
@@ -169,7 +170,6 @@ extern "C" VALUE ruby_parse_with_offset(const unsigned char *pBuf, size_t len,
 
             if (pData) {
                 VALUE rb_result = pData->getRubyData(verbose);
-                delete pData;
                 VALUE rb_offset = UINT2NUM(m_nPos);
                 VALUE rb_output = rb_ary_new_from_args(2, rb_result, rb_offset);
                 return rb_output;
