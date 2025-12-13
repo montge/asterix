@@ -339,7 +339,7 @@ bool CTcpDevice::Select(const unsigned int secondsToWait) {
 }
 
 
-bool CTcpDevice::IoCtrl(const unsigned int command, const void *data, size_t len) {
+bool CTcpDevice::IoCtrl(const unsigned int command, [[maybe_unused]] const void *data, [[maybe_unused]] size_t len) {
     static bool result;
 
     switch (command) {

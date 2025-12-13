@@ -28,6 +28,7 @@
 #include <sstream>
 #include <chrono>
 #include <vector>
+#include <memory>
 
 #ifdef _WIN32
   #include "win32_compat.h"
@@ -47,8 +48,8 @@
 #include "Category.h"
 
 // Global state
-static AsterixDefinition* g_pDefinition = nullptr;
-static InputParser* g_pInputParser = nullptr;
+static std::unique_ptr<AsterixDefinition> g_pDefinition;
+static std::unique_ptr<InputParser> g_pInputParser;
 static bool g_bInitialized = false;
 static std::string g_lastError;
 static const char* g_version = "2.9.0";
@@ -116,11 +117,11 @@ int asterix_init(const char* config_path) {
         Tracer::Configure(debug_trace);
 
         if (!g_pDefinition) {
-            g_pDefinition = new AsterixDefinition();
+            g_pDefinition = std::make_unique<AsterixDefinition>();
         }
 
         if (!g_pInputParser) {
-            g_pInputParser = new InputParser(g_pDefinition);
+            g_pInputParser = std::make_unique<InputParser>(g_pDefinition.get());
         }
 
         if (config_path && strlen(config_path) > 0) {
@@ -137,7 +138,7 @@ int asterix_init(const char* config_path) {
             }
 
             XMLParser parser;
-            if (!parser.Parse(fp, g_pDefinition, config_path)) {
+            if (!parser.Parse(fp, g_pDefinition.get(), config_path)) {
                 fclose(fp);
                 g_lastError = "Failed to parse configuration file";
                 return ASTERIX_ERR_PARSE;
@@ -304,7 +305,7 @@ AsterixParseResult* asterix_parse_with_offset(
     }
 }
 
-char* asterix_describe(int category, const char* item, const char* field, const char* value) {
+char* asterix_describe(int category, const char* item, const char* field, [[maybe_unused]] const char* value) {
     if (!g_bInitialized || !g_pDefinition) {
         return nullptr;
     }

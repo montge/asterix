@@ -208,7 +208,7 @@ bool CSerialDevice::Select(const unsigned int secondsToWait) {
 }
 
 
-bool CSerialDevice::IoCtrl(const unsigned int command, const void *data, size_t len) {
+bool CSerialDevice::IoCtrl(const unsigned int command, [[maybe_unused]] const void *data, [[maybe_unused]] size_t len) {
     static bool result;
 
     switch (command) {

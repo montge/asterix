@@ -196,7 +196,7 @@ bool DataItemFormatFixed::getText(std::string &strResult, std::string &strHeader
 }
 
 std::string DataItemFormatFixed::printDescriptors(std::string header) {
-    std::string strDef = "";
+    std::string strDef;
 
     std::list<DataItemFormat *>::iterator it;
     DataItemBits *bv = nullptr;
