@@ -294,7 +294,7 @@ const uint8_t* asterix_block_hex_data(const DataBlockWrapper* block) {
 
     for (const auto& record : block->block->m_lDataRecords) {
         if (record && record->m_pHexData) {
-            block->hex_data_cache += record->m_pHexData;
+            block->hex_data_cache += record->m_pHexData.get();
         }
     }
 
