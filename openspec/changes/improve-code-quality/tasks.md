@@ -80,6 +80,7 @@ SonarCloud Analysis Summary:
 - [x] 4.2.6 Fix string initialization issues - cpp:S4962 (commit 78d3621)
 - [x] 4.2.7 Replace NULL with nullptr in bindings (commit 78d3621)
 - [x] 4.2.8 Fix unsafe comma operator pattern in iterators (PR #132 - std::next())
+- [x] 4.2.9 Replace C-style casts with static_cast (PR #134, PR #135 - 27 casts fixed)
 
 ### 4.3 File-by-File Remediation
 - [ ] 4.3.1 Fix issues in src/asterix/*.cpp (core parsing)
@@ -185,6 +186,7 @@ SonarCloud Analysis Summary:
 - PR #132: Fixed unsafe comma operator pattern with std::next() in DataItemFormatCompound.cpp
 - PR #133: Eliminated code duplication with getEncodedString() helper in DataItemBits.cpp
 - PR #134: Replaced C-style casts with static_cast in DataItemBits.cpp
+- PR #135: Replaced C-style casts with static_cast across 7 more files (19 casts)
 
 ## Configuration Status
 
