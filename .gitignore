@@ -70,6 +70,12 @@ dataitembits_filtered.info
 dataitembits_raw.info
 explicit_only.info
 
+# SonarCloud / SonarQube
+.sonarcloud/
+.scannerwork/
+.sonar/
+report-task.txt
+
 # Build artifacts
 *.o
 *.a
