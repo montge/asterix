@@ -83,7 +83,7 @@ SonarCloud Analysis Summary:
 ### 4.3 File-by-File Remediation
 - [ ] 4.3.1 Fix issues in src/asterix/*.cpp (core parsing)
 - [x] 4.3.2 Fix issues in src/engine/*.cpp (device layer) - devicefactory.cxx uses std::make_unique
-- [ ] 4.3.3 Fix issues in asterix/*.py (Python bindings)
+- [x] 4.3.3 Fix issues in asterix/*.py (Python bindings) - unused vars, naming conventions
 - [ ] 4.3.4 Fix issues in asterix-rs/src/*.rs (Rust bindings)
 - [x] 4.3.5 Fix issues in asterix-node/*.cpp (Node.js bindings) - smart pointers added
 - [x] 4.3.6 Fix issues in src/go/*.cpp (Go bindings) - smart pointers added
@@ -160,10 +160,14 @@ SonarCloud Analysis Summary:
 - Security Rating: A
 
 **Smart Pointer Fixes (2025-12-13):**
-- Go wrapper: Converted raw new/delete to std::unique_ptr
-- Node.js wrapper: Converted raw new/delete to std::unique_ptr
+- Go wrapper: Converted raw new/delete to std::unique_ptr (commit efb1079)
+- Node.js wrapper: Converted raw new/delete to std::unique_ptr (commit efb1079)
 - Ruby parser: Already using std::unique_ptr (verified)
 - Device factory: Already using std::make_unique (verified)
+
+**Python Fixes (2025-12-13):**
+- test_cat048.py: Replaced 11 unused variables with '_' (commit 0e4491f)
+- xml_parser.py: Fixed naming convention (FixedResult → fixed_result)
 
 ## Configuration Status
 
