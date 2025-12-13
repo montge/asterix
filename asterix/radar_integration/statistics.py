@@ -37,8 +37,7 @@ Date: 2025-11-23
 """
 
 import math
-from typing import List, Dict, Optional, Tuple
-from collections import defaultdict
+from typing import List, Dict, Optional
 
 
 def compute_scenario_stats(plots: List, time_window: Optional[float] = None) -> Dict:

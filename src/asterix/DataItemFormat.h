@@ -333,7 +333,7 @@ public:
      * @note This method is only available when compiled with WIRESHARK_WRAPPER
      *       or ETHEREAL_WRAPPER defined (plugin builds).
      */
-    int getPID() { return m_nPID; }
+    int getPID() const { return m_nPID; }
 
   private:
     /**

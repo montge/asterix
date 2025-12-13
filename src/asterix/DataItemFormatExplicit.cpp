@@ -156,44 +156,44 @@ bool DataItemFormatExplicit::isFiltered(const char *name) {
     return false;
 }
 
-const char *DataItemFormatExplicit::getDescription(const char *field, const char *value = NULL) {
+const char *DataItemFormatExplicit::getDescription(const char *field, const char *value = nullptr) {
     std::list<DataItemFormat *>::iterator it;
     for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
         DataItemBits *bv = (DataItemBits *) (*it);
         const char *desc = bv->getDescription(field, value);
-        if (desc != NULL)
+        if (desc != nullptr)
             return desc;
     }
-    return NULL;
+    return nullptr;
 }
 
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_definitions* DataItemFormatExplicit::getWiresharkDefinitions()
 {
-    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : NULL;
-    if (pFixed == NULL)
+    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : nullptr;
+    if (pFixed == nullptr)
     {
         Tracer::Error("Wrong format of explicit item");
-        return NULL;
+        return nullptr;
     }
     return pFixed->getWiresharkDefinitions();
 }
 
 fulliautomatix_data* DataItemFormatExplicit::getData(unsigned char* pData, long, int byteoffset)
 {
-    fulliautomatix_data *lastData = NULL, *firstData = NULL;
-    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : NULL;
-    if (pFixed == NULL)
+    fulliautomatix_data *lastData = nullptr, *firstData = nullptr;
+    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : nullptr;
+    if (pFixed == nullptr)
     {
         Tracer::Error("Wrong format of explicit item");
-        return NULL;
+        return nullptr;
     }
 
     // TODO : fix this as it is in DataItemFormatExplicit::getText
     int fixedLength = pFixed->getLength(pData);
     unsigned char nFullLength = *pData;
 
-    firstData = lastData = newDataUL(NULL, PID_LEN, byteoffset, 1, nFullLength);
+    firstData = lastData = newDataUL(nullptr, PID_LEN, byteoffset, 1, nFullLength);
     byteoffset+=1;
 
     pData++;
@@ -240,8 +240,8 @@ PyObject* DataItemFormatExplicit::getObject(unsigned char* pData, long nLength, 
 
     if (nFullLength == bodyLength) {
         PyObject* p = PyDict_New();
-        DataItemFormat *di = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : NULL;
-        if (di != NULL) {
+        DataItemFormat *di = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : nullptr;
+        if (di != nullptr) {
             di->insertToDict(p, pData, bodyLength, verbose);
         }
         return p;

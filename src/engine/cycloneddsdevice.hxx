@@ -39,7 +39,7 @@
 #include "descriptor.hxx"
 #include "AsterixData.hpp"
 
-#define MAX_DDS_MESSAGE_SIZE    65536
+constexpr size_t MAX_DDS_MESSAGE_SIZE = 65536;
 
 /**
  * @class CCycloneDdsDevice
@@ -152,7 +152,7 @@ public:
      *
      * @param descriptor Descriptor with format: mode:domain:topic[:qos]
      */
-    CCycloneDdsDevice(CDescriptor &descriptor);
+    explicit CCycloneDdsDevice(CDescriptor &descriptor);
 
     /**
      * Class destructor.

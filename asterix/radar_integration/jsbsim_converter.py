@@ -46,7 +46,6 @@ Date: 2025-11-23
 """
 
 import time
-import math
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 
@@ -244,8 +243,8 @@ class JSBSimToAsterixConverter:
             flight_level = state.alt_msl_ft / 100.0
 
             # Convert velocities to m/s
-            vx_ms = state.velocity_north_fps * 0.3048
-            vy_ms = state.velocity_east_fps * 0.3048
+            state.velocity_north_fps * 0.3048
+            state.velocity_east_fps * 0.3048
 
             report = {
                 'lat': state.lat,

@@ -28,8 +28,8 @@
 #include "asterixformat.hxx"
 
 DataRecord::DataRecord(Category *cat, int nID, unsigned long len, const unsigned char *data, double nTimestamp)
-        : m_pCategory(cat), m_nID(nID), m_nLength(len), m_nFSPECLength(0), m_pFSPECData(NULL), m_nTimestamp(nTimestamp),
-          m_nCrc(0), m_pHexData(NULL), m_bFormatOK(false) {
+        : m_pCategory(cat), m_nID(nID), m_nLength(len), m_nFSPECLength(0), m_pFSPECData(nullptr), m_nTimestamp(nTimestamp),
+          m_nCrc(0), m_pHexData(nullptr), m_bFormatOK(false) {
     const unsigned char *m_pItemDataStart = data;
     long nUnparsed = len;
 
@@ -71,13 +71,9 @@ DataRecord::DataRecord(Category *cat, int nID, unsigned long len, const unsigned
         nUnparsed--;
     } while (!lastFSPEC && nUnparsed > 0);
 
-    m_pFSPECData = (unsigned char *) malloc(m_nFSPECLength);
-    // Security fix: Check malloc return value to prevent null pointer dereference
-    if (m_pFSPECData == NULL) {
-        Tracer::Error("Memory allocation failed for FSPEC data");
-        return;
-    }
-    memcpy(m_pFSPECData, data, m_nFSPECLength);
+    // Use std::unique_ptr for automatic memory management (RAII)
+    m_pFSPECData = std::make_unique<unsigned char[]>(m_nFSPECLength);
+    memcpy(m_pFSPECData.get(), data, m_nFSPECLength);
 
     if (nUnparsed < 0) {
         Tracer::Error("Wrong FSPEC in data block");
@@ -91,7 +87,7 @@ DataRecord::DataRecord(Category *cat, int nID, unsigned long len, const unsigned
     for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {
         DataItem *di = (DataItem *) (*it);
 
-        if (di->m_pDescription == NULL || di->m_pDescription->m_pFormat == NULL) {
+        if (di->m_pDescription == nullptr || di->m_pDescription->m_pFormat == nullptr) {
             Tracer::Error("DataItem format not defined for CAT%03d/I%s", cat->m_id,
                           di->m_pDescription->m_strID.c_str());
             errorReported = true;
@@ -147,15 +143,10 @@ DataRecord::DataRecord(Category *cat, int nID, unsigned long len, const unsigned
         unsigned int i;
         m_nCrc = crc32(data, m_nLength, 1);
 
-        // build hexdata string
-        m_pHexData = (char *) calloc(m_nLength  * 2 + 1 /* null */, sizeof(char));
-        // Security fix: Check calloc return value to prevent null pointer dereference
-        if (m_pHexData != NULL) {
-            for (i = 0; i < m_nLength; i++) {
-                snprintf(m_pHexData + sizeof(char) * i * 2, 3, "%02X", data[i]);
-            }
-        } else {
-            Tracer::Error("Memory allocation failed for hex data");
+        // build hexdata string using std::unique_ptr for automatic memory management
+        m_pHexData = std::make_unique<char[]>(m_nLength * 2 + 1);
+        for (i = 0; i < m_nLength; i++) {
+            snprintf(m_pHexData.get() + i * 2, 3, "%02X", data[i]);
         }
     }
 }
@@ -168,11 +159,7 @@ DataRecord::~DataRecord() {
         it = m_lDataItems.erase(it);
     }
 
-    if (m_pFSPECData)
-        free(m_pFSPECData);
-
-    if (m_pHexData)
-        free(m_pHexData);
+    // m_pFSPECData and m_pHexData are std::unique_ptr - automatically freed
 }
 
 bool DataRecord::getText(std::string &strResult, std::string &strHeader, const unsigned int formatType) {
@@ -188,25 +175,25 @@ bool DataRecord::getText(std::string &strResult, std::string &strHeader, const u
             strNewResult = format("\n-------------------------\nData Record %d", m_nID);
             strNewResult += format("\nLen: %ld", m_nLength);
             strNewResult += format("\nCRC: %08X", m_nCrc);
-            strNewResult += format("\nHexData: %s", m_pHexData);
+            strNewResult += format("\nHexData: %s", m_pHexData.get());
             break;
         case CAsterixFormat::EJSON:
             strNewResult = format(
                     "{\"id\":%d,\"cat\":%d,\"length\":%ld,\"crc\":\"%08X\",\"timestamp\":%lf,\"hexdata\":\"%s\",\"CAT%03d\":{",
-                    m_nID, m_pCategory->m_id, m_nLength, m_nCrc, m_nTimestamp, m_pHexData, m_pCategory->m_id);
+                    m_nID, m_pCategory->m_id, m_nLength, m_nCrc, m_nTimestamp, m_pHexData.get(), m_pCategory->m_id);
             break;
         case CAsterixFormat::EJSONH:
         case CAsterixFormat::EJSONE:
             strNewResult = format(
                     "{\"id\":%d,\n\"cat\":%d,\n\"length\":%ld,\n\"crc\":\"%08X\",\n\"timestamp\":%lf,\n\"hexdata\":\"%s\",\n\"CAT%03d\":{\n",
-                    m_nID, m_pCategory->m_id, m_nLength, m_nCrc, m_nTimestamp, m_pHexData, m_pCategory->m_id);
+                    m_nID, m_pCategory->m_id, m_nLength, m_nCrc, m_nTimestamp, m_pHexData.get(), m_pCategory->m_id);
             break;
         case CAsterixFormat::EXML:
         case CAsterixFormat::EXMLH: {
             const int nXIDEFv = 1;
             strNewResult = format(
                     "<ASTERIX ver=\"%d\" cat=\"%d\" length=\"%ld\" crc=\"%08X\" timestamp=\"%lf\" hexdata=\"%s\">",
-                    nXIDEFv, m_pCategory->m_id, m_nLength, m_nCrc, m_nTimestamp, m_pHexData);
+                    nXIDEFv, m_pCategory->m_id, m_nLength, m_nCrc, m_nTimestamp, m_pHexData.get());
             break;
         }
     }
@@ -217,7 +204,7 @@ bool DataRecord::getText(std::string &strResult, std::string &strHeader, const u
     std::list<DataItem *>::iterator it;
     for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {
         DataItem *di = (DataItem *) (*it);
-        if (di != NULL) {
+        if (di != nullptr) {
             if (di->getText(strNewResult, strHeader, formatType)) {
                 if (!ret) {
                     ret = true;
@@ -268,13 +255,13 @@ DataItem *DataRecord::getItem(std::string itemid) {
             return di;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_data* DataRecord::getData(int byteoffset)
 {
-  fulliautomatix_data *firstData = NULL, *lastData=NULL;
+  fulliautomatix_data *firstData = nullptr, *lastData=nullptr;
   int endOffset = byteoffset+m_nLength;
 
   char tmp[64];
@@ -282,7 +269,7 @@ fulliautomatix_data* DataRecord::getData(int byteoffset)
 
   firstData = lastData = newDataTree(lastData, byteoffset, m_nLength, tmp);
 
-  UAP* pUAP = m_pCategory->getUAP(m_pFSPECData, m_nFSPECLength);
+  UAP* pUAP = m_pCategory->getUAP(m_pFSPECData.get(), m_nFSPECLength);
   if (!pUAP)
   {
     Tracer::Error("UAP for CAT%03d not found!", m_pCategory->m_id);
@@ -297,7 +284,7 @@ fulliautomatix_data* DataRecord::getData(int byteoffset)
     for ( uapit=pUAP->m_lUAPItems.begin(); uapit != pUAP->m_lUAPItems.end(); uapit++ )
     {
       UAPItem* uap = (UAPItem*)(*uapit);
-      lastData->next = uap->getData(m_pFSPECData, m_nFSPECLength, byteoffset);
+      lastData->next = uap->getData(m_pFSPECData.get(), m_nFSPECLength, byteoffset);
 
       if(lastData->next)
       {
@@ -376,7 +363,7 @@ PyObject* DataRecord::getData(int verbose)
     Py_DECREF(v4);
 
     PyObject* k5 = Py_BuildValue("s", "hexdata");
-    PyObject* v5 = Py_BuildValue("s", m_pHexData);
+    PyObject* v5 = Py_BuildValue("s", m_pHexData.get());
     PyDict_SetItem(p, k5, v5);
     Py_DECREF(k5);
     Py_DECREF(v5);
@@ -391,7 +378,7 @@ PyObject* DataRecord::getData(int verbose)
             if (di)
             {
                 PyObject* v1 = di->getData(verbose);
-                if (v1 == NULL) {
+                if (v1 == nullptr) {
                     v1 = Py_BuildValue("s", "Error");
                 }
                 char tmp[20];

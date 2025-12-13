@@ -53,9 +53,9 @@ from .mock_radar import (
 # Optional visualization and statistics imports (graceful degradation)
 try:
     from .visualization import (
-        plot_radar_ascii,
-        check_matplotlib_available,
-        print_visualization_info,
+        plot_radar_ascii as plot_radar_ascii,
+        check_matplotlib_available as check_matplotlib_available,
+        print_visualization_info as print_visualization_info,
     )
     _HAS_VISUALIZATION = True
 except ImportError:
@@ -63,11 +63,11 @@ except ImportError:
 
 try:
     from .statistics import (
-        compute_scenario_stats,
-        compute_coverage_map,
-        analyze_detection_performance,
-        analyze_track_statistics,
-        compare_scenarios,
+        compute_scenario_stats as compute_scenario_stats,
+        compute_coverage_map as compute_coverage_map,
+        analyze_detection_performance as analyze_detection_performance,
+        analyze_track_statistics as analyze_track_statistics,
+        compare_scenarios as compare_scenarios,
     )
     _HAS_STATISTICS = True
 except ImportError:

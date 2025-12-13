@@ -27,12 +27,11 @@
 #include "asterixformat.hxx"
 
 DataItem::DataItem(DataItemDescription *pDesc)
-        : m_pDescription(pDesc), m_pData(NULL), m_nLength(0) {
+        : m_pDescription(pDesc), m_pData(nullptr), m_nLength(0) {
 }
 
 DataItem::~DataItem() {
-    if (m_pData)
-        delete[] m_pData;
+    // m_pData is std::unique_ptr - automatically freed
 }
 
 bool DataItem::getText(std::string &strResult, std::string &strHeader, const unsigned int formatType) {
@@ -60,7 +59,7 @@ bool DataItem::getText(std::string &strResult, std::string &strHeader, const uns
                                   m_pDescription->m_strName.c_str());
             strNewResult += format("\n[ ");
             for (int i = 0; i < m_nLength; i++) {
-                strNewResult += format("%02X ", *(m_pData + i));
+                strNewResult += format("%02X ", *(m_pData.get() + i));
             }
             strNewResult += format("]");
             break;
@@ -69,7 +68,7 @@ bool DataItem::getText(std::string &strResult, std::string &strHeader, const uns
             break;
     }
 
-    if (false == m_pDescription->getText(strNewResult, newHeader, formatType, m_pData, m_nLength)) {
+    if (false == m_pDescription->getText(strNewResult, newHeader, formatType, m_pData.get(), m_nLength)) {
         return false;
     }
     strResult += strNewResult;
@@ -96,8 +95,8 @@ bool DataItem::getText(std::string &strResult, std::string &strHeader, const uns
 }
 
 long DataItem::parse(const unsigned char *pData, long len) {
-    if (m_pDescription == NULL || m_pDescription->m_pFormat == NULL) {
-        Tracer::Error("DataItem::parse NULL pointer");
+    if (m_pDescription == nullptr || m_pDescription->m_pFormat == nullptr) {
+        Tracer::Error("DataItem::parse nullptr pointer");
         return 0;
     }
 
@@ -112,8 +111,8 @@ long DataItem::parse(const unsigned char *pData, long len) {
         Tracer::Error("DataItem::parse needed length=%d , and there is only %d : [ %s ]", m_nLength, len,
                       strNewResult.c_str());
     } else if (m_nLength > 0) {
-        m_pData = new unsigned char[m_nLength];
-        memcpy(m_pData, pData, m_nLength);
+        m_pData = std::make_unique<unsigned char[]>(m_nLength);
+        memcpy(m_pData.get(), pData, m_nLength);
     } else {
         Tracer::Error("DataItem::parse length=0");
     }
@@ -129,14 +128,14 @@ fulliautomatix_data* DataItem::getData(int byteoffset)
   snprintf(tmp, 20, "Data item %s - ", m_pDescription->m_strID.c_str());
   strDesc = tmp;
   strDesc += m_pDescription->m_strName;
-  lastData = firstData = newDataTree(NULL, byteoffset, m_nLength, (char*)strDesc.c_str());
+  lastData = firstData = newDataTree(nullptr, byteoffset, m_nLength, (char*)strDesc.c_str());
   if (m_pDescription && m_pDescription->m_pFormat && m_pData)
   {
-    lastData->next = m_pDescription->m_pFormat->getData(m_pData, m_nLength, byteoffset);
+    lastData->next = m_pDescription->m_pFormat->getData(m_pData.get(), m_nLength, byteoffset);
   }
   else
   {
-    lastData->next = newDataMessage(NULL, byteoffset, m_nLength, 2, (char*)"Error: Unknown item format.");
+    lastData->next = newDataMessage(nullptr, byteoffset, m_nLength, 2, (char*)"Error: Unknown item format.");
   }
   while (lastData->next)
   {
@@ -155,7 +154,7 @@ PyObject* DataItem::getData(int verbose)
 {
   if (m_pDescription && m_pDescription->m_pFormat && m_pData)
   {
-    return m_pDescription->m_pFormat->getObject(m_pData, m_nLength, verbose);
+    return m_pDescription->m_pFormat->getObject(m_pData.get(), m_nLength, verbose);
   }
   return Py_BuildValue("s", "Error");
 }

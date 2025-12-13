@@ -39,11 +39,11 @@
   #include <sys/time.h>
 #endif
 
-static AsterixDefinition *pDefinition = NULL;
-static InputParser *inputParser = NULL;
+static AsterixDefinition *pDefinition = nullptr;
+static InputParser *inputParser = nullptr;
 bool gFiltering = false;
 bool gSynchronous = false;
-const char *gAsterixDefinitionsFile = NULL;
+const char *gAsterixDefinitionsFile = nullptr;
 bool gVerbose = false;
 bool gForceRouting = false;
 int gHeartbeat = 0;
@@ -108,7 +108,7 @@ PyObject *python_parse(const unsigned char *pBuf, Py_ssize_t len, int verbose) {
     try {
         // get current timstamp in ms since epoch
         struct timeval tp;
-        gettimeofday(&tp, NULL);
+        gettimeofday(&tp, nullptr);
         unsigned long nTimestamp = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
         if (inputParser) {
@@ -119,18 +119,18 @@ PyObject *python_parse(const unsigned char *pBuf, Py_ssize_t len, int verbose) {
                 return lst;
             }
         }
-        return NULL;
+        return nullptr;
 
     } catch (const std::bad_alloc& e) {
         PyErr_SetString(PyExc_MemoryError, "Out of memory during parsing.");
-        return NULL;
+        return nullptr;
     } catch (const std::exception& e) {
         std::string error_msg = std::string("C++ exception during parsing: ") + e.what();
         PyErr_SetString(PyExc_RuntimeError, error_msg.c_str());
-        return NULL;
+        return nullptr;
     } catch (...) {
         PyErr_SetString(PyExc_RuntimeError, "Unknown C++ exception during parsing.");
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -145,12 +145,12 @@ python_parse_with_offset(const unsigned char *pBuf, Py_ssize_t len, unsigned int
         // CRITICAL-002 FIX: Additional bounds checking at parser level
         // Note: Validation already done in python_wrapper.cpp, but defense-in-depth
         if (offset >= len) {
-            return NULL;  // Return empty result for out-of-bounds offset
+            return nullptr;  // Return empty result for out-of-bounds offset
         }
 
         // get current timstamp in ms since epoch
         struct timeval tp;
-        gettimeofday(&tp, NULL);
+        gettimeofday(&tp, nullptr);
         unsigned long nTimestamp = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
         if (inputParser) {
@@ -192,39 +192,39 @@ python_parse_with_offset(const unsigned char *pBuf, Py_ssize_t len, unsigned int
                 return py_output;
             }
         }
-        return NULL;
+        return nullptr;
 
     } catch (const std::bad_alloc& e) {
         PyErr_SetString(PyExc_MemoryError, "Out of memory during parsing with offset.");
-        return NULL;
+        return nullptr;
     } catch (const std::exception& e) {
         std::string error_msg = std::string("C++ exception during parsing with offset: ") + e.what();
         PyErr_SetString(PyExc_RuntimeError, error_msg.c_str());
-        return NULL;
+        return nullptr;
     } catch (...) {
         PyErr_SetString(PyExc_RuntimeError, "Unknown C++ exception during parsing with offset.");
-        return NULL;
+        return nullptr;
     }
 }
 
-PyObject *python_describe(int category, const char *item = NULL, const char *field = NULL, const char *value = NULL) {
+PyObject *python_describe(int category, const char *item = nullptr, const char *field = nullptr, const char *value = nullptr) {
     // MEDIUM-005 FIX: Add exception handling to prevent crashes
     try {
         if (!pDefinition)
             return Py_BuildValue("s", "Not initialized");
 
         const char *description = pDefinition->getDescription(category, item, field, value);
-        if (description == NULL)
+        if (description == nullptr)
             return Py_BuildValue("s", "");
         return Py_BuildValue("s", description);
 
     } catch (const std::exception& e) {
         std::string error_msg = std::string("C++ exception in describe: ") + e.what();
         PyErr_SetString(PyExc_RuntimeError, error_msg.c_str());
-        return NULL;
+        return nullptr;
     } catch (...) {
         PyErr_SetString(PyExc_RuntimeError, "Unknown C++ exception in describe.");
-        return NULL;
+        return nullptr;
     }
 
 /*
@@ -234,13 +234,13 @@ PyObject *python_describe(int category, const char *item = NULL, const char *fie
         return Py_BuildValue("s", "Unknown category");
     }
 
-    if (item == NULL && field == NULL && value == NULL)
+    if (item == nullptr && field == nullptr && value == nullptr)
     {   // return Category description
         return Py_BuildValue("s", cat->m_strName.c_str());
     }
 
 	std::list<DataItemDescription*>::iterator it;
-	DataItemDescription* di = NULL;
+	DataItemDescription* di = nullptr;
 
     std::string item_number = format("%s", &item[1]);
 	for ( it=cat->m_lDataItems.begin() ; it != cat->m_lDataItems.end(); it++ )
@@ -248,17 +248,17 @@ PyObject *python_describe(int category, const char *item = NULL, const char *fie
         di = (DataItemDescription*)(*it);
         if (di->m_strID.compare(item_number) == 0)
             break;
-        di = NULL;
+        di = nullptr;
     }
-    if (di == NULL)
+    if (di == nullptr)
         return Py_BuildValue("s", "Unknown item");
 
-    if (field == NULL && value == NULL)
+    if (field == nullptr && value == nullptr)
     { // Return Item name and description
         return Py_BuildValue("s", (di->m_strName+" ("+di->m_strDefinition+" )").c_str());
     }
 
-    if (value == NULL)
+    if (value == nullptr)
     {
         return Py_BuildValue("s", "field todo");
     }
@@ -274,7 +274,7 @@ PyObject *python_describe(int category, const char *item = NULL, const char *fie
 	PyObject *arg = Py_BuildValue("(O)", lst);
 	PyObject *result = PyObject_CallObject(my_callback, arg);
 	Py_DECREF(lst);
-	if (result != NULL)
+	if (result != nullptr)
 		/// use result...
 		Py_DECREF(result);
 	return true;

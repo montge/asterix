@@ -87,10 +87,7 @@ import json
 # files shipped with this project. The XML files are static definitions, not
 # user-provided or external data. XXE and other XML attacks are not applicable.
 import xml.dom.minidom  # nosec B408 - parsing trusted local config files
-from xml.dom import Node  # nosec B408
-from xml.dom.minidom import Text  # nosec B408
 from xml.dom.minidom import Element  # nosec B408
-from xml.dom.minidom import parseString  # nosec B408
 
 logging.basicConfig(level=logging.INFO)
 
@@ -338,7 +335,7 @@ def getDataItemId(DataItem):
         Returns -1 (integer) instead of None when the id attribute is missing.
         This is used for error handling in the parsing logic.
     """
-    if type(DataItem._attrs) == dict:
+    if isinstance(DataItem._attrs, dict):
         return "I" + DataItem._attrs["id"]._value
     else:
         return -1
@@ -358,7 +355,7 @@ def printVariable(Variable, **kwargs):
         if type(Fixed) is not Element:
             continue
         if Fixed.nodeName == "Fixed":
-            printFixed(Fixed, DataItemId=DataItemId)
+            printFixed(Fixed, **kwargs)
 
 
 def getVariable(Variable, **kwargs):
@@ -377,9 +374,9 @@ def getVariable(Variable, **kwargs):
         if type(Fixed) is not Element:
             continue
         if Fixed.nodeName == "Fixed":
-            Variable = gitFixed(Fixed, DataItemId=DataItemId)
-            for key in Variable.keys():
-                Variables[key] = Variable[key]
+            FixedResult = gitFixed(Fixed, **kwargs)
+            for key in FixedResult.keys():
+                Variables[key] = FixedResult[key]
     return Variables
 
 
@@ -451,7 +448,7 @@ def printExplicit(Explicit, **kwargs):
         if type(DataItemFormat) is not Element:
             continue
         if DataItemFormat.nodeName == "Compound":
-            printCompound(DataItemFormat, DataItemId=DataItemId)
+            printCompound(DataItemFormat, **kwargs)
 
 
 def map2sql(map, key, depth):
@@ -470,9 +467,9 @@ def map2sql(map, key, depth):
     """
     rows = []
     for k in map.keys():
-        if type(map[k]) == str:
+        if isinstance(map[k], str):
             rows.append(struct_str2sql(map, k, depth + 1))
-        elif type(map[k]) == dict:
+        elif isinstance(map[k], dict):
             rows.append(map2sql(map[k], k, depth + 1))
 
     if depth == 1:
@@ -541,9 +538,9 @@ def json2sql(map):
     """
     rows = []
     for key in map.keys():
-        if type(map[key]) == str:
+        if isinstance(map[key], str):
             rows.append(str2sql(map, key, 1))
-        elif type(map[key]) == dict:
+        elif isinstance(map[key], dict):
             rows.append(map2sql(map[key], key, 1))
     return rows
 

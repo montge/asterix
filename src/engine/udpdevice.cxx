@@ -81,7 +81,7 @@ CUdpDevice::CUdpDevice(CDescriptor &descriptor) {
     element = descriptor.GetFirst();
 
     while (true) {
-        if (NULL == element) {
+        if (nullptr == element) {
             for (unsigned int i = 0; i < _socketDesc.size(); i++) {
                 if (_socketDesc[i] > _maxValSocketDesc) {
                     _maxValSocketDesc = _socketDesc[i];
@@ -162,7 +162,7 @@ CUdpDevice::CUdpDevice(CDescriptor &descriptor) {
         }
 
         // Mcast port argument
-        if (port == NULL) {
+        if (port == nullptr) {
             LOGWARNING(gVerbose, "Mcast port not specified (%d by default)\n", portNo);
         } else {
             portNo = atoi(port);
@@ -310,10 +310,10 @@ bool CUdpDevice::Select(const unsigned int secondsToWait) {
         timeout.tv_sec = secondsToWait;
         timeout.tv_usec = 0;
 
-        selectVal = select(_maxValSocketDesc, &_descToRead, NULL, NULL, &timeout);
+        selectVal = select(_maxValSocketDesc, &_descToRead, nullptr, nullptr, &timeout);
     } else {
         // secondsToWait is zero => Wait indefinitely
-        selectVal = select(_maxValSocketDesc, &_descToRead, NULL, NULL, NULL);
+        selectVal = select(_maxValSocketDesc, &_descToRead, nullptr, nullptr, nullptr);
     }
 
     _countToRead = selectVal;
@@ -431,7 +431,7 @@ void CUdpDevice::Init(const char *mcastAddress, const char *interfaceAddress, co
     // 1.1 Multicast address
     ASSERT(mcastAddress);
     host = gethostbyname(mcastAddress);
-    if (host == NULL) {
+    if (host == nullptr) {
         LOGERROR(1, "Unknown multicast group '%s'\n", mcastAddress);
         return;
     }
@@ -449,10 +449,10 @@ void CUdpDevice::Init(const char *mcastAddress, const char *interfaceAddress, co
 
 
     // 1.1b Source interface
-    if (srcAddress != NULL && strlen(srcAddress) != 0) {
+    if (srcAddress != nullptr && strlen(srcAddress) != 0) {
         // Specific interface is chosen
         host = gethostbyname(srcAddress);
-        if (host == NULL) {
+        if (host == nullptr) {
             LOGERROR(1, "Unknown source address '%s'\n", srcAddress);
             return;
         }
@@ -466,7 +466,7 @@ void CUdpDevice::Init(const char *mcastAddress, const char *interfaceAddress, co
     if (strlen(interfaceAddress) != 0) {
         // Specific interface is chosen
         host = gethostbyname(interfaceAddress);
-        if (host == NULL) {
+        if (host == nullptr) {
             LOGERROR(1, "Unknown interface address '%s'\n", interfaceAddress);
             return;
         }

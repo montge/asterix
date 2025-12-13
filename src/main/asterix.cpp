@@ -328,7 +328,7 @@ int main(int argc, const char *argv[]) {
 
     // check for definitions file
     FILE *tmp = fopen(gAsterixDefinitionsFile, "r");
-    if (tmp == NULL) {
+    if (tmp == nullptr) {
         std::cerr << "Error: Asterix definitions file " + strDefinitions + " not found." << std::endl;
         exit(2);
     }
@@ -403,7 +403,7 @@ int main(int argc, const char *argv[]) {
     // Create output string
     std::string strOutput = "std 0 " + strOutputFormat;
 
-    const char *inputChannel = NULL;
+    const char *inputChannel = nullptr;
     const char *outputChannel[CChannelFactory::MAX_OUTPUT_CHANNELS];
     unsigned int chFailover = 0;
     unsigned int nOutput = 1; // Total number of output channels
@@ -425,13 +425,13 @@ int main(int argc, const char *argv[]) {
     if (CConverterEngine::Instance()->Initialize(inputChannel, outputChannel, nOutput, chFailover)) {
         if (strFilterFile.empty() == false) { // read filter file and configure items
             CBaseFormatDescriptor *desc = CChannelFactory::Instance()->GetInputChannel()->GetFormatDescriptor();
-            if (desc == NULL) {
+            if (desc == nullptr) {
                 std::cerr << "Error: Format description not found." << std::endl;
                 exit(2);
             }
 
             FILE *ff = fopen(strFilterFile.c_str(), "r");
-            if (ff == NULL) {
+            if (ff == nullptr) {
                 std::cerr << "Error: Filter file " + strFilterFile + " not found." << std::endl;
                 exit(2);
             }
@@ -446,31 +446,22 @@ int main(int argc, const char *argv[]) {
                 if (line[0] == '#' || strlen(line) <= 0)
                     continue;
 
-                char *p = strtok(line, ":");
+                // Thread-safe parsing using std::string instead of strtok
+                std::string lineStr(line);
+                size_t firstColon = lineStr.find(':');
+                size_t secondColon = (firstColon != std::string::npos) ? lineStr.find(':', firstColon + 1) : std::string::npos;
+
                 int ret = 0;
-                while (p) {
-                    if (sscanf(p, "CAT%03d", &cat) != 1)
-                        break;
-                    p = strtok(NULL, ":");
-                    if (NULL == p) {
-                        std::cerr <<
-                                  "Warning: Wrong Filter format. Shall be: \"CATxxx:Ixxx:NAME  DESCRIPTION\" or start with \"#\" for comment . It is: " +
-                                  std::string(line) << std::endl;
-                        exit(3);
+                if (firstColon != std::string::npos && secondColon != std::string::npos) {
+                    std::string catPart = lineStr.substr(0, firstColon);
+                    std::string itemPart = lineStr.substr(firstColon + 1, secondColon - firstColon - 1);
+                    std::string namePart = lineStr.substr(secondColon + 1);
+
+                    if (sscanf(catPart.c_str(), "CAT%03d", &cat) == 1 &&
+                        sscanf(itemPart.c_str(), "I%128s", item) == 1 &&
+                        sscanf(namePart.c_str(), "%128s", name) == 1) {
+                        ret = 1;
                     }
-                    if (sscanf(p, "I%128s", item) != 1)
-                        break;
-                    p = strtok(NULL, "");
-                    if (NULL == p) {
-                        std::cerr <<
-                                  "Warning: Wrong Filter format. Shall be: \"CATxxx:Ixxx:NAME  DESCRIPTION\" or start with \"#\" for comment . It is: " +
-                                  std::string(line) << std::endl;
-                        exit(3);
-                    }
-                    if (sscanf(p, "%128s", name) != 1)
-                        break;
-                    ret = 1;
-                    break;
                 }
 
                 if (ret == 0) {
@@ -490,7 +481,7 @@ int main(int argc, const char *argv[]) {
 
         if (bListDefinitions) { // Parse definitions file and print all items
             CBaseFormatDescriptor *desc = CChannelFactory::Instance()->GetInputChannel()->GetFormatDescriptor();
-            if (desc == NULL) {
+            if (desc == nullptr) {
                 std::cerr << "Error: Format description not found." << std::endl;
                 exit(2);
             }

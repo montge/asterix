@@ -260,7 +260,7 @@ class TestRoundTrip(unittest.TestCase):
     def setUp(self):
         """Check if ASTERIX parser is available."""
         try:
-            import asterix
+            import asterix  # noqa: F401 - imported for availability check
             self.asterix_available = True
         except ImportError:
             self.asterix_available = False

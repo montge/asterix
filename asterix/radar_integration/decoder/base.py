@@ -18,7 +18,7 @@ Date: 2025-11-23
 
 import struct
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Dict, Any, Optional
+from typing import List, Tuple, Dict, Any
 
 
 class DecoderError(Exception):

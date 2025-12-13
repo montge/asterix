@@ -235,11 +235,11 @@ public:
      *
      * UAPItem is not a data parser, this method should not be called.
      *
-     * @return Always returns NULL after logging error
+     * @return Always returns nullptr after logging error
      */
     const char *getDescription(const char * /*field*/, const char * /*value*/) {
         Tracer::Error("UAPItem::getDescription() should not be called!");
-        return NULL;
+        return nullptr;
     };
 
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
@@ -268,16 +268,16 @@ public:
 #endif
 #if defined(PYTHON_WRAPPER)
     /**
-     * @brief NOT APPLICABLE - returns NULL (Python binding only)
+     * @brief NOT APPLICABLE - returns nullptr (Python binding only)
      *
      * UAPItem is not a data parser, this method is not applicable.
      *
-     * @return Always returns NULL
+     * @return Always returns nullptr
      *
      * @note This method is only available when compiled with PYTHON_WRAPPER
      *       defined (Python C extension module build).
      */
-    PyObject* getObject(unsigned char* pData, long nLength, int description) { return NULL; };
+    PyObject* getObject(unsigned char* pData, long nLength, int description) { return nullptr; };
 
     /**
      * @brief NOT APPLICABLE - no-op (Python binding only)

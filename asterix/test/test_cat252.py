@@ -45,7 +45,7 @@ class TestCAT252:
         
         # If packet is too minimal, it may return empty list, which is acceptable
         if len(result) > 0:
-            assert result[0]['category'] == 252, f"Should identify as CAT252"
+            assert result[0]['category'] == 252, "Should identify as CAT252"
 
     def test_parse_cat252_with_data_items(self):
         """
@@ -72,7 +72,7 @@ class TestCAT252:
         assert isinstance(result, list), "Parse should return a list"
         
         if len(result) > 0:
-            assert result[0]['category'] == 252, f"Should identify as CAT252"
+            assert result[0]['category'] == 252, "Should identify as CAT252"
 
     def test_cat252_error_handling(self):
         """

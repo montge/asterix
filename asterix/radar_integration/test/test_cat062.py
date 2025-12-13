@@ -17,7 +17,6 @@ Date: 2025-11-23
 
 import unittest
 import struct
-import time
 from asterix.radar_integration.encoder.cat062 import (
     encode_fspec,
     encode_i010,

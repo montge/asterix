@@ -1,0 +1,171 @@
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+env:
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+jobs:
+  # =============================================================================
+  # SONARCLOUD ANALYSIS WITH COVERAGE
+  # =============================================================================
+  sonarcloud:
+    name: SonarCloud Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0  # Full history for accurate blame information
+
+    # -------------------------------------------------------------------------
+    # C++ BUILD WITH COVERAGE
+    # -------------------------------------------------------------------------
+    - name: Install C++ dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev lcov gcovr
+
+    - name: Build C++ with coverage
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DENABLE_COVERAGE=ON \
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_STATIC_LIBS=ON \
+          -DBUILD_EXECUTABLE=ON \
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build --parallel $(nproc)
+        cmake --install build
+
+    - name: Run C++ tests for coverage
+      run: |
+        cd install/test
+        export LD_LIBRARY_PATH=${{ github.workspace }}/install/lib:${LD_LIBRARY_PATH:-}
+        chmod +x ./test.sh
+        ./test.sh || echo "Some tests may have failed"
+
+    - name: Generate C++ coverage report
+      run: |
+        # Capture coverage data
+        lcov --capture --directory build --output-file coverage.info --ignore-errors mismatch,source,gcov
+
+        # Remove system files and test files from coverage
+        lcov --remove coverage.info \
+          '/usr/*' \
+          '*/test/*' \
+          '*/tests/*' \
+          '*/_deps/*' \
+          '*/CMakeFiles/*' \
+          --output-file coverage.info --ignore-errors unused
+
+        # Generate coverage summary
+        lcov --list coverage.info || echo "Coverage list failed"
+
+        echo "C++ coverage report generated at coverage.info"
+
+    # -------------------------------------------------------------------------
+    # PYTHON COVERAGE
+    # -------------------------------------------------------------------------
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel coverage pytest pytest-cov numpy scipy
+
+    - name: Build Python module
+      run: pip install .
+
+    - name: Run Python tests with coverage
+      run: |
+        # Run tests with coverage
+        if [ -d "asterix/test" ]; then
+          python -m pytest asterix/test/ -v --cov=asterix --cov-report=xml --cov-report=term || echo "Python tests completed"
+        fi
+
+        # Also run radar integration tests if available
+        if [ -d "asterix/radar_integration/test" ]; then
+          python -m pytest asterix/radar_integration/test/ -v --cov=asterix.radar_integration --cov-append --cov-report=xml --cov-report=term || echo "Radar integration tests completed"
+        fi
+
+        echo "Python coverage report generated at coverage.xml"
+
+    # -------------------------------------------------------------------------
+    # RUST COVERAGE
+    # -------------------------------------------------------------------------
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: llvm-tools-preview
+
+    - name: Install cargo-llvm-cov
+      uses: taiki-e/install-action@cargo-llvm-cov
+
+    - name: Generate Rust coverage
+      run: |
+        cd asterix-rs
+        mkdir -p coverage
+
+        # Generate lcov format for SonarCloud
+        cargo llvm-cov \
+          --all-features \
+          --workspace \
+          --lcov \
+          --output-path coverage/lcov.info \
+          -- --test-threads=1 || echo "Rust tests completed"
+
+        echo "Rust coverage report generated at asterix-rs/coverage/lcov.info"
+
+    # -------------------------------------------------------------------------
+    # SONARCLOUD SCAN
+    # -------------------------------------------------------------------------
+    - name: Copy compile_commands.json
+      run: |
+        if [ -f build/compile_commands.json ]; then
+          cp build/compile_commands.json .
+        fi
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.projectKey=montge_asterix
+          -Dsonar.organization=montge
+          -Dsonar.cpp.coverage.reportPaths=coverage.info
+          -Dsonar.python.coverage.reportPaths=coverage.xml
+          -Dsonar.rust.coverage.reportPaths=asterix-rs/coverage/lcov.info
+          -Dsonar.cfamily.compile-commands=compile_commands.json
+
+    # -------------------------------------------------------------------------
+    # UPLOAD ARTIFACTS FOR DEBUGGING
+    # -------------------------------------------------------------------------
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v5
+      if: always()
+      with:
+        name: sonarcloud-coverage-reports
+        path: |
+          coverage.info
+          coverage.xml
+          asterix-rs/coverage/lcov.info
+        retention-days: 14

@@ -143,7 +143,7 @@ public:
      *
      * @param descriptor Descriptor with format: mode:host:port:topic[:qos[:clientid[:user:pass]]]
      */
-    CMqttDevice(CDescriptor &descriptor);
+    explicit CMqttDevice(CDescriptor &descriptor);
 
     /**
      * Class destructor.

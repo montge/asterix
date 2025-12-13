@@ -196,7 +196,7 @@ public:
      *       specific bits in the FSPEC. This method implements that
      *       selection logic.
      */
-    UAP *getUAP(const unsigned char *data, unsigned long len);
+    UAP *getUAP(const unsigned char *data, unsigned long len) const;
 
     /**
      * @brief Generate a printable list of all item descriptors
@@ -206,7 +206,7 @@ public:
      * @note Used for debugging and diagnostics to show what items
      *       are defined for this category.
      */
-    std::string printDescriptors();
+    std::string printDescriptors() const;
 
     /**
      * @brief Mark a specific item/field for filtering
@@ -244,7 +244,7 @@ public:
      *       should not be freed by the caller.
      */
     const char *
-    getDescription(const char *item, const char *field, const char *value);
+    getDescription(const char *item, const char *field, const char *value) const;
 
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
     /**
