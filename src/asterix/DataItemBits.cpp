@@ -80,9 +80,9 @@ DataItemBits::DataItemBits(const DataItemBits &obj)
 
 DataItemBits::~DataItemBits() {
     // destroy bits value items
-    std::list<BitsValue *>::iterator it = m_lValue.begin();
+    auto it = m_lValue.begin();
     while (it != m_lValue.end()) {
-        delete (BitsValue *) (*it);
+        delete *it;
         it = m_lValue.erase(it);
     }
 }
@@ -861,9 +861,8 @@ const char *DataItemBits::getDescription(const char *field, const char *value = 
         } else {
             int val = atoi(value);
             if (m_lValue.size() > 0) {
-                std::list<BitsValue *>::iterator it;
-                for (it = m_lValue.begin(); it != m_lValue.end(); it++) {
-                    BitsValue *bv = (BitsValue *) (*it);
+                for (auto it = m_lValue.begin(); it != m_lValue.end(); ++it) {
+                    auto *bv = *it;
                     if (bv->m_nVal == val)
                         return bv->m_strDescription.c_str();
                 }
@@ -899,18 +898,16 @@ def->strings = nullptr;
 
 if (m_lValue.size() > 0)
 {
-def->strings = (fulliautomatix_value_string*)malloc((1+m_lValue.size()) * sizeof(fulliautomatix_value_string));
+def->strings = static_cast<fulliautomatix_value_string*>(malloc((1+m_lValue.size()) * sizeof(fulliautomatix_value_string)));
 // Security fix: Check malloc return value to prevent null pointer dereference
 if (def->strings == nullptr) {
     return def;
 }
 
-std::list<BitsValue*>::iterator it;
-BitsValue* bv = nullptr;
 int i=0;
-for ( it=m_lValue.begin() ; it != m_lValue.end(); it++ )
+for (auto it = m_lValue.begin(); it != m_lValue.end(); ++it)
 {
-    bv = (BitsValue*)(*it);
+    auto *bv = *it;
     def->strings[i].value = bv->m_nVal;
     def->strings[i].strptr = strdup(bv->m_strDescription.c_str());
     i++;
