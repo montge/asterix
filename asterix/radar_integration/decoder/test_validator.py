@@ -417,7 +417,7 @@ class TestValidateCat048Record(unittest.TestCase):
             }
         }
 
-        result = validate_cat048_record(original, decoded, self.stats)
+        validate_cat048_record(original, decoded, self.stats)
 
         # Missing I140 is tracked but doesn't fail validation if I010 and I040 are present
         self.assertEqual(self.stats.missing_items.get('I140', 0), 1)

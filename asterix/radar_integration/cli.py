@@ -194,7 +194,7 @@ def main():
     bench_parser.add_argument('--save', help='Save results to JSON')
 
     # Info command
-    info_parser = subparsers.add_parser('info', help='Show package information')
+    subparsers.add_parser('info', help='Show package information')
 
     args = parser.parse_args()
 

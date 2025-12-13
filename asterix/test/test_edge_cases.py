@@ -36,7 +36,7 @@ class AsterixEdgeCasesTest(unittest.TestCase):
         """Test describeXML() output formatter with lxml (lines 177-232)."""
         # Skip if lxml is not available
         try:
-            from lxml import etree
+            from lxml import etree  # noqa: F401 - imported for availability check
         except ImportError:
             self.skipTest("lxml not available")
 
@@ -197,7 +197,7 @@ class AsterixEdgeCasesTest(unittest.TestCase):
         """Test describeXML with items that have string values (line 229)."""
         # This tests the 'else' branch where value is neither dict nor list
         try:
-            from lxml import etree
+            from lxml import etree  # noqa: F401 - imported for availability check
         except ImportError:
             self.skipTest("lxml not available")
 

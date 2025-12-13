@@ -355,7 +355,7 @@ def printVariable(Variable, **kwargs):
         if type(Fixed) is not Element:
             continue
         if Fixed.nodeName == "Fixed":
-            printFixed(Fixed, DataItemId=DataItemId)
+            printFixed(Fixed, **kwargs)
 
 
 def getVariable(Variable, **kwargs):
@@ -374,9 +374,9 @@ def getVariable(Variable, **kwargs):
         if type(Fixed) is not Element:
             continue
         if Fixed.nodeName == "Fixed":
-            Variable = gitFixed(Fixed, DataItemId=DataItemId)
-            for key in Variable.keys():
-                Variables[key] = Variable[key]
+            FixedResult = gitFixed(Fixed, **kwargs)
+            for key in FixedResult.keys():
+                Variables[key] = FixedResult[key]
     return Variables
 
 
@@ -448,7 +448,7 @@ def printExplicit(Explicit, **kwargs):
         if type(DataItemFormat) is not Element:
             continue
         if DataItemFormat.nodeName == "Compound":
-            printCompound(DataItemFormat, DataItemId=DataItemId)
+            printCompound(DataItemFormat, **kwargs)
 
 
 def map2sql(map, key, depth):

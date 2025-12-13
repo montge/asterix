@@ -69,9 +69,8 @@ except ImportError:
     lxml_found = False
 
 import os
-import sys
 from datetime import datetime
-from .version import __version__
+from .version import __version__ as __version__
 
 
 # def set_callback(callback):

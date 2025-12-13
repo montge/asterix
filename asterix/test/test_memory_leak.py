@@ -5,7 +5,7 @@ from memory_profiler import profile
 
 @profile
 def func(data):
-    p = asterix.parse_with_offset(data, 0, 100)
+    asterix.parse_with_offset(data, 0, 100)
     #p = asterix.parse(data)
     #print(p)
 

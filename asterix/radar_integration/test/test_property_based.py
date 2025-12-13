@@ -33,7 +33,7 @@ import math
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
 try:
-    from hypothesis import given, strategies as st, assume, settings, HealthCheck
+    from hypothesis import given, strategies as st, settings, HealthCheck
     from hypothesis.strategies import composite
     HYPOTHESIS_AVAILABLE = True
 except ImportError:
