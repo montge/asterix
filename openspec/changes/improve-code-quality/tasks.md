@@ -74,11 +74,12 @@ SonarCloud Analysis Summary:
 ### 4.2 High-Impact Code Smells (Top Rules)
 - [ ] 4.2.1 Address naming convention violations
 - [x] 4.2.2 Address cognitive complexity issues (commit 6a18fab - DataItemBits refactored)
-- [ ] 4.2.3 Address code duplication
+- [x] 4.2.3 Address code duplication (PR #133 - getEncodedString() helper)
 - [ ] 4.2.4 Address long methods/functions
 - [x] 4.2.5 Address unused imports/variables (commits f4608c6, bd61fe1, 217aeb2)
 - [x] 4.2.6 Fix string initialization issues - cpp:S4962 (commit 78d3621)
 - [x] 4.2.7 Replace NULL with nullptr in bindings (commit 78d3621)
+- [x] 4.2.8 Fix unsafe comma operator pattern in iterators (PR #132 - std::next())
 
 ### 4.3 File-by-File Remediation
 - [ ] 4.3.1 Fix issues in src/asterix/*.cpp (core parsing)
@@ -178,6 +179,11 @@ SonarCloud Analysis Summary:
 - asterixpcapsubformat.cxx, asterixgpssubformat.cxx: Added [[maybe_unused]] (commit 6fc50bc)
 - asterixhdlcsubformat.cxx, asterixfinalsubformat.cxx, asterixrawsubformat.cxx: Same fixes
 - Reduced compiler warnings from ~67 to ~28
+
+**Code Quality Fixes (2025-12-13):**
+- PR #131: Made valgrind tests conditional (prevents CI failures when valgrind not installed)
+- PR #132: Fixed unsafe comma operator pattern with std::next() in DataItemFormatCompound.cpp
+- PR #133: Eliminated code duplication with getEncodedString() helper in DataItemBits.cpp
 
 ## Configuration Status
 
