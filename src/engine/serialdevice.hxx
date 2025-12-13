@@ -54,7 +54,7 @@ public:
     /**
      * Default class constructor
      */
-    CSerialDevice(CDescriptor &descriptor);
+    explicit CSerialDevice(CDescriptor &descriptor);
 
     /**
      * Class destructor.
