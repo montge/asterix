@@ -175,6 +175,9 @@ SonarCloud Analysis Summary:
 - asterix.h: Removed redundant const qualifier from time_t casts
 - InputParser.cpp, DataItemBits.cpp: Added [[maybe_unused]] to unused params
 - diskdevice.cxx: Added braces around empty else body
+- asterixpcapsubformat.cxx, asterixgpssubformat.cxx: Added [[maybe_unused]] (commit 6fc50bc)
+- asterixhdlcsubformat.cxx, asterixfinalsubformat.cxx, asterixrawsubformat.cxx: Same fixes
+- Reduced compiler warnings from ~67 to ~28
 
 ## Configuration Status
 
