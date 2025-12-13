@@ -34,12 +34,12 @@ DataItemFormatBDS::~DataItemFormatBDS() {
 
 DataItemFormatBDS::DataItemFormatBDS(const DataItemFormatBDS &obj)
         : DataItemFormat(obj.m_nID) {
-    std::list<DataItemFormat *>::iterator it = ((DataItemFormat &) obj).m_lSubItems.begin();
+    auto it = const_cast<std::list<DataItemFormat *>&>(obj.m_lSubItems).begin();
 
     while (it != obj.m_lSubItems.end()) {
-        DataItemFormat *di = (DataItemFormat *) (*it);
+        auto *di = *it;
         m_lSubItems.push_back(di->clone());
-        it++;
+        ++it;
     }
 
     m_pParentFormat = obj.m_pParentFormat;
@@ -64,9 +64,9 @@ bool DataItemFormatBDS::getText(std::string &strResult, std::string &strHeader, 
     int BDSid = pData[7];
 
     // Find BDS register
-    std::list<DataItemFormat *>::iterator it = m_lSubItems.begin();
+    auto it = m_lSubItems.begin();
     while (it != m_lSubItems.end()) {
-        DataItemFormatFixed *pFixed = (DataItemFormatFixed *) (*it);
+        auto *pFixed = static_cast<DataItemFormatFixed *>(*it);
         if (pFixed->m_nID == BDSid || pFixed->m_nID == 0) {
             std::string item_str;
 
@@ -77,7 +77,7 @@ bool DataItemFormatBDS::getText(std::string &strResult, std::string &strHeader, 
             }
             break;
         }
-        it++;
+        ++it;
     }
 
     if (ret)
@@ -88,9 +88,9 @@ bool DataItemFormatBDS::getText(std::string &strResult, std::string &strHeader, 
 
 std::string DataItemFormatBDS::printDescriptors(std::string header) {
     std::string resStr;
-    std::list<DataItemFormat *>::iterator it = m_lSubItems.begin();
+    auto it = m_lSubItems.begin();
     while (it != m_lSubItems.end()) {
-        DataItemFormatFixed *pFixed = (DataItemFormatFixed *) (*it);
+        auto *pFixed = static_cast<DataItemFormatFixed *>(*it);
         if (pFixed == nullptr) {
             Tracer::Error("Wrong data in BDS");
         } else {
@@ -98,7 +98,7 @@ std::string DataItemFormatBDS::printDescriptors(std::string header) {
 
             resStr += pFixed->printDescriptors(bds_header);
         }
-        it++;
+        ++it;
     }
     return resStr;
 }
@@ -111,19 +111,19 @@ bool DataItemFormatBDS::filterOutItem(const char *name) {
     if (sscanf(name, "BDS%x:%127s", &item_id, item_name) != 2)
         return false;
 
-    std::list<DataItemFormat *>::iterator it = m_lSubItems.begin();
+    auto it = m_lSubItems.begin();
     while (it != m_lSubItems.end()) {
-        DataItemFormatFixed *pFixed = (DataItemFormatFixed *) (*it);
+        auto *pFixed = static_cast<DataItemFormatFixed *>(*it);
         if (pFixed->m_nID == item_id) {
             return pFixed->filterOutItem(item_name);
         }
-        it++;
+        ++it;
     }
     return false;
 }
 
 bool DataItemFormatBDS::isFiltered(const char *name) {// TODO
-    DataItemFormatFixed *pFixed = m_lSubItems.size() ? (DataItemFormatFixed *) m_lSubItems.front() : nullptr;
+    auto *pFixed = m_lSubItems.size() ? static_cast<DataItemFormatFixed *>(m_lSubItems.front()) : nullptr;
     if (pFixed == nullptr) {
         Tracer::Error("Wrong data in BDS");
         return false;
@@ -133,9 +133,8 @@ bool DataItemFormatBDS::isFiltered(const char *name) {// TODO
 }
 
 const char *DataItemFormatBDS::getDescription(const char *field, const char *value = nullptr) {
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemBits *bv = (DataItemBits *) (*it);
+    for (auto it = m_lSubItems.begin(); it != m_lSubItems.end(); ++it) {
+        auto *bv = static_cast<DataItemBits *>(*it);
         const char *desc = bv->getDescription(field, value);
         if (desc != nullptr)
             return desc;
@@ -146,7 +145,7 @@ const char *DataItemFormatBDS::getDescription(const char *field, const char *val
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_definitions* DataItemFormatBDS::getWiresharkDefinitions()
 {// TODO
-    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : nullptr;
+    auto *pFixed = m_lSubItems.size() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
     if (!pFixed)
     {
         Tracer::Error("Wrong format of BDS item");
@@ -158,7 +157,7 @@ fulliautomatix_definitions* DataItemFormatBDS::getWiresharkDefinitions()
 fulliautomatix_data* DataItemFormatBDS::getData(unsigned char* pData, long len, int byteoffset)
 {// TODO
     fulliautomatix_data *lastData = nullptr, *firstData = nullptr;
-    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : nullptr;
+    auto *pFixed = m_lSubItems.size() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
     if (!pFixed)
     {
         Tracer::Error("Wrong format of BDS item");
@@ -214,16 +213,16 @@ void DataItemFormatBDS::insertToDict(PyObject* p, unsigned char* pData, long nLe
     int BDSid = pData[7];
 
     // Find BDS register
-    std::list<DataItemFormat*>::iterator it =  m_lSubItems.begin();
+    auto it = m_lSubItems.begin();
     while (it != m_lSubItems.end())
     {
-        DataItemFormatFixed* pFixed = (DataItemFormatFixed*)(*it);
+        auto *pFixed = static_cast<DataItemFormatFixed*>(*it);
         if (pFixed->m_nID == BDSid || pFixed->m_nID == 0)
         {
             pFixed->insertToDict(p, pData, 8, verbose);
             break;
         }
-        it++;
+        ++it;
     }
 }
 

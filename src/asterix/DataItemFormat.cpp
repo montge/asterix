@@ -42,9 +42,9 @@ DataItemFormat::~DataItemFormat() {
     m_lSubItems.clear();
 #else
     // C++17: Traditional iterator-based cleanup
-    std::list<DataItemFormat *>::iterator it = m_lSubItems.begin();
+    auto it = m_lSubItems.begin();
     while (it != m_lSubItems.end()) {
-        delete (DataItemFormat *) (*it);
+        delete *it;
         it = m_lSubItems.erase(it);
     }
 #endif

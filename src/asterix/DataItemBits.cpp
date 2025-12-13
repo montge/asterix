@@ -43,11 +43,11 @@ DataItemBits::DataItemBits(int id)
 
 DataItemBits::DataItemBits(const DataItemBits &obj)
         : DataItemFormat(obj.m_nID) {
-    std::list<DataItemFormat *>::iterator it = ((DataItemFormat &) obj).m_lSubItems.begin();
+    auto it = const_cast<std::list<DataItemFormat *>&>(obj.m_lSubItems).begin();
     while (it != obj.m_lSubItems.end()) {
-        DataItemFormat *di = (DataItemFormat *) (*it);
+        auto *di = *it;
         m_lSubItems.push_back(di->clone());
-        it++;
+        ++it;
     }
 
     m_pParentFormat = obj.m_pParentFormat;
@@ -68,11 +68,11 @@ DataItemBits::DataItemBits(const DataItemBits &obj)
     m_bExtension = obj.m_bExtension;
     m_nPresenceOfField = obj.m_nPresenceOfField;
 
-    std::list<BitsValue *>::const_iterator bit = obj.m_lValue.begin();
+    auto bit = obj.m_lValue.begin();
     while (bit != obj.m_lValue.end()) {
-        BitsValue *bv = (BitsValue *) (*bit);
+        auto *bv = *bit;
         m_lValue.push_back(new BitsValue(bv->m_nVal, bv->m_strDescription));
-        bit++;
+        ++bit;
     }
     m_bFiltered = obj.m_bFiltered;
 }

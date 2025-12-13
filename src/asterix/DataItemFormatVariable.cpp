@@ -41,11 +41,11 @@ DataItemFormatVariable::DataItemFormatVariable(const DataItemFormatVariable &obj
     );
 #else
     // C++17: Traditional iterator-based approach
-    std::list<DataItemFormat *>::iterator it = ((DataItemFormat &) obj).m_lSubItems.begin();
+    auto it = const_cast<std::list<DataItemFormat *>&>(obj.m_lSubItems).begin();
     while (it != obj.m_lSubItems.end()) {
-        DataItemFormat *di = (DataItemFormat *) (*it);
+        auto *di = *it;
         m_lSubItems.push_back(di->clone());
-        it++;
+        ++it;
     }
 #endif
 
@@ -54,20 +54,19 @@ DataItemFormatVariable::DataItemFormatVariable(const DataItemFormatVariable &obj
 
 DataItemFormatVariable::~DataItemFormatVariable() {
     // destroy list items
-    std::list<DataItemFormat *>::iterator it = m_lSubItems.begin();
+    auto it = m_lSubItems.begin();
     while (it != m_lSubItems.end()) {
-        delete (DataItemFormatFixed *) (*it);
+        delete static_cast<DataItemFormatFixed *>(*it);
         it = m_lSubItems.erase(it);
     }
 }
 
 long DataItemFormatVariable::getLength(const unsigned char *pData) {
     long length = 0;
-    std::list<DataItemFormat *>::iterator it;
     bool lastPart = false;
-    it = m_lSubItems.begin();
+    auto it = m_lSubItems.begin();
 
-    DataItemFormatFixed *dip = (DataItemFormatFixed *) (*it);
+    auto *dip = static_cast<DataItemFormatFixed *>(*it);
 
     do {
         lastPart = dip->isLastPart(pData);
@@ -77,9 +76,9 @@ long DataItemFormatVariable::getLength(const unsigned char *pData) {
         pData += partlen;
 
         if (it != m_lSubItems.end()) {
-            it++;
+            ++it;
             if (it != m_lSubItems.end()) {
-                dip = (DataItemFormatFixed *) (*it);
+                dip = static_cast<DataItemFormatFixed *>(*it);
             }
         }
     } while (!lastPart);
@@ -91,7 +90,6 @@ bool DataItemFormatVariable::getText(std::string &strResult, std::string &strHea
                                      unsigned char *pData, long nLength) {
     bool ret = false;
 
-    std::list<DataItemFormat *>::iterator it;
     bool lastPart = false;
 
     // If Variable item definition contains 1 Fixed subitem, show items in list
@@ -99,10 +97,10 @@ bool DataItemFormatVariable::getText(std::string &strResult, std::string &strHea
     if (m_lSubItems.size() == 1)
         listOfSubItems = true;
 
-    it = m_lSubItems.begin();
+    auto it = m_lSubItems.begin();
     std::string tmpResult;
 
-    DataItemFormatFixed *dip = (DataItemFormatFixed *) (*it);
+    auto *dip = static_cast<DataItemFormatFixed *>(*it);
 
     switch (formatType) {
         case CAsterixFormat::EJSON:
@@ -146,9 +144,9 @@ bool DataItemFormatVariable::getText(std::string &strResult, std::string &strHea
         nLength -= dip->getLength();
 
         if (it != m_lSubItems.end()) {
-            it++;
+            ++it;
             if (it != m_lSubItems.end()) {
-                dip = (DataItemFormatFixed *) (*it);
+                dip = static_cast<DataItemFormatFixed *>(*it);
             }
         }
     } while (!lastPart && nLength > 0);
@@ -178,18 +176,16 @@ bool DataItemFormatVariable::getText(std::string &strResult, std::string &strHea
 std::string DataItemFormatVariable::printDescriptors(std::string header) {
     std::string strDef;
 
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormatFixed *dip = (DataItemFormatFixed *) (*it);
+    for (auto it = m_lSubItems.begin(); it != m_lSubItems.end(); ++it) {
+        auto *dip = static_cast<DataItemFormatFixed *>(*it);
         strDef += dip->printDescriptors(header);
     }
     return strDef;
 }
 
 bool DataItemFormatVariable::filterOutItem(const char *name) {
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormatFixed *dip = (DataItemFormatFixed *) (*it);
+    for (auto it = m_lSubItems.begin(); it != m_lSubItems.end(); ++it) {
+        auto *dip = static_cast<DataItemFormatFixed *>(*it);
         if (true == dip->filterOutItem(name))
             return true;
     }
@@ -197,9 +193,8 @@ bool DataItemFormatVariable::filterOutItem(const char *name) {
 }
 
 bool DataItemFormatVariable::isFiltered(const char *name) {
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormatFixed *dip = (DataItemFormatFixed *) (*it);
+    for (auto it = m_lSubItems.begin(); it != m_lSubItems.end(); ++it) {
+        auto *dip = static_cast<DataItemFormatFixed *>(*it);
         if (true == dip->isFiltered(name))
             return true;
     }
@@ -207,9 +202,8 @@ bool DataItemFormatVariable::isFiltered(const char *name) {
 }
 
 const char *DataItemFormatVariable::getDescription(const char *field, const char *value = nullptr) {
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormatFixed *dip = (DataItemFormatFixed *) (*it);
+    for (auto it = m_lSubItems.begin(); it != m_lSubItems.end(); ++it) {
+        auto *dip = static_cast<DataItemFormatFixed *>(*it);
         const char *desc = dip->getDescription(field, value);
         if (desc != nullptr)
             return desc;
@@ -222,10 +216,9 @@ fulliautomatix_definitions* DataItemFormatVariable::getWiresharkDefinitions()
 {
   fulliautomatix_definitions *def = nullptr, *startDef = nullptr;
 
-  std::list<DataItemFormat*>::iterator it;
-  for ( it=m_lSubItems.begin() ; it != m_lSubItems.end(); it++ )
+  for (auto it = m_lSubItems.begin(); it != m_lSubItems.end(); ++it)
   {
-    DataItemFormatFixed* dip = (DataItemFormatFixed*)(*it);
+    auto *dip = static_cast<DataItemFormatFixed*>(*it);
     if (def)
     {
       def->next = dip->getWiresharkDefinitions();
@@ -243,12 +236,11 @@ fulliautomatix_definitions* DataItemFormatVariable::getWiresharkDefinitions()
 fulliautomatix_data* DataItemFormatVariable::getData(unsigned char* pData, long len, int byteoffset)
 {
   fulliautomatix_data *lastData = nullptr, *firstData = nullptr;
-  std::list<DataItemFormat*>::iterator it;
   bool lastPart = false;
 
-  it=m_lSubItems.begin();
+  auto it = m_lSubItems.begin();
 
-  DataItemFormatFixed* dip = (DataItemFormatFixed*)(*it);
+  auto *dip = static_cast<DataItemFormatFixed*>(*it);
 
   do
   {
@@ -271,10 +263,10 @@ fulliautomatix_data* DataItemFormatVariable::getData(unsigned char* pData, long 
 
     if (it != m_lSubItems.end())
     {
-      it++;
+      ++it;
       if (it != m_lSubItems.end())
       {
-        dip = (DataItemFormatFixed*)(*it);
+        dip = static_cast<DataItemFormatFixed*>(*it);
       }
     }
   }
@@ -288,7 +280,6 @@ fulliautomatix_data* DataItemFormatVariable::getData(unsigned char* pData, long 
 PyObject* DataItemFormatVariable::getObject(unsigned char* pData, long nLength, int verbose)
 {
     PyObject* p = nullptr;
-    std::list<DataItemFormat*>::iterator it;
     bool lastPart = false;
 
     // If Variable item definition contains 1 Fixed subitem, show items in list
@@ -301,8 +292,8 @@ PyObject* DataItemFormatVariable::getObject(unsigned char* pData, long nLength, 
         p = PyDict_New();
     }
 
-    it=m_lSubItems.begin();
-    DataItemFormatFixed* dip = (DataItemFormatFixed*)(*it);
+    auto it = m_lSubItems.begin();
+    auto *dip = static_cast<DataItemFormatFixed*>(*it);
     do
     {
         lastPart = dip->isLastPart(pData);
@@ -321,9 +312,9 @@ PyObject* DataItemFormatVariable::getObject(unsigned char* pData, long nLength, 
         nLength -= dip->getLength();
 
         if (it != m_lSubItems.end()) {
-            it++;
+            ++it;
             if (it != m_lSubItems.end()) {
-                dip = (DataItemFormatFixed*)(*it);
+                dip = static_cast<DataItemFormatFixed*>(*it);
             }
         }
     }

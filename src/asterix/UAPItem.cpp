@@ -29,12 +29,12 @@ UAPItem::UAPItem()
 
 UAPItem::UAPItem(const UAPItem &obj)
         : DataItemFormat(obj.m_nID) {
-    std::list<DataItemFormat *>::iterator it = ((DataItemFormat &) obj).m_lSubItems.begin();
+    auto it = const_cast<std::list<DataItemFormat *>&>(obj.m_lSubItems).begin();
 
     while (it != obj.m_lSubItems.end()) {
-        DataItemFormat *di = (DataItemFormat *) (*it);
+        auto *di = *it;
         m_lSubItems.push_back(di->clone());
-        it++;
+        ++it;
     }
 
     m_pParentFormat = obj.m_pParentFormat;
@@ -75,7 +75,7 @@ fulliautomatix_definitions* UAPItem::getWiresharkDefinitions()
   def->bitmask = 0x01;
   def->bitmask <<= (7-m_nBit%8);
 
-  def->strings = (fulliautomatix_value_string*)malloc(3 * sizeof(fulliautomatix_value_string));
+  def->strings = static_cast<fulliautomatix_value_string*>(malloc(3 * sizeof(fulliautomatix_value_string)));
   // Security fix: Check malloc return value to prevent null pointer dereference
   if (def->strings == nullptr) {
     return def;
