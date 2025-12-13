@@ -66,7 +66,7 @@
 
 extern bool gSynchronous;
 
-bool CAsterixFinalSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard) {
+bool CAsterixFinalSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, [[maybe_unused]] bool &discard) {
     struct sFinalRecordHeader finalRecordHeader;
     char padding[4];
     static unsigned long lastFileTimeMSec = 0;

@@ -59,7 +59,7 @@
  * 7. Move the rest of unparsed data to beginning of input buffer
  */
 
-bool CAsterixHDLCSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard) {
+bool CAsterixHDLCSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, [[maybe_unused]] bool &discard) {
     CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
 
     // read available data to read buffer

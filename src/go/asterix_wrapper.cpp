@@ -305,7 +305,7 @@ AsterixParseResult* asterix_parse_with_offset(
     }
 }
 
-char* asterix_describe(int category, const char* item, const char* field, const char* value) {
+char* asterix_describe(int category, const char* item, const char* field, [[maybe_unused]] const char* value) {
     if (!g_bInitialized || !g_pDefinition) {
         return nullptr;
     }

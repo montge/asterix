@@ -150,7 +150,7 @@ bool DataItemFormatCompound::getText(std::string &strResult, std::string &strHea
                     case CAsterixFormat::EJSONE: {
                         tmpStr += "\n\t\t";
                     }
-                        /* no break */
+                        [[fallthrough]];
                     case CAsterixFormat::EJSON: {
                         tmpStr += "\"" + dip->getPartName(secondaryPart) + "\":";
 

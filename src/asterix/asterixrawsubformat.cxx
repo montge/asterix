@@ -56,8 +56,8 @@
 /*
  * Read packet and store it in Descriptor.m_pBuffer
  */
-bool CAsterixRawSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool &discard,
-                                      bool oradis) {
+bool CAsterixRawSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, [[maybe_unused]] bool &discard,
+                                      [[maybe_unused]] bool oradis) {
     CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
     size_t readSize = 0;
 
