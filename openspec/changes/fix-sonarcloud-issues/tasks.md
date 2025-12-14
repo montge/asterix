@@ -118,6 +118,7 @@
 - DataItemFormatFixed.h, DataItemFormatRepetitive.h, DataItemFormatVariable.h
 - UAPItem.h (clone method)
 - serialdevice.hxx, udpdevice.hxx, diskdevice.hxx, stddevice.hxx, tcpdevice.hxx
+- mqttdevice.hxx, grpcdevice.hxx, zeromqdevice.hxx, cycloneddsdevice.hxx
 
 ## Phase 4: Remaining Code Smells (Priority: LOW)
 

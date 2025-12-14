@@ -148,7 +148,7 @@ public:
     /**
      * Class destructor.
      */
-    virtual ~CMqttDevice();
+    ~CMqttDevice() override;
 
     /**
      * Read data from MQTT message queue (exact length)
@@ -157,7 +157,7 @@ public:
      * @param len Number of bytes to read
      * @return true if successful, false on error
      */
-    virtual bool Read(void *data, size_t len);
+    bool Read(void *data, size_t len) override;
 
     /**
      * Read data from MQTT message queue (variable length)
@@ -166,7 +166,7 @@ public:
      * @param len Input: max buffer size, Output: actual bytes read
      * @return true if successful, false on error
      */
-    virtual bool Read(void *data, size_t *len);
+    bool Read(void *data, size_t *len) override;
 
     /**
      * Write data to MQTT topic (publish)
@@ -175,7 +175,7 @@ public:
      * @param len Number of bytes to send
      * @return true if successful, false on error
      */
-    virtual bool Write(const void *data, size_t len);
+    bool Write(const void *data, size_t len) override;
 
     /**
      * Wait for message availability
@@ -183,7 +183,7 @@ public:
      * @param secondsToWait Timeout in seconds (0 = wait indefinitely)
      * @return true if message available, false on timeout or error
      */
-    virtual bool Select(const unsigned int secondsToWait);
+    bool Select(const unsigned int secondsToWait) override;
 
     /**
      * IO control operations
@@ -193,22 +193,22 @@ public:
      * @param len Optional length parameter
      * @return true if successful, false otherwise
      */
-    virtual bool IoCtrl(const unsigned int command, const void *data = 0, size_t len = 0);
+    bool IoCtrl(const unsigned int command, const void *data = 0, size_t len = 0) override;
 
     /**
      * Returns true - MQTT messages are packet-oriented
      */
-    virtual bool IsPacketDevice() { return true; }
+    bool IsPacketDevice() override { return true; }
 
     /**
      * Returns maximum message size supported
      */
-    virtual unsigned int MaxPacketSize() { return MAX_MQTT_MESSAGE_SIZE; }
+    unsigned int MaxPacketSize() override { return MAX_MQTT_MESSAGE_SIZE; }
 
     /**
      * Returns 0 - MQTT doesn't support "bytes left to read" concept
      */
-    virtual unsigned int BytesLeftToRead() { return 0; }
+    unsigned int BytesLeftToRead() override { return 0; }
 
     /**
      * Check if connected to broker

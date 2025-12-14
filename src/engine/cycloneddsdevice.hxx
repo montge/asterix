@@ -157,7 +157,7 @@ public:
     /**
      * Class destructor.
      */
-    virtual ~CCycloneDdsDevice();
+    ~CCycloneDdsDevice() override;
 
     /**
      * Read data from DDS (exact length)
@@ -166,7 +166,7 @@ public:
      * @param len Number of bytes to read
      * @return true if successful, false on error
      */
-    virtual bool Read(void *data, size_t len);
+    bool Read(void *data, size_t len) override;
 
     /**
      * Read data from DDS (variable length)
@@ -175,7 +175,7 @@ public:
      * @param len Input: max buffer size, Output: actual bytes read
      * @return true if successful, false on error
      */
-    virtual bool Read(void *data, size_t *len);
+    bool Read(void *data, size_t *len) override;
 
     /**
      * Write data to DDS (publish)
@@ -184,7 +184,7 @@ public:
      * @param len Number of bytes to send
      * @return true if successful, false on error
      */
-    virtual bool Write(const void *data, size_t len);
+    bool Write(const void *data, size_t len) override;
 
     /**
      * Wait for data availability
@@ -192,7 +192,7 @@ public:
      * @param secondsToWait Timeout in seconds (0 = wait indefinitely)
      * @return true if data available, false on timeout or error
      */
-    virtual bool Select(const unsigned int secondsToWait);
+    bool Select(const unsigned int secondsToWait) override;
 
     /**
      * IO control operations
@@ -202,22 +202,22 @@ public:
      * @param len Optional length parameter
      * @return true if successful, false otherwise
      */
-    virtual bool IoCtrl(const unsigned int command, const void *data = 0, size_t len = 0);
+    bool IoCtrl(const unsigned int command, const void *data = 0, size_t len = 0) override;
 
     /**
      * Returns true - DDS messages are packet-oriented
      */
-    virtual bool IsPacketDevice() { return true; }
+    bool IsPacketDevice() override { return true; }
 
     /**
      * Returns maximum message size supported
      */
-    virtual unsigned int MaxPacketSize() { return MAX_DDS_MESSAGE_SIZE; }
+    unsigned int MaxPacketSize() override { return MAX_DDS_MESSAGE_SIZE; }
 
     /**
      * Returns 0 - DDS doesn't support "bytes left to read" concept
      */
-    virtual unsigned int BytesLeftToRead() { return 0; }
+    unsigned int BytesLeftToRead() override { return 0; }
 };
 
 #endif // HAVE_CYCLONEDDS
