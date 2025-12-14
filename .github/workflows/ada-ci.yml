@@ -132,7 +132,7 @@ jobs:
           submodules: recursive
 
       - name: Install Alire
-        uses: alire-project/setup-alire@v3
+        uses: alire-project/setup-alire@v5
         with:
           version: 2.0.1
 
