@@ -30,6 +30,22 @@
 
 extern bool gFiltering;
 
+// Helper function to allocate error string with new[] (not strdup/malloc)
+// This ensures consistent deallocation with delete[]
+static unsigned char* newErrorString(const char* str) {
+    size_t len = strlen(str) + 1;
+    auto result = new unsigned char[len];
+    memcpy(result, str, len);
+    return result;
+}
+
+static char* newErrorStringChar(const char* str) {
+    size_t len = strlen(str) + 1;
+    auto result = new char[len];
+    memcpy(result, str, len);
+    return result;
+}
+
 static const char SIXBITCODE[] = {' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
                                   'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', ' ', ' ', ' ', ' ',
                                   ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
@@ -254,14 +270,14 @@ unsigned char *DataItemBits::getSixBitString(unsigned char *pData, int bytes, in
     int numberOfBits = (tobit - frombit + 1);
     if (!numberOfBits || numberOfBits % 6) {
         Tracer::Error("Six-bit char representation not valid");
-        return (unsigned char *) strdup("???");
+        return newErrorString("???");
     }
 
     std::unique_ptr<unsigned char[]> pB(getBits(pData, bytes, frombit, tobit));
 
     if (!pB) {
         Tracer::Error("DATAITEM_ENCODING_SIX_BIT_CHAR : Error.");
-        return (unsigned char *) strdup("???");
+        return newErrorString("???");
     }
 
     int numberOfCharacters = numberOfBits / 6;
@@ -300,14 +316,14 @@ unsigned char *DataItemBits::getHexBitString(unsigned char *pData, int bytes, in
     int numberOfBits = (tobit - frombit + 1);
     if (!numberOfBits || numberOfBits % 4) {
         Tracer::Error("Hex representation not valid");
-        return (unsigned char *) strdup("???");
+        return newErrorString("???");
     }
 
     std::unique_ptr<unsigned char[]> pB(getBits(pData, bytes, frombit, tobit));
 
     if (!pB) {
         Tracer::Error("DATAITEM_ENCODING_HEX_BIT_CHAR : Error.");
-        return (unsigned char *) strdup("???");
+        return newErrorString("???");
     }
 
     int numberOfCharacters = numberOfBits / 4;
@@ -329,7 +345,7 @@ unsigned char *DataItemBits::getHexBitStringFullByte(unsigned char *pData, int b
     int numberOfBits = (tobit - frombit + 1);
     if (!numberOfBits) {
         Tracer::Error("Hex representation not valid");
-        return (unsigned char *) strdup("???");
+        return newErrorString("???");
     }
 
     if (tobit%8) {
@@ -344,7 +360,7 @@ unsigned char *DataItemBits::getHexBitStringFullByte(unsigned char *pData, int b
 
     if (!pB) {
         Tracer::Error("DATAITEM_ENCODING_HEX_BIT_CHAR : Error.");
-        return (unsigned char *) strdup("???");
+        return newErrorString("???");
     }
 
     int numberOfCharacters = numberOfBits / 4;
@@ -366,7 +382,7 @@ unsigned char *DataItemBits::getHexBitStringMask([[maybe_unused]] int bytes, int
     int numberOfBits = (tobit - frombit + 1);
     if (!numberOfBits) {
         Tracer::Error("Hex representation not valid");
-        return (unsigned char *) strdup("???");
+        return newErrorString("???");
     }
 
     int tobitStart = tobit;
@@ -397,14 +413,14 @@ unsigned char *DataItemBits::getOctal(unsigned char *pData, int bytes, int fromb
     int numberOfBits = (tobit - frombit + 1);
     if (!numberOfBits || numberOfBits % 3) {
         Tracer::Error("Octal representation not valid");
-        return (unsigned char *) strdup("???");
+        return newErrorString("???");
     }
 
     std::unique_ptr<unsigned char[]> pB(getBits(pData, bytes, frombit, tobit));
 
     if (!pB) {
         Tracer::Error("DATAITEM_ENCODING_OCTAL : Error.");
-        return (unsigned char *) strdup("???");
+        return newErrorString("???");
     }
 
     int numberOfCharacters = numberOfBits / 3;
@@ -446,13 +462,13 @@ char *DataItemBits::getASCII(unsigned char *pData, int bytes, int frombit, int t
     int numberOfBits = (tobit - frombit + 1);
     if (bytes < numberOfBits / 8 || !numberOfBits || numberOfBits % 8) {
         Tracer::Error("ASCII representation not valid");
-        return strdup("???");
+        return newErrorStringChar("???");
     }
 
     std::unique_ptr<unsigned char[]> pTmp(getBits(pData, bytes, frombit, tobit));
     if (!pTmp) {
         Tracer::Error("DATAITEM_ENCODING_ASCII : Error.");
-        return strdup("???");
+        return newErrorStringChar("???");
     }
 
     int numberOfBytes = numberOfBits/8;
