@@ -566,7 +566,7 @@ void DataItemBits::appendClosingTag(std::ostringstream& ss, const unsigned int f
 const char* DataItemBits::findValueDescription(unsigned long long value, bool& found) const {
     for (auto it = m_lValue.begin(); it != m_lValue.end(); ++it) {
         BitsValue* bv = *it;
-        if (bv->m_nVal == (int)value) {
+        if (bv->m_nVal == static_cast<int>(value)) {
             found = true;
             return bv->m_strDescription.c_str();
         }
@@ -609,7 +609,7 @@ void DataItemBits::formatUnsignedWithMeta(std::ostringstream& ss, unsigned long 
                     ss << format("%sWarning: Value smaller than min (%.7lf)",
                                 isOut ? " " : "\n\t", m_dMinValue);
                 }
-            } else if (m_bIsConst && (int)value64 != m_nConst) {
+            } else if (m_bIsConst && static_cast<int>(value64) != m_nConst) {
                 ss << format("%sWarning: Value should be set to %d",
                             isOut ? " " : "\n\t", m_nConst);
             } else if (descFound) {
@@ -663,7 +663,7 @@ void DataItemBits::formatSignedWithMeta(std::ostringstream& ss, signed long valu
     const char* desc = nullptr;
 
     if (!m_lValue.empty()) {
-        desc = findValueDescription((unsigned long long)value, descFound);
+        desc = findValueDescription(static_cast<unsigned long long>(value), descFound);
     }
 
     switch (formatType) {
@@ -1084,7 +1084,7 @@ return def;
 char* DataItemBits::createWiresharkValueDescription(double scaled, unsigned long long value64) {
     char tmp[128];
     bool isOutOfRange = (m_bMaxValueSet && scaled > m_dMaxValue) || (m_bMinValueSet && scaled < m_dMinValue);
-    bool isWrongConst = m_bIsConst && (int)value64 != m_nConst;
+    bool isWrongConst = m_bIsConst && static_cast<int>(value64) != m_nConst;
 
     if (isOutOfRange) {
         snprintf(tmp, 128, " (%.7lf %s) Warning! Value out of range (%.7lf to %.7lf)",
@@ -1123,7 +1123,7 @@ fulliautomatix_data* DataItemBits::createWiresharkUnsignedData(unsigned char* pD
 
         bool hasError = (m_bMaxValueSet && scaled > m_dMaxValue) ||
                        (m_bMinValueSet && scaled < m_dMinValue) ||
-                       (m_bIsConst && (int)value64 != m_nConst);
+                       (m_bIsConst && static_cast<int>(value64) != m_nConst);
         if (hasError) {
             pOutData->err = 1;
         }
@@ -1141,11 +1141,11 @@ fulliautomatix_data* DataItemBits::createWiresharkSignedData(unsigned char* pDat
 
     if (m_dScale != 0) {
         double scaled = value * m_dScale;
-        pOutData->value_description = createWiresharkValueDescription(scaled, (unsigned long long)value);
+        pOutData->value_description = createWiresharkValueDescription(scaled, static_cast<unsigned long long>(value));
 
         bool hasError = (m_bMaxValueSet && scaled > m_dMaxValue) ||
                        (m_bMinValueSet && scaled < m_dMinValue) ||
-                       (m_bIsConst && (int)value != m_nConst);
+                       (m_bIsConst && static_cast<int>(value) != m_nConst);
         if (hasError) {
             pOutData->err = 1;
         }
@@ -1286,7 +1286,7 @@ void DataItemBits::insertSignedToDict(PyObject* pValue, signed long value, int v
         }
     } else if (!m_lValue.empty()) {
         bool descFound = false;
-        const char* desc = findValueDescription((unsigned long long)value, descFound);
+        const char* desc = findValueDescription(static_cast<unsigned long long>(value), descFound);
 
         addPyDictItem(pValue, "val", Py_BuildValue("d", value));
 
