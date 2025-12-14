@@ -54,9 +54,15 @@ test_compare "Test unfiltered txt CAT_034_048" "$exec -d $config -P -f ../sample
 test_compare "Test GPS parsing" "$exec -d $config -G -f ../sample_data/parsegps.gps" "../sample_output/parsegps.txt"
 
 
-#test_output  "Test Memory leak with valgrind" "valgrind --leak-check=full --show-leak-kinds=all --error-exitcode=1 $execd -P -d $config -f ../sample_data/cat_062_065.pcap -jh" "0"
-test_output  "Test Memory leak with valgrind (1)" "valgrind --leak-check=full --error-exitcode=1 $execd -P -d $config -f ../sample_data/cat_062_065.pcap -jh" "0"
-test_output  "Test Memory leak with valgrind (2)" "valgrind --leak-check=full --error-exitcode=1 $execd -G -d $config -f ../sample_data/parsegps.gps -jh" "0"
+# Valgrind tests - only run if valgrind is installed
+if command -v valgrind &> /dev/null; then
+  #test_output  "Test Memory leak with valgrind" "valgrind --leak-check=full --show-leak-kinds=all --error-exitcode=1 $execd -P -d $config -f ../sample_data/cat_062_065.pcap -jh" "0"
+  test_output  "Test Memory leak with valgrind (1)" "valgrind --leak-check=full --error-exitcode=1 $execd -P -d $config -f ../sample_data/cat_062_065.pcap -jh" "0"
+  test_output  "Test Memory leak with valgrind (2)" "valgrind --leak-check=full --error-exitcode=1 $execd -G -d $config -f ../sample_data/parsegps.gps -jh" "0"
+else
+  echo "Skipped  Test Memory leak with valgrind (1) - valgrind not installed"
+  echo "Skipped  Test Memory leak with valgrind (2) - valgrind not installed"
+fi
 
 
 if [ "$failedtests" == "0" ]; then
