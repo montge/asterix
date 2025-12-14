@@ -236,6 +236,12 @@ void CSerialDevice::Init(const char *device) {
     _fileDesc = -1;
     ResetAllErrors();
 
+    // Validate input parameter
+    if (device == nullptr) {
+        LOGERROR(1, "Cannot open serial device: null device name\n");
+        return;
+    }
+
     // Open the serial device
     _fileDesc = open(device, O_RDWR | O_NOCTTY);
     if (_fileDesc < 0) {

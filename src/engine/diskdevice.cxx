@@ -159,6 +159,11 @@ bool CDiskDevice::Read(void *data, size_t len) {
 
 
 bool CDiskDevice::Write(const void *data, size_t len) {
+    // Validate input parameters
+    if (data == nullptr || len == 0) {
+        return true;  // Nothing to write is not an error
+    }
+
     // Check if interface was set-up correctly
     if (!_opened) {
         LOGERROR(1, "Cannot write: file not open.\n");

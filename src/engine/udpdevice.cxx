@@ -206,7 +206,7 @@ bool CUdpDevice::Read(void *data, size_t *len) {
     }
 
     // Get the message (blocking)
-    struct sockaddr_in clientAddr;
+    struct sockaddr_in clientAddr = {};  // Zero-initialize to prevent undefined behavior
     socklen_t clientLen = sizeof(clientAddr);
 
     for (unsigned int i = 0; i < _socketDesc.size() && _countToRead > 0; i++) {
@@ -388,7 +388,7 @@ bool CUdpDevice::InitServer(int socketDesc) {
 
 
 bool CUdpDevice::InitClient(int socketDesc) {
-    struct sockaddr_in clientAddr;
+    struct sockaddr_in clientAddr = {};  // Zero-initialize to prevent undefined behavior
 
     // Bind any port
     clientAddr.sin_family = AF_INET;
