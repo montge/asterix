@@ -31,12 +31,9 @@ DataItemFormatFixed::DataItemFormatFixed(int id)
 
 DataItemFormatFixed::DataItemFormatFixed(const DataItemFormatFixed &obj)
         : DataItemFormat(obj.m_nID), m_nLength(obj.m_nLength) {
-    std::list<DataItemFormat *>::iterator it = const_cast<std::list<DataItemFormat *>&>(obj.m_lSubItems).begin();
-
-    while (it != obj.m_lSubItems.end()) {
-        DataItemFormat *di = *it;
+    // Use const_iterator to avoid casting away const
+    for (const auto* di : obj.m_lSubItems) {
         m_lSubItems.push_back(di->clone());
-        it++;
     }
 
     m_pParentFormat = obj.m_pParentFormat;

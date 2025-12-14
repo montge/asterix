@@ -31,12 +31,9 @@ DataItemFormatExplicit::DataItemFormatExplicit(int id)
 
 DataItemFormatExplicit::DataItemFormatExplicit(const DataItemFormatExplicit &obj)
         : DataItemFormat(obj.m_nID) {
-    std::list<DataItemFormat *>::iterator it = const_cast<std::list<DataItemFormat *>&>(obj.m_lSubItems).begin();
-
-    while (it != obj.m_lSubItems.end()) {
-        DataItemFormat *di = *it;
+    // Use range-based for to avoid casting away const
+    for (const auto* di : obj.m_lSubItems) {
         m_lSubItems.push_back(di->clone());
-        it++;
     }
 
     m_pParentFormat = obj.m_pParentFormat;
