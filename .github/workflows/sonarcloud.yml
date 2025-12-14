@@ -2,11 +2,15 @@ name: SonarCloud Analysis
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ master ]
   pull_request:
-    branches: [ master, develop ]
+    branches: [ master ]
     types: [opened, synchronize, reopened]
   workflow_dispatch:
+
+# Note: SonarCloud free tier only analyzes the default branch (master)
+# Branch support for OSS projects expected in 2026
+# See: openspec/changes/fix-sonarcloud-issues/proposal.md
 
 permissions:
   contents: read

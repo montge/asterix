@@ -58,3 +58,23 @@ Address remaining code smells incrementally:
 4. Code smells reduced by >90%
 5. All existing tests pass
 6. No memory leaks (valgrind)
+
+## Known Limitations
+
+### SonarCloud Free Tier - Single Branch Only
+
+**Current State (Dec 2024):** SonarCloud's free tier for open source projects only supports scanning the default branch (master). Branch analysis (including gitflow `develop` branch) is not available.
+
+**Impact:**
+- All SonarCloud analysis must target the `master` branch
+- Feature branches and `develop` branch cannot be scanned until merged
+- Pull request decoration works for PRs targeting master
+
+**Future Enhancement (Expected 2026):**
+SonarCloud plans to introduce branch support for open source projects. When available:
+- [ ] Enable `develop` branch scanning
+- [ ] Configure gitflow branch patterns in SonarCloud
+- [ ] Update `sonar.newCode.referenceBranch` to `develop`
+- [ ] Add branch-specific quality gates
+
+**Workaround:** Run local SonarQube instance for branch analysis during development if needed.
