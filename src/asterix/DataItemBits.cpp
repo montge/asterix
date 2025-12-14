@@ -1107,7 +1107,7 @@ fulliautomatix_data* DataItemBits::createWiresharkUnsignedData(unsigned char* pD
         ? getUnsigned64(pData, nLength, m_nFrom, m_nTo)
         : getUnsigned(pData, nLength, m_nFrom, m_nTo);
 
-    unsigned long value = (unsigned long)value64;
+    unsigned long value = static_cast<unsigned long>(value64);
 
     // Adjust for bitmask presentation in Wireshark
     if (value && m_nFrom > 1 && numberOfBits % 8) {
