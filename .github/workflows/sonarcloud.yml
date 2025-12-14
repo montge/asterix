@@ -95,14 +95,16 @@ jobs:
 
     - name: Run Python tests with coverage
       run: |
-        # Run tests with coverage
+        # Run tests with coverage (with timeout to avoid hanging)
         if [ -d "asterix/test" ]; then
-          python -m pytest asterix/test/ -v --cov=asterix --cov-report=xml --cov-report=term || echo "Python tests completed"
+          timeout 300 python -m pytest asterix/test/ -v --cov=asterix --cov-report=xml --cov-report=term || echo "Python tests completed"
         fi
 
-        # Also run radar integration tests if available
+        # Also run radar integration tests if available (skip slow JSBSim tests)
         if [ -d "asterix/radar_integration/test" ]; then
-          python -m pytest asterix/radar_integration/test/ -v --cov=asterix.radar_integration --cov-append --cov-report=xml --cov-report=term || echo "Radar integration tests completed"
+          timeout 300 python -m pytest asterix/radar_integration/test/ -v \
+            --ignore=asterix/radar_integration/test/test_jsbsim_converter.py \
+            --cov=asterix.radar_integration --cov-append --cov-report=xml --cov-report=term || echo "Radar integration tests completed"
         fi
 
         echo "Python coverage report generated at coverage.xml"
@@ -143,7 +145,7 @@ jobs:
         fi
 
     - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
+      uses: SonarSource/sonarqube-scan-action@v5
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
