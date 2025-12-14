@@ -66,11 +66,12 @@ bool DataItemFormatFixed::isLastPart(const unsigned char *pData) {
     // go through all bits and find which is FX
     std::list<DataItemFormat *>::iterator bitit;
     for (bitit = m_lSubItems.begin(); bitit != m_lSubItems.end(); bitit++) {
-        auto *bit = static_cast<DataItemBits *>(*bitit);
-        if (bit == nullptr) {
+        // Security fix: Check pointer before casting
+        if (*bitit == nullptr) {
             Tracer::Error("Missing bits format!");
             return true;
         }
+        auto *bit = static_cast<DataItemBits *>(*bitit);
         if (bit->m_bExtension) { // this is extension bit
             int bitnr = bit->m_nFrom;
 
@@ -124,11 +125,12 @@ bool DataItemFormatFixed::isSecondaryPartPresent(const unsigned char *pData, int
     // go through all bits and find which has BitsPresence set to part
     std::list<DataItemFormat *>::iterator bitit;
     for (bitit = m_lSubItems.begin(); bitit != m_lSubItems.end(); bitit++) {
-        auto *bit = static_cast<DataItemBits *>(*bitit);
-        if (bit == nullptr) {
+        // Security fix: Check pointer before casting
+        if (*bitit == nullptr) {
             Tracer::Error("Missing bits format!");
             return true;
         }
+        auto *bit = static_cast<DataItemBits *>(*bitit);
         if (bit->m_nPresenceOfField == part) { // found
             int bitnr = bit->m_nFrom;
 

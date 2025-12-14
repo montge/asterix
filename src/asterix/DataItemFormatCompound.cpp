@@ -60,11 +60,12 @@ long DataItemFormatCompound::getLength(const unsigned char *pData) {
     std::list<DataItemFormat *>::iterator it;
     std::list<DataItemFormat *>::iterator it2;
     it2 = m_lSubItems.begin();
-    DataItemFormatVariable *pCompoundPrimary = (DataItemFormatVariable *) (*it2);
-    if (pCompoundPrimary == nullptr) {
+    // Security fix: Check iterator validity before dereferencing
+    if (it2 == m_lSubItems.end() || *it2 == nullptr) {
         Tracer::Error("Missing primary subfield of Compound");
         return 0;
     }
+    DataItemFormatVariable *pCompoundPrimary = (DataItemFormatVariable *) (*it2);
     it2++;
     if (it2 == m_lSubItems.end()) {
         Tracer::Error("Missing secondary subfields of Compund");
@@ -108,11 +109,12 @@ bool DataItemFormatCompound::getText(std::string &strResult, std::string &strHea
     std::list<DataItemFormat *>::iterator it;
     std::list<DataItemFormat *>::iterator it2;
     it2 = m_lSubItems.begin();
-    DataItemFormatVariable *pCompoundPrimary = (DataItemFormatVariable *) (*it2);
-    if (pCompoundPrimary == nullptr) {
+    // Security fix: Check iterator validity before dereferencing
+    if (it2 == m_lSubItems.end() || *it2 == nullptr) {
         Tracer::Error("Missing primary subfield of Compound");
         return false;
     }
+    DataItemFormatVariable *pCompoundPrimary = (DataItemFormatVariable *) (*it2);
     it2++;
     if (it2 == m_lSubItems.end()) {
         Tracer::Error("Missing secondary subfields of Compund");
@@ -355,12 +357,13 @@ void DataItemFormatCompound::insertToDict(PyObject* p, unsigned char* pData, lon
     std::list<DataItemFormat*>::iterator it;
     std::list<DataItemFormat*>::iterator it2;
     it2 = m_lSubItems.begin();
-    DataItemFormatVariable* pCompoundPrimary = (DataItemFormatVariable*)(*it2);
-    if (pCompoundPrimary == nullptr)
+    // Security fix: Check iterator validity before dereferencing
+    if (it2 == m_lSubItems.end() || *it2 == nullptr)
     {
         Tracer::Error("Missing primary subfield of Compound");
         return;
     }
+    DataItemFormatVariable* pCompoundPrimary = (DataItemFormatVariable*)(*it2);
     it2++;
     if (it2 == m_lSubItems.end())
     {

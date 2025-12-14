@@ -90,14 +90,16 @@ std::string DataItemFormatBDS::printDescriptors(std::string header) {
     std::string resStr;
     std::list<DataItemFormat *>::iterator it = m_lSubItems.begin();
     while (it != m_lSubItems.end()) {
-        DataItemFormatFixed *pFixed = (DataItemFormatFixed *) (*it);
-        if (pFixed == nullptr) {
+        // Security fix: Check pointer before casting
+        if (*it == nullptr) {
             Tracer::Error("Wrong data in BDS");
-        } else {
-            std::string bds_header = format("%sBDS%x:", header.c_str(), pFixed->m_nID);
-
-            resStr += pFixed->printDescriptors(bds_header);
+            it++;
+            continue;
         }
+        DataItemFormatFixed *pFixed = (DataItemFormatFixed *) (*it);
+        std::string bds_header = format("%sBDS%x:", header.c_str(), pFixed->m_nID);
+
+        resStr += pFixed->printDescriptors(bds_header);
         it++;
     }
     return resStr;
@@ -217,6 +219,11 @@ void DataItemFormatBDS::insertToDict(PyObject* p, unsigned char* pData, long nLe
     std::list<DataItemFormat*>::iterator it =  m_lSubItems.begin();
     while (it != m_lSubItems.end())
     {
+        // Security fix: Check pointer before casting
+        if (*it == nullptr) {
+            it++;
+            continue;
+        }
         DataItemFormatFixed* pFixed = (DataItemFormatFixed*)(*it);
         if (pFixed->m_nID == BDSid || pFixed->m_nID == 0)
         {

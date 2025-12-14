@@ -87,9 +87,9 @@ DataRecord::DataRecord(Category *cat, int nID, unsigned long len, const unsigned
     for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {
         DataItem *di = (DataItem *) (*it);
 
-        if (di->m_pDescription == nullptr || di->m_pDescription->m_pFormat == nullptr) {
-            Tracer::Error("DataItem format not defined for CAT%03d/I%s", cat->m_id,
-                          di->m_pDescription->m_strID.c_str());
+        // Security fix: Check di pointer before dereferencing
+        if (di == nullptr || di->m_pDescription == nullptr || di->m_pDescription->m_pFormat == nullptr) {
+            Tracer::Error("DataItem format not defined for CAT%03d", cat->m_id);
             errorReported = true;
             break;
         }

@@ -26,6 +26,7 @@
 #include "Tracer.h"
 #include "asterixformat.hxx"
 #include <sstream>  // PERFORMANCE: For efficient string building
+#include <memory>   // For std::unique_ptr
 
 extern bool gFiltering;
 
@@ -107,16 +108,16 @@ unsigned char *DataItemBits::getBits(unsigned char *pData, int bytes, int frombi
 
     if (frombit > tobit || tobit < 1 || frombit < 1 || numberOfBytes > bytes) {
         Tracer::Error("Irregular request for getBits");
-        return 0;
+        return nullptr;
     }
 
-    unsigned char *pVal = new unsigned char[numberOfBytes];
-    unsigned char *pTmp = pVal;
-    memset(pVal, 0, numberOfBytes);
+    auto pVal = std::make_unique<unsigned char[]>(numberOfBytes);
+    unsigned char *pTmp = pVal.get();
+    memset(pVal.get(), 0, numberOfBytes);
 
     if (frombit == 1 && tobit == bytes * 8) {
-        memcpy(pVal, pData, bytes);
-        return pVal;
+        memcpy(pVal.get(), pData, bytes);
+        return pVal.release();
     }
 
     unsigned char bitmask = 0x80;
@@ -143,10 +144,10 @@ unsigned char *DataItemBits::getBits(unsigned char *pData, int bytes, int frombi
         }
     }
 
-    if (pVal + numberOfBytes - 1 >= pTmp)
+    if (pVal.get() + numberOfBytes - 1 >= pTmp)
         *pTmp <<= 8 - outbits;
 
-    return pVal;
+    return pVal.release();
 }
 
 unsigned long DataItemBits::getUnsigned(unsigned char *pData, int bytes, int frombit, int tobit) {
@@ -256,7 +257,7 @@ unsigned char *DataItemBits::getSixBitString(unsigned char *pData, int bytes, in
         return (unsigned char *) strdup("???");
     }
 
-    unsigned char *pB = getBits(pData, bytes, frombit, tobit);
+    std::unique_ptr<unsigned char[]> pB(getBits(pData, bytes, frombit, tobit));
 
     if (!pB) {
         Tracer::Error("DATAITEM_ENCODING_SIX_BIT_CHAR : Error.");
@@ -264,11 +265,11 @@ unsigned char *DataItemBits::getSixBitString(unsigned char *pData, int bytes, in
     }
 
     int numberOfCharacters = numberOfBits / 6;
-    unsigned char *str = new unsigned char[numberOfCharacters + 1];
-    unsigned char *pStr = str;
-    memset(str, 0, numberOfCharacters + 1);
+    auto str = std::make_unique<unsigned char[]>(numberOfCharacters + 1);
+    unsigned char *pStr = str.get();
+    memset(str.get(), 0, numberOfCharacters + 1);
 
-    unsigned char *pTmp = pB;
+    unsigned char *pTmp = pB.get();
     unsigned char bitmask = 0x80;
     int outbits = 0;
     unsigned char val = 0;
@@ -292,8 +293,7 @@ unsigned char *DataItemBits::getSixBitString(unsigned char *pData, int bytes, in
             pStr++;
         }
     }
-    delete[] pB;
-    return str;
+    return str.release();
 }
 
 unsigned char *DataItemBits::getHexBitString(unsigned char *pData, int bytes, int frombit, int tobit) {
@@ -303,7 +303,7 @@ unsigned char *DataItemBits::getHexBitString(unsigned char *pData, int bytes, in
         return (unsigned char *) strdup("???");
     }
 
-    unsigned char *pB = getBits(pData, bytes, frombit, tobit);
+    std::unique_ptr<unsigned char[]> pB(getBits(pData, bytes, frombit, tobit));
 
     if (!pB) {
         Tracer::Error("DATAITEM_ENCODING_HEX_BIT_CHAR : Error.");
@@ -311,19 +311,18 @@ unsigned char *DataItemBits::getHexBitString(unsigned char *pData, int bytes, in
     }
 
     int numberOfCharacters = numberOfBits / 4;
-    unsigned char *str = new unsigned char[numberOfCharacters + 1];
+    auto str = std::make_unique<unsigned char[]>(numberOfCharacters + 1);
 
-    memset(str, 0, numberOfCharacters + 1);
+    memset(str.get(), 0, numberOfCharacters + 1);
 
     int numberOfBytes = (numberOfCharacters + 1) / 2;
     int i;
     for (i = 0; i < numberOfBytes; i++) {
         // Security fix: Use snprintf to prevent buffer overflow
-        snprintf((char *) &str[i * 2], 3, "%02X", pB[i]);
+        snprintf((char *) &str.get()[i * 2], 3, "%02X", pB[i]);
     }
 
-    delete[] pB;
-    return str;
+    return str.release();
 }
 
 unsigned char *DataItemBits::getHexBitStringFullByte(unsigned char *pData, int bytes, int frombit, int tobit) {
@@ -341,7 +340,7 @@ unsigned char *DataItemBits::getHexBitStringFullByte(unsigned char *pData, int b
     }
     numberOfBits = (tobit - frombit + 1);
 
-    unsigned char *pB = getBits(pData, bytes, frombit, tobit);
+    std::unique_ptr<unsigned char[]> pB(getBits(pData, bytes, frombit, tobit));
 
     if (!pB) {
         Tracer::Error("DATAITEM_ENCODING_HEX_BIT_CHAR : Error.");
@@ -349,19 +348,18 @@ unsigned char *DataItemBits::getHexBitStringFullByte(unsigned char *pData, int b
     }
 
     int numberOfCharacters = numberOfBits / 4;
-    unsigned char *str = new unsigned char[numberOfCharacters + 1];
+    auto str = std::make_unique<unsigned char[]>(numberOfCharacters + 1);
 
-    memset(str, 0, numberOfCharacters + 1);
+    memset(str.get(), 0, numberOfCharacters + 1);
 
     int numberOfBytes = (numberOfCharacters + 1) / 2;
     int i;
     for (i = 0; i < numberOfBytes; i++) {
         // Security fix: Use snprintf to prevent buffer overflow
-        snprintf((char *) &str[i * 2], 3, "%02X", pB[i]);
+        snprintf((char *) &str.get()[i * 2], 3, "%02X", pB[i]);
     }
 
-    delete[] pB;
-    return str;
+    return str.release();
 }
 
 unsigned char *DataItemBits::getHexBitStringMask([[maybe_unused]] int bytes, int frombit, int tobit) {
@@ -381,8 +379,8 @@ unsigned char *DataItemBits::getHexBitStringMask([[maybe_unused]] int bytes, int
     }
     numberOfBits = (tobitStart - frombitStart + 1);
 
-    unsigned char *str = new unsigned char[numberOfBits + 1];
-    unsigned char *p = str;
+    auto str = std::make_unique<unsigned char[]>(numberOfBits + 1);
+    unsigned char *p = str.get();
     int indx = 0;
     for (int i = tobitStart; i >= frombitStart; --i) {
         if (i >= frombit && i <= tobit)
@@ -391,7 +389,7 @@ unsigned char *DataItemBits::getHexBitStringMask([[maybe_unused]] int bytes, int
             p[indx++] = '0';
     }
     p[indx] = 0;
-    return str;
+    return str.release();
 }
 
 
@@ -402,7 +400,7 @@ unsigned char *DataItemBits::getOctal(unsigned char *pData, int bytes, int fromb
         return (unsigned char *) strdup("???");
     }
 
-    unsigned char *pB = getBits(pData, bytes, frombit, tobit);
+    std::unique_ptr<unsigned char[]> pB(getBits(pData, bytes, frombit, tobit));
 
     if (!pB) {
         Tracer::Error("DATAITEM_ENCODING_OCTAL : Error.");
@@ -410,11 +408,11 @@ unsigned char *DataItemBits::getOctal(unsigned char *pData, int bytes, int fromb
     }
 
     int numberOfCharacters = numberOfBits / 3;
-    unsigned char *str = new unsigned char[numberOfCharacters + 1];
-    unsigned char *pStr = str;
-    memset(str, 0, numberOfCharacters + 1);
+    auto str = std::make_unique<unsigned char[]>(numberOfCharacters + 1);
+    unsigned char *pStr = str.get();
+    memset(str.get(), 0, numberOfCharacters + 1);
 
-    unsigned char *pTmp = pB;
+    unsigned char *pTmp = pB.get();
     unsigned char bitmask = 0x80;
     int outbits = 0;
     unsigned char val = 0;
@@ -440,8 +438,7 @@ unsigned char *DataItemBits::getOctal(unsigned char *pData, int bytes, int fromb
         }
     }
 
-    delete[] pB;
-    return str;
+    return str.release();
 }
 
 char *DataItemBits::getASCII(unsigned char *pData, int bytes, int frombit, int tobit) {
@@ -452,11 +449,16 @@ char *DataItemBits::getASCII(unsigned char *pData, int bytes, int frombit, int t
         return strdup("???");
     }
 
-    unsigned char *pTmp = getBits(pData, bytes, frombit, tobit);
+    std::unique_ptr<unsigned char[]> pTmp(getBits(pData, bytes, frombit, tobit));
+    if (!pTmp) {
+        Tracer::Error("DATAITEM_ENCODING_ASCII : Error.");
+        return strdup("???");
+    }
+
     int numberOfBytes = numberOfBits/8;
 
-    char *pStr = new char[numberOfBytes + 1];
-    char *ppStr = pStr;
+    auto pStr = std::make_unique<char[]>(numberOfBytes + 1);
+    char *ppStr = pStr.get();
 
     // replace non alphabetic ASCII characters with empty string
     for (int i = 0; i < numberOfBytes; i++) {
@@ -466,9 +468,8 @@ char *DataItemBits::getASCII(unsigned char *pData, int bytes, int frombit, int t
             *ppStr++ = ' ';
     }
 
-    delete[] pTmp;
     *ppStr = 0;
-    return pStr;
+    return pStr.release();
 }
 
 
