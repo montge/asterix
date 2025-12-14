@@ -114,21 +114,21 @@ public:
     /**
      * Class destructor.
      */
-    virtual ~CDiskDevice();
+    ~CDiskDevice() override;
 
-    virtual bool Read(void *data, size_t len);
+    bool Read(void *data, size_t len) override;
 
-    virtual bool Write(const void *data, size_t len);
+    bool Write(const void *data, size_t len) override;
 
-    virtual bool Select(const unsigned int secondsToWait);
+    bool Select(const unsigned int secondsToWait) override;
 
-    virtual bool IoCtrl(const unsigned int command, const void *data = 0, size_t len = 0);
+    bool IoCtrl(const unsigned int command, const void *data = 0, size_t len = 0) override;
 
-    virtual bool IsPacketDevice() { return false; };
+    bool IsPacketDevice() override { return false; };
 
-    virtual bool IsOpened();
+    bool IsOpened() override;
 
-    virtual unsigned int BytesLeftToRead(); // return number of bytes left to read or 0 if unknown
+    unsigned int BytesLeftToRead() override; // return number of bytes left to read or 0 if unknown
 
 private:
     bool Init(const char *path);

@@ -46,19 +46,19 @@ public:
     /**
      * Class destructor.
      */
-    virtual ~CStdDevice();
+    ~CStdDevice() override;
 
-    virtual bool Read(void *data, size_t len);
+    bool Read(void *data, size_t len) override;
 
-    virtual bool Write(const void *data, size_t len);
+    bool Write(const void *data, size_t len) override;
 
-    virtual bool Select(const unsigned int secondsToWait);
+    bool Select(const unsigned int secondsToWait) override;
 
-    virtual bool IoCtrl([[maybe_unused]] const unsigned int command, [[maybe_unused]] const void *data = 0, [[maybe_unused]] size_t len = 0) { return false; }
+    bool IoCtrl([[maybe_unused]] const unsigned int command, [[maybe_unused]] const void *data = 0, [[maybe_unused]] size_t len = 0) override { return false; }
 
-    virtual bool IsPacketDevice() { return false; }
+    bool IsPacketDevice() override { return false; }
 
-    virtual unsigned int BytesLeftToRead() { return 0; } // return number of bytes left to read or 0 if unknown
+    unsigned int BytesLeftToRead() override { return 0; } // return number of bytes left to read or 0 if unknown
 };
 
 #endif

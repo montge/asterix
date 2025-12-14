@@ -333,11 +333,10 @@ bool CDiskDevice::Init(const char *path) {
         }
     }
 
-    if (!(_mode & DD_MODE_PACKETFILE)) {
-        if (fname != _fileName) {
-            strncpy(_fileName, fname, MAXPATHLEN);
-            _fileName[MAXPATHLEN] = '\0';  // Ensure null-termination
-        }
+    // Merge nested conditions for clarity (SonarCloud S1066)
+    if (!(_mode & DD_MODE_PACKETFILE) && fname != _fileName) {
+        strncpy(_fileName, fname, MAXPATHLEN);
+        _fileName[MAXPATHLEN] = '\0';  // Ensure null-termination
     }
 
     if (_input)

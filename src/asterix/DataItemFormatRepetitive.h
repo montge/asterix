@@ -300,7 +300,7 @@ public:
 #if HAS_DEDUCED_THIS
     DataItemFormatRepetitive *clone(this const auto& self) const { return new DataItemFormatRepetitive(self); }
 #else
-    DataItemFormatRepetitive *clone() const { return new DataItemFormatRepetitive(*this); }
+    DataItemFormatRepetitive *clone() const override { return new DataItemFormatRepetitive(*this); }
 #endif
 
     /**

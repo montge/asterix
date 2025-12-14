@@ -105,6 +105,17 @@
 **Commits:**
 - `0e9bd4b` - Remove const_cast in copy constructors
 
+### 3.5 Missing Override Keywords (cpp:S3471)
+- [x] 3.5.1 Add override to DataItemFormat subclasses clone() methods
+- [x] 3.5.2 Add override to engine device classes
+- [x] 3.5.3 Verify build and tests pass
+
+**Files Fixed:**
+- DataItemFormatBDS.h, DataItemFormatCompound.h, DataItemFormatExplicit.h
+- DataItemFormatFixed.h, DataItemFormatRepetitive.h, DataItemFormatVariable.h
+- UAPItem.h (clone method)
+- serialdevice.hxx, udpdevice.hxx, diskdevice.hxx, stddevice.hxx, tcpdevice.hxx
+
 ## Phase 4: Remaining Code Smells (Priority: LOW)
 
 ### 4.1 Style and Naming
@@ -138,10 +149,10 @@
 |-------|-------|-----------|
 | Bug Fixes | 14 | 10 |
 | Security Hotspots | 7 | 6 |
-| High-Impact Smells | 10 | 7 |
+| High-Impact Smells | 13 | 10 |
 | Remaining Smells | 5 | 0 |
 | Verification | 6 | 0 |
-| **Total** | **42** | **23** |
+| **Total** | **45** | **26** |
 
 ## Session Summary (Dec 14, 2025)
 
@@ -198,3 +209,15 @@
 - All 11 integration tests pass
 - Valgrind: 0 memory leaks
 - Build successful on Linux (GCC)
+
+### Override Keywords (cpp:S3471) - Session 2
+
+11. **Missing override keywords** (CRITICAL - cpp:S3471)
+    - Added `override` to all virtual method overrides in 12 files:
+      - ASTERIX format classes: DataItemFormatBDS.h, DataItemFormatCompound.h,
+        DataItemFormatExplicit.h, DataItemFormatFixed.h, DataItemFormatRepetitive.h,
+        DataItemFormatVariable.h, UAPItem.h
+      - Engine device classes: serialdevice.hxx, udpdevice.hxx, diskdevice.hxx,
+        stddevice.hxx, tcpdevice.hxx
+    - Replaced `virtual` with `override` for clearer intent
+    - Enables compiler to detect signature mismatches

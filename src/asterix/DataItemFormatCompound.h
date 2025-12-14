@@ -333,7 +333,7 @@ public:
 #if HAS_DEDUCED_THIS
     DataItemFormatCompound *clone(this const auto& self) const { return new DataItemFormatCompound(self); }
 #else
-    DataItemFormatCompound *clone() const { return new DataItemFormatCompound(*this); } // Return clone of object
+    DataItemFormatCompound *clone() const override { return new DataItemFormatCompound(*this); } // Return clone of object
 #endif
 
     /**

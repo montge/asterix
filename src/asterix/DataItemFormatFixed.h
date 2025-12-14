@@ -223,7 +223,7 @@ public:
 #if HAS_DEDUCED_THIS
     DataItemFormatFixed *clone(this const auto& self) const { return new DataItemFormatFixed(self); }
 #else
-    DataItemFormatFixed *clone() const { return new DataItemFormatFixed(*this); } // Return clone of object
+    DataItemFormatFixed *clone() const override { return new DataItemFormatFixed(*this); } // Return clone of object
 #endif
 
     /**

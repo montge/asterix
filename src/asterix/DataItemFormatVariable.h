@@ -194,7 +194,7 @@ public:
 #if HAS_DEDUCED_THIS
     DataItemFormatVariable *clone(this const auto& self) const { return new DataItemFormatVariable(self); }
 #else
-    DataItemFormatVariable *clone() const { return new DataItemFormatVariable(*this); } // Return clone of object
+    DataItemFormatVariable *clone() const override { return new DataItemFormatVariable(*this); } // Return clone of object
 #endif
 
     /**

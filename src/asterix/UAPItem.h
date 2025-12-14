@@ -168,7 +168,7 @@ public:
      *
      * @note Implements DataItemFormat::clone() interface.
      */
-    UAPItem *clone() const { return new UAPItem(*this); }
+    UAPItem *clone() const override { return new UAPItem(*this); }
 
     /**
      * @brief NOT APPLICABLE - logs error if called

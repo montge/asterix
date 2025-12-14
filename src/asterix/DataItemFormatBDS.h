@@ -241,7 +241,7 @@ public:
 #if HAS_DEDUCED_THIS
     DataItemFormatBDS *clone(this const auto& self) const { return new DataItemFormatBDS(self); }
 #else
-    DataItemFormatBDS *clone() const { return new DataItemFormatBDS(*this); } // Return clone of object
+    DataItemFormatBDS *clone() const override { return new DataItemFormatBDS(*this); } // Return clone of object
 #endif
 
     /**

@@ -203,7 +203,7 @@ public:
      * @brief Create a deep copy of this DataItemBits object
      * @return Pointer to newly allocated clone (caller owns memory)
      */
-    DataItemBits *clone() const { return new DataItemBits(*this); }
+    DataItemBits *clone() const override { return new DataItemBits(*this); }
 
     /**
      * @brief Extract and format the bit field value from binary data

@@ -276,7 +276,7 @@ public:
 #if HAS_DEDUCED_THIS
     DataItemFormatExplicit *clone(this const auto& self) const { return new DataItemFormatExplicit(self); }
 #else
-    DataItemFormatExplicit *clone() const { return new DataItemFormatExplicit(*this); } // Return clone of object
+    DataItemFormatExplicit *clone() const override { return new DataItemFormatExplicit(*this); } // Return clone of object
 #endif
 
     /**

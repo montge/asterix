@@ -52,7 +52,8 @@ UAPItem::~UAPItem() {
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_definitions* UAPItem::getWiresharkDefinitions()
 {
-  fulliautomatix_definitions* def = static_cast<fulliautomatix_definitions*>(
+  // Use auto to avoid redundant type specification (SonarCloud S5827)
+  auto* def = static_cast<fulliautomatix_definitions*>(
       malloc(sizeof(fulliautomatix_definitions)));
   if (def == nullptr) {
       return nullptr;
