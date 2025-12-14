@@ -225,11 +225,13 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
             } else if (p->m_pFormat->isCompound()) {
                 if (p->m_pFormat->m_lSubItems.size() == 0) {
                     p->Error("XMLParser : First part of <Compound> must be <Variable> and not <BDS>");
+                    delete pFormatBDS;
                     return;
                 }
                 p->m_pFormat->m_lSubItems.push_back(pFormatBDS);
             } else {
                 p->Error("XMLParser : Error in handling BDS format in item ", p->m_pDataItem->m_strName.c_str());
+                delete pFormatBDS;
                 return;
             }
             pFormatBDS->m_pParentFormat = p->m_pFormat;
@@ -265,11 +267,13 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
             } else if (p->m_pFormat->isCompound()) {
                 if (p->m_pFormat->m_lSubItems.size() == 0) {
                     p->Error("XMLParser : First part of <Compound> must be <Variable> and not <Fixed>");
+                    delete pFormatFixed;
                     return;
                 }
                 p->m_pFormat->m_lSubItems.push_back(pFormatFixed);
             } else {
                 p->Error("XMLParser : Error in handling Fixed format in item ", p->m_pDataItem->m_strName.c_str());
+                delete pFormatFixed;
                 return;
             }
             pFormatFixed->m_pParentFormat = p->m_pFormat;
@@ -307,11 +311,13 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
             if (p->m_pFormat->isCompound()) {
                 if (p->m_pFormat->m_lSubItems.size() == 0) {
                     p->Error("XMLParser : First part of <Compound> must be <Variable> and not <Explicit>");
+                    delete pFormatExplicit;
                     return;
                 }
                 p->m_pFormat->m_lSubItems.push_back(pFormatExplicit);
             } else {
                 p->Error("XMLParser : Error in handling Explicit format", p->m_pDataItem->m_strName.c_str());
+                delete pFormatExplicit;
                 return;
             }
             pFormatExplicit->m_pParentFormat = p->m_pFormat;
@@ -335,6 +341,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
             if (p->m_pFormat->isCompound()) {
                 if (p->m_pFormat->m_lSubItems.size() == 0) {
                     p->Error("XMLParser : First part of <Compound> must be <Variable> and not <Repetitive>");
+                    delete pFormatRepetitive;
                     return;
                 }
                 p->m_pFormat->m_lSubItems.push_back(pFormatRepetitive);
@@ -345,6 +352,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
                 p->m_pFormat->m_lSubItems.push_back(pFormatRepetitive);
             } else {
                 p->Error("XMLParser : Error in handling Repetitive format", p->m_pDataItem->m_strName.c_str());
+                delete pFormatRepetitive;
                 return;
             }
             pFormatRepetitive->m_pParentFormat = p->m_pFormat;
@@ -374,6 +382,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
                 p->m_pFormat->m_lSubItems.push_back(pFormatVariable);
             } else {
                 p->Error("XMLParser : Error in handling Variable format", p->m_pDataItem->m_strName.c_str());
+                delete pFormatVariable;
                 return;
             }
             pFormatVariable->m_pParentFormat = p->m_pFormat;
@@ -397,6 +406,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
             if (p->m_pFormat->isCompound()) {
                 if (p->m_pFormat->m_lSubItems.size() == 0) {
                     p->Error("XMLParser : First part of <Compound> must be <Variable> and not <Compound>");
+                    delete pFormatCompound;
                     return;
                 }
                 p->m_pFormat->m_lSubItems.push_back(pFormatCompound);
@@ -406,7 +416,8 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
                 }
                 p->m_pFormat->m_lSubItems.push_back(pFormatCompound);
             } else {
-                p->Error("XMLParser : Error in handling Variable format", p->m_pDataItem->m_strName.c_str());
+                p->Error("XMLParser : Error in handling Compound format", p->m_pDataItem->m_strName.c_str());
+                delete pFormatCompound;
                 return;
             }
             pFormatCompound->m_pParentFormat = p->m_pFormat;
