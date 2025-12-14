@@ -56,7 +56,7 @@ More about ASTERIX protocol: http://www.eurocontrol.int/services/asterix
 - **Security tools guide**: FREE vs commercial tools documentation
 - **Git hooks**: Setup, troubleshooting, and best practices guides
 
-**See**: [CROSS_PLATFORM_SUMMARY.md](CROSS_PLATFORM_SUMMARY.md), [CPP23_BUILD_UPGRADE_SUMMARY.md](CPP23_BUILD_UPGRADE_SUMMARY.md), and [SECURITY_TOOLS_GUIDE.md](SECURITY_TOOLS_GUIDE.md) for details.
+**See**: [Cross-Platform Build Guide](docs/build/CROSS_PLATFORM_BUILD_GUIDE.md), [Build Guide](docs/BUILD.md), and [Development Setup](docs/development/GIT_HOOKS_SETUP.md) for details.
 
 ## Features
 
