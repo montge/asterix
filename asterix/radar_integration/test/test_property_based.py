@@ -307,9 +307,7 @@ class TestCAT021Properties(unittest.TestCase):
             asterix_data = encode_cat021(
                 [data],
                 sac=0,
-                sic=1,
-                include_callsign=True,
-                include_altitude=True
+                sic=1
             )
             self.assertGreater(len(asterix_data), 3)
             self.assertEqual(asterix_data[0], 21, "First byte should be CAT 021")
@@ -342,7 +340,7 @@ class TestCAT021Properties(unittest.TestCase):
         }
 
         try:
-            asterix_data = encode_cat021([data], sac=0, sic=1, include_altitude=True)
+            asterix_data = encode_cat021([data], sac=0, sic=1)
             self.assertGreater(len(asterix_data), 3)
             # Verify it doesn't crash on extreme but valid coordinates
         except Exception as e:
