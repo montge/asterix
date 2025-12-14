@@ -134,7 +134,7 @@ static bool convert_asterix_data_to_records(
 
             // Copy hex data
             if (dr->m_pHexData) {
-                rec->hex_data = strdup(dr->m_pHexData);
+                rec->hex_data = strdup(dr->m_pHexData.get());
             } else {
                 rec->hex_data = strdup("");
             }

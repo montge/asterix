@@ -648,7 +648,7 @@ TEST_F(DataRecordTest, HexDataGeneration) {
     ASSERT_TRUE(record.m_bFormatOK);
     ASSERT_NE(record.m_pHexData, nullptr);
 
-    std::string hexdata(record.m_pHexData);
+    std::string hexdata(record.m_pHexData.get());
     EXPECT_EQ(hexdata, "80ABCD");
 
     pCategory = nullptr;
@@ -1055,7 +1055,7 @@ TEST_F(DataRecordTest, HexDataVariousPatterns) {
     ASSERT_TRUE(record.m_bFormatOK);
     ASSERT_NE(record.m_pHexData, nullptr);
 
-    std::string hexdata(record.m_pHexData);
+    std::string hexdata(record.m_pHexData.get());
     EXPECT_EQ(hexdata, "8000FFA55A");
 
     pCategory = nullptr;
