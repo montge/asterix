@@ -80,7 +80,7 @@ SonarCloud Analysis Summary:
 - [x] 4.2.6 Fix string initialization issues - cpp:S4962 (commit 78d3621)
 - [x] 4.2.7 Replace NULL with nullptr in bindings (commit 78d3621)
 - [x] 4.2.8 Fix unsafe comma operator pattern in iterators (PR #132 - std::next())
-- [x] 4.2.9 Replace C-style casts with static_cast (PRs #134-140 - 170+ casts fixed)
+- [x] 4.2.9 Replace C-style casts with static_cast (PRs #134-140 - 190+ casts fixed)
 
 ### 4.3 File-by-File Remediation
 - [x] 4.3.1 Fix issues in src/asterix/*.cpp (core parsing) - PRs #136-140 fix all Format* and core files
@@ -135,12 +135,12 @@ SonarCloud Analysis Summary:
 
 ## 7. Verification - Priority: REQUIRED
 
-- [ ] 7.1 All CI pipelines pass
+- [ ] 7.1 All CI pipelines pass (running as of 2025-12-14)
 - [ ] 7.2 SonarCloud shows 0 critical issues
 - [ ] 7.3 SonarCloud shows 0 major issues
 - [ ] 7.4 Code coverage visible in SonarCloud
-- [ ] 7.5 No regressions in functionality
-- [ ] 7.6 Memory leak testing passes (valgrind)
+- [x] 7.5 No regressions in functionality (local tests 12/12 pass - 2025-12-14)
+- [x] 7.6 Memory leak testing passes (valgrind - 0 leaks - 2025-12-14)
 
 ## Progress Tracking
 
@@ -193,7 +193,7 @@ SonarCloud Analysis Summary:
 - PR #137: Replaced C-style casts in Fixed/Repetitive/Explicit formats (34 casts)
 - PR #138: Replaced C-style casts in DataBlock/Category/UAP/AsterixData (23 casts)
 - PR #139: Replaced C-style casts in DataRecord.cpp (12 casts)
-- PR #140: Replaced C-style casts in remaining format files (48 casts, incl. 5 additional DataItemBits fixes)
+- PR #140: Replaced C-style casts in remaining format files (48+ casts, incl. DataItemBits and XMLParser fixes)
 
 ## Configuration Status
 
