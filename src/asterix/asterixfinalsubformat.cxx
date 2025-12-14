@@ -40,17 +40,17 @@
     FILETIME ft;
     GetSystemTimeAsFileTime(&ft);
 
-    unsigned long long t = ((unsigned long long)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
+    unsigned long long t = (static_cast<unsigned long long>(ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
     t -= 116444736000000000ULL;
     t /= 10;
 
-    tp->tv_sec = (long)(t / 1000000UL);
-    tp->tv_usec = (long)(t % 1000000UL);
+    tp->tv_sec = static_cast<long>(t / 1000000UL);
+    tp->tv_usec = static_cast<long>(t % 1000000UL);
     return 0;
   }
 
   inline void usleep(useconds_t usec) {
-    Sleep((DWORD)(usec / 1000));
+    Sleep(static_cast<DWORD>(usec / 1000));
   }
 #else
   #include <sys/time.h>
@@ -80,9 +80,9 @@ bool CAsterixFinalSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor,
         return false;
     }
 
-    unsigned long nTimestamp = (unsigned long) finalRecordHeader.m_nTimeMMSB << 16;
-    nTimestamp |= (unsigned long) finalRecordHeader.m_nTimeMSB << 8;
-    nTimestamp |= (unsigned long) finalRecordHeader.m_nTimeLSB;
+    unsigned long nTimestamp = static_cast<unsigned long>(finalRecordHeader.m_nTimeMMSB) << 16;
+    nTimestamp |= static_cast<unsigned long>(finalRecordHeader.m_nTimeMSB) << 8;
+    nTimestamp |= static_cast<unsigned long>(finalRecordHeader.m_nTimeLSB);
     // convert timestamp to milliseconds (resolution is 10ms in final format)
     nTimestamp = nTimestamp * 10;
 

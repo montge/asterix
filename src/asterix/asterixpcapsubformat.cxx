@@ -44,12 +44,12 @@
     GetSystemTimeAsFileTime(&ft);
 
     // Convert FILETIME to Unix epoch (microseconds since 1970)
-    unsigned long long t = ((unsigned long long)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
+    unsigned long long t = (static_cast<unsigned long long>(ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
     t -= 116444736000000000ULL; // Convert from Windows epoch to Unix epoch
     t /= 10; // Convert 100-nanosecond intervals to microseconds
 
-    tp->tv_sec = (long)(t / 1000000UL);
-    tp->tv_usec = (long)(t % 1000000UL);
+    tp->tv_sec = static_cast<long>(t / 1000000UL);
+    tp->tv_usec = static_cast<long>(t % 1000000UL);
     return 0;
   }
 

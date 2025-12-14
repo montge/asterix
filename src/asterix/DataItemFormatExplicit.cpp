@@ -46,7 +46,7 @@ DataItemFormatExplicit::~DataItemFormatExplicit() {
 }
 
 long DataItemFormatExplicit::getLength(const unsigned char *pData) {
-    return (long) (*pData);
+    return static_cast<long>(*pData);
 }
 
 bool DataItemFormatExplicit::getText(std::string &strResult, std::string &strHeader, const unsigned int formatType,
