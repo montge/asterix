@@ -473,6 +473,34 @@ char *DataItemBits::getASCII(unsigned char *pData, int bytes, int frombit, int t
 
 
 /**
+ * @brief Get encoded string based on encoding type
+ *
+ * Unified helper function that returns the appropriate encoded string
+ * for the given encoding type. Eliminates code duplication across
+ * createWiresharkStringData(), insertStringToDict(), and similar functions.
+ *
+ * @param encoding The encoding type (SIX_BIT_CHAR, HEX_BIT_CHAR, OCTAL, ASCII)
+ * @param pData Pointer to raw data buffer
+ * @param nLength Length of data buffer in bytes
+ * @return Allocated string (caller must delete[]), or nullptr for unsupported encoding
+ */
+char* DataItemBits::getEncodedString(_eEncoding encoding, unsigned char* pData, long nLength) {
+    switch (encoding) {
+        case DATAITEM_ENCODING_SIX_BIT_CHAR:
+            return reinterpret_cast<char*>(getSixBitString(pData, nLength, m_nFrom, m_nTo));
+        case DATAITEM_ENCODING_HEX_BIT_CHAR:
+            return reinterpret_cast<char*>(getHexBitString(pData, nLength, m_nFrom, m_nTo));
+        case DATAITEM_ENCODING_OCTAL:
+            return reinterpret_cast<char*>(getOctal(pData, nLength, m_nFrom, m_nTo));
+        case DATAITEM_ENCODING_ASCII:
+            return getASCII(pData, nLength, m_nFrom, m_nTo);
+        default:
+            return nullptr;
+    }
+}
+
+
+/**
  * @brief Formats ASTERIX data item bits into various output formats (text, JSON, XML)
  *
  * PERFORMANCE OPTIMIZATION:
@@ -1130,23 +1158,9 @@ fulliautomatix_data* DataItemBits::createWiresharkSignedData(unsigned char* pDat
 fulliautomatix_data* DataItemBits::createWiresharkStringData(_eEncoding encoding, unsigned char* pData,
                                                              long nLength, int byteoffset,
                                                              int firstByte, int numberOfBytes) {
-    char* str = nullptr;
-
-    switch (encoding) {
-        case DATAITEM_ENCODING_SIX_BIT_CHAR:
-            str = (char*)getSixBitString(pData, nLength, m_nFrom, m_nTo);
-            break;
-        case DATAITEM_ENCODING_HEX_BIT_CHAR:
-            str = (char*)getHexBitString(pData, nLength, m_nFrom, m_nTo);
-            break;
-        case DATAITEM_ENCODING_OCTAL:
-            str = (char*)getOctal(pData, nLength, m_nFrom, m_nTo);
-            break;
-        case DATAITEM_ENCODING_ASCII:
-            str = getASCII(pData, nLength, m_nFrom, m_nTo);
-            break;
-        default:
-            return nullptr;
+    char* str = getEncodedString(encoding, pData, nLength);
+    if (!str) {
+        return nullptr;
     }
 
     fulliautomatix_data* data = newDataString(nullptr, getPID(), byteoffset + firstByte, numberOfBytes, str);
@@ -1287,30 +1301,14 @@ void DataItemBits::insertSignedToDict(PyObject* pValue, signed long value, int v
 // Helper function to process string encodings for Python dict
 void DataItemBits::insertStringToDict(PyObject* pValue, _eEncoding encoding,
                                       unsigned char* pData, long nLength) {
-    char* str = nullptr;
-
-    switch (encoding) {
-        case DATAITEM_ENCODING_SIX_BIT_CHAR:
-            str = (char*)getSixBitString(pData, nLength, m_nFrom, m_nTo);
-            break;
-        case DATAITEM_ENCODING_HEX_BIT_CHAR:
-            str = (char*)getHexBitString(pData, nLength, m_nFrom, m_nTo);
-            break;
-        case DATAITEM_ENCODING_OCTAL:
-            str = (char*)getOctal(pData, nLength, m_nFrom, m_nTo);
-            break;
-        case DATAITEM_ENCODING_ASCII:
-            str = getASCII(pData, nLength, m_nFrom, m_nTo);
-            break;
-        default:
-            addPyDictItem(pValue, "val", Py_BuildValue("s", "???"));
-            return;
+    char* str = getEncodedString(encoding, pData, nLength);
+    if (!str) {
+        addPyDictItem(pValue, "val", Py_BuildValue("s", "???"));
+        return;
     }
 
-    if (str) {
-        addPyDictItem(pValue, "val", Py_BuildValue("s", str));
-        delete[] str;
-    }
+    addPyDictItem(pValue, "val", Py_BuildValue("s", str));
+    delete[] str;
 }
 
 void DataItemBits::insertToDict(PyObject* p, unsigned char* pData, long nLength, int verbose)
