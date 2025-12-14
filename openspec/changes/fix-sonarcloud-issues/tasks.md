@@ -110,6 +110,9 @@
 - [x] 3.5.2 Add override to engine device classes
 - [x] 3.5.3 Verify build and tests pass
 
+**Commits:**
+- `e64ca89` - Add override keywords and fix minor code smells
+
 **Files Fixed:**
 - DataItemFormatBDS.h, DataItemFormatCompound.h, DataItemFormatExplicit.h
 - DataItemFormatFixed.h, DataItemFormatRepetitive.h, DataItemFormatVariable.h
