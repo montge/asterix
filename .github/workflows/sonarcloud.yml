@@ -53,6 +53,8 @@ jobs:
           -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
         cmake --build build --parallel $(nproc)
         cmake --install build
+        # Debug: Check if compile_commands.json was generated
+        ls -la build/compile_commands.json 2>/dev/null || echo "compile_commands.json not found in build/"
 
     - name: Run C++ tests for coverage
       run: |
@@ -142,6 +144,17 @@ jobs:
     # -------------------------------------------------------------------------
     # SONARCLOUD SCAN
     # -------------------------------------------------------------------------
+    - name: Check for compile_commands.json
+      id: check_compile_commands
+      run: |
+        if [ -f build/compile_commands.json ]; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+          echo "compile_commands.json found"
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+          echo "compile_commands.json not found - SonarCloud will analyze without it"
+        fi
+
     - name: SonarCloud Scan
       uses: SonarSource/sonarqube-scan-action@v6
       env:
@@ -154,7 +167,7 @@ jobs:
           -Dsonar.cpp.coverage.reportPaths=coverage.info
           -Dsonar.python.coverage.reportPaths=coverage.xml
           -Dsonar.rust.coverage.reportPaths=asterix-rs/coverage/lcov.info
-          -Dsonar.cfamily.compile-commands=build/compile_commands.json
+          ${{ steps.check_compile_commands.outputs.exists == 'true' && '-Dsonar.cfamily.compile-commands=build/compile_commands.json' || '' }}
 
     # -------------------------------------------------------------------------
     # UPLOAD ARTIFACTS FOR DEBUGGING
