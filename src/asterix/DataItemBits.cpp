@@ -577,7 +577,8 @@ const char* DataItemBits::findValueDescription(unsigned long long value, bool& f
 
 // Helper function to format unsigned value with metadata
 void DataItemBits::formatUnsignedWithMeta(std::ostringstream& ss, unsigned long long value64,
-                                          const unsigned int formatType, const std::string& strHeader) {
+                                          const unsigned int formatType, const std::string& strHeader,
+                                          unsigned char* pData, long nLength) {
     bool descFound = false;
     const char* desc = nullptr;
 
@@ -626,12 +627,12 @@ void DataItemBits::formatUnsignedWithMeta(std::ostringstream& ss, unsigned long 
                 ss << format("\"val\"=%llu", value64);
             }
 
-            unsigned char* hexstr = getHexBitStringFullByte((unsigned char*)nullptr, 0, m_nFrom, m_nTo);
+            unsigned char* hexstr = getHexBitStringFullByte(pData, nLength, m_nFrom, m_nTo);
             ss << format(", \"hex\"=\"%s\"", hexstr);
             delete[] hexstr;
 
             if ((m_nTo - m_nFrom + 1) % 8) {
-                unsigned char* maskstr = getHexBitStringMask(0, m_nFrom, m_nTo);
+                unsigned char* maskstr = getHexBitStringMask(nLength, m_nFrom, m_nTo);
                 ss << format(", \"mask\"=\"%s\"", maskstr);
                 delete[] maskstr;
             }
@@ -658,7 +659,8 @@ void DataItemBits::formatUnsignedWithMeta(std::ostringstream& ss, unsigned long 
 
 // Helper function to format signed value with metadata
 void DataItemBits::formatSignedWithMeta(std::ostringstream& ss, signed long value,
-                                        const unsigned int formatType, const std::string& strHeader) {
+                                        const unsigned int formatType, const std::string& strHeader,
+                                        unsigned char* pData, long nLength) {
     bool descFound = false;
     const char* desc = nullptr;
 
@@ -706,12 +708,12 @@ void DataItemBits::formatSignedWithMeta(std::ostringstream& ss, signed long valu
             }
         }
     } else if (formatType == CAsterixFormat::EJSONE) {
-        unsigned char* hexstr = getHexBitStringFullByte((unsigned char*)nullptr, 0, m_nFrom, m_nTo);
+        unsigned char* hexstr = getHexBitStringFullByte(pData, nLength, m_nFrom, m_nTo);
         ss << format(", \"hex\"=\"%s\"", hexstr);
         delete[] hexstr;
 
         if ((m_nTo - m_nFrom + 1) % 8) {
-            unsigned char* maskstr = getHexBitStringMask(0, m_nFrom, m_nTo);
+            unsigned char* maskstr = getHexBitStringMask(nLength, m_nFrom, m_nTo);
             ss << format(", \"mask\"=\"%s\"", maskstr);
             delete[] maskstr;
         }
@@ -799,12 +801,12 @@ bool DataItemBits::getText(std::string &strResult, std::string &strHeader, const
             unsigned long long value64 = (numberOfBits > 32)
                 ? getUnsigned64(pData, nLength, m_nFrom, m_nTo)
                 : getUnsigned(pData, nLength, m_nFrom, m_nTo);
-            formatUnsignedWithMeta(ss, value64, formatType, strHeader);
+            formatUnsignedWithMeta(ss, value64, formatType, strHeader, pData, nLength);
             break;
         }
         case DATAITEM_ENCODING_SIGNED: {
             signed long value = getSigned(pData, nLength, m_nFrom, m_nTo);
-            formatSignedWithMeta(ss, value, formatType, strHeader);
+            formatSignedWithMeta(ss, value, formatType, strHeader, pData, nLength);
             break;
         }
         case DATAITEM_ENCODING_SIX_BIT_CHAR: {

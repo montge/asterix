@@ -325,9 +325,11 @@ private:
     void appendClosingTag(std::ostringstream& ss, const unsigned int formatType) const;
     const char* findValueDescription(unsigned long long value, bool& found) const;
     void formatUnsignedWithMeta(std::ostringstream& ss, unsigned long long value64,
-                                const unsigned int formatType, const std::string& strHeader);
+                                const unsigned int formatType, const std::string& strHeader,
+                                unsigned char* pData, long nLength);
     void formatSignedWithMeta(std::ostringstream& ss, signed long value,
-                              const unsigned int formatType, const std::string& strHeader);
+                              const unsigned int formatType, const std::string& strHeader,
+                              unsigned char* pData, long nLength);
     void formatStringEncoding(std::ostringstream& ss, const unsigned char* str,
                               unsigned char* pData, long nLength,
                               const unsigned int formatType, const std::string& strHeader);
