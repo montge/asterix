@@ -86,13 +86,13 @@ void XMLParser::Error(const char *errstr, const char *param1) {
 
 void XMLParser::Error(const char *errstr) {
     char strLine[1024];
-    snprintf(strLine, 1024, " in file: %s line: %d", m_pFileName, (int) XML_GetCurrentLineNumber(m_Parser));
+    snprintf(strLine, 1024, " in file: %s line: %d", m_pFileName, static_cast<int>(XML_GetCurrentLineNumber(m_Parser)));
     std::string tmpstr(errstr);
     tmpstr += strLine;
     tmpstr += "\n";
 
 #ifdef PYTHON_WRAPPER
-    PyErr_SetString(PyExc_SyntaxError, (char*)tmpstr.c_str());
+    PyErr_SetString(PyExc_SyntaxError, tmpstr.c_str());
 #else
     // Use "%s" format to prevent format string injection from XML content
     Tracer::Error("%s", tmpstr.c_str());
@@ -773,7 +773,7 @@ bool XMLParser::Parse(FILE *pFile, AsterixDefinition *pDefinition, const char *f
         int done;
         int len;
 
-        len = (int) fread(m_pBuff, 1, BUFFSIZE, pFile);
+        len = static_cast<int>(fread(m_pBuff, 1, BUFFSIZE, pFile));
         if (ferror(pFile)) {
 #ifdef PYTHON_WRAPPER
             PyErr_SetString(PyExc_IOError, "Format file read error.");

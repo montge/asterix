@@ -538,7 +538,7 @@ void DataItemBits::appendClosingTag(std::ostringstream& ss, const unsigned int f
 const char* DataItemBits::findValueDescription(unsigned long long value, bool& found) const {
     for (auto it = m_lValue.begin(); it != m_lValue.end(); ++it) {
         BitsValue* bv = *it;
-        if (bv->m_nVal == (int)value) {
+        if (bv->m_nVal == static_cast<int>(value)) {
             found = true;
             return bv->m_strDescription.c_str();
         }
@@ -581,7 +581,7 @@ void DataItemBits::formatUnsignedWithMeta(std::ostringstream& ss, unsigned long 
                     ss << format("%sWarning: Value smaller than min (%.7lf)",
                                 isOut ? " " : "\n\t", m_dMinValue);
                 }
-            } else if (m_bIsConst && (int)value64 != m_nConst) {
+            } else if (m_bIsConst && static_cast<int>(value64) != m_nConst) {
                 ss << format("%sWarning: Value should be set to %d",
                             isOut ? " " : "\n\t", m_nConst);
             } else if (descFound) {
@@ -598,7 +598,7 @@ void DataItemBits::formatUnsignedWithMeta(std::ostringstream& ss, unsigned long 
                 ss << format("\"val\"=%llu", value64);
             }
 
-            unsigned char* hexstr = getHexBitStringFullByte((unsigned char*)nullptr, 0, m_nFrom, m_nTo);
+            unsigned char* hexstr = getHexBitStringFullByte(nullptr, 0, m_nFrom, m_nTo);
             ss << format(", \"hex\"=\"%s\"", hexstr);
             delete[] hexstr;
 
@@ -678,7 +678,7 @@ void DataItemBits::formatSignedWithMeta(std::ostringstream& ss, signed long valu
             }
         }
     } else if (formatType == CAsterixFormat::EJSONE) {
-        unsigned char* hexstr = getHexBitStringFullByte((unsigned char*)nullptr, 0, m_nFrom, m_nTo);
+        unsigned char* hexstr = getHexBitStringFullByte(nullptr, 0, m_nFrom, m_nTo);
         ss << format(", \"hex\"=\"%s\"", hexstr);
         delete[] hexstr;
 
@@ -1053,7 +1053,7 @@ return def;
 char* DataItemBits::createWiresharkValueDescription(double scaled, unsigned long long value64) {
     char tmp[128];
     bool isOutOfRange = (m_bMaxValueSet && scaled > m_dMaxValue) || (m_bMinValueSet && scaled < m_dMinValue);
-    bool isWrongConst = m_bIsConst && (int)value64 != m_nConst;
+    bool isWrongConst = m_bIsConst && static_cast<int>(value64) != m_nConst;
 
     if (isOutOfRange) {
         snprintf(tmp, 128, " (%.7lf %s) Warning! Value out of range (%.7lf to %.7lf)",
@@ -1076,7 +1076,7 @@ fulliautomatix_data* DataItemBits::createWiresharkUnsignedData(unsigned char* pD
         ? getUnsigned64(pData, nLength, m_nFrom, m_nTo)
         : getUnsigned(pData, nLength, m_nFrom, m_nTo);
 
-    unsigned long value = (unsigned long)value64;
+    unsigned long value = static_cast<unsigned long>(value64);
 
     // Adjust for bitmask presentation in Wireshark
     if (value && m_nFrom > 1 && numberOfBits % 8) {
@@ -1092,7 +1092,7 @@ fulliautomatix_data* DataItemBits::createWiresharkUnsignedData(unsigned char* pD
 
         bool hasError = (m_bMaxValueSet && scaled > m_dMaxValue) ||
                        (m_bMinValueSet && scaled < m_dMinValue) ||
-                       (m_bIsConst && (int)value64 != m_nConst);
+                       (m_bIsConst && static_cast<int>(value64) != m_nConst);
         if (hasError) {
             pOutData->err = 1;
         }
@@ -1110,11 +1110,11 @@ fulliautomatix_data* DataItemBits::createWiresharkSignedData(unsigned char* pDat
 
     if (m_dScale != 0) {
         double scaled = value * m_dScale;
-        pOutData->value_description = createWiresharkValueDescription(scaled, (unsigned long long)value);
+        pOutData->value_description = createWiresharkValueDescription(scaled, static_cast<unsigned long long>(value));
 
         bool hasError = (m_bMaxValueSet && scaled > m_dMaxValue) ||
                        (m_bMinValueSet && scaled < m_dMinValue) ||
-                       (m_bIsConst && (int)value != m_nConst);
+                       (m_bIsConst && static_cast<int>(value) != m_nConst);
         if (hasError) {
             pOutData->err = 1;
         }
@@ -1131,13 +1131,13 @@ fulliautomatix_data* DataItemBits::createWiresharkStringData(_eEncoding encoding
 
     switch (encoding) {
         case DATAITEM_ENCODING_SIX_BIT_CHAR:
-            str = (char*)getSixBitString(pData, nLength, m_nFrom, m_nTo);
+            str = reinterpret_cast<char*>(getSixBitString(pData, nLength, m_nFrom, m_nTo));
             break;
         case DATAITEM_ENCODING_HEX_BIT_CHAR:
-            str = (char*)getHexBitString(pData, nLength, m_nFrom, m_nTo);
+            str = reinterpret_cast<char*>(getHexBitString(pData, nLength, m_nFrom, m_nTo));
             break;
         case DATAITEM_ENCODING_OCTAL:
-            str = (char*)getOctal(pData, nLength, m_nFrom, m_nTo);
+            str = reinterpret_cast<char*>(getOctal(pData, nLength, m_nFrom, m_nTo));
             break;
         case DATAITEM_ENCODING_ASCII:
             str = getASCII(pData, nLength, m_nFrom, m_nTo);
@@ -1194,7 +1194,7 @@ fulliautomatix_data* DataItemBits::getData(unsigned char* pData, long nLength, i
 
     // Error case - unknown encoding
     return newDataMessage(nullptr, byteoffset + firstByte, numberOfBytes, 2,
-                          (char*)"Error: Unknown encoding.");
+                          const_cast<char*>("Error: Unknown encoding."));
 }
 #endif
 
@@ -1288,13 +1288,13 @@ void DataItemBits::insertStringToDict(PyObject* pValue, _eEncoding encoding,
 
     switch (encoding) {
         case DATAITEM_ENCODING_SIX_BIT_CHAR:
-            str = (char*)getSixBitString(pData, nLength, m_nFrom, m_nTo);
+            str = reinterpret_cast<char*>(getSixBitString(pData, nLength, m_nFrom, m_nTo));
             break;
         case DATAITEM_ENCODING_HEX_BIT_CHAR:
-            str = (char*)getHexBitString(pData, nLength, m_nFrom, m_nTo);
+            str = reinterpret_cast<char*>(getHexBitString(pData, nLength, m_nFrom, m_nTo));
             break;
         case DATAITEM_ENCODING_OCTAL:
-            str = (char*)getOctal(pData, nLength, m_nFrom, m_nTo);
+            str = reinterpret_cast<char*>(getOctal(pData, nLength, m_nFrom, m_nTo));
             break;
         case DATAITEM_ENCODING_ASCII:
             str = getASCII(pData, nLength, m_nFrom, m_nTo);
