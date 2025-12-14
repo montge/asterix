@@ -318,8 +318,10 @@ bool CDiskDevice::Init(const char *path) {
         // special case when DD_MODE_WAITFILE is set and we're waiting for a file to appear
         // in this case we never fail here
         if (_input && (_mode & DD_MODE_WAITFILE)) {
-            if (fname != _fileName)
+            if (fname != _fileName) {
                 strncpy(_fileName, fname, MAXPATHLEN);
+                _fileName[MAXPATHLEN] = '\0';  // Ensure null-termination
+            }
 
             return true;
         }
@@ -332,8 +334,10 @@ bool CDiskDevice::Init(const char *path) {
     }
 
     if (!(_mode & DD_MODE_PACKETFILE)) {
-        if (fname != _fileName)
+        if (fname != _fileName) {
             strncpy(_fileName, fname, MAXPATHLEN);
+            _fileName[MAXPATHLEN] = '\0';  // Ensure null-termination
+        }
     }
 
     if (_input)
@@ -355,8 +359,10 @@ bool CDiskDevice::OpenOutputFile(const char *path, bool openNow) {
     // initialize first file name for packeted files
     if (_mode & DD_MODE_PACKETFILE) {
         if (_baseName[0] == '\0') {
-            if (_baseName != fname)
+            if (_baseName != fname) {
                 strncpy(_baseName, fname, MAXPATHLEN);
+                _baseName[MAXPATHLEN] = '\0';  // Ensure null-termination
+            }
             fname = NextFileName();
         }
     }
@@ -368,8 +374,10 @@ bool CDiskDevice::OpenOutputFile(const char *path, bool openNow) {
             LOGERROR(1, "Cannot open file '%s'\n", fname);
             return false;
         } else {
-            if (fname != _fileName)
+            if (fname != _fileName) {
                 strncpy(_fileName, fname, MAXPATHLEN);
+                _fileName[MAXPATHLEN] = '\0';  // Ensure null-termination
+            }
             LOGDEBUG(ZONE_DISKDEVICE, "Opened output file '%s'\n", _fileName);
             _opened = true;
             _onstart = true;
@@ -385,8 +393,10 @@ bool CDiskDevice::OpenOutputFile(const char *path, bool openNow) {
             }
         }
 
-        if (fname != _fileName)
+        if (fname != _fileName) {
             strncpy(_fileName, fname, MAXPATHLEN);
+            _fileName[MAXPATHLEN] = '\0';  // Ensure null-termination
+        }
 
         LOGDEBUG(ZONE_DISKDEVICE, "Output file '%s' will be opened on first write\n", _fileName);
         return true;
@@ -662,10 +672,13 @@ bool CDiskDevice::DoneAll() {
         // but we must keep the base name
         char tmpName[MAXPATHLEN+1];
 
-        if (_mode & DD_MODE_PACKETFILE)
+        if (_mode & DD_MODE_PACKETFILE) {
             strncpy(tmpName, _baseName, MAXPATHLEN);
-        else
+            tmpName[MAXPATHLEN] = '\0';  // Ensure null-termination
+        } else {
             strncpy(tmpName, _fileName, MAXPATHLEN);
+            tmpName[MAXPATHLEN] = '\0';  // Ensure null-termination
+        }
 
         memset(_fileName, 0, sizeof(_fileName));
         memset(_baseName, 0, sizeof(_baseName));
