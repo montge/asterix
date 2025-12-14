@@ -142,12 +142,6 @@ jobs:
     # -------------------------------------------------------------------------
     # SONARCLOUD SCAN
     # -------------------------------------------------------------------------
-    - name: Copy compile_commands.json
-      run: |
-        if [ -f build/compile_commands.json ]; then
-          cp build/compile_commands.json .
-        fi
-
     - name: SonarCloud Scan
       uses: SonarSource/sonarqube-scan-action@v6
       env:
@@ -160,7 +154,7 @@ jobs:
           -Dsonar.cpp.coverage.reportPaths=coverage.info
           -Dsonar.python.coverage.reportPaths=coverage.xml
           -Dsonar.rust.coverage.reportPaths=asterix-rs/coverage/lcov.info
-          -Dsonar.cfamily.compile-commands=compile_commands.json
+          -Dsonar.cfamily.compile-commands=build/compile_commands.json
 
     # -------------------------------------------------------------------------
     # UPLOAD ARTIFACTS FOR DEBUGGING
