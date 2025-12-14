@@ -22,6 +22,7 @@
  */
 
 #include "UAPItem.h"
+#include <cstring>  // For memset
 
 UAPItem::UAPItem()
         : m_nBit(0), m_nFRN(0), m_bFX(false), m_nLen(0) {
@@ -51,7 +52,12 @@ UAPItem::~UAPItem() {
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_definitions* UAPItem::getWiresharkDefinitions()
 {
-  fulliautomatix_definitions* def = new fulliautomatix_definitions;
+  fulliautomatix_definitions* def = static_cast<fulliautomatix_definitions*>(
+      malloc(sizeof(fulliautomatix_definitions)));
+  if (def == nullptr) {
+      return nullptr;
+  }
+  memset(def, 0, sizeof(fulliautomatix_definitions));
 
   def->pid = getPID();
 
