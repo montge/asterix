@@ -332,6 +332,10 @@ private:
                               unsigned char* pData, long nLength,
                               const unsigned int formatType, const std::string& strHeader);
 
+    // Unified helper for string encoding - eliminates code duplication across getText(),
+    // createWiresharkStringData(), and insertStringToDict()
+    char* getEncodedString(_eEncoding encoding, unsigned char* pData, long nLength);
+
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
     // Helper methods for getData() (Wireshark) to reduce cognitive complexity
     char* createWiresharkValueDescription(double scaled, unsigned long long value64);
