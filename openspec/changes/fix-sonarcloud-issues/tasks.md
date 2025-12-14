@@ -37,15 +37,27 @@
 ## Phase 2: Security Hotspot Review (Priority: HIGH)
 
 ### 2.1 Triage Security Hotspots
-- [ ] 2.1.1 Export security hotspot list from SonarCloud
-- [ ] 2.1.2 Categorize by type (crypto, injection, auth, etc.)
-- [ ] 2.1.3 Identify hotspots requiring fixes vs safe-to-acknowledge
+- [x] 2.1.1 Export security hotspot list from SonarCloud
+- [x] 2.1.2 Categorize by type (crypto, injection, auth, etc.)
+- [x] 2.1.3 Identify hotspots requiring fixes vs safe-to-acknowledge
 
 ### 2.2 Review and Resolve Hotspots
-- [ ] 2.2.1 Review each hotspot for actual security risk
-- [ ] 2.2.2 Fix genuine security issues
-- [ ] 2.2.3 Document justification for safe hotspots
+- [x] 2.2.1 Review each hotspot for actual security risk
+- [x] 2.2.2 Fix genuine security issues
+- [x] 2.2.3 Document justification for safe hotspots
 - [ ] 2.2.4 Mark resolved in SonarCloud
+
+**Commits:**
+- `d28ca72` - Add null-termination after strncpy in diskdevice
+
+**Security Hotspot Analysis (45 total):**
+
+| Category | Count | Status | Notes |
+|----------|-------|--------|-------|
+| Buffer-overflow (strlen) | 27 | Safe | fgets/vsnprintf guarantee null-termination |
+| Buffer-overflow (strncpy) | 10 | Fixed | Added explicit null-termination |
+| Buffer-overflow (strncat) | 4 | Safe | Proper bounds checking in place |
+| Weak-cryptography | 4 | Safe | Demo data generation, not security |
 
 ## Phase 3: High-Impact Code Smells (Priority: MEDIUM)
 
@@ -91,11 +103,11 @@
 | Phase | Tasks | Completed |
 |-------|-------|-----------|
 | Bug Fixes | 14 | 10 |
-| Security Hotspots | 7 | 0 |
+| Security Hotspots | 7 | 6 |
 | High-Impact Smells | 10 | 0 |
 | Remaining Smells | 5 | 0 |
 | Verification | 6 | 0 |
-| **Total** | **42** | **10** |
+| **Total** | **42** | **16** |
 
 ## Session Summary (Dec 14, 2025)
 
@@ -118,6 +130,22 @@
 4. **Null pointer issues** (MINOR - cpp:S2637)
    - diskdevice.cxx: Added null check for data parameter in Write()
    - serialdevice.cxx: Added null check for device parameter in Init()
+
+### Security Hotspots Reviewed
+
+5. **Buffer-overflow (strncpy)** - FIXED
+   - diskdevice.cxx: Added explicit null-termination after all strncpy calls
+   - 8 strncpy calls secured with `buffer[MAXPATHLEN] = '\0'`
+
+6. **Buffer-overflow (strlen)** - SAFE TO ACKNOWLEDGE
+   - All strlen calls on strings from fgets, vsnprintf, std::string.c_str()
+   - These functions guarantee null-termination
+   - 27 hotspots reviewed and documented as safe
+
+7. **Weak-cryptography (random)** - SAFE TO ACKNOWLEDGE
+   - Python radar encoders use random for demo data generation
+   - Already documented with `# nosec B311` comments
+   - Cryptographic RNG not required for test data
 
 ### Testing Results
 - All 11 integration tests pass
