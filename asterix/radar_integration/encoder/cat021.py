@@ -34,48 +34,7 @@ import struct
 import time
 from typing import List, Optional, Dict
 
-
-def encode_fspec(items: List[int]) -> bytes:
-    """
-    Encode Field Specification (FSPEC) for present data items.
-
-    Args:
-        items: List of FRN (Field Reference Numbers) present
-
-    Returns:
-        FSPEC bytes (variable length, 1-N octets)
-    """
-    max_frn = max(items) if items else 0
-    num_octets = (max_frn + 6) // 7
-
-    fspec = bytearray(num_octets)
-
-    for frn in items:
-        octet_idx = (frn - 1) // 7
-        bit_idx = 7 - ((frn - 1) % 7)
-
-        if octet_idx < num_octets:
-            fspec[octet_idx] |= (1 << bit_idx)
-
-    # Set extension bits for all but last octet
-    for i in range(num_octets - 1):
-        fspec[i] |= 0x01
-
-    return bytes(fspec)
-
-
-def encode_i010(sac: int, sic: int) -> bytes:
-    """
-    I010: Data Source Identifier
-
-    Args:
-        sac: System Area Code (0-255)
-        sic: System Identification Code (0-255)
-
-    Returns:
-        2 bytes: SAC, SIC
-    """
-    return struct.pack('BB', sac, sic)
+from .common import encode_fspec, encode_i010, encode_wgs84_position, encode_aircraft_address, encode_callsign
 
 
 def encode_i040(atp: int = 0, arc: int = 0, rc: int = 0) -> bytes:

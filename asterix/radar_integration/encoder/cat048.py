@@ -25,61 +25,12 @@ Date: 2025-11-23
 import struct
 import time
 from typing import List, Tuple, Optional
-from dataclasses import dataclass
+
+from .common import ASTERIXDataItem, encode_fspec, encode_i010, encode_time_of_day
 
 
-@dataclass
-class CAT048DataItem:
-    """Represents a single ASTERIX CAT048 data item."""
-    frn: int  # Field Reference Number
-    data: bytes  # Binary data
-
-
-def encode_fspec(items: List[int]) -> bytes:
-    """
-    Encode Field Specification (FSPEC) for present data items.
-
-    Args:
-        items: List of FRN (Field Reference Numbers) present
-
-    Returns:
-        FSPEC bytes (variable length, 1-N octets)
-    """
-    # FSPEC uses 7 bits per octet, with bit 1 as extension indicator
-    # Bits 8-2: indicate presence of data items (FRN 1-7, 8-14, etc.)
-    # Bit 1: 1=more FSPEC octets follow, 0=last octet
-
-    max_frn = max(items) if items else 0
-    num_octets = (max_frn + 6) // 7  # Calculate required FSPEC octets
-
-    fspec = bytearray(num_octets)
-
-    for frn in items:
-        octet_idx = (frn - 1) // 7
-        bit_idx = 7 - ((frn - 1) % 7)  # Bit 8-2 (counting from MSB)
-
-        if octet_idx < num_octets:
-            fspec[octet_idx] |= (1 << bit_idx)
-
-    # Set extension bits (bit 1) for all but last octet
-    for i in range(num_octets - 1):
-        fspec[i] |= 0x01  # Set bit 1
-
-    return bytes(fspec)
-
-
-def encode_i010(sac: int, sic: int) -> bytes:
-    """
-    I010: Data Source Identifier
-
-    Args:
-        sac: System Area Code (0-255)
-        sic: System Identification Code (0-255)
-
-    Returns:
-        2 bytes: SAC, SIC
-    """
-    return struct.pack('BB', sac, sic)
+# Backwards compatibility alias
+CAT048DataItem = ASTERIXDataItem
 
 
 def encode_i140(timestamp: Optional[float] = None) -> bytes:

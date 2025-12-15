@@ -50,6 +50,18 @@ Author: ASTERIX Integration Team
 Date: 2025-11-23
 """
 
+from .common import (
+    ASTERIXDataItem,
+    encode_fspec,
+    encode_i010,
+    encode_time_of_day,
+    encode_wgs84_position,
+    encode_aircraft_address,
+    encode_callsign,
+    encode_track_number,
+    encode_flight_level,
+    encode_cartesian_velocity,
+)
 from .cat001 import encode_cat001, encode_cat001_datablock, encode_cat001_record
 from .cat019 import encode_cat019_status, encode_cat019_update_cycle
 from .cat020 import encode_cat020, encode_cat020_datablock, encode_cat020_record
@@ -63,6 +75,17 @@ from .cat062 import (
 )
 
 __all__ = [
+    # Common utilities
+    'ASTERIXDataItem',
+    'encode_fspec',
+    'encode_i010',
+    'encode_time_of_day',
+    'encode_wgs84_position',
+    'encode_aircraft_address',
+    'encode_callsign',
+    'encode_track_number',
+    'encode_flight_level',
+    'encode_cartesian_velocity',
     # CAT001
     'encode_cat001',
     'encode_cat001_datablock',
