@@ -42,7 +42,7 @@ jobs:
         sudo apt-get install -y libexpat1-dev lcov gcovr
 
     - name: Install SonarCloud build-wrapper
-      uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v6
+      uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v7
 
     - name: Build C++ with coverage (using build-wrapper)
       run: |
@@ -146,7 +146,7 @@ jobs:
     # SONARCLOUD SCAN
     # -------------------------------------------------------------------------
     - name: SonarCloud Scan
-      uses: SonarSource/sonarqube-scan-action@v6
+      uses: SonarSource/sonarqube-scan-action@v7
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
