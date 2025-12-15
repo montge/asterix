@@ -87,7 +87,7 @@ jobs:
         go tool cover -func=coverage.out
 
     - name: Upload coverage
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: go-coverage-${{ matrix.os }}-${{ matrix.go }}
         path: asterix-go/coverage.out
@@ -199,7 +199,7 @@ jobs:
         go test -bench=. -benchmem -benchtime=5s ./... | tee benchmark-results.txt
 
     - name: Upload benchmark results
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: go-benchmark-results
         path: asterix-go/benchmark-results.txt

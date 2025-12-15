@@ -114,7 +114,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload plugin artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: wireshark-plugin-linux
         path: src/asterix/wireshark-plugin/4.x/build/asterix.so
@@ -159,7 +159,7 @@ jobs:
       continue-on-error: true  # macOS Wireshark dev setup can be tricky
 
     - name: Upload plugin artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       if: success()
       with:
         name: wireshark-plugin-macos
