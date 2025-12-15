@@ -56,7 +56,7 @@ jobs:
       uses: dtolnay/rust-toolchain@stable
 
     - name: Cache Cargo registry
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ~/.cargo/registry
         key: ${{ runner.os }}-cargo-registry-zenoh-${{ hashFiles('**/Cargo.lock') }}
@@ -64,7 +64,7 @@ jobs:
           ${{ runner.os }}-cargo-registry-zenoh-
 
     - name: Cache Cargo build
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: asterix-rs/target
         key: ${{ runner.os }}-cargo-build-zenoh-${{ hashFiles('**/Cargo.lock') }}
