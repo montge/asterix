@@ -119,30 +119,50 @@ def encode_time_of_day(timestamp: Optional[float] = None) -> bytes:
 
 def encode_wgs84_position(lat: float, lon: float, high_precision: bool = False) -> bytes:
     """
-    Encode WGS-84 latitude/longitude position.
+    Encode WGS-84 latitude/longitude position (24-bit per coordinate).
 
-    Used by multiple categories with different precisions:
-    - CAT062 I105: 180/2^25 degrees (standard precision, 6 bytes)
-    - CAT021 I130: 180/2^23 degrees (high precision, 6 bytes)
-    - CAT020 I041: 180/2^25 degrees (standard precision, 8 bytes total)
+    This function outputs 6 bytes total (3 bytes lat + 3 bytes lon) using
+    24-bit signed two's complement encoding. For 24-bit encoding, the
+    180/2^23 scale factor is used which allows the full ±180° range to
+    fit within the 24-bit signed integer range (±8,388,607).
+
+    Note:
+        The high_precision parameter controls the scale factor:
+        - False: 180/2^23 (~2.4 meters resolution at equator)
+        - True: 180/2^25 (~0.6 meters resolution), but values are clamped
+                to 24-bit range which limits effective longitude to ~±45°
+
+        For full precision 180/2^25 encoding of the complete ±180° range,
+        use encode_wgs84_position_32bit() which outputs 8 bytes (4+4).
 
     Args:
         lat: Latitude in degrees (-90 to +90)
         lon: Longitude in degrees (-180 to +180)
-        high_precision: Use 180/2^23 (True) or 180/2^25 (False) resolution
+        high_precision: Use 180/2^25 (True) or 180/2^23 (False) resolution
 
     Returns:
         6 bytes: Latitude (3 bytes), Longitude (3 bytes)
     """
+    # 24-bit signed range: -8,388,608 to +8,388,607
+    MAX_24BIT = 8388607
+    MIN_24BIT = -8388608
+
     if high_precision:
-        # 180/2^23 degrees resolution (~0.021 meters)
-        scale = (2**23) / 180.0
-    else:
-        # 180/2^25 degrees resolution (~0.67 meters)
+        # 180/2^25 degrees resolution (~0.6 meters at equator)
+        # Note: This scale exceeds 24-bit range for |lon| > ~45°
+        # Values will be clamped to 24-bit range
         scale = (2**25) / 180.0
+    else:
+        # 180/2^23 degrees resolution (~2.4 meters at equator)
+        # This scale allows full ±180° range in 24 bits
+        scale = (2**23) / 180.0
 
     lat_units = int(lat * scale)
     lon_units = int(lon * scale)
+
+    # Clamp to 24-bit signed range to prevent overflow
+    lat_units = max(MIN_24BIT, min(MAX_24BIT, lat_units))
+    lon_units = max(MIN_24BIT, min(MAX_24BIT, lon_units))
 
     # Convert to 3-byte signed integers (24-bit two's complement)
     lat_bytes = struct.pack('>i', lat_units)[1:]  # Take last 3 bytes
@@ -238,9 +258,8 @@ def encode_flight_level(fl: int) -> bytes:
     # Convert to 1/4 FL units
     fl_units = int(fl * 4)
 
-    # Handle negative flight levels (two's complement)
-    if fl_units < 0:
-        fl_units = fl_units & 0xFFFF
+    # Clamp to 16-bit signed range (-32768 to 32767)
+    fl_units = max(-32768, min(32767, fl_units))
 
     return struct.pack('>h', fl_units)
 
