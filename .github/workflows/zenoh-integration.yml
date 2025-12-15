@@ -233,7 +233,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload benchmark results
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: zenoh-benchmark-results
         path: asterix-rs/zenoh-benchmark-results.txt
@@ -282,7 +282,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload coverage
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: zenoh-coverage
         path: asterix-rs/zenoh-coverage.lcov

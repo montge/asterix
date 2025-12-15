@@ -157,7 +157,7 @@ jobs:
         ls -lh ../*.deb
 
     - name: Upload nightly DEB packages
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: nightly-deb-${{ matrix.name }}
         path: ../*.deb
@@ -245,7 +245,7 @@ jobs:
         ls -lh ~/rpmbuild/RPMS/*/*.rpm
 
     - name: Upload nightly RPM packages
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: nightly-rpm-${{ matrix.name }}
         path: ~/rpmbuild/RPMS/*/*.rpm
@@ -300,7 +300,7 @@ jobs:
         ls -lh build/*.tar.gz build/*.zip
 
     - name: Upload nightly source packages
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: nightly-source
         path: |

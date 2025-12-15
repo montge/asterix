@@ -53,7 +53,7 @@ jobs:
       run: python scripts/ci/benchmark_encoder.py
 
     - name: Upload encoder benchmark results
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: encoder-benchmarks
         path: encoder_benchmark_results.txt
@@ -94,7 +94,7 @@ jobs:
       run: python scripts/ci/benchmark_mock_radar.py
 
     - name: Upload mock radar benchmark results
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: mock-radar-benchmarks
         path: mock_radar_benchmark_results.txt
@@ -138,7 +138,7 @@ jobs:
         echo "✅ All benchmarks completed"
 
     - name: Upload consolidated benchmark report
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: performance-benchmarks-all
         path: all-benchmarks/
