@@ -27,9 +27,12 @@ Date: 2025-11-23
 import struct
 import time
 import math
-from typing import List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from .common import encode_fspec, encode_i010
+
+# Type alias for radar plot data (can be RadarPlot object or dict)
+RadarPlotData = Union[Dict[str, Any], Any]
 
 
 def encode_i020(typ: str = "PSR") -> bytes:
@@ -273,7 +276,7 @@ def encode_cat001_datablock(records: List[bytes]) -> bytes:
 
 
 def encode_cat001(
-    plots: List,
+    plots: List[RadarPlotData],
     radar_position: Tuple[float, float, float] = (0.0, 0.0, 0.0),
     sac: int = 0,
     sic: int = 1,

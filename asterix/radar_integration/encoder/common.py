@@ -13,8 +13,13 @@ Date: 2025-12-14
 
 import struct
 import time
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Union
 from dataclasses import dataclass
+
+# Type aliases for common ASTERIX data structures
+RadarPlotData = Union[Dict[str, Any], Any]  # Radar plot dict or object
+TrackData = Dict[str, Any]  # System track dictionary
+TargetData = Dict[str, Any]  # Generic target data dictionary
 
 
 @dataclass

@@ -32,30 +32,12 @@ Date: 2025-11-23
 
 import struct
 import time
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Union
 
+from .common import encode_fspec, encode_i010
 
-def encode_fspec(items: List[int]) -> bytes:
-    """Encode Field Specification (FSPEC)."""
-    max_frn = max(items) if items else 0
-    num_octets = (max_frn + 6) // 7
-    fspec = bytearray(num_octets)
-
-    for frn in items:
-        octet_idx = (frn - 1) // 7
-        bit_idx = 7 - ((frn - 1) % 7)
-        if octet_idx < num_octets:
-            fspec[octet_idx] |= (1 << bit_idx)
-
-    for i in range(num_octets - 1):
-        fspec[i] |= 0x01
-
-    return bytes(fspec)
-
-
-def encode_i010(sac: int, sic: int) -> bytes:
-    """I010: Data Source Identifier."""
-    return struct.pack('BB', sac, sic)
+# Type alias for MLAT target data
+MLATTargetData = Dict[str, Any]
 
 
 def encode_i020(ssr: bool = False, ms: bool = True, hf: bool = False) -> bytes:
@@ -314,7 +296,7 @@ def encode_cat020_datablock(records: List[bytes]) -> bytes:
 
 
 def encode_cat020(
-    targets: List,
+    targets: List[MLATTargetData],
     sac: int = 0,
     sic: int = 1
 ) -> bytes:

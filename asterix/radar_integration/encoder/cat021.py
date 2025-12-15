@@ -32,9 +32,12 @@ Date: 2025-11-23
 
 import struct
 import time
-from typing import List, Optional, Dict
+from typing import Any, Dict, List, Optional
 
 from .common import encode_fspec, encode_i010, encode_wgs84_position, encode_aircraft_address, encode_callsign
+
+# Type alias for ADS-B report data
+ADSBReportData = Dict[str, Any]
 
 
 def encode_i040(atp: int = 0, arc: int = 0, rc: int = 0) -> bytes:
@@ -490,7 +493,7 @@ def encode_cat021_datablock(records: List[bytes]) -> bytes:
 
 
 def encode_cat021(
-    adsb_reports: List[Dict],
+    adsb_reports: List[ADSBReportData],
     sac: int = 0,
     sic: int = 1,
     service_id: int = 0

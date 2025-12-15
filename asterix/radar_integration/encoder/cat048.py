@@ -24,13 +24,16 @@ Date: 2025-11-23
 
 import struct
 import time
-from typing import List, Tuple, Optional
+from typing import Any, Dict, List, Tuple, Optional, Union
 
-from .common import ASTERIXDataItem, encode_fspec, encode_i010, encode_time_of_day
+from .common import ASTERIXDataItem, RadarPlotData, encode_fspec, encode_i010, encode_time_of_day
 
 
 # Backwards compatibility alias
 CAT048DataItem = ASTERIXDataItem
+
+# Type alias for CAT048 radar plot data
+CAT048PlotData = Union[Dict[str, Any], Any]
 
 
 def encode_i140(timestamp: Optional[float] = None) -> bytes:
@@ -288,7 +291,7 @@ def encode_cat048_datablock(records: List[bytes]) -> bytes:
 
 
 def encode_cat048(
-    plots: List,  # List of RadarPlot or dict-like objects
+    plots: List[CAT048PlotData],
     radar_position: Tuple[float, float, float] = (0.0, 0.0, 0.0),
     sac: int = 0,
     sic: int = 1,

@@ -23,10 +23,11 @@ Date: 2025-11-23
 
 import struct
 import time
-from typing import List, Optional, Dict
+from typing import Any, Dict, List, Optional
 
 from .common import (
     ASTERIXDataItem,
+    TrackData,
     encode_fspec,
     encode_i010,
     encode_time_of_day,
@@ -38,6 +39,9 @@ from .common import (
 
 # Backwards compatibility alias
 CAT062DataItem = ASTERIXDataItem
+
+# Type alias for CAT062 system track data
+SystemTrackData = Dict[str, Any]
 
 
 def encode_i070(timestamp: Optional[float] = None) -> bytes:
@@ -429,7 +433,7 @@ def encode_cat062_datablock(records: List[bytes]) -> bytes:
 
 
 def encode_cat062(
-    tracks: List[Dict],
+    tracks: List[SystemTrackData],
     sac: int = 0,
     sic: int = 1
 ) -> bytes:
