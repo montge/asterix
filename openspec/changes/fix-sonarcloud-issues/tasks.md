@@ -158,6 +158,23 @@
 | Verification | 6 | 0 |
 | **Total** | **45** | **26** |
 
+## Current SonarCloud Metrics (Dec 14, 2025)
+
+| Metric | Value | Target | Status |
+|--------|-------|--------|--------|
+| Bugs | 21 | 0 | 🔴 In Progress |
+| Vulnerabilities | 0 | 0 | ✅ Achieved |
+| Security Hotspots | 47 | 0 reviewed | 🟡 Needs Review |
+| Code Smells | 1,475 | <1,000 | 🔴 In Progress |
+| Coverage | 21.4% | >80% | 🔴 Needs Improvement |
+| Duplicated Lines | 1.8% | <3% | ✅ Achieved |
+
+**Notes:**
+- Bugs reduced significantly from initial ~234
+- Code smells reduced from ~5,097 to 1,475 (71% reduction)
+- Many remaining code smells are in radar_integration module (new code)
+- Coverage is low due to new radar_integration code lacking tests in CI
+
 ## Session Summary (Dec 14, 2025)
 
 ### Bugs Fixed
