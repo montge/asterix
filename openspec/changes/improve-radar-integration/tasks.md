@@ -26,10 +26,13 @@
 - [ ] 2.1.4 Verify duplication remains <3%
 
 ### 2.2 Fix SonarCloud Issues
-- [ ] 2.2.1 Address code smells in radar_integration module
+- [x] 2.2.1 Address code smells in radar_integration module
 - [ ] 2.2.2 Fix cognitive complexity issues
 - [ ] 2.2.3 Add missing type hints
 - [ ] 2.2.4 Improve docstrings
+
+**Commits:**
+- `ed5a454` - Fix code smells: unused variables, legacy random, duplicate strings
 
 ## Phase 3: RadarSimPy Integration (Priority: LOW)
 
@@ -57,7 +60,7 @@
 | Phase | Tasks | Completed |
 |-------|-------|-----------|
 | CI/CD Optimization | 8 | 3 |
-| Code Quality | 8 | 0 |
+| Code Quality | 8 | 1 |
 | RadarSimPy Integration | 7 | 0 |
 | Test Coverage | 4 | 0 |
-| **Total** | **27** | **3** |
+| **Total** | **27** | **4** |
