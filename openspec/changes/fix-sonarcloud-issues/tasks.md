@@ -170,6 +170,12 @@
 | Coverage | 21.4% | >80% | 🔴 Needs Improvement |
 | Duplicated Lines | 1.8% | <3% | ✅ Achieved |
 
+## CI Configuration Fixes
+
+### SonarCloud Build-Wrapper Deprecation
+- [x] Update sonarcloud.yml to use sonar.cfamily.compile-commands
+- **Commit:** `edc8a05` - Replace deprecated build-wrapper-output property
+
 **Notes:**
 - Bugs reduced significantly from initial ~234
 - Code smells reduced from ~5,097 to 1,475 (71% reduction)
