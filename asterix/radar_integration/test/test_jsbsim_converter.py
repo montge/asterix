@@ -645,8 +645,9 @@ class TestRunScenarioToAsterix(unittest.TestCase):
 
         mock_import.side_effect = import_side_effect
 
-        # Mock simulation time
-        mock_fdm.__getitem__.side_effect = lambda key: 10.0 if key == 'simulation/sim-time-sec' else 0.0
+        # Mock simulation time - must exceed default duration (300s)
+        # to allow loop to exit
+        mock_fdm.__getitem__.side_effect = lambda key: 500.0 if key == 'simulation/sim-time-sec' else 0.0
 
         # Call with minimal parameters (using defaults)
         run_scenario_to_asterix()
