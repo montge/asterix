@@ -115,7 +115,8 @@ class MockRadar:
         range_resolution: float = 100.0,  # 100 meters
         update_rate: float = 0.25,  # 4 second rotation
         noise_std: float = 0.05,
-        name: str = "RADAR_01"
+        name: str = "RADAR_01",
+        seed: Optional[int] = None
     ):
         """
         Initialize mock radar sensor.
@@ -131,6 +132,7 @@ class MockRadar:
             update_rate: Radar scan rate (Hz)
             noise_std: Measurement noise standard deviation (fraction)
             name: Radar identifier
+            seed: Random seed for reproducibility (default: None for random)
         """
         self.position = RadarPosition(lat, lon, alt, name)
         self.max_range = max_range
@@ -139,7 +141,8 @@ class MockRadar:
         self.range_resolution = range_resolution
         self.update_rate = update_rate
         self.noise_std = noise_std
-        self._rng = np.random.default_rng()
+        # Use Generator with optional seed for reproducibility (SonarCloud S2245)
+        self._rng = np.random.default_rng(seed)
 
     def generate_plots(
         self,
@@ -304,7 +307,8 @@ def generate_aircraft_scenario(
     duration: float = 60.0,
     radar_lat: float = 52.5,
     radar_lon: float = 13.4,
-    radar_alt: float = 100.0
+    radar_alt: float = 100.0,
+    seed: Optional[int] = None
 ) -> List[RadarPlot]:
     """
     Generate a realistic aircraft surveillance scenario.
@@ -318,6 +322,7 @@ def generate_aircraft_scenario(
         radar_lat: Radar latitude (degrees)
         radar_lon: Radar longitude (degrees)
         radar_alt: Radar altitude (meters)
+        seed: Random seed for reproducibility (default: None for random)
 
     Returns:
         List of radar plots from all aircraft
@@ -325,8 +330,8 @@ def generate_aircraft_scenario(
     radar = MockRadar(radar_lat, radar_lon, radar_alt)
     all_plots = []
 
-    # Use Generator for better randomness (SonarCloud S6711)
-    rng = np.random.default_rng()
+    # Use Generator with optional seed for reproducibility (SonarCloud S2245)
+    rng = np.random.default_rng(seed)
     for _ in range(num_aircraft):
         # Random initial conditions
         start_range = rng.uniform(20e3, 150e3)  # 20-150 km
