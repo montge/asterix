@@ -24,7 +24,11 @@ License: GPL-3.0
 import sys
 import struct
 import time
-sys.path.insert(0, '<path-to-asterix-repo>')
+import os
+
+# Add project root to path (assumes examples/radar_integration/ directory structure)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
 
 from asterix.radar_integration import MockRadar
 from asterix.radar_integration.encoder import (

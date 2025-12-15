@@ -26,7 +26,11 @@ License: GPL-3.0
 import sys
 import time
 import struct
-sys.path.insert(0, '<path-to-asterix-repo>')
+import os
+
+# Add project root to path (assumes examples/radar_integration/ directory structure)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
 
 from asterix.radar_integration.encoder import encode_cat021
 from asterix.radar_integration.visualization import plot_radar_ascii

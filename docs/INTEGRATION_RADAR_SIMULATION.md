@@ -368,7 +368,9 @@ fspec = encode_fspec(items)
 Radar-to-ASTERIX Integration - Complete Example
 """
 import sys
-sys.path.insert(0, '<path-to-asterix-repo>')
+import os
+# Add project root to path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from asterix.radar_integration import MockRadar, generate_aircraft_scenario
 from asterix.radar_integration.encoder import encode_cat048

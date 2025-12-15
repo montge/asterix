@@ -63,6 +63,117 @@ def _require_matplotlib(func):
     return wrapper
 
 
+def _draw_cardinal_directions(grid: List[List[str]], width: int, height: int,
+                               center_x: int, center_y: int) -> None:
+    """Draw cardinal directions and axes on the radar grid."""
+    if center_y > 2:
+        grid[2][center_x] = 'N'
+        grid[1][center_x] = '|'
+    if center_y < height - 3:
+        grid[height - 3][center_x] = 'S'
+        grid[height - 2][center_x] = '|'
+    if center_x > 5:
+        grid[center_y][5] = 'W'
+        for x in range(6, center_x):
+            grid[center_y][x] = '-'
+    if center_x < width - 6:
+        grid[center_y][width - 6] = 'E'
+        for x in range(center_x + 1, width - 6):
+            grid[center_y][x] = '-'
+
+
+def _draw_range_rings(grid: List[List[str]], ring_ranges: List[float],
+                      max_range: float, width: int, height: int,
+                      center_x: int, center_y: int) -> None:
+    """Draw range rings (circles) on the radar grid."""
+    for ring_range_km in ring_ranges:
+        ring_range = ring_range_km * 1000.0
+        radius_chars = int((ring_range / max_range) * min(center_x - 10, center_y - 5))
+        if radius_chars <= 0:
+            continue
+
+        for angle_deg in range(0, 360, 15):
+            angle_rad = math.radians(angle_deg)
+            dx = int(radius_chars * math.sin(angle_rad))
+            dy = int(radius_chars * math.cos(angle_rad))
+            x = center_x + dx
+            y = center_y - dy
+
+            if 0 <= x < width and 0 <= y < height and grid[y][x] == ' ':
+                grid[y][x] = '·'
+
+
+def _plot_detections(grid: List[List[str]], plots: List, max_range: float,
+                     width: int, height: int, center_x: int,
+                     center_y: int) -> Tuple[int, int]:
+    """Plot radar detections and return SNR counts."""
+    high_snr_count = 0
+    low_snr_count = 0
+
+    for plot in plots:
+        angle_rad = math.radians(plot.azimuth)
+        norm_range = plot.range / max_range
+        radius_chars = norm_range * min(center_x - 10, center_y - 5)
+        dx = int(radius_chars * math.sin(angle_rad))
+        dy = int(radius_chars * math.cos(angle_rad))
+
+        x = center_x + dx
+        y = center_y - dy
+
+        if 0 <= x < width and 0 <= y < height:
+            if plot.snr > 30:
+                symbol, high_snr_count = '*', high_snr_count + 1
+            else:
+                symbol, low_snr_count = '+', low_snr_count + 1
+            grid[y][x] = symbol
+
+    return high_snr_count, low_snr_count
+
+
+def _build_header(width: int, radar_pos: Optional[Tuple[float, float]],
+                  max_range_km: float, num_plots: int) -> List[str]:
+    """Build the header lines for the radar display."""
+    header_lines = ["=" * width]
+    if radar_pos:
+        header_lines.append(f"Radar Position: {radar_pos[0]:.2f}°N, {radar_pos[1]:.2f}°E")
+    header_lines.append(f"Max Range: {max_range_km:.0f} km ({num_plots} detections)")
+    header_lines.append("=" * width)
+    return header_lines
+
+
+def _build_footer(plots: List, show_legend: bool, show_stats: bool,
+                  high_snr_count: int, low_snr_count: int,
+                  ring_ranges: List[float]) -> List[str]:
+    """Build the footer lines with legend and statistics."""
+    footer_lines = []
+
+    if show_legend:
+        footer_lines.extend([
+            "",
+            "Legend:",
+            "  R = Radar position",
+            f"  * = High SNR target (SNR > 30 dB): {high_snr_count}",
+            f"  + = Low SNR target (SNR ≤ 30 dB): {low_snr_count}",
+            f"  · = Range ring ({', '.join(f'{r:.0f}km' for r in ring_ranges)})"
+        ])
+
+    if show_stats and plots:
+        avg_range = sum(p.range for p in plots) / len(plots)
+        avg_snr = sum(p.snr for p in plots) / len(plots)
+        max_snr = max(p.snr for p in plots)
+        min_snr = min(p.snr for p in plots)
+
+        footer_lines.extend([
+            "",
+            "Statistics:",
+            f"  Average range: {avg_range / 1000:.1f} km ({avg_range / 1852:.1f} NM)",
+            f"  SNR: avg={avg_snr:.1f} dB, min={min_snr:.1f} dB, max={max_snr:.1f} dB",
+            f"  Azimuth coverage: {min(p.azimuth for p in plots):.0f}° - {max(p.azimuth for p in plots):.0f}°"
+        ])
+
+    return footer_lines
+
+
 def plot_radar_ascii(
     plots: List,
     radar_pos: Optional[Tuple[float, float]] = None,
@@ -116,121 +227,33 @@ def plot_radar_ascii(
     # Calculate automatic range if not specified
     if max_range_km is None:
         max_range = max(p.range for p in plots)
-        # Round up to nearest 50km
         max_range_km = math.ceil(max_range / 50000.0) * 50.0
     else:
         max_range = max_range_km * 1000.0
 
     # Initialize display grid
     grid = [[' ' for _ in range(width)] for _ in range(height)]
-
-    # Calculate center position
     center_x = width // 2
     center_y = height // 2
 
-    # Draw radar center
+    # Draw radar components
     grid[center_y][center_x] = 'R'
+    _draw_cardinal_directions(grid, width, height, center_x, center_y)
 
-    # Draw cardinal directions and axes
-    if center_y > 2:
-        grid[2][center_x] = 'N'
-        grid[1][center_x] = '|'
-    if center_y < height - 3:
-        grid[height - 3][center_x] = 'S'
-        grid[height - 2][center_x] = '|'
-    if center_x > 5:
-        grid[center_y][5] = 'W'
-        for x in range(6, center_x):
-            grid[center_y][x] = '-'
-    if center_x < width - 6:
-        grid[center_y][width - 6] = 'E'
-        for x in range(center_x + 1, width - 6):
-            grid[center_y][x] = '-'
-
-    # Draw range rings (circles)
     num_rings = 3
     ring_ranges = [max_range_km * (i + 1) / (num_rings + 1) for i in range(num_rings)]
+    _draw_range_rings(grid, ring_ranges, max_range, width, height, center_x, center_y)
 
-    for ring_range_km in ring_ranges:
-        ring_range = ring_range_km * 1000.0
-        radius_chars = int((ring_range / max_range) * min(center_x - 10, center_y - 5))
+    high_snr_count, low_snr_count = _plot_detections(
+        grid, plots, max_range, width, height, center_x, center_y
+    )
 
-        if radius_chars > 0:
-            # Draw approximate circle with dots
-            for angle_deg in range(0, 360, 15):
-                angle_rad = math.radians(angle_deg)
-                dx = int(radius_chars * math.sin(angle_rad))
-                dy = int(radius_chars * math.cos(angle_rad))
-                x = center_x + dx
-                y = center_y - dy  # Invert Y for screen coordinates
-
-                if 0 <= x < width and 0 <= y < height:
-                    if grid[y][x] == ' ':
-                        grid[y][x] = '·'
-
-    # Plot radar detections
-    high_snr_count = 0
-    low_snr_count = 0
-
-    for plot in plots:
-        # Convert polar to Cartesian (screen coordinates)
-        angle_rad = math.radians(plot.azimuth)
-        norm_range = plot.range / max_range
-
-        # Scale to screen
-        radius_chars = norm_range * min(center_x - 10, center_y - 5)
-        dx = int(radius_chars * math.sin(angle_rad))
-        dy = int(radius_chars * math.cos(angle_rad))
-
-        x = center_x + dx
-        y = center_y - dy  # Invert Y
-
-        # Check bounds
-        if 0 <= x < width and 0 <= y < height:
-            # Symbol based on SNR
-            if plot.snr > 30:
-                symbol = '*'
-                high_snr_count += 1
-            else:
-                symbol = '+'
-                low_snr_count += 1
-
-            grid[y][x] = symbol
-
-    # Convert grid to string
-    lines = [''.join(row) for row in grid]
-    output = '\n'.join(lines)
-
-    # Add header
-    header_lines = []
-    header_lines.append("=" * width)
-    if radar_pos:
-        header_lines.append(f"Radar Position: {radar_pos[0]:.2f}°N, {radar_pos[1]:.2f}°E")
-    header_lines.append(f"Max Range: {max_range_km:.0f} km ({len(plots)} detections)")
-    header_lines.append("=" * width)
-
-    # Add legend
-    footer_lines = []
-    if show_legend:
-        footer_lines.append("")
-        footer_lines.append("Legend:")
-        footer_lines.append("  R = Radar position")
-        footer_lines.append(f"  * = High SNR target (SNR > 30 dB): {high_snr_count}")
-        footer_lines.append(f"  + = Low SNR target (SNR ≤ 30 dB): {low_snr_count}")
-        footer_lines.append(f"  · = Range ring ({', '.join(f'{r:.0f}km' for r in ring_ranges)})")
-
-    # Add statistics
-    if show_stats and plots:
-        footer_lines.append("")
-        footer_lines.append("Statistics:")
-        avg_range = sum(p.range for p in plots) / len(plots)
-        avg_snr = sum(p.snr for p in plots) / len(plots)
-        max_snr = max(p.snr for p in plots)
-        min_snr = min(p.snr for p in plots)
-
-        footer_lines.append(f"  Average range: {avg_range / 1000:.1f} km ({avg_range / 1852:.1f} NM)")
-        footer_lines.append(f"  SNR: avg={avg_snr:.1f} dB, min={min_snr:.1f} dB, max={max_snr:.1f} dB")
-        footer_lines.append(f"  Azimuth coverage: {min(p.azimuth for p in plots):.0f}° - {max(p.azimuth for p in plots):.0f}°")
+    # Build output
+    output = '\n'.join([''.join(row) for row in grid])
+    header_lines = _build_header(width, radar_pos, max_range_km, len(plots))
+    footer_lines = _build_footer(
+        plots, show_legend, show_stats, high_snr_count, low_snr_count, ring_ranges
+    )
 
     return '\n'.join(header_lines + [output] + footer_lines)
 
