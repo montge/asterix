@@ -22,6 +22,7 @@
 **Commits:**
 - `bbfcb89` - Replace strdup with new[] for consistent memory deallocation
 - `7948eff` - Fix memory leaks in XMLParser error paths
+- `f1c6142` - Fix memory leak in asterixformat.cxx (delete pDefinition on fopen failure)
 
 ### 1.4 Fix Logic Errors
 - [ ] 1.4.1 Identify logic error bugs
