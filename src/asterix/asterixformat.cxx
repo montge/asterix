@@ -250,6 +250,7 @@ CBaseFormatDescriptor *CAsterixFormat::CreateFormatDescriptor
         FILE *fpini = fopen(gAsterixDefinitionsFile, "rt");
         if (!fpini) {
             LOGERROR(1, "Failed to open definitions file");
+            delete pDefinition;
             return nullptr;
         }
 
