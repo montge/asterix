@@ -28,10 +28,16 @@
 ## Phase 2: Code Quality (Priority: MEDIUM)
 
 ### 2.1 Reduce Code Duplication
-- [ ] 2.1.1 Identify duplicated patterns in encoder modules
-- [ ] 2.1.2 Extract common FSPEC encoding logic
-- [ ] 2.1.3 Create shared data item encoding utilities
-- [ ] 2.1.4 Verify duplication remains <3%
+- [x] 2.1.1 Identify duplicated patterns in encoder modules
+- [x] 2.1.2 Extract common FSPEC encoding logic
+- [x] 2.1.3 Create shared data item encoding utilities
+- [x] 2.1.4 Verify duplication remains <3%
+
+**Commits:**
+- `acb279d` - Extract common ASTERIX encoding functions to encoder/common.py
+- Created encode_fspec(), encode_i010(), encode_time_of_day(), encode_wgs84_position()
+- Added encode_aircraft_address(), encode_callsign(), encode_track_number()
+- Removed ~143 lines of duplicate code across 4 encoder modules
 
 ### 2.2 Fix SonarCloud Issues
 - [x] 2.2.1 Address code smells in radar_integration module
@@ -69,7 +75,7 @@
 | Phase | Tasks | Completed |
 |-------|-------|-----------|
 | CI/CD Optimization | 10 | 6 |
-| Code Quality | 8 | 2 |
+| Code Quality | 8 | 6 |
 | RadarSimPy Integration | 7 | 0 |
 | Test Coverage | 4 | 0 |
-| **Total** | **29** | **8** |
+| **Total** | **29** | **12** |
