@@ -277,35 +277,35 @@ def describeXML(parsed, descriptions=False):
             for key, value in record.items():
                 if key[0] == 'I':
                     xml_Item = etree.SubElement(xml_Record, key)
-                    description = _asterix.describe(cat, str(key))
+                    description = _asterix.describe(cat, key)
                     if description and descriptions:
                         xml_Item.set('description', description)
                     if isinstance(value, dict):
                         for ikey, ival in value.items():
                             xml_Field = etree.SubElement(xml_Item, ikey)
                             if 'val' in ival:
-                                description2 = _asterix.describe(cat, str(key), ikey,
-                                                                 str(ival['val']))
+                                val_str = str(ival['val'])
+                                description2 = _asterix.describe(cat, key, ikey, val_str)
                                 if description2 and descriptions:
                                     xml_Field.set('description', description2)
-                                xml_Field.text = str(ival['val'])
+                                xml_Field.text = val_str
                             else:
                                 for ikey2, ival2 in ival.items():
                                     xml_subItem = etree.SubElement(xml_Field, ikey2)
-                                    description2 = _asterix.describe(cat, str(key), ikey2,
-                                                                     str(ival2['val']))
+                                    val2_str = str(ival2['val'])
+                                    description2 = _asterix.describe(cat, key, ikey2, val2_str)
                                     if description2 and descriptions:
                                         xml_subItem.set('description', description2)
-                                    xml_subItem.text = str(ival2['val'])
+                                    xml_subItem.text = val2_str
                     elif isinstance(value, list):
                         for it in value:
                             for ikey, ival in it.items():
                                 xml_Field = etree.SubElement(xml_Item, ikey)
-                                description2 = _asterix.describe(cat, str(key), ikey,
-                                                                 str(ival['val']))
+                                val_str = str(ival['val'])
+                                description2 = _asterix.describe(cat, key, ikey, val_str)
                                 if description2 and descriptions:
                                     xml_Field.set('description', description2)
-                                xml_Field.text = str(ival['val'])
+                                xml_Field.text = val_str
                     else:
                         xml_Item.text = str(value)
 
@@ -351,43 +351,40 @@ def describe(parsed):
         For verbose output, ensure asterix.parse() was called with verbose=True
         (the default). Non-verbose parsing will result in limited descriptions.
     """
-    i = 0
-    txt = ''
-    for record in parsed:
-        i += 1
-        txt += f'\n\nAsterix record: {i} '
-        record_len = record['len']
-        txt += f'\nLen: {record_len}'
-        crc = record['crc']
-        txt += f'\nCRC: {crc}'
+    # Use list for O(n) string building instead of O(n²) concatenation
+    parts = []
+    for i, record in enumerate(parsed, 1):
+        parts.append(f'\n\nAsterix record: {i} ')
+        parts.append(f'\nLen: {record["len"]}')
+        parts.append(f'\nCRC: {record["crc"]}')
         ts = record['ts']
         strts = datetime.fromtimestamp(ts / 1000.)
-
-        txt += f'\nTimestamp: {ts} ({strts})'
+        parts.append(f'\nTimestamp: {ts} ({strts})')
         cat = record['category']
-        txt += f'\nCategory: {cat} ({_asterix.describe(cat)})'
-        txt += f'\nHexdata: {record["hexdata"]}'
+        parts.append(f'\nCategory: {cat} ({_asterix.describe(cat)})')
+        parts.append(f'\nHexdata: {record["hexdata"]}')
 
         for key, value in record.items():
             if key != 'category':
                 if isinstance(value, dict):
                     for ikey, ival in value.items():
-                        txt += f'\nItem: {key} ({_asterix.describe(cat, str(key))})'
-
+                        parts.append(f'\nItem: {key} ({_asterix.describe(cat, key)})')
                         if 'val' in ival:
-                            txt += f'\n\t{ikey} ({_asterix.describe(cat, str(key), ikey)}): {ival["val"]} {_asterix.describe(cat, str(key), ikey, str(ival["val"]))}'
+                            val = ival["val"]
+                            parts.append(f'\n\t{ikey} ({_asterix.describe(cat, key, ikey)}): {val} {_asterix.describe(cat, key, ikey, str(val))}')
                         else:
-                            txt += f'\n\t{ikey}'
+                            parts.append(f'\n\t{ikey}')
                             for ikey2, ival2 in ival.items():
-                                txt += f'\n\t\t{ikey2} ({_asterix.describe(cat, str(key), ikey2)}): {ival2["val"]} {_asterix.describe(cat, str(key), ikey2, str(ival2["val"]))}'
+                                val2 = ival2["val"]
+                                parts.append(f'\n\t\t{ikey2} ({_asterix.describe(cat, key, ikey2)}): {val2} {_asterix.describe(cat, key, ikey2, str(val2))}')
                 elif isinstance(value, list):
-                    txt += f'\nItem: {key} ({_asterix.describe(cat, str(key))})'
-
+                    parts.append(f'\nItem: {key} ({_asterix.describe(cat, key)})')
                     for it in value:
                         for ikey, ival in it.items():
-                            txt += f'\n\t{ikey} ({_asterix.describe(cat, str(key), ikey)}): {ival["val"]} {_asterix.describe(cat, str(key), ikey, str(ival["val"]))}'
+                            val = ival["val"]
+                            parts.append(f'\n\t{ikey} ({_asterix.describe(cat, key, ikey)}): {val} {_asterix.describe(cat, key, ikey, str(val))}')
 
-    return txt
+    return ''.join(parts)
 
 
 def list_sample_files():
