@@ -154,7 +154,7 @@ jobs:
         args: >
           -Dsonar.projectKey=montge_asterix
           -Dsonar.organization=montge
-          -Dsonar.cfamily.build-wrapper-output=build-wrapper-output
+          -Dsonar.cfamily.compile-commands=build-wrapper-output/compile_commands.json
           -Dsonar.cpp.coverage.reportPaths=coverage.info
           -Dsonar.python.coverage.reportPaths=coverage.xml
           -Dsonar.rust.coverage.reportPaths=asterix-rs/coverage/lcov.info
