@@ -113,8 +113,14 @@ jobs:
         id: check_licenses
         working-directory: asterix-rs
         run: |
-          # List of licenses to flag (GPL variants that might conflict with project goals)
-          problematic=$(cargo license | grep -E 'GPL-3.0|AGPL-3.0|SSPL' || true)
+          # ASTERIX is GPL-3.0 licensed, so GPL-3.0 and LGPL dependencies are compatible.
+          # Only flag licenses that are truly problematic:
+          # - SSPL (Server Side Public License - not OSI approved)
+          # - Proprietary/Commercial licenses
+          # - GPL-incompatible licenses (CDDL, etc.)
+          #
+          # Note: AGPL-3.0 deps are acceptable since we're already GPL-3.0
+          problematic=$(cargo license | grep -E 'SSPL|CDDL|Proprietary|Commercial' || true)
 
           if [ -n "$problematic" ]; then
             echo "problematic_found=true" >> $GITHUB_OUTPUT
@@ -122,7 +128,7 @@ jobs:
             echo "$problematic"
           else
             echo "problematic_found=false" >> $GITHUB_OUTPUT
-            echo "All licenses appear compatible"
+            echo "All licenses appear compatible with GPL-3.0"
           fi
 
       - name: Upload license report
@@ -143,13 +149,15 @@ jobs:
 
             **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-            Licenses like GPL-3.0/AGPL-3.0 were found in dependencies. These may have copyleft requirements that conflict with the project's licensing goals.
+            Licenses incompatible with GPL-3.0 were found in dependencies (e.g., SSPL, CDDL, Proprietary).
+
+            Note: GPL-3.0 and AGPL-3.0 dependencies are **compatible** with this project's GPL-3.0 license.
 
             Download the full license report from the workflow artifacts.
 
             **Action Required:** Review the licenses and consider alternatives for affected dependencies.
 
-            **Priority:** Low - informational, but should be reviewed before next release.`;
+            **Priority:** Medium - incompatible licenses need to be addressed before release.`;
 
             const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
