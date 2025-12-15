@@ -27,6 +27,10 @@
 #include <stdarg.h>
 #include <string.h>
 
+namespace {
+    constexpr size_t kErrorBufferSize = 1024;
+}
+
 using namespace std;
 
 Tracer *Tracer::g_TracerInstance = nullptr;
@@ -65,10 +69,10 @@ void Tracer::Error(const char *format, ...) {
         return;
     }
 
-    char buffer[1024];
+    char buffer[kErrorBufferSize];
     va_list args;
     va_start (args, format);
-    vsnprintf(buffer, 1024, format, args);
+    vsnprintf(buffer, kErrorBufferSize, format, args);
     va_end (args);
 
     if (instance.pPrintFunc) {

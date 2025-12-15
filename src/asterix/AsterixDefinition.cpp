@@ -22,7 +22,6 @@
  */
 
 #include "AsterixDefinition.h"
-#include <memory.h>
 
 AsterixDefinition::AsterixDefinition() {
     for (int i = 0; i < MAX_CATEGORIES; i++) {
