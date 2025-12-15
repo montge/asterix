@@ -132,7 +132,7 @@ def cmd_benchmark(args):
         suite.save_results(args.save)
 
 
-def cmd_info(args):
+def cmd_info(_args):
     """Show package information."""
     print("ASTERIX Radar Integration Suite")
     print("=" * 60)

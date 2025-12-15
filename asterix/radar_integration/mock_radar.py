@@ -165,7 +165,7 @@ class MockRadar:
 
         plots = []
 
-        for i in range(num_targets):
+        for _ in range(num_targets):
             # Generate random target parameters
             range_m = self._rng.uniform(self.min_range, self.max_range)
             azimuth_deg = self._rng.uniform(0, 360)
@@ -325,12 +325,14 @@ def generate_aircraft_scenario(
     radar = MockRadar(radar_lat, radar_lon, radar_alt)
     all_plots = []
 
-    for i in range(num_aircraft):
+    # Use Generator for better randomness (SonarCloud S6711)
+    rng = np.random.default_rng()
+    for _ in range(num_aircraft):
         # Random initial conditions
-        start_range = np.random.uniform(20e3, 150e3)  # 20-150 km
-        start_azimuth = np.random.uniform(0, 360)
-        velocity = np.random.uniform(150, 250)  # 150-250 m/s (typical cruise)
-        heading = np.random.uniform(0, 360)
+        start_range = rng.uniform(20e3, 150e3)  # 20-150 km
+        start_azimuth = rng.uniform(0, 360)
+        velocity = rng.uniform(150, 250)  # 150-250 m/s (typical cruise)
+        heading = rng.uniform(0, 360)
 
         # Generate track
         track = radar.generate_track(

@@ -45,6 +45,11 @@ except ImportError:
     HAS_MATPLOTLIB = False
     np = None  # Will need numpy for some calculations
 
+# Constants to avoid string duplication (SonarCloud S1192)
+MSG_NO_PLOTS = "No plots to display"
+MSG_NO_RADAR_PLOTS = "No radar plots to display"
+LABEL_RANGE_KM = "Range (km)"
+
 
 def _require_matplotlib(func):
     """Decorator to check matplotlib availability."""
@@ -106,7 +111,7 @@ def plot_radar_ascii(
         * = Primary target (10 detections)
     """
     if not plots:
-        return "No radar plots to display"
+        return MSG_NO_RADAR_PLOTS
 
     # Calculate automatic range if not specified
     if max_range_km is None:
@@ -258,7 +263,7 @@ def plot_range_azimuth(
         >>> plot_range_azimuth(plots, "radar_ppi.png", max_range_km=200)
     """
     if not plots:
-        print("No plots to display")
+        print(MSG_NO_PLOTS)
         return
 
     fig = plt.figure(figsize=figsize)
@@ -288,7 +293,7 @@ def plot_range_azimuth(
     if max_range_km:
         ax.set_ylim(0, max_range_km)
 
-    ax.set_xlabel('Range (km)')
+    ax.set_xlabel(LABEL_RANGE_KM)
     ax.set_title(title, pad=20)
     ax.grid(True, alpha=0.3)
 
@@ -375,7 +380,7 @@ def plot_tracks(
     if max_range_km:
         ax.set_ylim(0, max_range_km)
 
-    ax.set_xlabel('Range (km)')
+    ax.set_xlabel(LABEL_RANGE_KM)
     ax.set_title(title, pad=20)
     ax.grid(True, alpha=0.3)
     ax.legend(loc='upper right', bbox_to_anchor=(1.3, 1.0))
@@ -419,7 +424,7 @@ def plot_snr_heatmap(
         >>> plot_snr_heatmap(plots, "snr_heatmap.png", grid_size=(40, 72))
     """
     if not plots:
-        print("No plots to display")
+        print(MSG_NO_PLOTS)
         return
 
     # Determine range extent
@@ -473,7 +478,7 @@ def plot_snr_heatmap(
     cbar.set_label('Average SNR (dB)', rotation=270, labelpad=15)
 
     ax.set_ylim(0, max_range_km)
-    ax.set_xlabel('Range (km)')
+    ax.set_xlabel(LABEL_RANGE_KM)
     ax.set_title(title, pad=20)
     ax.grid(True, alpha=0.3, color='white')
 
@@ -514,7 +519,7 @@ def plot_elevation_profile(
         >>> plot_elevation_profile(plots, "elevation.png")
     """
     if not plots:
-        print("No plots to display")
+        print(MSG_NO_PLOTS)
         return
 
     fig, ax = plt.subplots(figsize=figsize)
@@ -532,7 +537,7 @@ def plot_elevation_profile(
     if max_range_km:
         ax.set_xlim(0, max_range_km)
 
-    ax.set_xlabel('Range (km)')
+    ax.set_xlabel(LABEL_RANGE_KM)
     ax.set_ylabel('Elevation (degrees)')
     ax.set_title(title)
     ax.grid(True, alpha=0.3)

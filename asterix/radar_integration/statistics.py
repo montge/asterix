@@ -39,6 +39,9 @@ Date: 2025-11-23
 import math
 from typing import List, Dict, Optional
 
+# Constants to avoid string duplication (SonarCloud S1192)
+ERR_NO_PLOTS = 'No plots provided'
+
 
 def compute_scenario_stats(plots: List, time_window: Optional[float] = None) -> Dict:
     """
@@ -67,7 +70,7 @@ def compute_scenario_stats(plots: List, time_window: Optional[float] = None) -> 
     if not plots:
         return {
             'total_detections': 0,
-            'error': 'No plots provided'
+            'error': ERR_NO_PLOTS
         }
 
     # Time statistics
@@ -199,7 +202,7 @@ def compute_coverage_map(
         return {
             'grid_size': grid_size,
             'total_cells': 0,
-            'error': 'No plots provided'
+            'error': ERR_NO_PLOTS
         }
 
     # Determine range extent
@@ -311,7 +314,7 @@ def analyze_detection_performance(
     if not plots:
         return {
             'overall_performance': {},
-            'error': 'No plots provided'
+            'error': ERR_NO_PLOTS
         }
 
     # Overall statistics
