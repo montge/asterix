@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <memory>
 #ifdef _WIN32
   #include <io.h>
   #include <process.h>
@@ -245,14 +246,14 @@ CBaseFormatDescriptor *CAsterixFormat::CreateFormatDescriptor
         Tracer::Configure(debug_trace);
 
         // initialize Fulliautomatix engine
-        AsterixDefinition *pDefinition = new AsterixDefinition();
+        // Use unique_ptr for exception safety and clear ownership
+        auto pDefinition = std::make_unique<AsterixDefinition>();
 
         // open asterix.ini file
         FILE *fpini = fopen(gAsterixDefinitionsFile, "rt");
         if (!fpini) {
             LOGERROR(1, "Failed to open definitions file");
-            delete pDefinition;
-            return nullptr;
+            return nullptr;  // unique_ptr handles cleanup
         }
 
         // extract ini file path
@@ -295,7 +296,7 @@ CBaseFormatDescriptor *CAsterixFormat::CreateFormatDescriptor
 
             // parse format file
             XMLParser Parser;
-            if (!Parser.Parse(fp, pDefinition, inputFile)) {
+            if (!Parser.Parse(fp, pDefinition.get(), inputFile)) {
                 LOGERROR(1, "Failed to parse definitions file: %s\n", strInputFile.c_str());
             }
 
@@ -304,7 +305,8 @@ CBaseFormatDescriptor *CAsterixFormat::CreateFormatDescriptor
 
         fclose(fpini);
 
-        m_pFormatDescriptor = new CAsterixFormatDescriptor(pDefinition);
+        // Transfer ownership to the descriptor
+        m_pFormatDescriptor = new CAsterixFormatDescriptor(pDefinition.release());
     }
     return m_pFormatDescriptor;
 }

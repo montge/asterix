@@ -283,10 +283,16 @@ unsigned char *DataItemBits::getSixBitString(unsigned char *pData, int bytes, in
     memset(str.get(), 0, numberOfCharacters + 1);
 
     unsigned char *pTmp = pB.get();
+    unsigned char *pBEnd = pB.get() + (numberOfBits + 7) / 8;  // Buffer end for bounds checking
     unsigned char bitmask = 0x80;
     int outbits = 0;
     unsigned char val = 0;
     while (numberOfBits--) {
+        // Bounds check: ensure we don't read past buffer
+        if (pTmp >= pBEnd) {
+            Tracer::Error("Six-bit string: buffer overrun detected");
+            return newErrorString("???");
+        }
         unsigned char bitval = *pTmp & bitmask;
         val <<= 1;
         if (bitval)
@@ -426,11 +432,17 @@ unsigned char *DataItemBits::getOctal(unsigned char *pData, int bytes, int fromb
     memset(str.get(), 0, numberOfCharacters + 1);
 
     unsigned char *pTmp = pB.get();
+    unsigned char *pBEnd = pB.get() + (numberOfBits + 7) / 8;  // Buffer end for bounds checking
     unsigned char bitmask = 0x80;
     int outbits = 0;
     unsigned char val = 0;
 
     while (numberOfBits--) {
+        // Bounds check: ensure we don't read past buffer
+        if (pTmp >= pBEnd) {
+            Tracer::Error("Octal string: buffer overrun detected");
+            return newErrorString("???");
+        }
         unsigned char bitval = *pTmp & bitmask;
         val <<= 1;
         if (bitval)

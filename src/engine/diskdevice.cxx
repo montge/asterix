@@ -184,6 +184,12 @@ bool CDiskDevice::Write(const void *data, size_t len) {
                 CountWriteError();
                 return false;
             }
+            // Verify file stream was opened successfully
+            if (_fileStream == nullptr) {
+                LOGERROR(1, "Cannot write: file stream is null after open.\n");
+                CountWriteError();
+                return false;
+            }
         } else {
             LOGERROR(1, "Cannot write due to not properly initialized interface.\n");
             CountWriteError();

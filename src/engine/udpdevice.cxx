@@ -217,8 +217,8 @@ bool CUdpDevice::Read(void *data, size_t *len) {
             ssize_t lenread = recvfrom(_socketDesc[i], RECVFROM_CAST(data), *len, MSG_DONTWAIT, (struct sockaddr *) &clientAddr,
                                        &clientLen);
             if (lenread < 0) {
-                LOGERROR(1, "Error reading from %s on address %s.\n",
-                         inet_ntoa(clientAddr.sin_addr),
+                // Don't use clientAddr in error - it may not be populated on failure
+                LOGERROR(1, "Error reading from UDP socket on multicast address %s.\n",
                          inet_ntoa(_mcastAddr.sin_addr));
                 CountReadError();
                 return false;
