@@ -67,6 +67,34 @@
 #include "asterix.h"
 #include "tcpdevice.hxx"
 
+namespace {
+    /**
+     * Thread-safe hostname resolution using getaddrinfo (replaces gethostbyname)
+     * @param hostname The hostname or IP address to resolve
+     * @param addr Output sockaddr_in structure to populate
+     * @return true on success, false on failure
+     */
+    bool resolveHostname(const char* hostname, struct sockaddr_in& addr) {
+        struct addrinfo hints = {};
+        struct addrinfo* result = nullptr;
+
+        hints.ai_family = AF_INET;      // IPv4
+        hints.ai_socktype = SOCK_STREAM; // TCP
+
+        int status = getaddrinfo(hostname, nullptr, &hints, &result);
+        if (status != 0 || result == nullptr) {
+            return false;
+        }
+
+        // Copy the resolved address
+        auto* ipv4 = reinterpret_cast<struct sockaddr_in*>(result->ai_addr);
+        addr.sin_family = AF_INET;
+        addr.sin_addr = ipv4->sin_addr;
+
+        freeaddrinfo(result);
+        return true;
+    }
+}
 
 CTcpDevice::CTcpDevice(CDescriptor &descriptor) {
     const char *server = descriptor.GetFirst();
@@ -518,16 +546,11 @@ bool CTcpDevice::InitServer(const char *serverAddress, const int serverPort) {
         _serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
         _serverAddr.sin_port = htons(serverPort);
     } else {
-        // Bind specified server address
-        struct hostent *host;
-
-        host = gethostbyname(serverAddress);
-        if (host == nullptr) {
+        // Bind specified server address (thread-safe)
+        if (!resolveHostname(serverAddress, _serverAddr)) {
             LOGERROR(1, "Unknown server address '%s'\n", serverAddress);
             return false;
         }
-        _serverAddr.sin_family = host->h_addrtype;
-        memcpy(&_serverAddr.sin_addr.s_addr, host->h_addr_list[0], host->h_length);
         _serverAddr.sin_port = htons(serverPort);
     }
 
@@ -552,18 +575,12 @@ bool CTcpDevice::InitServer(const char *serverAddress, const int serverPort) {
 
 bool CTcpDevice::InitClient(const char *serverAddress, const int serverPort, const char *clientAddress,
                             const int clientPort) {
-    struct hostent *host;
-
-    // Server address/port
+    // Server address/port (thread-safe resolution)
     ASSERT(serverAddress);
-    host = gethostbyname(serverAddress);
-    if (host == nullptr) {
+    if (!resolveHostname(serverAddress, _serverAddr)) {
         LOGERROR(1, "Unknown server address '%s'\n", serverAddress);
         return false;
     }
-
-    _serverAddr.sin_family = host->h_addrtype;
-    memcpy(&_serverAddr.sin_addr.s_addr, host->h_addr_list[0], host->h_length);
     _serverAddr.sin_port = htons(serverPort);
 
     // Enable local address reuse
@@ -578,14 +595,11 @@ bool CTcpDevice::InitClient(const char *serverAddress, const int serverPort, con
         _clientAddr.sin_addr.s_addr = htonl(INADDR_ANY);
         _clientAddr.sin_port = htons(clientPort);
     } else {
-        // Bind specified client address
-        host = gethostbyname(clientAddress);
-        if (host == nullptr) {
+        // Bind specified client address (thread-safe resolution)
+        if (!resolveHostname(clientAddress, _clientAddr)) {
             LOGERROR(1, "Unknown client address '%s'\n", clientAddress);
             return false;
         }
-        _clientAddr.sin_family = host->h_addrtype;
-        memcpy(&_clientAddr.sin_addr.s_addr, host->h_addr_list[0], host->h_length);
         _clientAddr.sin_port = htons(clientPort);
     }
 

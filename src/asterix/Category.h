@@ -98,7 +98,7 @@ public:
      * @note Data items and UAPs are added later via XML parsing.
      *       Use XMLParser to populate the category from an XML file.
      */
-    Category(int id);
+    explicit Category(int id);
 
     /**
      * @brief Destructor - frees all data items and UAPs

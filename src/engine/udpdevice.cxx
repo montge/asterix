@@ -65,6 +65,60 @@
 #include "udpdevice.hxx"
 #include "descriptor.hxx"
 
+namespace {
+    /**
+     * Thread-safe hostname resolution using getaddrinfo (replaces gethostbyname)
+     * @param hostname The hostname or IP address to resolve
+     * @param addr Output sockaddr_in structure to populate
+     * @return true on success, false on failure
+     */
+    bool resolveHostname(const char* hostname, struct sockaddr_in& addr) {
+        struct addrinfo hints = {};
+        struct addrinfo* result = nullptr;
+
+        hints.ai_family = AF_INET;      // IPv4
+        hints.ai_socktype = SOCK_DGRAM; // UDP
+
+        int status = getaddrinfo(hostname, nullptr, &hints, &result);
+        if (status != 0 || result == nullptr) {
+            return false;
+        }
+
+        // Copy the resolved address
+        auto* ipv4 = reinterpret_cast<struct sockaddr_in*>(result->ai_addr);
+        addr.sin_family = AF_INET;
+        addr.sin_addr = ipv4->sin_addr;
+
+        freeaddrinfo(result);
+        return true;
+    }
+
+    /**
+     * Thread-safe hostname resolution to in_addr (replaces gethostbyname)
+     * @param hostname The hostname or IP address to resolve
+     * @param addr Output in_addr structure to populate
+     * @return true on success, false on failure
+     */
+    bool resolveHostnameToAddr(const char* hostname, struct in_addr& addr) {
+        struct addrinfo hints = {};
+        struct addrinfo* result = nullptr;
+
+        hints.ai_family = AF_INET;      // IPv4
+        hints.ai_socktype = SOCK_DGRAM; // UDP
+
+        int status = getaddrinfo(hostname, nullptr, &hints, &result);
+        if (status != 0 || result == nullptr) {
+            return false;
+        }
+
+        // Copy the resolved address
+        auto* ipv4 = reinterpret_cast<struct sockaddr_in*>(result->ai_addr);
+        addr = ipv4->sin_addr;
+
+        freeaddrinfo(result);
+        return true;
+    }
+}
 
 CUdpDevice::CUdpDevice(CDescriptor &descriptor) {
     int portNo = 0;
@@ -415,7 +469,6 @@ bool CUdpDevice::InitClient(int socketDesc) {
 
 void CUdpDevice::Init(const char *mcastAddress, const char *interfaceAddress, const char *srcAddress, const int port,
                       const bool server) {
-    struct hostent *host;
     u_int yes = 1;
     int socketDesc;
 
@@ -428,16 +481,12 @@ void CUdpDevice::Init(const char *mcastAddress, const char *interfaceAddress, co
 
     // 1. Global initialization
 
-    // 1.1 Multicast address
+    // 1.1 Multicast address (thread-safe resolution)
     ASSERT(mcastAddress);
-    host = gethostbyname(mcastAddress);
-    if (host == nullptr) {
+    if (!resolveHostname(mcastAddress, _mcastAddr)) {
         LOGERROR(1, "Unknown multicast group '%s'\n", mcastAddress);
         return;
     }
-
-    _mcastAddr.sin_family = host->h_addrtype;
-    memcpy(&_mcastAddr.sin_addr.s_addr, host->h_addr_list[0], host->h_length);
 /*
     if (!IN_MULTICAST(ntohl(_mcastAddr.sin_addr.s_addr)))
     {
@@ -448,29 +497,25 @@ void CUdpDevice::Init(const char *mcastAddress, const char *interfaceAddress, co
     _mcastAddr.sin_port = htons(_port);
 
 
-    // 1.1b Source interface
+    // 1.1b Source interface (thread-safe resolution)
     if (srcAddress != nullptr && strlen(srcAddress) != 0) {
         // Specific interface is chosen
-        host = gethostbyname(srcAddress);
-        if (host == nullptr) {
+        if (!resolveHostnameToAddr(srcAddress, _sourceAddr)) {
             LOGERROR(1, "Unknown source address '%s'\n", srcAddress);
             return;
         }
-        memcpy(&_sourceAddr, host->h_addr_list[0], host->h_length);
     } else {
         // Source address not chosen
         _sourceAddr.s_addr = htonl(INADDR_ANY);
     }
 
-    // 1.2 Multicast interface
+    // 1.2 Multicast interface (thread-safe resolution)
     if (strlen(interfaceAddress) != 0) {
         // Specific interface is chosen
-        host = gethostbyname(interfaceAddress);
-        if (host == nullptr) {
+        if (!resolveHostnameToAddr(interfaceAddress, _interfaceAddr)) {
             LOGERROR(1, "Unknown interface address '%s'\n", interfaceAddress);
             return;
         }
-        memcpy(&_interfaceAddr, host->h_addr_list[0], host->h_length);
     } else {
         // Interface not chosen
         _interfaceAddr.s_addr = htonl(INADDR_ANY);
