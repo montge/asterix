@@ -203,13 +203,13 @@ CUdpDevice::CUdpDevice(CDescriptor &descriptor) {
         element = descriptor.GetNext();
 
         // Mcast address argument
-        if (strlen(mcastAddress) == 0) {
+        if (mcastAddress[0] == '\0') {
             LOGINFO(gVerbose, "Mcast address not specified\n");
         }
 
         // Interface address argument may be null.
         // In that case INADDR_ANY will be used.
-        if (strlen(interfaceAddress) == 0) {
+        if (interfaceAddress[0] == '\0') {
             LOGINFO(gVerbose, "INADDR_ANY used as interface\n");
         }
 
@@ -221,7 +221,7 @@ CUdpDevice::CUdpDevice(CDescriptor &descriptor) {
         }
 
         // Server argument
-        if (strlen(server) == 0) {
+        if (server[0] == '\0') {
             LOGWARNING(1, "Server flag not specified (%d by default)\n", isServer);
         } else {
             if (toupper(*server) == 'S') {
@@ -496,7 +496,7 @@ void CUdpDevice::Init(const char *mcastAddress, const char *interfaceAddress, co
 
 
     // 1.1b Source interface (thread-safe resolution)
-    if (srcAddress != nullptr && strlen(srcAddress) != 0) {
+    if (srcAddress != nullptr && srcAddress[0] != '\0') {
         // Specific interface is chosen
         if (!resolveHostnameToAddr(srcAddress, _sourceAddr)) {
             LOGERROR(1, "Unknown source address '%s'\n", srcAddress);
@@ -508,7 +508,7 @@ void CUdpDevice::Init(const char *mcastAddress, const char *interfaceAddress, co
     }
 
     // 1.2 Multicast interface (thread-safe resolution)
-    if (strlen(interfaceAddress) != 0) {
+    if (interfaceAddress[0] != '\0') {
         // Specific interface is chosen
         if (!resolveHostnameToAddr(interfaceAddress, _interfaceAddr)) {
             LOGERROR(1, "Unknown interface address '%s'\n", interfaceAddress);

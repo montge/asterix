@@ -227,14 +227,17 @@ static void debug_trace(char const *format, ...) {
     char buffer[1024];
     va_list args;
     va_start (args, format);
-    vsnprintf(buffer, sizeof(buffer) - 1, format, args);
+    // Use vsnprintf with room for newline, then append it safely
+    int written = vsnprintf(buffer, sizeof(buffer) - 2, format, args);
     va_end (args);
-    // Security fix: Use strncat to prevent buffer overflow
-    size_t len = strlen(buffer);
-    if (len < sizeof(buffer) - 1) {
-        strncat(buffer, "\n", sizeof(buffer) - 1 - len);
+    // Append newline if there's room
+    if (written >= 0 && static_cast<size_t>(written) < sizeof(buffer) - 1) {
+        buffer[written] = '\n';
+        buffer[written + 1] = '\0';
+    } else {
+        buffer[sizeof(buffer) - 2] = '\n';
+        buffer[sizeof(buffer) - 1] = '\0';
     }
-    buffer[sizeof(buffer) - 1] = '\0';  // Ensure null termination
     LOGERROR(1, "%s", buffer);
 }
 
@@ -269,8 +272,8 @@ CBaseFormatDescriptor *CAsterixFormat::CreateFormatDescriptor
         while (fgets(inputFile, sizeof(inputFile), fpini)) {
             std::string strInputFile;
 
-            // remove trailing /n from filename
-            int lastChar = strlen(inputFile) - 1;
+            // remove trailing /n from filename (strnlen for bounded length)
+            int lastChar = static_cast<int>(strnlen(inputFile, sizeof(inputFile))) - 1;
             while (lastChar >= 0 && (inputFile[lastChar] == '\r' || inputFile[lastChar] == '\n')) {
                 inputFile[lastChar] = 0;
                 lastChar--;

@@ -106,7 +106,7 @@ CTcpDevice::CTcpDevice(CDescriptor &descriptor) {
     bool isServer = false;
 
     // Server argument
-    if ((server == nullptr) || (strlen(server) == 0)) {
+    if ((server == nullptr) || (server[0] == '\0')) {
         LOGERROR(1, "Server flag not specified\n");
     } else {
         if (toupper(server[0]) == 'S') {
@@ -128,7 +128,7 @@ CTcpDevice::CTcpDevice(CDescriptor &descriptor) {
 
     // Server address argument may be null only in server mode
     // In that case INADDR_ANY is used.
-    if ((serverAddress == nullptr) || (strlen(serverAddress) == 0)) {
+    if ((serverAddress == nullptr) || (serverAddress[0] == '\0')) {
         if (isServer) {
             LOGINFO(gVerbose, "INADDR_ANY used as server interface\n");
         } else {
@@ -140,7 +140,7 @@ CTcpDevice::CTcpDevice(CDescriptor &descriptor) {
     }
 
     // Server port argument may be 0 only in client mode
-    if ((serverPort == nullptr) || (strlen(serverPort) == 0)) {
+    if ((serverPort == nullptr) || (serverPort[0] == '\0')) {
         if (isServer) {
             LOGERROR(1, "Server port not specified\n");
         } else {
@@ -153,14 +153,14 @@ CTcpDevice::CTcpDevice(CDescriptor &descriptor) {
 
     // Client address argument may be null
     // In that case INADDR_ANY is used.
-    if ((clientAddress == nullptr) || (strlen(clientAddress) == 0)) {
+    if ((clientAddress == nullptr) || (clientAddress[0] == '\0')) {
         LOGINFO(gVerbose, "INADDR_ANY used as client address\n");
     } else {
         LOGINFO(gVerbose, "Client address: %s\n", clientAddress);
     }
 
     // Client port argument
-    if ((clientPort == nullptr) || (strlen(clientPort) == 0)) {
+    if ((clientPort == nullptr) || (clientPort[0] == '\0')) {
         LOGINFO(gVerbose, "Client port not specified (%d by default)\n", clientPortNo);
     } else {
         clientPortNo = atoi(clientPort);
@@ -539,7 +539,7 @@ bool CTcpDevice::Disconnect(bool bLinger) {
 
 bool CTcpDevice::InitServer(const char *serverAddress, const int serverPort) {
 
-    if ((serverAddress == nullptr) || (strlen(serverAddress) == 0)) {
+    if ((serverAddress == nullptr) || (serverAddress[0] == '\0')) {
         // Bind any server address
         _serverAddr.sin_family = AF_INET;
         _serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -588,7 +588,7 @@ bool CTcpDevice::InitClient(const char *serverAddress, const int serverPort, con
         LOGWARNING(1, "Error %d on setsockopt(). %s\n", errno, strerror(errno));
     }
 
-    if ((clientAddress == nullptr) || (strlen(clientAddress) == 0)) {
+    if ((clientAddress == nullptr) || (clientAddress[0] == '\0')) {
         // Bind any client address
         _clientAddr.sin_family = AF_INET;
         _clientAddr.sin_addr.s_addr = htonl(INADDR_ANY);
