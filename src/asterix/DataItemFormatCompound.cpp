@@ -54,7 +54,6 @@ DataItemFormatCompound::~DataItemFormatCompound() {
 
 long DataItemFormatCompound::getLength(const unsigned char *pData) {
     long totalLength = 0;
-    std::list<DataItemFormat *>::iterator it;
     std::list<DataItemFormat *>::iterator it2;
     it2 = m_lSubItems.begin();
     // Security fix: Check iterator validity before dereferencing
@@ -73,7 +72,7 @@ long DataItemFormatCompound::getLength(const unsigned char *pData) {
     const unsigned char *pSecData = pData + primaryPartLength;
     totalLength += primaryPartLength;
 
-    for (it = pCompoundPrimary->m_lSubItems.begin(); it != pCompoundPrimary->m_lSubItems.end(); ++it) {
+    for (auto it = pCompoundPrimary->m_lSubItems.begin(); it != pCompoundPrimary->m_lSubItems.end(); ++it) {
         int secondaryPart = 1;
         it2 = m_lSubItems.begin();
         ++it2; // skip primary part
@@ -83,7 +82,7 @@ long DataItemFormatCompound::getLength(const unsigned char *pData) {
 
         while (it2 != m_lSubItems.end()) { // parse secondary parts
             if (dip->isSecondaryPartPresent(pData, secondaryPart)) {
-                auto *dip2 = static_cast<DataItemFormat *>(*it2);
+                auto *dip2 = *it2;  // Already DataItemFormat*
                 int skip = dip2->getLength(pSecData);
                 pSecData += skip;
                 totalLength += skip;
@@ -130,7 +129,7 @@ bool DataItemFormatCompound::getText(std::string &strResult, std::string &strHea
     int primaryPartLength = pCompoundPrimary->getLength(pData);
     unsigned char *pSecData = pData + primaryPartLength;
 
-    for (it = pCompoundPrimary->m_lSubItems.begin(); it != pCompoundPrimary->m_lSubItems.end(); ++it) {
+    for (auto it = pCompoundPrimary->m_lSubItems.begin(); it != pCompoundPrimary->m_lSubItems.end(); ++it) {
         int secondaryPart = 1;
         it2 = m_lSubItems.begin();
         ++it2; // skip primary part
@@ -140,7 +139,7 @@ bool DataItemFormatCompound::getText(std::string &strResult, std::string &strHea
 
         while (it2 != m_lSubItems.end()) { // parse secondary parts
             if (dip->isSecondaryPartPresent(pData, secondaryPart)) {
-                auto *dip2 = static_cast<DataItemFormat *>(*it2);
+                auto *dip2 = *it2;  // Already DataItemFormat*
                 int skip = 0;
                 std::string tmpStr;
 
@@ -264,7 +263,7 @@ fulliautomatix_definitions* DataItemFormatCompound::getWiresharkDefinitions()
 
     for (; it != m_lSubItems.end(); it++ )
     {
-        auto* dip = static_cast<DataItemFormat*>(*it);
+        auto* dip = *it;  // Already DataItemFormat*
         def->next = dip->getWiresharkDefinitions();
         while(def->next)
         def = def->next;
@@ -318,7 +317,7 @@ fulliautomatix_data* DataItemFormatCompound::getData(unsigned char* pData, long,
         { // parse secondary parts
             if (dip->isSecondaryPartPresent(pData, secondaryPart))
             {
-                auto* dip2 = static_cast<DataItemFormat*>(*it2);
+                auto* dip2 = *it2;  // Already DataItemFormat*
                 int skip = dip2->getLength(pSecData);
                 lastData->next = dip2->getData(pSecData, skip, byteoffset);
                 while(lastData->next)

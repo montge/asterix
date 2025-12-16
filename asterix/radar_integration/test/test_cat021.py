@@ -276,9 +276,7 @@ class TestI071TimeOfApplicability(unittest.TestCase):
 
     def test_current_time_default(self):
         """Test using current time as default."""
-        before = time.time()
         data = encode_i071()
-        after = time.time()
         # Should be non-zero for most of day
         value = struct.unpack('>I', b'\x00' + data)[0]
         self.assertGreaterEqual(value, 0)

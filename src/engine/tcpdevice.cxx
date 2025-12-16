@@ -81,8 +81,7 @@ namespace {
         hints.ai_family = AF_INET;      // IPv4
         hints.ai_socktype = SOCK_STREAM; // TCP
 
-        int status = getaddrinfo(hostname, nullptr, &hints, &result);
-        if (status != 0 || result == nullptr) {
+        if (int status = getaddrinfo(hostname, nullptr, &hints, &result); status != 0 || result == nullptr) {
             return false;
         }
 

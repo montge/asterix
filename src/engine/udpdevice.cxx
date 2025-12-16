@@ -79,8 +79,7 @@ namespace {
         hints.ai_family = AF_INET;      // IPv4
         hints.ai_socktype = SOCK_DGRAM; // UDP
 
-        int status = getaddrinfo(hostname, nullptr, &hints, &result);
-        if (status != 0 || result == nullptr) {
+        if (int status = getaddrinfo(hostname, nullptr, &hints, &result); status != 0 || result == nullptr) {
             return false;
         }
 
@@ -106,8 +105,7 @@ namespace {
         hints.ai_family = AF_INET;      // IPv4
         hints.ai_socktype = SOCK_DGRAM; // UDP
 
-        int status = getaddrinfo(hostname, nullptr, &hints, &result);
-        if (status != 0 || result == nullptr) {
+        if (int status = getaddrinfo(hostname, nullptr, &hints, &result); status != 0 || result == nullptr) {
             return false;
         }
 

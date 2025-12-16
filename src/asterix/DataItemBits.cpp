@@ -180,7 +180,7 @@ unsigned long DataItemBits::getUnsigned(unsigned char *pData, int bytes, int fro
         }
 
         if (numberOfBits == 8) {
-            val = *static_cast<unsigned char *>(pTmp);
+            val = *pTmp;  // pTmp is already unsigned char*
         } else {
             unsigned char *pTmp2 = pTmp;
             unsigned char bitmask = BIT_MASK_MSB;
