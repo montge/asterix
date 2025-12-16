@@ -325,8 +325,7 @@ bool CDiskDevice::Init(const char *path) {
         // in this case we never fail here
         if (_input && (_mode & DD_MODE_WAITFILE)) {
             if (fname != _fileName) {
-                strncpy(_fileName, fname, MAXPATHLEN);
-                _fileName[MAXPATHLEN] = '\0';  // Ensure null-termination
+                snprintf(_fileName, sizeof(_fileName), "%s", fname);
             }
 
             return true;
@@ -341,8 +340,7 @@ bool CDiskDevice::Init(const char *path) {
 
     // Merge nested conditions for clarity (SonarCloud S1066)
     if (!(_mode & DD_MODE_PACKETFILE) && fname != _fileName) {
-        strncpy(_fileName, fname, MAXPATHLEN);
-        _fileName[MAXPATHLEN] = '\0';  // Ensure null-termination
+        snprintf(_fileName, sizeof(_fileName), "%s", fname);
     }
 
     if (_input)
@@ -365,8 +363,7 @@ bool CDiskDevice::OpenOutputFile(const char *path, bool openNow) {
     if (_mode & DD_MODE_PACKETFILE) {
         if (_baseName[0] == '\0') {
             if (_baseName != fname) {
-                strncpy(_baseName, fname, MAXPATHLEN);
-                _baseName[MAXPATHLEN] = '\0';  // Ensure null-termination
+                snprintf(_baseName, sizeof(_baseName), "%s", fname);
             }
             fname = NextFileName();
         }
@@ -380,8 +377,7 @@ bool CDiskDevice::OpenOutputFile(const char *path, bool openNow) {
             return false;
         } else {
             if (fname != _fileName) {
-                strncpy(_fileName, fname, MAXPATHLEN);
-                _fileName[MAXPATHLEN] = '\0';  // Ensure null-termination
+                snprintf(_fileName, sizeof(_fileName), "%s", fname);
             }
             LOGDEBUG(ZONE_DISKDEVICE, "Opened output file '%s'\n", _fileName);
             _opened = true;
@@ -399,8 +395,7 @@ bool CDiskDevice::OpenOutputFile(const char *path, bool openNow) {
         }
 
         if (fname != _fileName) {
-            strncpy(_fileName, fname, MAXPATHLEN);
-            _fileName[MAXPATHLEN] = '\0';  // Ensure null-termination
+            snprintf(_fileName, sizeof(_fileName), "%s", fname);
         }
 
         LOGDEBUG(ZONE_DISKDEVICE, "Output file '%s' will be opened on first write\n", _fileName);
@@ -451,10 +446,8 @@ bool CDiskDevice::DoneWithFile(bool allDone) {
 #endif
             strftime(suffix, 25, sfxFormat, stm);
 
-            strncpy(newName, _fileName, MAXPATHLEN);
-            newName[MAXPATHLEN] = '\0';
-            // Security fix: Use strncat to prevent buffer overflow
-            strncat(newName, suffix, 31);
+            // Security fix: Use snprintf for safe string concatenation
+            snprintf(newName, sizeof(newName), "%s%s", _fileName, suffix);
 
             if (rename(_fileName, newName)) {
                 LOGERROR(1, "Rename of file failed\n");
@@ -527,20 +520,13 @@ char *CDiskDevice::NextFileName() {
 
     char *posExt = strrchr(_baseName, '.');
     if (posExt) {
+        // Build filename with extension: base + counter + extension
         size_t baseLen = posExt - _baseName;
-        if (baseLen > MAXPATHLEN) baseLen = MAXPATHLEN;
-        strncpy(newName, _baseName, baseLen); // base name
-        newName[baseLen] = '\0';
-        // Security fix: Use strncat to prevent buffer overflow
-        strncat(newName, cnt, MAXPATHLEN - baseLen);
-        strncat(newName, posExt, MAXPATHLEN - strlen(newName)); // extension
+        snprintf(newName, sizeof(newName), "%.*s%s%s", static_cast<int>(baseLen), _baseName, cnt, posExt);
     } else {
-        strncpy(newName, _baseName, MAXPATHLEN-32);
-        newName[MAXPATHLEN-32] = '\0';
-        // Security fix: Use strncat to prevent buffer overflow
-        strncat(newName, cnt, 31);
+        // No extension: base + counter
+        snprintf(newName, sizeof(newName), "%s%s", _baseName, cnt);
     }
-    newName[MAXPATHLEN] = '\0'; // Ensure null termination
 
     return newName;
 }
@@ -678,11 +664,9 @@ bool CDiskDevice::DoneAll() {
         char tmpName[MAXPATHLEN+1];
 
         if (_mode & DD_MODE_PACKETFILE) {
-            strncpy(tmpName, _baseName, MAXPATHLEN);
-            tmpName[MAXPATHLEN] = '\0';  // Ensure null-termination
+            snprintf(tmpName, sizeof(tmpName), "%s", _baseName);
         } else {
-            strncpy(tmpName, _fileName, MAXPATHLEN);
-            tmpName[MAXPATHLEN] = '\0';  // Ensure null-termination
+            snprintf(tmpName, sizeof(tmpName), "%s", _fileName);
         }
 
         memset(_fileName, 0, sizeof(_fileName));

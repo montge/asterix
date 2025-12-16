@@ -49,6 +49,7 @@ jobs:
         cmake -B build \
           -DCMAKE_BUILD_TYPE=Debug \
           -DENABLE_COVERAGE=ON \
+          -DBUILD_TESTING=ON \
           -DBUILD_SHARED_LIBS=ON \
           -DBUILD_STATIC_LIBS=ON \
           -DBUILD_EXECUTABLE=ON \
@@ -57,12 +58,19 @@ jobs:
         build-wrapper-linux-x86-64 --out-dir build-wrapper-output cmake --build build --parallel $(nproc)
         cmake --install build
 
-    - name: Run C++ tests for coverage
+    - name: Run C++ unit tests for coverage
+      run: |
+        cd build
+        export LD_LIBRARY_PATH=${{ github.workspace }}/install/lib:${LD_LIBRARY_PATH:-}
+        # Run unit tests with ctest (verbose output)
+        ctest --output-on-failure --timeout 120 || echo "Some unit tests may have failed"
+
+    - name: Run C++ integration tests for coverage
       run: |
         cd install/test
         export LD_LIBRARY_PATH=${{ github.workspace }}/install/lib:${LD_LIBRARY_PATH:-}
         chmod +x ./test.sh
-        ./test.sh || echo "Some tests may have failed"
+        ./test.sh || echo "Some integration tests may have failed"
 
     - name: Generate C++ coverage report
       run: |
