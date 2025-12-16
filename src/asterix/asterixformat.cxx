@@ -223,16 +223,17 @@ bool CAsterixFormat::HeartbeatProcessing(
 }
 
 static void debug_trace(char const *format, ...) {
-    char buffer[1025];
+    char buffer[1024];
     va_list args;
     va_start (args, format);
-    vsnprintf(buffer, 1024, format, args);
+    vsnprintf(buffer, sizeof(buffer) - 1, format, args);
     va_end (args);
     // Security fix: Use strncat to prevent buffer overflow
     size_t len = strlen(buffer);
-    if (len < 1024) {
-        strncat(buffer, "\n", 1024 - len);
+    if (len < sizeof(buffer) - 1) {
+        strncat(buffer, "\n", sizeof(buffer) - 1 - len);
     }
+    buffer[sizeof(buffer) - 1] = '\0';  // Ensure null termination
     LOGERROR(1, "%s", buffer);
 }
 
