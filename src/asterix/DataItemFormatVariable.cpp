@@ -70,7 +70,7 @@ long DataItemFormatVariable::getLength(const unsigned char *pData) {
         pData += partlen;
 
         if (it != m_lSubItems.end()) {
-            it++;
+            ++it;
             if (it != m_lSubItems.end()) {
                 dip = static_cast<DataItemFormatFixed *>(*it);
             }
@@ -139,7 +139,7 @@ bool DataItemFormatVariable::getText(std::string &strResult, std::string &strHea
         nLength -= dip->getLength();
 
         if (it != m_lSubItems.end()) {
-            it++;
+            ++it;
             if (it != m_lSubItems.end()) {
                 dip = static_cast<DataItemFormatFixed *>(*it);
             }
@@ -255,7 +255,7 @@ fulliautomatix_data* DataItemFormatVariable::getData(unsigned char* pData, long 
 
     if (it != m_lSubItems.end())
     {
-      it++;
+      ++it;
       if (it != m_lSubItems.end())
       {
         dip = static_cast<DataItemFormatFixed*>(*it);
@@ -305,7 +305,7 @@ PyObject* DataItemFormatVariable::getObject(unsigned char* pData, long nLength, 
         nLength -= dip->getLength();
 
         if (it != m_lSubItems.end()) {
-            it++;
+            ++it;
             if (it != m_lSubItems.end()) {
                 dip = static_cast<DataItemFormatFixed*>(*it);
             }
@@ -337,7 +337,7 @@ void DataItemFormatVariable::insertToDict(PyObject* p, unsigned char* pData, lon
         nLength -= dip->getLength();
 
         if (it != m_lSubItems.end()) {
-            it++;
+            ++it;
             if (it != m_lSubItems.end()) {
                 dip = (DataItemFormatFixed*)(*it);
             }

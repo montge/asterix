@@ -423,7 +423,7 @@ int main(int argc, const char *argv[]) {
 
     // Finally execute converter engine
     if (CConverterEngine::Instance()->Initialize(inputChannel, outputChannel, nOutput, chFailover)) {
-        if (strFilterFile.empty() == false) { // read filter file and configure items
+        if (!strFilterFile.empty()) { // read filter file and configure items
             CBaseFormatDescriptor *desc = CChannelFactory::Instance()->GetInputChannel()->GetFormatDescriptor();
             if (desc == nullptr) {
                 std::cerr << "Error: Format description not found." << std::endl;
