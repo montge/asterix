@@ -903,7 +903,7 @@ std::string DataItemBits::printDescriptors(std::string header) {
 }
 
 bool DataItemBits::filterOutItem(const char *name) {
-    if (0 == strncmp(name, m_strShortName.c_str(), m_strShortName.length())) {
+    if (strncmp(name, m_strShortName.c_str(), m_strShortName.length()) == 0) {
         m_bFiltered = true;
         return true;
     }
