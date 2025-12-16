@@ -284,7 +284,7 @@ bool CDiskDevice::Init(const char *path) {
     _fileStream = nullptr;
     ResetAllErrors();
 
-    char *fname = (char *) path;
+    const char *fname = path;
 
     if (_input) {
         // Initialize as input device
@@ -353,7 +353,7 @@ bool CDiskDevice::Init(const char *path) {
 
 
 bool CDiskDevice::OpenOutputFile(const char *path, bool openNow) {
-    char *fname = (char *) path;
+    const char *fname = path;
 
     ASSERT(!_input);
     ASSERT(_fileStream == nullptr);
@@ -431,7 +431,7 @@ bool CDiskDevice::DoneWithFile(bool allDone) {
                                          : ".co%d_%%y%%m%%d%%H%%M%%S";
 
             // Security fix: Use snprintf to prevent buffer overflow
-            snprintf(sfxFormat, sizeof(sfxFormat), sfxBase, (int) getpid());
+            snprintf(sfxFormat, sizeof(sfxFormat), sfxBase, static_cast<int>(getpid()));
 
             time_t t = time(nullptr);
             struct tm tmBuf;

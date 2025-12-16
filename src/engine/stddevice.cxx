@@ -59,7 +59,7 @@ CStdDevice::~CStdDevice() {
 bool CStdDevice::Read(void *data, size_t len) {
     // Read a message from the standard input (blocking)
     ssize_t bytesLeftToRead = len;
-    char* pData = (char*)data;
+    char* pData = static_cast<char*>(data);
 
     while(bytesLeftToRead > 0) {
         ssize_t bytesRead = read(STDIN_FILENO, pData, bytesLeftToRead);
@@ -83,8 +83,8 @@ bool CStdDevice::Read(void *data, size_t len) {
 
 bool CStdDevice::Write(const void *data, size_t len) {
     // Write the message to the standard output (blocking)
-    ssize_t bytesLeft = (ssize_t)len;
-    char *pData = (char *) data;
+    ssize_t bytesLeft = static_cast<ssize_t>(len);
+    const char *pData = static_cast<const char *>(data);
 
     while (bytesLeft > 0) {
         ssize_t bytesWrote = write(STDOUT_FILENO, pData, bytesLeft);

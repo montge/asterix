@@ -133,7 +133,7 @@ bool CSerialDevice::Read(void *data, size_t len) {
     // Initialize
     ssize_t bytesRead = 0;
     size_t bytesLeft = len;
-    char *buffer = (char *) data;
+    char *buffer = static_cast<char *>(data);
 
     // Read all required bytes (len) in a loop
     do {

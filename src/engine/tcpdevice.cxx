@@ -210,8 +210,8 @@ bool CTcpDevice::Read(void *data, size_t len) {
 #if defined(__CYGWIN__) || defined(_WIN32)
     // Windows and Cygwin don't support MSG_WAITALL, use loop
     int totalReceived = 0;
-    while (((unsigned int) totalReceived) < len) {
-        bytesReceived = recv(socketToRecv, ((char *) data) + totalReceived, len - totalReceived, MSG_NOSIGNAL);
+    while ((static_cast<unsigned int>(totalReceived)) < len) {
+        bytesReceived = recv(socketToRecv, (static_cast<char *>(data)) + totalReceived, len - totalReceived, MSG_NOSIGNAL);
 
         if (bytesReceived < 0) {
             LOGERROR(1, "Error %d reading from socket %d. %s\n",
@@ -233,10 +233,10 @@ bool CTcpDevice::Read(void *data, size_t len) {
     } // while
 
     // Check if we got all the data
-    if ((unsigned int) totalReceived != len) {
+    if (static_cast<unsigned int>(totalReceived) != len) {
         LOGWARNING(1, "Read only %d bytes from %d requested from socket %d.\n",
            totalReceived,
-           (int)len,
+           static_cast<int>(len),
            socketToRecv);
     }
 #else
@@ -257,10 +257,10 @@ bool CTcpDevice::Read(void *data, size_t len) {
         Disconnect(false); // error, do not linger
 //        CountReadError(); // this can be a normal disconnection, not an error
         return false;
-    } else if ((unsigned int) bytesReceived != len) {
+    } else if (static_cast<unsigned int>(bytesReceived) != len) {
         LOGWARNING(1, "Read only %d bytes from %d requested from socket %d.\n",
            bytesReceived,
-           (int)len,
+           static_cast<int>(len),
            socketToRecv);
     }
 #endif
@@ -294,7 +294,7 @@ bool CTcpDevice::Write(const void *data, size_t len) {
     ASSERT(socketToSend >= 0);
 
     // Write the message (blocking)
-    if (send(socketToSend, (const char*)data, (int)len, MSG_NOSIGNAL) < 0) {
+    if (send(socketToSend, static_cast<const char*>(data), static_cast<int>(len), MSG_NOSIGNAL) < 0) {
         LOGERROR(1, "Error %d writing to socket %d. %s\n",
                  errno, socketToSend, strerror(errno));
 

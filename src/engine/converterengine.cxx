@@ -159,7 +159,7 @@ void CConverterEngine::Start() {
                 for (unsigned int i = 0; i < nChannels; i++) {
                     if (noMoreData) {
                         // notify output channels
-                        if (!CChannelFactory::Instance()->IoCtrl((int) i, CBaseDevice::EAllDone)) {
+                        if (!CChannelFactory::Instance()->IoCtrl(static_cast<int>(i), CBaseDevice::EAllDone)) {
                             LOGERROR(1, "IoCtrl() failed.\n");
                         }
                     } else if (packetOk) {
@@ -185,14 +185,14 @@ void CConverterEngine::Start() {
                         break; // successfull!
 
                     // failed...
-                    LOGERROR(1, "The current packet has been lost for failover output channel %d\n", (int) ch);
+                    LOGERROR(1, "The current packet has been lost for failover output channel %d\n", static_cast<int>(ch));
 
                     int sts = ProcessStatus();
 
                     if (sts & STS_FAIL_OUTPUT) {
                         ch = CChannelFactory::Instance()->GetNextFailoverOutputChannel();
 
-                        LOGNOTIFY(gVerbose, "Switching to failover output channel: %d\n", (int) ch);
+                        LOGNOTIFY(gVerbose, "Switching to failover output channel: %d\n", static_cast<int>(ch));
 
                         if (ch == startCh)
                             break; // we've cycled through all failover channels
@@ -220,9 +220,9 @@ int CConverterEngine::ProcessStatus() {
     unsigned int activeFOC = CChannelFactory::Instance()->GetActiveFailoverOutputChannel();
 
     if (sts & STS_FAIL_OUTPUT) {
-        LOGWARNING(1, "Resetting output channel %d due to excessive errors\n", (int) activeFOC);
+        LOGWARNING(1, "Resetting output channel %d due to excessive errors\n", static_cast<int>(activeFOC));
         if (!CChannelFactory::Instance()->ResetOutputChannel(activeFOC)) {
-            LOGERROR(1, "Failed to reset output channel %d.\n", (int) activeFOC);
+            LOGERROR(1, "Failed to reset output channel %d.\n", static_cast<int>(activeFOC));
         }
     }
 
