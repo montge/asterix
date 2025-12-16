@@ -23,8 +23,8 @@
 
 #include "XMLParser.h"
 #include "Tracer.h"
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 /*!
  * Handling of CDATA

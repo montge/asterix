@@ -21,9 +21,7 @@
  *
  */
 
-//#include <stdlib.h>
-//#include <memory.h>
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)

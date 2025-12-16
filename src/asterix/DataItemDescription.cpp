@@ -22,7 +22,7 @@
  */
 
 #include "DataItemDescription.h"
-#include <stdlib.h>
+#include <cstdlib>
 
 DataItemDescription::DataItemDescription(std::string id)
         : m_strID(id), m_pFormat(nullptr), m_eRule(DATAITEM_UNKNOWN) {

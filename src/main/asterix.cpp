@@ -26,10 +26,10 @@
 
 #include <string>
 #include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "asterix.h"
 #include "version.h"
 #include "Tracer.h"

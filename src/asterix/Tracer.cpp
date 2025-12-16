@@ -22,16 +22,13 @@
  */
 
 #include "Tracer.h"
-#include <stdio.h>
-#include <iostream>
-#include <stdarg.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdarg>
+#include <cstring>
 
 namespace {
     constexpr size_t kErrorBufferSize = 1024;
 }
-
-using namespace std;
 
 Tracer *Tracer::g_TracerInstance = nullptr;
 
