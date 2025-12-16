@@ -50,7 +50,7 @@ CSingleton<CChannelFactory> CChannelFactory::_Instance;
 
 CChannelFactory::CChannelFactory() {
     // Create format engine.
-    _formatEngine = (CBaseFormat *) new CAsterixFormat;
+    _formatEngine = new CAsterixFormat;
     LOGDEBUG(_formatEngine, "CChannelFactory successfully initialized with CAsterixFormat.\n");
 
     if (_formatEngine == nullptr) {
