@@ -157,7 +157,7 @@ const char *DataItemFormatExplicit::getDescription(const char *field, const char
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_definitions* DataItemFormatExplicit::getWiresharkDefinitions()
 {
-    DataItemFormatFixed* pFixed = m_lSubItems.size() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
+    DataItemFormatFixed* pFixed = !m_lSubItems.empty() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
     if (pFixed == nullptr)
     {
         Tracer::Error("Wrong format of explicit item");
@@ -169,7 +169,7 @@ fulliautomatix_definitions* DataItemFormatExplicit::getWiresharkDefinitions()
 fulliautomatix_data* DataItemFormatExplicit::getData(unsigned char* pData, long, int byteoffset)
 {
     fulliautomatix_data *lastData = nullptr, *firstData = nullptr;
-    DataItemFormatFixed* pFixed = m_lSubItems.size() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
+    DataItemFormatFixed* pFixed = !m_lSubItems.empty() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
     if (pFixed == nullptr)
     {
         Tracer::Error("Wrong format of explicit item");
@@ -225,7 +225,7 @@ PyObject* DataItemFormatExplicit::getObject(unsigned char* pData, long nLength, 
 
     if (nFullLength == bodyLength) {
         PyObject* p = PyDict_New();
-        DataItemFormat *di = m_lSubItems.size() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
+        DataItemFormat *di = !m_lSubItems.empty() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
         if (di != nullptr) {
             di->insertToDict(p, pData, bodyLength, verbose);
         }
@@ -234,8 +234,7 @@ PyObject* DataItemFormatExplicit::getObject(unsigned char* pData, long nLength, 
     else {
         PyObject* p = PyList_New(0);
         for (int i = 0; i < nFullLength; i += bodyLength) {
-            for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-                DataItemFormat *di = *it;
+            for (auto* di : m_lSubItems) {
                 PyObject* p1 = di->getObject(pData, bodyLength, verbose);
                 PyList_Append(p, p1);
                 Py_DECREF(p1);

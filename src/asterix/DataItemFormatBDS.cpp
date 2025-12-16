@@ -125,7 +125,7 @@ bool DataItemFormatBDS::filterOutItem(const char *name) {
 }
 
 bool DataItemFormatBDS::isFiltered(const char *name) {// TODO
-    DataItemFormatFixed *pFixed = m_lSubItems.size() ? (DataItemFormatFixed *) m_lSubItems.front() : nullptr;
+    auto *pFixed = !m_lSubItems.empty() ? static_cast<DataItemFormatFixed *>(m_lSubItems.front()) : nullptr;
     if (pFixed == nullptr) {
         Tracer::Error("Wrong data in BDS");
         return false;
@@ -135,9 +135,8 @@ bool DataItemFormatBDS::isFiltered(const char *name) {// TODO
 }
 
 const char *DataItemFormatBDS::getDescription(const char *field, const char *value = nullptr) {
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemBits *bv = (DataItemBits *) (*it);
+    for (auto* subItem : m_lSubItems) {
+        auto *bv = static_cast<DataItemBits *>(subItem);
         const char *desc = bv->getDescription(field, value);
         if (desc != nullptr)
             return desc;
@@ -148,9 +147,8 @@ const char *DataItemFormatBDS::getDescription(const char *field, const char *val
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_definitions* DataItemFormatBDS::getWiresharkDefinitions()
 {// TODO
-    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : nullptr;
-    if (!pFixed)
-    {
+    auto* pFixed = !m_lSubItems.empty() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
+    if (!pFixed) {
         Tracer::Error("Wrong format of BDS item");
         return nullptr;
     }
@@ -160,9 +158,8 @@ fulliautomatix_definitions* DataItemFormatBDS::getWiresharkDefinitions()
 fulliautomatix_data* DataItemFormatBDS::getData(unsigned char* pData, long len, int byteoffset)
 {// TODO
     fulliautomatix_data *lastData = nullptr, *firstData = nullptr;
-    DataItemFormatFixed* pFixed = m_lSubItems.size() ? (DataItemFormatFixed*)m_lSubItems.front() : nullptr;
-    if (!pFixed)
-    {
+    auto* pFixed = !m_lSubItems.empty() ? static_cast<DataItemFormatFixed*>(m_lSubItems.front()) : nullptr;
+    if (!pFixed) {
         Tracer::Error("Wrong format of BDS item");
         return nullptr;
     }
@@ -216,21 +213,18 @@ void DataItemFormatBDS::insertToDict(PyObject* p, unsigned char* pData, long nLe
     int BDSid = pData[7];
 
     // Find BDS register
-    std::list<DataItemFormat*>::iterator it =  m_lSubItems.begin();
-    while (it != m_lSubItems.end())
+    for (auto* subItem : m_lSubItems)
     {
         // Security fix: Check pointer before casting
-        if (*it == nullptr) {
-            it++;
+        if (subItem == nullptr) {
             continue;
         }
-        DataItemFormatFixed* pFixed = (DataItemFormatFixed*)(*it);
+        auto* pFixed = static_cast<DataItemFormatFixed*>(subItem);
         if (pFixed->m_nID == BDSid || pFixed->m_nID == 0)
         {
             pFixed->insertToDict(p, pData, 8, verbose);
             break;
         }
-        it++;
     }
 }
 

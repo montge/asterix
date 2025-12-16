@@ -68,7 +68,7 @@ bool DataItem::getText(std::string &strResult, std::string &strHeader, const uns
             break;
     }
 
-    if (false == m_pDescription->getText(strNewResult, newHeader, formatType, m_pData.get(), m_nLength)) {
+    if (!m_pDescription->getText(strNewResult, newHeader, formatType, m_pData.get(), m_nLength)) {
         return false;
     }
     strResult += strNewResult;
