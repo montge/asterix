@@ -66,12 +66,7 @@ DataBlock::DataBlock(Category *cat, unsigned long len, const unsigned char *data
 }
 
 DataBlock::~DataBlock() {
-    // go through all present data items in this block
-    std::list<DataRecord *>::iterator it = m_lDataRecords.begin();
-    while (it != m_lDataRecords.end()) {
-        delete (DataRecord *) (*it);
-        it = m_lDataRecords.erase(it);
-    }
+    deleteAndClear(m_lDataRecords);
 }
 
 bool DataBlock::getText(std::string &strResult, const unsigned int formatType) {

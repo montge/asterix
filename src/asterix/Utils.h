@@ -44,6 +44,37 @@
 #include <memory>  // For std::unique_ptr
 
 /**
+ * @brief Delete all pointer elements in a container and clear it
+ *
+ * This template function provides a safe, consistent way to clean up
+ * containers of raw pointers. It deletes each element and clears the container.
+ *
+ * @tparam Container Container type (must support begin(), end(), erase())
+ * @param container Reference to the container to clean up
+ *
+ * @par Example Usage
+ * @code
+ * std::list<DataItem*> items;
+ * // ... populate items ...
+ * deleteAndClear(items);  // Deletes all DataItem* and clears the list
+ * @endcode
+ *
+ * @note This function is for containers of raw pointers only.
+ *       For smart pointers, simply call container.clear().
+ * @note After this call, the container will be empty.
+ *
+ * @warning Ensure no other code holds references to the deleted pointers.
+ */
+template<typename Container>
+void deleteAndClear(Container& container) {
+    auto it = container.begin();
+    while (it != container.end()) {
+        delete *it;
+        it = container.erase(it);
+    }
+}
+
+/**
  * @brief Printf-style string formatter with performance optimization
  *
  * Creates a formatted string using printf-style format specifiers.

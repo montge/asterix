@@ -24,6 +24,7 @@
 #include "DataItemFormat.h"
 #include "DataItemBits.h"
 #include "Tracer.h"
+#include "Utils.h"
 #include "asterixformat.hxx"
 #include <sstream>  // PERFORMANCE: For efficient string building
 #include <memory>   // For std::unique_ptr
@@ -96,12 +97,7 @@ DataItemBits::DataItemBits(const DataItemBits &obj)
 
 
 DataItemBits::~DataItemBits() {
-    // destroy bits value items
-    std::list<BitsValue *>::iterator it = m_lValue.begin();
-    while (it != m_lValue.end()) {
-        delete (BitsValue *) (*it);
-        it = m_lValue.erase(it);
-    }
+    deleteAndClear(m_lValue);
 }
 
 long DataItemBits::getLength(const unsigned char *) {

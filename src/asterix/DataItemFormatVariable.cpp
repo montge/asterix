@@ -23,6 +23,7 @@
 
 #include "DataItemFormatVariable.h"
 #include "Tracer.h"
+#include "Utils.h"
 #include "asterixformat.hxx"
 
 DataItemFormatVariable::DataItemFormatVariable(int id)
@@ -53,12 +54,7 @@ DataItemFormatVariable::DataItemFormatVariable(const DataItemFormatVariable &obj
 }
 
 DataItemFormatVariable::~DataItemFormatVariable() {
-    // destroy list items
-    std::list<DataItemFormat *>::iterator it = m_lSubItems.begin();
-    while (it != m_lSubItems.end()) {
-        delete (DataItemFormatFixed *) (*it);
-        it = m_lSubItems.erase(it);
-    }
+    deleteAndClear(m_lSubItems);
 }
 
 long DataItemFormatVariable::getLength(const unsigned char *pData) {

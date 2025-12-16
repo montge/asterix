@@ -23,6 +23,7 @@
 
 #include "DataItemFormatFixed.h"
 #include "Tracer.h"
+#include "Utils.h"
 #include "asterixformat.hxx"
 
 DataItemFormatFixed::DataItemFormatFixed(int id)
@@ -40,12 +41,7 @@ DataItemFormatFixed::DataItemFormatFixed(const DataItemFormatFixed &obj)
 }
 
 DataItemFormatFixed::~DataItemFormatFixed() {
-    // destroy list items
-    std::list<DataItemFormat *>::iterator it = m_lSubItems.begin();
-    while (it != m_lSubItems.end()) {
-        delete static_cast<DataItemBits *>(*it);
-        it = m_lSubItems.erase(it);
-    }
+    deleteAndClear(m_lSubItems);
 }
 
 long DataItemFormatFixed::getLength() {

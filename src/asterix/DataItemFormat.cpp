@@ -22,6 +22,7 @@
  */
 
 #include "DataItemFormat.h"
+#include "Utils.h"
 
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 int DataItemFormat::m_nLastPID = PID_LAST;
@@ -35,17 +36,5 @@ DataItemFormat::DataItemFormat(int id)
 }
 
 DataItemFormat::~DataItemFormat() {
-    // C++23 Quick Win: Ranges simplify cleanup operations
-#if HAS_RANGES_ALGORITHMS
-    // Modern ranges-based cleanup - more concise and potentially optimized
-    asterix::ranges::for_each(m_lSubItems, [](DataItemFormat* item) { delete item; });
-    m_lSubItems.clear();
-#else
-    // C++17: Traditional iterator-based cleanup
-    std::list<DataItemFormat *>::iterator it = m_lSubItems.begin();
-    while (it != m_lSubItems.end()) {
-        delete (DataItemFormat *) (*it);
-        it = m_lSubItems.erase(it);
-    }
-#endif
+    deleteAndClear(m_lSubItems);
 }

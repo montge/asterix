@@ -152,13 +152,7 @@ DataRecord::DataRecord(Category *cat, int nID, unsigned long len, const unsigned
 }
 
 DataRecord::~DataRecord() {
-    // go through all present data items in this block
-    std::list<DataItem *>::iterator it = m_lDataItems.begin();
-    while (it != m_lDataItems.end()) {
-        delete (DataItem *) (*it);
-        it = m_lDataItems.erase(it);
-    }
-
+    deleteAndClear(m_lDataItems);
     // m_pFSPECData and m_pHexData are std::unique_ptr - automatically freed
 }
 

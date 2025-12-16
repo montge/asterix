@@ -30,12 +30,7 @@ AsterixData::AsterixData() {
 }
 
 AsterixData::~AsterixData() {
-    // go through all present data blocks and delete them
-    std::list<DataBlock *>::iterator it = m_lDataBlocks.begin();
-    while (it != m_lDataBlocks.end()) {
-        delete (DataBlock *) (*it);
-        it = m_lDataBlocks.erase(it);
-    }
+    deleteAndClear(m_lDataBlocks);
 }
 
 /*

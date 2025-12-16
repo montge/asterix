@@ -22,25 +22,15 @@
  */
 
 #include "Category.h"
+#include "Utils.h"
 
 Category::Category(int id)
         : m_id(id), m_bFiltered(false) {
 }
 
 Category::~Category() {
-    // destroy data items
-    std::list<DataItemDescription *>::iterator it = m_lDataItems.begin();
-    while (it != m_lDataItems.end()) {
-        delete (DataItemDescription *) (*it);
-        it = m_lDataItems.erase(it);
-    }
-
-    // destroy UAPs
-    std::list<UAP *>::iterator it2 = m_lUAPs.begin();
-    while (it2 != m_lUAPs.end()) {
-        delete (UAP *) (*it2);
-        it2 = m_lUAPs.erase(it2);
-    }
+    deleteAndClear(m_lDataItems);
+    deleteAndClear(m_lUAPs);
 }
 
 DataItemDescription *Category::getDataItemDescription(std::string id) {

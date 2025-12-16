@@ -22,18 +22,14 @@
  */
 
 #include "UAP.h"
+#include "Utils.h"
 
 UAP::UAP()
         : m_nUseIfBitSet(0), m_nUseIfByteNr(0), m_nIsSetTo(0) {
 }
 
 UAP::~UAP() {
-    // destroy UAP items
-    std::list<UAPItem *>::iterator it = m_lUAPItems.begin();
-    while (it != m_lUAPItems.end()) {
-        delete (UAPItem *) (*it);
-        it = m_lUAPItems.erase(it);
-    }
+    deleteAndClear(m_lUAPItems);
 }
 
 UAPItem *UAP::newUAPItem() {
