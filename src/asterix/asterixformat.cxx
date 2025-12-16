@@ -326,7 +326,7 @@ bool CAsterixFormat::GetFormatNo(const char *formatName, unsigned int &formatTyp
 }
 
 int CAsterixFormat::GetStatus(CBaseDevice &device, [[maybe_unused]] const unsigned int formatType, [[maybe_unused]] int query) {
-    if (device.IsOpened() == false)
+    if (!device.IsOpened())
         return STS_NO_DATA;
 
     return 0;

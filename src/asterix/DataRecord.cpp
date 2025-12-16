@@ -112,12 +112,12 @@ DataRecord::DataRecord(Category *cat, int nID, unsigned long len, const unsigned
     }
 
     if (it != m_lDataItems.end()) {
-        if (errorReported == false) {
+        if (!errorReported) {
             Tracer::Error("Not enough data in record for CAT%03d", cat->m_id);
         }
 
         while (it != m_lDataItems.end()) {
-            DataItem *di = (DataItem *) (*it);
+            auto *di = static_cast<DataItem *>(*it);
             delete di;
             it = m_lDataItems.erase(it);
         }

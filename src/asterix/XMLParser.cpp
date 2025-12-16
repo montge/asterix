@@ -513,7 +513,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
                                                    : nullptr)) { // <!ELEMENT CPBitsPresence (#PCDATA)>
     } else if (!strcmp(el, "BitsValue")) { // <!ELEMENT BitsValue (#PCDATA)>
 
-        if (p->m_pFormat == nullptr || p->m_pFormat->isBits() == false) {
+        if (p->m_pFormat == nullptr || !p->m_pFormat->isBits()) {
             p->Error("XMLParser : <BitsValue> without <Bits>");
             return;
         }
@@ -543,7 +543,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
     } else if (!strcmp(el,
                        "BitsUnit")) { // <!ELEMENT BitsUnit (#PCDATA)> <!ELEMENT PBitsUnit (#PCDATA)> <!ELEMENT CPBitsUnit (#PCDATA)>
 
-        if (p->m_pFormat == nullptr || p->m_pFormat->isBits() == false) {
+        if (p->m_pFormat == nullptr || !p->m_pFormat->isBits()) {
             p->Error("XMLParser : <BitsUnit> without <Bits>");
             return;
         }
@@ -562,7 +562,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
 
         p->GetAttribute(el, "BitsUnit", &((DataItemBits *) p->m_pFormat)->m_strUnit);
     } else if (!strcmp(el, "BitsConst")) {
-        if (p->m_pFormat == nullptr || p->m_pFormat->isBits() == false) {
+        if (p->m_pFormat == nullptr || !p->m_pFormat->isBits()) {
             p->Error("XMLParser : <BitsConst> without <Bits>");
             return;
         }
