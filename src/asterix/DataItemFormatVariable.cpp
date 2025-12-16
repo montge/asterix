@@ -41,12 +41,9 @@ DataItemFormatVariable::DataItemFormatVariable(const DataItemFormatVariable &obj
         [](const DataItemFormat* item) { return item->clone(); }
     );
 #else
-    // C++17: Traditional iterator-based approach
-    std::list<DataItemFormat *>::iterator it = ((DataItemFormat &) obj).m_lSubItems.begin();
-    while (it != obj.m_lSubItems.end()) {
-        DataItemFormat *di = (DataItemFormat *) (*it);
+    // C++17: Traditional range-based approach
+    for (const auto* di : obj.m_lSubItems) {
         m_lSubItems.push_back(di->clone());
-        it++;
     }
 #endif
 
@@ -63,7 +60,7 @@ long DataItemFormatVariable::getLength(const unsigned char *pData) {
     bool lastPart = false;
     it = m_lSubItems.begin();
 
-    DataItemFormatFixed *dip = (DataItemFormatFixed *) (*it);
+    auto *dip = static_cast<DataItemFormatFixed *>(*it);
 
     do {
         lastPart = dip->isLastPart(pData);
@@ -75,7 +72,7 @@ long DataItemFormatVariable::getLength(const unsigned char *pData) {
         if (it != m_lSubItems.end()) {
             it++;
             if (it != m_lSubItems.end()) {
-                dip = (DataItemFormatFixed *) (*it);
+                dip = static_cast<DataItemFormatFixed *>(*it);
             }
         }
     } while (!lastPart);
@@ -98,7 +95,7 @@ bool DataItemFormatVariable::getText(std::string &strResult, std::string &strHea
     it = m_lSubItems.begin();
     std::string tmpResult;
 
-    DataItemFormatFixed *dip = (DataItemFormatFixed *) (*it);
+    auto *dip = static_cast<DataItemFormatFixed *>(*it);
 
     switch (formatType) {
         case CAsterixFormat::EJSON:
@@ -144,7 +141,7 @@ bool DataItemFormatVariable::getText(std::string &strResult, std::string &strHea
         if (it != m_lSubItems.end()) {
             it++;
             if (it != m_lSubItems.end()) {
-                dip = (DataItemFormatFixed *) (*it);
+                dip = static_cast<DataItemFormatFixed *>(*it);
             }
         }
     } while (!lastPart && nLength > 0);
@@ -235,7 +232,7 @@ fulliautomatix_data* DataItemFormatVariable::getData(unsigned char* pData, long 
 
   it=m_lSubItems.begin();
 
-  DataItemFormatFixed* dip = (DataItemFormatFixed*)(*it);
+  auto* dip = static_cast<DataItemFormatFixed*>(*it);
 
   do
   {
@@ -261,7 +258,7 @@ fulliautomatix_data* DataItemFormatVariable::getData(unsigned char* pData, long 
       it++;
       if (it != m_lSubItems.end())
       {
-        dip = (DataItemFormatFixed*)(*it);
+        dip = static_cast<DataItemFormatFixed*>(*it);
       }
     }
   }
@@ -289,7 +286,7 @@ PyObject* DataItemFormatVariable::getObject(unsigned char* pData, long nLength, 
     }
 
     it=m_lSubItems.begin();
-    DataItemFormatFixed* dip = (DataItemFormatFixed*)(*it);
+    auto* dip = static_cast<DataItemFormatFixed*>(*it);
     do
     {
         lastPart = dip->isLastPart(pData);
@@ -310,7 +307,7 @@ PyObject* DataItemFormatVariable::getObject(unsigned char* pData, long nLength, 
         if (it != m_lSubItems.end()) {
             it++;
             if (it != m_lSubItems.end()) {
-                dip = (DataItemFormatFixed*)(*it);
+                dip = static_cast<DataItemFormatFixed*>(*it);
             }
         }
     }
