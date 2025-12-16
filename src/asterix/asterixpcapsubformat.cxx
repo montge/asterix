@@ -169,7 +169,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
      *
      * Memory lifecycle: Buffer persists in Descriptor until format object destroyed.
      */
-    unsigned char *pPacketBuffer = (unsigned char *)Descriptor.GetNewBuffer(nPacketBufferSize);
+    unsigned char *pPacketBuffer = const_cast<unsigned char *>(Descriptor.GetNewBuffer(nPacketBufferSize));
     if (!device.Read((void *) pPacketBuffer, nPacketBufferSize)) {
         LOGERROR(1, "Couldn't read PCAP packet.\n");
         // No delete needed - buffer is managed by Descriptor

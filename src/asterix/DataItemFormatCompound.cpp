@@ -58,7 +58,7 @@ long DataItemFormatCompound::getLength(const unsigned char *pData) {
     std::list<DataItemFormat *>::iterator it2;
     it2 = m_lSubItems.begin();
     // Security fix: Check iterator validity before dereferencing
-    if (it2 == m_lSubItems.end() || *it2 == nullptr) {
+    if (it2 == m_lSubItems.end() || !*it2) {
         Tracer::Error("Missing primary subfield of Compound");
         return 0;
     }
@@ -107,7 +107,7 @@ bool DataItemFormatCompound::getText(std::string &strResult, std::string &strHea
     std::list<DataItemFormat *>::iterator it2;
     it2 = m_lSubItems.begin();
     // Security fix: Check iterator validity before dereferencing
-    if (it2 == m_lSubItems.end() || *it2 == nullptr) {
+    if (it2 == m_lSubItems.end() || !*it2) {
         Tracer::Error("Missing primary subfield of Compound");
         return false;
     }
@@ -252,7 +252,7 @@ fulliautomatix_definitions* DataItemFormatCompound::getWiresharkDefinitions()
     it = m_lSubItems.begin();
     auto* pCompoundPrimary = static_cast<DataItemFormatVariable*>(*it);
     ++it;
-    if (pCompoundPrimary == nullptr)
+    if (!pCompoundPrimary)
     {
         Tracer::Error("Missing primary subfield of Compound");
         return nullptr;
@@ -280,7 +280,7 @@ fulliautomatix_data* DataItemFormatCompound::getData(unsigned char* pData, long,
     std::list<DataItemFormat*>::iterator it2;
     it2 = m_lSubItems.begin();
     auto* pCompoundPrimary = static_cast<DataItemFormatVariable*>(*it2);
-    if (pCompoundPrimary == nullptr)
+    if (!pCompoundPrimary)
     {
         Tracer::Error("Missing primary subfield of Compound");
         return 0;
@@ -295,7 +295,7 @@ fulliautomatix_data* DataItemFormatCompound::getData(unsigned char* pData, long,
     int primaryPartLength = pCompoundPrimary->getLength(pData);
     unsigned char* pSecData = pData + primaryPartLength;
 
-    lastData = firstData = newDataTree(nullptr, byteoffset, primaryPartLength, (char*)"Compound item header");
+    lastData = firstData = newDataTree(nullptr, byteoffset, primaryPartLength, const_cast<char*>("Compound item header"));
 
     lastData->next = pCompoundPrimary->getData(pData, primaryPartLength, byteoffset);
     while(lastData->next)
@@ -354,7 +354,7 @@ void DataItemFormatCompound::insertToDict(PyObject* p, unsigned char* pData, lon
     std::list<DataItemFormat*>::iterator it2;
     it2 = m_lSubItems.begin();
     // Security fix: Check iterator validity before dereferencing
-    if (it2 == m_lSubItems.end() || *it2 == nullptr)
+    if (it2 == m_lSubItems.end() || !*it2)
     {
         Tracer::Error("Missing primary subfield of Compound");
         return;

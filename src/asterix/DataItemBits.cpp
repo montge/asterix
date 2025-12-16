@@ -31,6 +31,13 @@
 
 extern bool gFiltering;
 
+// Bit manipulation constants for binary field parsing
+namespace {
+    constexpr unsigned char BIT_MASK_MSB = 0x80;  // Most significant bit mask
+    constexpr unsigned char BIT_MASK_LSB = 0x01;  // Least significant bit mask
+    constexpr unsigned char BIT_MASK_CLEAR_MSB = 0x7F;  // Clear MSB, keep lower 7 bits
+}
+
 // Helper function to allocate error string with new[] (not strdup/malloc)
 // This ensures consistent deallocation with delete[]
 static unsigned char* newErrorString(const char* str) {
@@ -126,14 +133,14 @@ unsigned char *DataItemBits::getBits(unsigned char *pData, int bytes, int frombi
         return pVal.release();
     }
 
-    unsigned char bitmask = 0x80;
+    unsigned char bitmask = BIT_MASK_MSB;
     unsigned char outbits = 0;
     for (int bit = bytes * 8; bit >= frombit; bit--) {
         if (bit <= tobit) {
             unsigned char bitval = *pData & bitmask;
             *pTmp <<= 1;
             if (bitval)
-                *pTmp |= 0x01;
+                *pTmp |= BIT_MASK_LSB;
 
             if (++outbits >= 8) {
                 outbits = 0;
@@ -142,10 +149,10 @@ unsigned char *DataItemBits::getBits(unsigned char *pData, int bytes, int frombi
         }
 
         bitmask >>= 1;
-        bitmask &= 0x7F;
+        bitmask &= BIT_MASK_CLEAR_MSB;
 
         if (bitmask == 0) {
-            bitmask = 0x80;
+            bitmask = BIT_MASK_MSB;
             pData++;
         }
     }
@@ -173,20 +180,20 @@ unsigned long DataItemBits::getUnsigned(unsigned char *pData, int bytes, int fro
         }
 
         if (numberOfBits == 8) {
-            val = *((unsigned char *) pTmp);
+            val = *static_cast<unsigned char *>(pTmp);
         } else {
             unsigned char *pTmp2 = pTmp;
-            unsigned char bitmask = 0x80;
+            unsigned char bitmask = BIT_MASK_MSB;
             while (numberOfBits--) {
                 unsigned char bitval = *pTmp2 & bitmask;
                 val <<= 1;
                 if (bitval)
-                    val |= 0x01;
+                    val |= BIT_MASK_LSB;
 
                 bitmask >>= 1;
-                bitmask &= 0x7F;
+                bitmask &= BIT_MASK_CLEAR_MSB;
                 if (bitmask == 0) {
-                    bitmask = 0x80;
+                    bitmask = BIT_MASK_MSB;
                     pTmp2++;
                 }
             }
@@ -221,17 +228,17 @@ unsigned long long DataItemBits::getUnsigned64(unsigned char *pData, int bytes, 
         } else {
             // Bit-by-bit extraction for non-byte-aligned or < 64 bits
             unsigned char *pTmp2 = pTmp;
-            unsigned char bitmask = 0x80;
+            unsigned char bitmask = BIT_MASK_MSB;
             while (numberOfBits--) {
                 unsigned char bitval = *pTmp2 & bitmask;
                 val <<= 1;
                 if (bitval)
-                    val |= 0x01;
+                    val |= BIT_MASK_LSB;
 
                 bitmask >>= 1;
-                bitmask &= 0x7F;
+                bitmask &= BIT_MASK_CLEAR_MSB;
                 if (bitmask == 0) {
-                    bitmask = 0x80;
+                    bitmask = BIT_MASK_MSB;
                     pTmp2++;
                 }
             }
@@ -325,7 +332,7 @@ unsigned char *DataItemBits::getHexBitString(unsigned char *pData, int bytes, in
     int i;
     for (i = 0; i < numberOfBytes; i++) {
         // Security fix: Use snprintf to prevent buffer overflow
-        snprintf((char *) &str.get()[i * 2], 3, "%02X", pB[i]);
+        snprintf(reinterpret_cast<char *>(&str.get()[i * 2]), 3, "%02X", pB[i]);
     }
 
     return str.release();
@@ -362,7 +369,7 @@ unsigned char *DataItemBits::getHexBitStringFullByte(unsigned char *pData, int b
     int i;
     for (i = 0; i < numberOfBytes; i++) {
         // Security fix: Use snprintf to prevent buffer overflow
-        snprintf((char *) &str.get()[i * 2], 3, "%02X", pB[i]);
+        snprintf(reinterpret_cast<char *>(&str.get()[i * 2]), 3, "%02X", pB[i]);
     }
 
     return str.release();
@@ -1219,7 +1226,7 @@ fulliautomatix_data* DataItemBits::getData(unsigned char* pData, long nLength, i
 
     // Error case - unknown encoding
     return newDataMessage(nullptr, byteoffset + firstByte, numberOfBytes, 2,
-                          (char*)"Error: Unknown encoding.");
+                          const_cast<char*>("Error: Unknown encoding."));
 }
 #endif
 

@@ -231,7 +231,7 @@ bool CAsterixGPSSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor
         gettimeofday(&tp, nullptr);
 	double dTimestamp = tp.tv_sec + (1.0/1000000) * tp.tv_usec;
 
-        unsigned char *pPacketPtr = (unsigned char *) Descriptor.GetBuffer();
+        unsigned char *pPacketPtr = const_cast<unsigned char *>(Descriptor.GetBuffer());
         int m_nDataLength = Descriptor.GetBufferLen();
 
         while (m_nDataLength > 0) {

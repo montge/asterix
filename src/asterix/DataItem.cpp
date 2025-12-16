@@ -135,7 +135,7 @@ fulliautomatix_data* DataItem::getData(int byteoffset)
   }
   else
   {
-    lastData->next = newDataMessage(nullptr, byteoffset, m_nLength, 2, (char*)"Error: Unknown item format.");
+    lastData->next = newDataMessage(nullptr, byteoffset, m_nLength, 2, const_cast<char*>("Error: Unknown item format."));
   }
   while (lastData->next)
   {

@@ -30,16 +30,16 @@
  * Handling of CDATA
  */
 void XMLParser::CharacterHandler(void *userData, const XML_Char *s, int len) {
-    XMLParser *p = (XMLParser *) userData;
+    XMLParser *p = static_cast<XMLParser *>(userData);
 
-    if (p == nullptr) {
+    if (!p) {
         return;
     }
 
-    if (p->m_pstrCData != nullptr) {
+    if (p->m_pstrCData) {
         // assign string value
         p->m_pstrCData->append(s, len);
-    } else if (p->m_pintCData != nullptr) {
+    } else if (p->m_pintCData) {
         std::string tmpstr(s, len);
         *(p->m_pintCData) = atoi(tmpstr.c_str());
         p->m_pintCData = nullptr;
@@ -47,8 +47,8 @@ void XMLParser::CharacterHandler(void *userData, const XML_Char *s, int len) {
 }
 
 bool XMLParser::GetAttribute(const char *elementName, const char *attrName, std::string *ptrString) {
-    if (!strcmp(elementName, attrName)) {
-        if (ptrString == nullptr) {
+    if (strcmp(elementName, attrName) == 0) {
+        if (!ptrString) {
 #ifdef PYTHON_WRAPPER
             PyErr_SetString(PyExc_SyntaxError, "XMLParser : Attribute parsing error");
 #else
@@ -63,8 +63,8 @@ bool XMLParser::GetAttribute(const char *elementName, const char *attrName, std:
 }
 
 bool XMLParser::GetAttribute(const char *elementName, const char *attrName, int *ptrInt) {
-    if (!strcmp(elementName, attrName)) {
-        if (ptrInt == nullptr) {
+    if (strcmp(elementName, attrName) == 0) {
+        if (!ptrInt) {
 #ifdef PYTHON_WRAPPER
             PyErr_SetString(PyExc_SyntaxError, "XMLParser : Attribute parsing error");
 #else
@@ -92,7 +92,7 @@ void XMLParser::Error(const char *errstr) {
     tmpstr += "\n";
 
 #ifdef PYTHON_WRAPPER
-    PyErr_SetString(PyExc_SyntaxError, (char*)tmpstr.c_str());
+    PyErr_SetString(PyExc_SyntaxError, const_cast<char*>(tmpstr.c_str()));
 #else
     // Use "%s" format to prevent format string injection from XML content
     Tracer::Error("%s", tmpstr.c_str());
@@ -106,9 +106,9 @@ void XMLParser::Error(const char *errstr) {
  */
 void XMLParser::ElementHandlerStart(void *data, const char *el, const char **attr) {
     int i;
-    XMLParser *p = (XMLParser *) data;
+    XMLParser *p = static_cast<XMLParser *>(data);
 
-    if (p == nullptr) {
+    if (!p) {
 #ifdef PYTHON_WRAPPER
         PyErr_SetString(PyExc_RuntimeError, "Missing Parser!");
 #else
@@ -120,12 +120,12 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
     if (p->m_bErrorDetectedStopParsing)
         return;
 
-    if (!strcmp(el, "Category")) { // <!ELEMENT Category (CatID,CatName,CatVer,DataItemDescription*,UAP)>
+    if (strcmp(el, "Category") == 0) { // <!ELEMENT Category (CatID,CatName,CatVer,DataItemDescription*,UAP)>
         for (i = 0; attr[i]; i += 2) {
-            if (!strcmp(attr[i], "id")) { // <!ATTLIST id CDATA #REQUIRED>
+            if (strcmp(attr[i], "id") == 0) { // <!ATTLIST id CDATA #REQUIRED>
                 int id = 0;
 
-                if (!strcmp(attr[i + 1], "BDS"))
+                if (strcmp(attr[i + 1], "BDS") == 0)
                     id = BDS_CAT_ID;
                 else
                     id = atoi(attr[i + 1]);
@@ -136,28 +136,28 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
                     p->Error("XMLParser : Wrong category: ", attr[i + 1]);
                     break;
                 }
-            } else if (!strcmp(attr[i], "name")) { // <!ATTLIST name CDATA #REQUIRED>
+            } else if (strcmp(attr[i], "name") == 0) { // <!ATTLIST name CDATA #REQUIRED>
                 p->m_pCategory->m_strName = attr[i + 1];
-            } else if (!strcmp(attr[i], "ver")) { // <!ATTLIST ver CDATA #REQUIRED>
+            } else if (strcmp(attr[i], "ver") == 0) { // <!ATTLIST ver CDATA #REQUIRED>
                 p->m_pCategory->m_strVer = attr[i + 1];
             } else {
                 p->Error("XMLParser : Unknown attribute: ", attr[i]);
             }
         }
-    } else if (!strcmp(el,
-                       "DataItem")) { // <!ELEMENT DataItemDescription (DataItemName,DataItemDefinition,DataItemFormat,DataItemNote?)>
+    } else if (strcmp(el,
+                       "DataItem") == 0) { // <!ELEMENT DataItemDescription (DataItemName,DataItemDefinition,DataItemFormat,DataItemNote?)>
         if (p->m_pCategory == nullptr) {
             p->Error("XMLParser : <DataItem> without <Category> ");
         } else {
             for (i = 0; attr[i]; i += 2) {
-                if (!strcmp(attr[i], "id")) { //<!ATTLIST DataItemDescription id CDATA #REQUIRED>
+                if (strcmp(attr[i], "id") == 0) { //<!ATTLIST DataItemDescription id CDATA #REQUIRED>
                     p->m_pDataItem = p->m_pCategory->getDataItemDescription(attr[i + 1]);
-                } else if (!strcmp(attr[i],
-                                   "rule")) { // <!ATTLIST DataItemDescription rule (mandatory|optional|unknown) "unknown">
+                } else if (strcmp(attr[i],
+                                   "rule") == 0) { // <!ATTLIST DataItemDescription rule (mandatory|optional|unknown) "unknown">
                     if (p->m_pDataItem) {
-                        if (!strcmp(attr[i + 1], "optional"))
+                        if (strcmp(attr[i + 1], "optional") == 0)
                             p->m_pDataItem->m_eRule = DataItemDescription::DATAITEM_OPTIONAL;
-                        else if (!strcmp(attr[i + 1], "mandatory"))
+                        else if (strcmp(attr[i + 1], "mandatory") == 0)
                             p->m_pDataItem->m_eRule = DataItemDescription::DATAITEM_MANDATORY;
                         else
                             p->m_pDataItem->m_eRule = DataItemDescription::DATAITEM_UNKNOWN;
@@ -175,9 +175,9 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
                                                                         : nullptr)) { // <!ELEMENT DataItemDefinition (#PCDATA)>
     } else if (p->GetAttribute(el, "DataItemNote", p->m_pDataItem ? &p->m_pDataItem->m_strNote
                                                                   : nullptr)) { // <!ELEMENT DataItemNote (#PCDATA)>
-    } else if (!strcmp(el, "DataItemFormat")) { // <!ELEMENT DataItemFormat (Fixed|Variable|Compound)>
+    } else if (strcmp(el, "DataItemFormat") == 0) { // <!ELEMENT DataItemFormat (Fixed|Variable|Compound)>
         for (i = 0; attr[i]; i += 2) {
-            if (!strcmp(attr[i], "desc")) { // <!ATTLIST DataItemFormat desc CDATA "" >
+            if (strcmp(attr[i], "desc") == 0) { // <!ATTLIST DataItemFormat desc CDATA "" >
                 if (p->m_pDataItem) {
                     p->m_pDataItem->m_strFormat = attr[i + 1];
                 } else {
@@ -187,7 +187,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
                 p->Error("XMLParser : Unknown attribute for <DataItemFormat>: ", attr[i]);
             }
         }
-    } else if (!strcmp(el, "BDS")) { // <!ELEMENT BDS (Bits+)>
+    } else if (strcmp(el, "BDS") == 0) { // <!ELEMENT BDS (Bits+)>
         Category *m_pBDSCategory = p->m_pDef->getCategory(BDS_CAT_ID);
 
         std::list<DataItemDescription *>::iterator it = m_pBDSCategory->m_lDataItems.begin();
@@ -242,7 +242,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
             p->m_pDataItem->m_pFormat = pFormatBDS;
             p->m_pFormat = pFormatBDS;
         }
-    } else if (!strcmp(el, "Fixed")) { // <!ELEMENT Fixed (Bits+)>
+    } else if (strcmp(el, "Fixed") == 0) { // <!ELEMENT Fixed (Bits+)>
         if (!p->m_pDataItem) {
             p->Error("XMLParser : <Fixed> without <DataItem>");
             return;
@@ -286,7 +286,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
         }
 
         for (i = 0; attr[i]; i += 2) {
-            if (!strcmp(attr[i], "length")) { // <!ATTLIST Fixed length CDATA "1" >
+            if (strcmp(attr[i], "length") == 0) { // <!ATTLIST Fixed length CDATA "1" >
                 int len = atoi(attr[i + 1]);
 
                 if (len >= 0) {
@@ -298,7 +298,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
                 p->Error("XMLParser : Unknown attribute for Fixed: ", attr[i]);
             }
         }
-    } else if (!strcmp(el, "Explicit")) { // <!ELEMENT Explicit (Bits+)>
+    } else if (strcmp(el, "Explicit") == 0) { // <!ELEMENT Explicit (Bits+)>
         if (!p->m_pDataItem) {
             p->Error("XMLParser : <Explicit> without <DataItem>");
             return;
@@ -328,7 +328,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
             p->m_pDataItem->m_pFormat = pFormatExplicit;
             p->m_pFormat = pFormatExplicit;
         }
-    } else if (!strcmp(el, "Repetitive")) { // <!ELEMENT Repetitive (Bits+)>
+    } else if (strcmp(el, "Repetitive") == 0) { // <!ELEMENT Repetitive (Bits+)>
         if (!p->m_pDataItem) {
             p->Error("XMLParser : <Repetitive> without <DataItem>");
             return;
@@ -363,7 +363,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
             p->m_pDataItem->m_pFormat = pFormatRepetitive;
             p->m_pFormat = pFormatRepetitive;
         }
-    } else if (!strcmp(el, "Variable")) { // <!ELEMENT Variable (Part+)>
+    } else if (strcmp(el, "Variable") == 0) { // <!ELEMENT Variable (Part+)>
         if (!p->m_pDataItem) {
             p->Error("XMLParser : <Variable> without <DataItem>");
             return;
@@ -393,7 +393,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
             p->m_pDataItem->m_pFormat = pFormatVariable;
             p->m_pFormat = pFormatVariable;
         }
-    } else if (!strcmp(el, "Compound")) { // <!ELEMENT Compound (CPart+)>
+    } else if (strcmp(el, "Compound") == 0) { // <!ELEMENT Compound (CPart+)>
         if (!p->m_pDataItem) {
             p->Error("XMLParser : <Compound> without <DataItem>");
             return;
@@ -428,7 +428,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
             p->m_pDataItem->m_pFormat = pFormatCompound;
             p->m_pFormat = pFormatCompound;
         }
-    } else if (!strcmp(el, "Bits")) {
+    } else if (strcmp(el, "Bits") == 0) {
         if (!p->m_pFormat) {
             p->Error("XMLParser : <Bits> without <Format>");
             return;
@@ -444,7 +444,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
         p->m_pFormat = pBits;
 
         for (i = 0; attr[i]; i += 2) {
-            if (!strcmp(attr[i], "bit")) { // <!ATTLIST Bits bit CDATA "0">
+            if (strcmp(attr[i], "bit") == 0) { // <!ATTLIST Bits bit CDATA "0">
 
                 int bit = atoi(attr[i + 1]);
 
@@ -456,7 +456,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
                 } else {
                     p->Error("XMLParser : Wrong bit: ", attr[i + 1]);
                 }
-            } else if (!strcmp(attr[i], "from")) { // <!ATTLIST Bits from CDATA "0">
+            } else if (strcmp(attr[i], "from") == 0) { // <!ATTLIST Bits from CDATA "0">
                 int bit = atoi(attr[i + 1]);
 
                 if (bit >= 0) {
@@ -467,7 +467,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
                 } else {
                     p->Error("XMLParser : Wrong bit from: ", attr[i + 1]);
                 }
-            } else if (!strcmp(attr[i], "to")) { // <!ATTLIST Bits to CDATA "0">
+            } else if (strcmp(attr[i], "to") == 0) { // <!ATTLIST Bits to CDATA "0">
                 int bit = atoi(attr[i + 1]);
 
                 if (bit >= 0) {
@@ -478,24 +478,24 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
                 } else {
                     p->Error("XMLParser : Wrong bit to: ", attr[i + 1]);
                 }
-            } else if (!strcmp(attr[i],
-                               "encode")) { // <!ATTLIST Bits encode (signed|6bitschar|octal|unsigned|ascii|hex) "unsigned">
-                if (!strcmp(attr[i + 1], "unsigned")) {
+            } else if (strcmp(attr[i],
+                               "encode") == 0) { // <!ATTLIST Bits encode (signed|6bitschar|octal|unsigned|ascii|hex) "unsigned">
+                if (strcmp(attr[i + 1], "unsigned") == 0) {
                     pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
-                } else if (!strcmp(attr[i + 1], "6bitschar")) {
+                } else if (strcmp(attr[i + 1], "6bitschar") == 0) {
                     pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_SIX_BIT_CHAR;
-                } else if (!strcmp(attr[i + 1], "hex")) {
+                } else if (strcmp(attr[i + 1], "hex") == 0) {
                     pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_HEX_BIT_CHAR;
-                } else if (!strcmp(attr[i + 1], "octal")) {
+                } else if (strcmp(attr[i + 1], "octal") == 0) {
                     pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_OCTAL;
-                } else if (!strcmp(attr[i + 1], "signed")) {
+                } else if (strcmp(attr[i + 1], "signed") == 0) {
                     pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_SIGNED;
-                } else if (!strcmp(attr[i + 1], "ascii")) {
+                } else if (strcmp(attr[i + 1], "ascii") == 0) {
                     pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_ASCII;
                 } else {
                     p->Error("XMLParser : Wrong encode: ", attr[i]);
                 }
-            } else if (!strcmp(attr[i], "fx")) {
+            } else if (strcmp(attr[i], "fx") == 0) {
                 pBits->m_bExtension = atoi(attr[i + 1]) ? true : false;
             } else {
                 p->Error("XMLParser : Unknown attribute: ", attr[i]);
@@ -510,7 +510,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
     } else if (p->GetAttribute(el, "BitsPresence", (p->m_pFormat && p->m_pFormat->isBits())
                                                    ? &((DataItemBits *) p->m_pFormat)->m_nPresenceOfField
                                                    : nullptr)) { // <!ELEMENT CPBitsPresence (#PCDATA)>
-    } else if (!strcmp(el, "BitsValue")) { // <!ELEMENT BitsValue (#PCDATA)>
+    } else if (strcmp(el, "BitsValue") == 0) { // <!ELEMENT BitsValue (#PCDATA)>
 
         if (p->m_pFormat == nullptr || !p->m_pFormat->isBits()) {
             p->Error("XMLParser : <BitsValue> without <Bits>");
@@ -518,19 +518,19 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
         }
 
         for (i = 0; attr[i]; i += 2) {
-            if (!strcmp(attr[i], "val")) { // <!ATTLIST BitsValue val CDATA "0" >
+            if (strcmp(attr[i], "val") == 0) { // <!ATTLIST BitsValue val CDATA "0" >
                 int val = atoi(attr[i + 1]);
                 p->m_pBitsValue = new BitsValue(val);
                 ((DataItemBits *) p->m_pFormat)->m_lValue.push_back(p->m_pBitsValue);
             }
             /* TODO <!ATTLIST BitsValue from CDATA "0" > <!ATTLIST BitsValue to CDATA "0" >
-      else if (!strcmp(attr[i], "from"))
+      else if (strcmp(attr[i], "from") == 0)
       { // <!ATTLIST BitsValue from CDATA "0" >
         int val = atoi(attr[i+1]);
         p->m_pBitsValue = new BitsValue(val); // TODO from
         p->m_pBits->m_lValue.push_back(p->m_pBitsValue);
       }
-      else if (!strcmp(attr[i], "to"))
+      else if (strcmp(attr[i], "to") == 0)
       { // <!ATTLIST BitsValue to CDATA "0" >
         int val = atoi(attr[i+1]);
         p->m_pBitsValue = new BitsValue(val);// TODO to
@@ -539,8 +539,8 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
              */
         }
         p->GetAttribute(el, "BitsValue", p->m_pBitsValue ? &p->m_pBitsValue->m_strDescription : nullptr);
-    } else if (!strcmp(el,
-                       "BitsUnit")) { // <!ELEMENT BitsUnit (#PCDATA)> <!ELEMENT PBitsUnit (#PCDATA)> <!ELEMENT CPBitsUnit (#PCDATA)>
+    } else if (strcmp(el,
+                       "BitsUnit") == 0) { // <!ELEMENT BitsUnit (#PCDATA)> <!ELEMENT PBitsUnit (#PCDATA)> <!ELEMENT CPBitsUnit (#PCDATA)>
 
         if (p->m_pFormat == nullptr || !p->m_pFormat->isBits()) {
             p->Error("XMLParser : <BitsUnit> without <Bits>");
@@ -548,19 +548,19 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
         }
 
         for (i = 0; attr[i]; i += 2) {
-            if (!strcmp(attr[i], "scale")) { // <!ATTLIST BitsUnit scale CDATA "1" >
+            if (strcmp(attr[i], "scale") == 0) { // <!ATTLIST BitsUnit scale CDATA "1" >
                 ((DataItemBits *) p->m_pFormat)->m_dScale = atof(attr[i + 1]);
-            } else if (!strcmp(attr[i], "min")) { // <!ATTLIST BitsUnit min CDATA "0" >
+            } else if (strcmp(attr[i], "min") == 0) { // <!ATTLIST BitsUnit min CDATA "0" >
                 ((DataItemBits *) p->m_pFormat)->m_dMinValue = atof(attr[i + 1]);
                 ((DataItemBits *) p->m_pFormat)->m_bMinValueSet = true;
-            } else if (!strcmp(attr[i], "max")) { // <!ATTLIST BitsUnit max CDATA "0" >
+            } else if (strcmp(attr[i], "max") == 0) { // <!ATTLIST BitsUnit max CDATA "0" >
                 ((DataItemBits *) p->m_pFormat)->m_dMaxValue = atof(attr[i + 1]);
                 ((DataItemBits *) p->m_pFormat)->m_bMaxValueSet = true;
             }
         }
 
         p->GetAttribute(el, "BitsUnit", &((DataItemBits *) p->m_pFormat)->m_strUnit);
-    } else if (!strcmp(el, "BitsConst")) {
+    } else if (strcmp(el, "BitsConst") == 0) {
         if (p->m_pFormat == nullptr || !p->m_pFormat->isBits()) {
             p->Error("XMLParser : <BitsConst> without <Bits>");
             return;
@@ -568,7 +568,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
 
         ((DataItemBits *) p->m_pFormat)->m_bIsConst = true;
         p->GetAttribute(el, "BitsConst", &((DataItemBits *) p->m_pFormat)->m_nConst);
-    } else if (!strcmp(el, "UAP")) {
+    } else if (strcmp(el, "UAP") == 0) {
         if (p->m_pCategory == nullptr) {
             p->Error("XMLParser : Missing <UAP> outside <Category>");
             return;
@@ -577,17 +577,17 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
         p->m_pUAP = p->m_pCategory->newUAP();
 
         for (i = 0; attr[i]; i += 2) {
-            if (!strcmp(attr[i], "use_if_bit_set")) { // <!ATTLIST UAP use_if_bit_set CDATA "0">
+            if (strcmp(attr[i], "use_if_bit_set") == 0) { // <!ATTLIST UAP use_if_bit_set CDATA "0">
                 p->m_pUAP->m_nUseIfBitSet = atoi(attr[i + 1]);
-            } else if (!strcmp(attr[i], "use_if_byte_nr")) { // <!ATTLIST UAP use_if_byte_nr CDATA "0">
+            } else if (strcmp(attr[i], "use_if_byte_nr") == 0) { // <!ATTLIST UAP use_if_byte_nr CDATA "0">
                 p->m_pUAP->m_nUseIfByteNr = atoi(attr[i + 1]);
-            } else if (!strcmp(attr[i], "is_set_to")) { // <!ATTLIST UAP is_set_to CDATA "0">
+            } else if (strcmp(attr[i], "is_set_to") == 0) { // <!ATTLIST UAP is_set_to CDATA "0">
                 p->m_pUAP->m_nIsSetTo = atoi(attr[i + 1]);
             } else {
                 p->Error("XMLParser : Unknown property for UAP: ", attr[i + 1]);
             }
         }
-    } else if (!strcmp(el, "UAPItem")) { // <!ELEMENT UAPItem (#PCDATA)>
+    } else if (strcmp(el, "UAPItem") == 0) { // <!ELEMENT UAPItem (#PCDATA)>
         if (p->m_pCategory == nullptr) {
             p->Error("XMLParser : Missing <UAPItem> outside <Category>");
             return;
@@ -600,16 +600,16 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
         p->m_pUAPItem = p->m_pUAP->newUAPItem();
 
         for (i = 0; attr[i]; i += 2) {
-            if (!strcmp(attr[i], "bit")) { // <!ATTLIST UAPItem bit CDATA #REQUIRED>
+            if (strcmp(attr[i], "bit") == 0) { // <!ATTLIST UAPItem bit CDATA #REQUIRED>
                 p->m_pUAPItem->m_nBit = atoi(attr[i + 1]);
-            } else if (!strcmp(attr[i], "frn")) { // <!ATTLIST UAPItem frn CDATA #REQUIRED>
-                if (!strcmp(attr[i + 1], "FX")) {
+            } else if (strcmp(attr[i], "frn") == 0) { // <!ATTLIST UAPItem frn CDATA #REQUIRED>
+                if (strcmp(attr[i + 1], "FX") == 0) {
                     p->m_pUAPItem->m_bFX = true;
                 } else {
                     p->m_pUAPItem->m_bFX = false;
                     p->m_pUAPItem->m_nFRN = atoi(attr[i + 1]);
                 }
-            } else if (!strcmp(attr[i], "len")) { // <!ATTLIST UAPItem len CDATA #REQUIRED>
+            } else if (strcmp(attr[i], "len") == 0) { // <!ATTLIST UAPItem len CDATA #REQUIRED>
                 p->m_pUAPItem->m_nLen = atoi(attr[i + 1]);
             } else {
                 p->Error("XMLParser : Unknown property for UAPItem: ", attr[i + 1]);
@@ -626,9 +626,9 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
  * Handling of element end
  */
 void XMLParser::ElementHandlerEnd(void *data, const char *el) {
-    XMLParser *p = (XMLParser *) data;
+    XMLParser *p = static_cast<XMLParser *>(data);
 
-    if (p == nullptr) {
+    if (!p) {
 #ifdef PYTHON_WRAPPER
         PyErr_SetString(PyExc_RuntimeError, "Missing Parser!");
 #else
@@ -640,20 +640,20 @@ void XMLParser::ElementHandlerEnd(void *data, const char *el) {
     if (p->m_bErrorDetectedStopParsing)
         return;
 
-    if (!strcmp(el, "Category")) {
+    if (strcmp(el, "Category") == 0) {
         if (p->m_pCategory) {
             p->m_pDef->setCategory(p->m_pCategory);
             p->m_pCategory = nullptr;
         } else {
             p->Error("Closing unopened tag: ", el);
         }
-    } else if (!strcmp(el, "DataItem")) {
+    } else if (strcmp(el, "DataItem") == 0) {
         if (p->m_pDataItem) {
             p->m_pDataItem = nullptr;
         } else {
             p->Error("Closing unopened tag: ", el);
         }
-    } else if (!strcmp(el, "Fixed")) {
+    } else if (strcmp(el, "Fixed") == 0) {
         if (p->m_pFormat != nullptr && p->m_pFormat->isFixed()) {
             /* We do not check for fx bit any more because there are some formats that
                do not have fx bit in primary part of variable item (e.g. I021/271).
@@ -682,55 +682,55 @@ void XMLParser::ElementHandlerEnd(void *data, const char *el) {
         } else {
             p->Error("Closing unopened tag: ", el);
         }
-    } else if (!strcmp(el, "Variable")) {
+    } else if (strcmp(el, "Variable") == 0) {
         if (p->m_pFormat != nullptr && p->m_pFormat->isVariable()) {
             p->m_pFormat = p->m_pFormat->m_pParentFormat;
         } else {
             p->Error("Closing unopened tag: ", el);
         }
-    } else if (!strcmp(el, "Explicit")) {
+    } else if (strcmp(el, "Explicit") == 0) {
         if (p->m_pFormat != nullptr && p->m_pFormat->isExplicit()) {
             p->m_pFormat = p->m_pFormat->m_pParentFormat;
         } else {
             p->Error("Closing unopened tag: ", el);
         }
-    } else if (!strcmp(el, "Repetitive")) {
+    } else if (strcmp(el, "Repetitive") == 0) {
         if (p->m_pFormat != nullptr && p->m_pFormat->isRepetitive()) {
             p->m_pFormat = p->m_pFormat->m_pParentFormat;
         } else {
             p->Error("Closing unopened tag: ", el);
         }
-    } else if (!strcmp(el, "BDS")) {
+    } else if (strcmp(el, "BDS") == 0) {
         if (p->m_pFormat != nullptr && p->m_pFormat->isBDS()) {
             p->m_pFormat = p->m_pFormat->m_pParentFormat;
         } else {
             p->Error("Closing unopened tag: ", el);
         }
-    } else if (!strcmp(el, "Compound")) {
+    } else if (strcmp(el, "Compound") == 0) {
         if (p->m_pFormat != nullptr && p->m_pFormat->isCompound()) {
             p->m_pFormat = p->m_pFormat->m_pParentFormat;
         } else {
             p->Error("Closing unopened tag: ", el);
         }
-    } else if (!strcmp(el, "Bits")) {
+    } else if (strcmp(el, "Bits") == 0) {
         if (p->m_pFormat != nullptr && p->m_pFormat->isBits()) {
             p->m_pFormat = p->m_pFormat->m_pParentFormat;
         } else {
             p->Error("Closing unopened tag: ", el);
         }
-    } else if (!strcmp(el, "BitsValue")) {
+    } else if (strcmp(el, "BitsValue") == 0) {
         if (p->m_pBitsValue) {
             p->m_pBitsValue = nullptr;
         } else {
             p->Error("Closing unopened tag: ", el);
         }
-    } else if (!strcmp(el, "UAP")) {
+    } else if (strcmp(el, "UAP") == 0) {
         if (p->m_pUAP) {
             p->m_pUAP = nullptr;
         } else {
             p->Error("Closing unopened tag: ", el);
         }
-    } else if (!strcmp(el, "UAPItem")) {
+    } else if (strcmp(el, "UAPItem") == 0) {
         if (p->m_pUAPItem) {
             p->m_pUAPItem = nullptr;
         } else {

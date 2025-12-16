@@ -267,7 +267,7 @@ fulliautomatix_data* DataRecord::getData(int byteoffset)
   }
   else
   {
-    lastData = newDataTree(lastData, byteoffset, m_nFSPECLength, (char*)"FSPEC");
+    lastData = newDataTree(lastData, byteoffset, m_nFSPECLength, const_cast<char*>("FSPEC"));
 
     // go through all UAPitems items in this record
     for (auto* uap : pUAP->m_lUAPItems) {
