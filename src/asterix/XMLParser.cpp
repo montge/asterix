@@ -203,27 +203,26 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
 
         DataItemFormat *pFormatBDS = new DataItemFormatBDS(p->m_pDataItem->m_nID);
 
-        while (it != m_pBDSCategory->m_lDataItems.end()) {
-            DataItemDescription *dip = (DataItemDescription *) (*it);
+        for (; it != m_pBDSCategory->m_lDataItems.end(); ++it) {
+            auto *dip = *it;
             pFormatBDS->m_lSubItems.push_back(dip->m_pFormat->clone());
-            it++;
         }
 
         if (p->m_pFormat != nullptr) {
             if (p->m_pFormat->isVariable()) {
                 p->m_pFormat->m_lSubItems.push_back(pFormatBDS);
             } else if (p->m_pFormat->isRepetitive()) {
-                if (p->m_pFormat->m_lSubItems.size() != 0) {
+                if (!p->m_pFormat->m_lSubItems.empty()) {
                     p->Error("XMLParser : Duplicate BDS item in Repetitive");
                 }
                 p->m_pFormat->m_lSubItems.push_back(pFormatBDS);
             } else if (p->m_pFormat->isExplicit()) {
-                if (p->m_pFormat->m_lSubItems.size() != 0) {
+                if (!p->m_pFormat->m_lSubItems.empty()) {
                     p->Error("XMLParser : Duplicate BDS item in Explicit");
                 }
                 p->m_pFormat->m_lSubItems.push_back(pFormatBDS);
             } else if (p->m_pFormat->isCompound()) {
-                if (p->m_pFormat->m_lSubItems.size() == 0) {
+                if (p->m_pFormat->m_lSubItems.empty()) {
                     p->Error("XMLParser : First part of <Compound> must be <Variable> and not <BDS>");
                     delete pFormatBDS;
                     return;
@@ -255,17 +254,17 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
             if (p->m_pFormat->isVariable()) {
                 p->m_pFormat->m_lSubItems.push_back(pFormatFixed);
             } else if (p->m_pFormat->isRepetitive()) {
-                if (p->m_pFormat->m_lSubItems.size() != 0) {
+                if (!p->m_pFormat->m_lSubItems.empty()) {
                     p->Error("XMLParser : Duplicate Fixed item in Repetitive");
                 }
                 p->m_pFormat->m_lSubItems.push_back(pFormatFixed);
             } else if (p->m_pFormat->isExplicit()) {
-                if (p->m_pFormat->m_lSubItems.size() != 0) {
+                if (!p->m_pFormat->m_lSubItems.empty()) {
                     p->Error("XMLParser : Duplicate Fixed item in Explicit");
                 }
                 p->m_pFormat->m_lSubItems.push_back(pFormatFixed);
             } else if (p->m_pFormat->isCompound()) {
-                if (p->m_pFormat->m_lSubItems.size() == 0) {
+                if (p->m_pFormat->m_lSubItems.empty()) {
                     p->Error("XMLParser : First part of <Compound> must be <Variable> and not <Fixed>");
                     delete pFormatFixed;
                     return;
@@ -309,7 +308,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
 
         if (p->m_pFormat != nullptr) {
             if (p->m_pFormat->isCompound()) {
-                if (p->m_pFormat->m_lSubItems.size() == 0) {
+                if (p->m_pFormat->m_lSubItems.empty()) {
                     p->Error("XMLParser : First part of <Compound> must be <Variable> and not <Explicit>");
                     delete pFormatExplicit;
                     return;
@@ -339,14 +338,14 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
 
         if (p->m_pFormat != nullptr) {
             if (p->m_pFormat->isCompound()) {
-                if (p->m_pFormat->m_lSubItems.size() == 0) {
+                if (p->m_pFormat->m_lSubItems.empty()) {
                     p->Error("XMLParser : First part of <Compound> must be <Variable> and not <Repetitive>");
                     delete pFormatRepetitive;
                     return;
                 }
                 p->m_pFormat->m_lSubItems.push_back(pFormatRepetitive);
             } else if (p->m_pFormat->isExplicit()) {
-                if (p->m_pFormat->m_lSubItems.size() != 0) {
+                if (!p->m_pFormat->m_lSubItems.empty()) {
                     p->Error("XMLParser : Duplicate format item in Explicit");
                 }
                 p->m_pFormat->m_lSubItems.push_back(pFormatRepetitive);
@@ -376,7 +375,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
             if (p->m_pFormat->isCompound()) {
                 p->m_pFormat->m_lSubItems.push_back(pFormatVariable);
             } else if (p->m_pFormat->isExplicit()) {
-                if (p->m_pFormat->m_lSubItems.size() != 0) {
+                if (!p->m_pFormat->m_lSubItems.empty()) {
                     p->Error("XMLParser : Duplicate format item in Explicit");
                 }
                 p->m_pFormat->m_lSubItems.push_back(pFormatVariable);
@@ -404,14 +403,14 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
 
         if (p->m_pFormat != nullptr) {
             if (p->m_pFormat->isCompound()) {
-                if (p->m_pFormat->m_lSubItems.size() == 0) {
+                if (p->m_pFormat->m_lSubItems.empty()) {
                     p->Error("XMLParser : First part of <Compound> must be <Variable> and not <Compound>");
                     delete pFormatCompound;
                     return;
                 }
                 p->m_pFormat->m_lSubItems.push_back(pFormatCompound);
             } else if (p->m_pFormat->isExplicit()) {
-                if (p->m_pFormat->m_lSubItems.size() != 0) {
+                if (!p->m_pFormat->m_lSubItems.empty()) {
                     p->Error("XMLParser : Duplicate format item in Explicit");
                 }
                 p->m_pFormat->m_lSubItems.push_back(pFormatCompound);

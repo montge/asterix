@@ -34,12 +34,8 @@ DataItemFormatBDS::~DataItemFormatBDS() {
 
 DataItemFormatBDS::DataItemFormatBDS(const DataItemFormatBDS &obj)
         : DataItemFormat(obj.m_nID) {
-    std::list<DataItemFormat *>::iterator it = ((DataItemFormat &) obj).m_lSubItems.begin();
-
-    while (it != obj.m_lSubItems.end()) {
-        DataItemFormat *di = (DataItemFormat *) (*it);
+    for (const auto* di : obj.m_lSubItems) {
         m_lSubItems.push_back(di->clone());
-        it++;
     }
 
     m_pParentFormat = obj.m_pParentFormat;
@@ -64,9 +60,8 @@ bool DataItemFormatBDS::getText(std::string &strResult, std::string &strHeader, 
     int BDSid = pData[7];
 
     // Find BDS register
-    std::list<DataItemFormat *>::iterator it = m_lSubItems.begin();
-    while (it != m_lSubItems.end()) {
-        DataItemFormatFixed *pFixed = (DataItemFormatFixed *) (*it);
+    for (auto* subItem : m_lSubItems) {
+        auto *pFixed = static_cast<DataItemFormatFixed *>(subItem);
         if (pFixed->m_nID == BDSid || pFixed->m_nID == 0) {
             std::string item_str;
 
@@ -77,7 +72,6 @@ bool DataItemFormatBDS::getText(std::string &strResult, std::string &strHeader, 
             }
             break;
         }
-        it++;
     }
 
     if (ret)
@@ -88,19 +82,16 @@ bool DataItemFormatBDS::getText(std::string &strResult, std::string &strHeader, 
 
 std::string DataItemFormatBDS::printDescriptors(std::string header) {
     std::string resStr;
-    std::list<DataItemFormat *>::iterator it = m_lSubItems.begin();
-    while (it != m_lSubItems.end()) {
+    for (auto* subItem : m_lSubItems) {
         // Security fix: Check pointer before casting
-        if (*it == nullptr) {
+        if (subItem == nullptr) {
             Tracer::Error("Wrong data in BDS");
-            it++;
             continue;
         }
-        DataItemFormatFixed *pFixed = (DataItemFormatFixed *) (*it);
+        auto *pFixed = static_cast<DataItemFormatFixed *>(subItem);
         std::string bds_header = format("%sBDS%x:", header.c_str(), pFixed->m_nID);
 
         resStr += pFixed->printDescriptors(bds_header);
-        it++;
     }
     return resStr;
 }
@@ -113,13 +104,11 @@ bool DataItemFormatBDS::filterOutItem(const char *name) {
     if (sscanf(name, "BDS%x:%127s", &item_id, item_name) != 2)
         return false;
 
-    std::list<DataItemFormat *>::iterator it = m_lSubItems.begin();
-    while (it != m_lSubItems.end()) {
-        DataItemFormatFixed *pFixed = (DataItemFormatFixed *) (*it);
+    for (auto* subItem : m_lSubItems) {
+        auto *pFixed = static_cast<DataItemFormatFixed *>(subItem);
         if (pFixed->m_nID == item_id) {
             return pFixed->filterOutItem(item_name);
         }
-        it++;
     }
     return false;
 }
