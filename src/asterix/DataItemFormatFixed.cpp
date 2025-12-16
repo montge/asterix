@@ -55,7 +55,7 @@ long DataItemFormatFixed::getLength(const unsigned char *) {
 /*
  * Check FX bit to see if this is last part of variable item.
  */
-bool DataItemFormatFixed::isLastPart(const unsigned char *pData) {
+bool DataItemFormatFixed::isLastPart(const unsigned char *pData) const {
     // go through all bits and find which is FX
     for (auto* subItem : m_lSubItems) {
         // Security fix: Check pointer before casting
@@ -112,7 +112,7 @@ std::string &DataItemFormatFixed::getPartName(int part) {
     return unknown;
 }
 
-bool DataItemFormatFixed::isSecondaryPartPresent(const unsigned char *pData, int part) {
+bool DataItemFormatFixed::isSecondaryPartPresent(const unsigned char *pData, int part) const {
     // go through all bits and find which has BitsPresence set to part
     for (auto* subItem : m_lSubItems) {
         // Security fix: Check pointer before casting

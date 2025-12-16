@@ -227,7 +227,7 @@ public:
      * @param name Field name within the item (or nullptr for entire item)
      * @return true if the item/field should be displayed (passes filter)
      */
-    bool isFiltered(std::string item, const char *name);
+    bool isFiltered(std::string item, const char *name) const;
 
     /**
      * @brief Get human-readable description for a field value

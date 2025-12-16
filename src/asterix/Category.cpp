@@ -138,11 +138,10 @@ bool Category::filterOutItem(std::string item, const char *name) {
     return false;
 }
 
-bool Category::isFiltered(std::string item, const char *name) {
-    for (auto* di : m_lDataItems) {
-        if (di->m_strID == item) {
-            if (di->m_pFormat->isFiltered(name))
-                return true;
+bool Category::isFiltered(std::string item, const char *name) const {
+    for (const auto* di : m_lDataItems) {
+        if (di->m_strID == item && di->m_pFormat->isFiltered(name)) {
+            return true;
         }
     }
     return false;

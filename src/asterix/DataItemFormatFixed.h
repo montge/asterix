@@ -245,7 +245,7 @@ public:
      * @note Fixed items are always single-part (no extension mechanism).
      *       This method exists for compatibility with Variable format.
      */
-    bool isLastPart(const unsigned char *pData);
+    bool isLastPart(const unsigned char *pData) const;
 
     /**
      * @brief Check if a secondary part is present
@@ -257,7 +257,7 @@ public:
      * @note Fixed items have no extension mechanism, so no secondary parts exist.
      *       This method exists for compatibility with Variable format.
      */
-    bool isSecondaryPartPresent(const unsigned char *pData, int part);
+    bool isSecondaryPartPresent(const unsigned char *pData, int part) const;
 
     /**
      * @brief Get the name of a specific part (for multi-part items)

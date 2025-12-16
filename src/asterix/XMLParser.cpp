@@ -626,7 +626,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
  * Handling of element end
  */
 void XMLParser::ElementHandlerEnd(void *data, const char *el) {
-    XMLParser *p = static_cast<XMLParser *>(data);
+    auto *p = static_cast<XMLParser *>(data);
 
     if (!p) {
 #ifdef PYTHON_WRAPPER
