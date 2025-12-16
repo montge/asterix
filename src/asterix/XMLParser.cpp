@@ -496,19 +496,19 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
                     p->Error("XMLParser : Wrong encode: ", attr[i]);
                 }
             } else if (strcmp(attr[i], "fx") == 0) {
-                pBits->m_bExtension = atoi(attr[i + 1]) ? true : false;
+                pBits->m_bExtension = (atoi(attr[i + 1]) != 0);
             } else {
                 p->Error("XMLParser : Unknown attribute: ", attr[i]);
             }
         }
     } else if (p->GetAttribute(el, "BitsShortName", (p->m_pFormat && p->m_pFormat->isBits())
-                                                    ? &((DataItemBits *) p->m_pFormat)->m_strShortName
+                                                    ? &(static_cast<DataItemBits *>(p->m_pFormat))->m_strShortName
                                                     : nullptr)) { // <!ELEMENT BitsShortName (#PCDATA)>
     } else if (p->GetAttribute(el, "BitsName",
-                               (p->m_pFormat && p->m_pFormat->isBits()) ? &((DataItemBits *) p->m_pFormat)->m_strName
+                               (p->m_pFormat && p->m_pFormat->isBits()) ? &(static_cast<DataItemBits *>(p->m_pFormat))->m_strName
                                                                         : nullptr)) { // <!ELEMENT BitsName (#PCDATA)>
     } else if (p->GetAttribute(el, "BitsPresence", (p->m_pFormat && p->m_pFormat->isBits())
-                                                   ? &((DataItemBits *) p->m_pFormat)->m_nPresenceOfField
+                                                   ? &(static_cast<DataItemBits *>(p->m_pFormat))->m_nPresenceOfField
                                                    : nullptr)) { // <!ELEMENT CPBitsPresence (#PCDATA)>
     } else if (strcmp(el, "BitsValue") == 0) { // <!ELEMENT BitsValue (#PCDATA)>
 
@@ -521,7 +521,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
             if (strcmp(attr[i], "val") == 0) { // <!ATTLIST BitsValue val CDATA "0" >
                 int val = atoi(attr[i + 1]);
                 p->m_pBitsValue = new BitsValue(val);
-                ((DataItemBits *) p->m_pFormat)->m_lValue.push_back(p->m_pBitsValue);
+                (static_cast<DataItemBits *>(p->m_pFormat))->m_lValue.push_back(p->m_pBitsValue);
             }
             /* TODO <!ATTLIST BitsValue from CDATA "0" > <!ATTLIST BitsValue to CDATA "0" >
       else if (strcmp(attr[i], "from") == 0)
@@ -549,25 +549,25 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
 
         for (i = 0; attr[i]; i += 2) {
             if (strcmp(attr[i], "scale") == 0) { // <!ATTLIST BitsUnit scale CDATA "1" >
-                ((DataItemBits *) p->m_pFormat)->m_dScale = atof(attr[i + 1]);
+                (static_cast<DataItemBits *>(p->m_pFormat))->m_dScale = atof(attr[i + 1]);
             } else if (strcmp(attr[i], "min") == 0) { // <!ATTLIST BitsUnit min CDATA "0" >
-                ((DataItemBits *) p->m_pFormat)->m_dMinValue = atof(attr[i + 1]);
-                ((DataItemBits *) p->m_pFormat)->m_bMinValueSet = true;
+                (static_cast<DataItemBits *>(p->m_pFormat))->m_dMinValue = atof(attr[i + 1]);
+                (static_cast<DataItemBits *>(p->m_pFormat))->m_bMinValueSet = true;
             } else if (strcmp(attr[i], "max") == 0) { // <!ATTLIST BitsUnit max CDATA "0" >
-                ((DataItemBits *) p->m_pFormat)->m_dMaxValue = atof(attr[i + 1]);
-                ((DataItemBits *) p->m_pFormat)->m_bMaxValueSet = true;
+                (static_cast<DataItemBits *>(p->m_pFormat))->m_dMaxValue = atof(attr[i + 1]);
+                (static_cast<DataItemBits *>(p->m_pFormat))->m_bMaxValueSet = true;
             }
         }
 
-        p->GetAttribute(el, "BitsUnit", &((DataItemBits *) p->m_pFormat)->m_strUnit);
+        p->GetAttribute(el, "BitsUnit", &(static_cast<DataItemBits *>(p->m_pFormat))->m_strUnit);
     } else if (strcmp(el, "BitsConst") == 0) {
         if (p->m_pFormat == nullptr || !p->m_pFormat->isBits()) {
             p->Error("XMLParser : <BitsConst> without <Bits>");
             return;
         }
 
-        ((DataItemBits *) p->m_pFormat)->m_bIsConst = true;
-        p->GetAttribute(el, "BitsConst", &((DataItemBits *) p->m_pFormat)->m_nConst);
+        (static_cast<DataItemBits *>(p->m_pFormat))->m_bIsConst = true;
+        p->GetAttribute(el, "BitsConst", &(static_cast<DataItemBits *>(p->m_pFormat))->m_nConst);
     } else if (strcmp(el, "UAP") == 0) {
         if (p->m_pCategory == nullptr) {
             p->Error("XMLParser : Missing <UAP> outside <Category>");

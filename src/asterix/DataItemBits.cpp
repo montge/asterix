@@ -266,7 +266,7 @@ signed long DataItemBits::getSigned(unsigned char *pData, int bytes, int frombit
         signed long sl = ul + 1;
         return (-sl);
     }
-    return (signed long) ul;
+    return static_cast<signed long>(ul);
 }
 
 unsigned char *DataItemBits::getSixBitString(unsigned char *pData, int bytes, int frombit, int tobit) {

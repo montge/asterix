@@ -58,7 +58,7 @@ void AsterixDefinition::setCategory(Category *newCategory) {
 }
 
 bool AsterixDefinition::CategoryDefined(int i) {
-    return (i < MAX_CATEGORIES && m_pCategory[i] != nullptr) ? true : false;
+    return i >= 0 && i < MAX_CATEGORIES && m_pCategory[i] != nullptr;
 }
 
 std::string AsterixDefinition::printDescriptors() {
