@@ -74,8 +74,8 @@ int fulliautomatix_start(ptExtVoidPrintf pPrintFunc, const char* ini_file_path)
   }
   while(fgets(inputFile, sizeof(inputFile), fpini))
   {
-    // remove trailing /n from filename
-    int lastChar = strlen(inputFile)-1;
+    // remove trailing /n from filename (use strnlen for bounded length)
+    int lastChar = static_cast<int>(strnlen(inputFile, sizeof(inputFile))) - 1;
     while (lastChar>=0 && (inputFile[lastChar] == '\r' || inputFile[lastChar] == '\n'))
     {
       inputFile[lastChar] = 0;

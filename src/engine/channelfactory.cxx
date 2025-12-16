@@ -151,12 +151,12 @@ bool CChannelFactory::CreateOutputChannel(const char *sDeviceName, const char *s
     bool bHeartbeat = false;
     unsigned int heartbeatInterval = 0;
     unsigned int heartbeatMode = CChannel::EAlways;
-    if ((sHeartbeat != nullptr) && (strlen(sHeartbeat) > 0)) {
+    if ((sHeartbeat != nullptr) && (sHeartbeat[0] != '\0')) {
         CDescriptor heartbeatDescriptor(sHeartbeat, ":");
         const char *sHeartbeatInterval = heartbeatDescriptor.GetFirst();
         const char *sHeartbeatMode = heartbeatDescriptor.GetNext();
 
-        if ((sHeartbeatInterval != nullptr) && (strlen(sHeartbeatInterval) > 0)) {
+        if ((sHeartbeatInterval != nullptr) && (sHeartbeatInterval[0] != '\0')) {
             heartbeatInterval = abs(atoi(sHeartbeatInterval));
             bHeartbeat = true;
             // N mode means that heartbeat works only when there are no packets on output

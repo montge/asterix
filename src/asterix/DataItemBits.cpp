@@ -41,6 +41,9 @@ namespace {
 // Helper function to allocate error string with new[] (not strdup/malloc)
 // This ensures consistent deallocation with delete[]
 static unsigned char* newErrorString(const char* str) {
+    if (str == nullptr) {
+        str = "???";
+    }
     size_t len = strlen(str) + 1;
     auto result = new unsigned char[len];
     memcpy(result, str, len);
@@ -48,6 +51,9 @@ static unsigned char* newErrorString(const char* str) {
 }
 
 static char* newErrorStringChar(const char* str) {
+    if (str == nullptr) {
+        str = "???";
+    }
     size_t len = strlen(str) + 1;
     auto result = new char[len];
     memcpy(result, str, len);
