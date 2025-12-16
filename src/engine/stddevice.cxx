@@ -107,7 +107,7 @@ bool CStdDevice::Select(const unsigned int secondsToWait) {
     fd_set descToRead;
     int selectVal;
 
-    while (1) {
+    while (true) {
         // Configure 'set' of single stdin file descriptor
         FD_ZERO(&descToRead);
         FD_SET(STDIN_FILENO, &descToRead);

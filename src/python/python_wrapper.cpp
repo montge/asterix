@@ -212,7 +212,7 @@ parse_with_offset(PyObject *self, PyObject *args, PyObject *kwargs)
     }
 
     // CRITICAL-001 FIX: Validate offset is within bounds
-    if (offset >= (unsigned int)len) {
+    if (offset >= static_cast<unsigned int>(len)) {
         PyErr_Format(PyExc_ValueError,
             "Offset %u exceeds data length %zd",
             offset, len);
