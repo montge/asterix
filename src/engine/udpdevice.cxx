@@ -84,7 +84,7 @@ namespace {
         }
 
         // Copy the resolved address
-        auto* ipv4 = reinterpret_cast<struct sockaddr_in*>(result->ai_addr);
+        const auto* ipv4 = reinterpret_cast<const struct sockaddr_in*>(result->ai_addr);
         addr.sin_family = AF_INET;
         addr.sin_addr = ipv4->sin_addr;
 
@@ -110,7 +110,7 @@ namespace {
         }
 
         // Copy the resolved address
-        auto* ipv4 = reinterpret_cast<struct sockaddr_in*>(result->ai_addr);
+        const auto* ipv4 = reinterpret_cast<const struct sockaddr_in*>(result->ai_addr);
         addr = ipv4->sin_addr;
 
         freeaddrinfo(result);

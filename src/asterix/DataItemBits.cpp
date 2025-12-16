@@ -283,7 +283,7 @@ unsigned char *DataItemBits::getSixBitString(unsigned char *pData, int bytes, in
     memset(str.get(), 0, numberOfCharacters + 1);
 
     unsigned char *pTmp = pB.get();
-    unsigned char *pBEnd = pB.get() + (numberOfBits + 7) / 8;  // Buffer end for bounds checking
+    const unsigned char *pBEnd = pB.get() + (numberOfBits + 7) / 8;  // Buffer end for bounds checking
     unsigned char bitmask = 0x80;
     int outbits = 0;
     unsigned char val = 0;
@@ -432,7 +432,7 @@ unsigned char *DataItemBits::getOctal(unsigned char *pData, int bytes, int fromb
     memset(str.get(), 0, numberOfCharacters + 1);
 
     unsigned char *pTmp = pB.get();
-    unsigned char *pBEnd = pB.get() + (numberOfBits + 7) / 8;  // Buffer end for bounds checking
+    const unsigned char *pBEnd = pB.get() + (numberOfBits + 7) / 8;  // Buffer end for bounds checking
     unsigned char bitmask = 0x80;
     int outbits = 0;
     unsigned char val = 0;

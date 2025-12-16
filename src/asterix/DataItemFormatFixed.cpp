@@ -63,7 +63,7 @@ bool DataItemFormatFixed::isLastPart(const unsigned char *pData) const {
             Tracer::Error("Missing bits format!");
             return true;
         }
-        auto *bit = static_cast<DataItemBits *>(subItem);
+        const auto *bit = static_cast<const DataItemBits *>(subItem);
         if (bit->m_bExtension) { // this is extension bit
             int bitnr = bit->m_nFrom;
 
@@ -120,7 +120,7 @@ bool DataItemFormatFixed::isSecondaryPartPresent(const unsigned char *pData, int
             Tracer::Error("Missing bits format!");
             return true;
         }
-        auto *bit = static_cast<DataItemBits *>(subItem);
+        const auto *bit = static_cast<const DataItemBits *>(subItem);
         if (bit->m_nPresenceOfField == part) { // found
             int bitnr = bit->m_nFrom;
 
