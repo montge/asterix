@@ -109,9 +109,9 @@ int fulliautomatix_start(ptExtVoidPrintf pPrintFunc, const char* ini_file_path)
   return ret;
 }
 
-static fulliautomatix_definitions* newDefinition(fulliautomatix_definitions* prev, int pid, char *name, char *abbrev, int type, int display, void *strings, unsigned long bitmask, const char *blurb)
+static fulliautomatix_definitions* newDefinition(fulliautomatix_definitions* prev, int pid, const char *name, const char *abbrev, int type, int display, void *strings, unsigned long bitmask, const char *blurb)
 {
-  fulliautomatix_definitions* newdef = (fulliautomatix_definitions*)malloc(sizeof(fulliautomatix_definitions));
+  auto* newdef = static_cast<fulliautomatix_definitions*>(malloc(sizeof(fulliautomatix_definitions)));
   // Security fix: Check malloc return value to prevent null pointer dereference
   if (newdef == nullptr) {
     return nullptr;
@@ -136,11 +136,11 @@ fulliautomatix_definitions* fulliautomatix_get_definitions()
   fulliautomatix_definitions* first_def = nullptr;
   fulliautomatix_definitions* def = nullptr;
 
-  first_def = def = newDefinition(nullptr, PID_CATEGORY, (char*)"Category       ",(char*)"asterix.category", FA_FT_UINT32, FA_BASE_DEC, nullptr, 0, (char*)"category");
-  def = newDefinition(def, PID_LENGTH, (char*)"Payload length ", (char*)"asterix.payload_len", FA_FT_UINT32, FA_BASE_DEC, nullptr, 0, (char*)"Payload length");
-  def = newDefinition(def, PID_FSPEC, (char*)"FSPEC ", (char*)"asterix.fspec", FA_FT_BYTES, FA_FT_NONE, nullptr, 0, (char*)"FSPEC");
-  def = newDefinition(def, PID_REP, (char*)"Repetition factor ", (char*)"asterix.rep", FA_FT_UINT32, FA_BASE_DEC, nullptr, 0, (char*)"REP");
-  def = newDefinition(def, PID_LEN, (char*)"Data Item Length ", (char*)"asterix.len", FA_FT_UINT32, FA_BASE_DEC, nullptr, 0, (char*)"LEN");
+  first_def = def = newDefinition(nullptr, PID_CATEGORY, "Category       ", "asterix.category", FA_FT_UINT32, FA_BASE_DEC, nullptr, 0, "category");
+  def = newDefinition(def, PID_LENGTH, "Payload length ", "asterix.payload_len", FA_FT_UINT32, FA_BASE_DEC, nullptr, 0, "Payload length");
+  def = newDefinition(def, PID_FSPEC, "FSPEC ", "asterix.fspec", FA_FT_BYTES, FA_FT_NONE, nullptr, 0, "FSPEC");
+  def = newDefinition(def, PID_REP, "Repetition factor ", "asterix.rep", FA_FT_UINT32, FA_BASE_DEC, nullptr, 0, "REP");
+  def = newDefinition(def, PID_LEN, "Data Item Length ", "asterix.len", FA_FT_UINT32, FA_BASE_DEC, nullptr, 0, "LEN");
 
   for (int i=0; i<MAX_CATEGORIES; i++)
   {
@@ -185,7 +185,7 @@ void fulliautomatix_destroy_definitions(fulliautomatix_definitions* pDef)
 
 fulliautomatix_data* newDataString(fulliautomatix_data* prev, int pid, int bytenr, int length, const char* val)
 {
-  fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
+  auto* newdata = static_cast<fulliautomatix_data*>(malloc(sizeof(fulliautomatix_data)));
   // Security fix: Check malloc return value to prevent null pointer dereference
   if (newdata == nullptr) {
     return nullptr;
@@ -207,7 +207,7 @@ fulliautomatix_data* newDataString(fulliautomatix_data* prev, int pid, int byten
 
 fulliautomatix_data* newDataMessage(fulliautomatix_data* prev, int bytenr, int length, int err, const char* val)
 {
-  fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
+  auto* newdata = static_cast<fulliautomatix_data*>(malloc(sizeof(fulliautomatix_data)));
   // Security fix: Check malloc return value to prevent null pointer dereference
   if (newdata == nullptr) {
     return nullptr;
@@ -228,7 +228,7 @@ fulliautomatix_data* newDataMessage(fulliautomatix_data* prev, int bytenr, int l
 
 fulliautomatix_data* newDataBytes(fulliautomatix_data* prev, int pid, int bytenr, int length, unsigned char* val)
 {
-  fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
+  auto* newdata = static_cast<fulliautomatix_data*>(malloc(sizeof(fulliautomatix_data)));
   // Security fix: Check malloc return value to prevent null pointer dereference
   if (newdata == nullptr) {
     return nullptr;
@@ -244,7 +244,7 @@ fulliautomatix_data* newDataBytes(fulliautomatix_data* prev, int pid, int bytenr
   newdata->bytenr = bytenr;
   newdata->length = length;
   newdata->type = FA_FT_BYTES;
-  newdata->val.str = (char*)malloc(length);
+  newdata->val.str = static_cast<char*>(malloc(length));
   // Security fix: Check malloc return value to prevent null pointer dereference
   if (newdata->val.str != nullptr) {
     memcpy(newdata->val.str, val, length);
@@ -254,7 +254,7 @@ fulliautomatix_data* newDataBytes(fulliautomatix_data* prev, int pid, int bytenr
 
 fulliautomatix_data* newDataUL(fulliautomatix_data* prev, int pid, int bytenr, int length, unsigned long val)
 {
-  fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
+  auto* newdata = static_cast<fulliautomatix_data*>(malloc(sizeof(fulliautomatix_data)));
   // Security fix: Check malloc return value to prevent null pointer dereference
   if (newdata == nullptr) {
     return nullptr;
@@ -276,7 +276,7 @@ fulliautomatix_data* newDataUL(fulliautomatix_data* prev, int pid, int bytenr, i
 
 fulliautomatix_data* newDataSL(fulliautomatix_data* prev, int pid, int bytenr, int length, signed long val)
 {
-  fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
+  auto* newdata = static_cast<fulliautomatix_data*>(malloc(sizeof(fulliautomatix_data)));
   // Security fix: Check malloc return value to prevent null pointer dereference
   if (newdata == nullptr) {
     return nullptr;
@@ -298,7 +298,7 @@ fulliautomatix_data* newDataSL(fulliautomatix_data* prev, int pid, int bytenr, i
 
 fulliautomatix_data* newDataTree(fulliautomatix_data* prev, int bytenr, int length, const char* description)
 {
-  fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
+  auto* newdata = static_cast<fulliautomatix_data*>(malloc(sizeof(fulliautomatix_data)));
   // Security fix: Check malloc return value to prevent null pointer dereference
   if (newdata == nullptr) {
     return nullptr;
@@ -318,7 +318,7 @@ fulliautomatix_data* newDataTree(fulliautomatix_data* prev, int bytenr, int leng
 
 fulliautomatix_data* newDataTreeEnd(fulliautomatix_data* prev, int offset)
 {
-  fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
+  auto* newdata = static_cast<fulliautomatix_data*>(malloc(sizeof(fulliautomatix_data)));
   // Security fix: Check malloc return value to prevent null pointer dereference
   if (newdata == nullptr) {
     return nullptr;
