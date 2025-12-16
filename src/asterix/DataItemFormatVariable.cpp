@@ -174,38 +174,34 @@ bool DataItemFormatVariable::getText(std::string &strResult, std::string &strHea
 std::string DataItemFormatVariable::printDescriptors(std::string header) {
     std::string strDef;
 
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormatFixed *dip = (DataItemFormatFixed *) (*it);
+    for (auto* subItem : m_lSubItems) {
+        auto *dip = static_cast<DataItemFormatFixed *>(subItem);
         strDef += dip->printDescriptors(header);
     }
     return strDef;
 }
 
 bool DataItemFormatVariable::filterOutItem(const char *name) {
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormatFixed *dip = (DataItemFormatFixed *) (*it);
-        if (true == dip->filterOutItem(name))
+    for (auto* subItem : m_lSubItems) {
+        auto *dip = static_cast<DataItemFormatFixed *>(subItem);
+        if (dip->filterOutItem(name))
             return true;
     }
     return false;
 }
 
 bool DataItemFormatVariable::isFiltered(const char *name) {
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormatFixed *dip = (DataItemFormatFixed *) (*it);
-        if (true == dip->isFiltered(name))
+    for (auto* subItem : m_lSubItems) {
+        auto *dip = static_cast<DataItemFormatFixed *>(subItem);
+        if (dip->isFiltered(name))
             return true;
     }
     return false;
 }
 
 const char *DataItemFormatVariable::getDescription(const char *field, const char *value = nullptr) {
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormatFixed *dip = (DataItemFormatFixed *) (*it);
+    for (auto* subItem : m_lSubItems) {
+        auto *dip = static_cast<DataItemFormatFixed *>(subItem);
         const char *desc = dip->getDescription(field, value);
         if (desc != nullptr)
             return desc;
@@ -218,19 +214,14 @@ fulliautomatix_definitions* DataItemFormatVariable::getWiresharkDefinitions()
 {
   fulliautomatix_definitions *def = nullptr, *startDef = nullptr;
 
-  std::list<DataItemFormat*>::iterator it;
-  for ( it=m_lSubItems.begin() ; it != m_lSubItems.end(); it++ )
-  {
-    DataItemFormatFixed* dip = (DataItemFormatFixed*)(*it);
-    if (def)
-    {
+  for (auto* subItem : m_lSubItems) {
+    auto* dip = static_cast<DataItemFormatFixed*>(subItem);
+    if (def) {
       def->next = dip->getWiresharkDefinitions();
-    }
-    else
-    {
+    } else {
       startDef = def = dip->getWiresharkDefinitions();
     }
-    while(def->next)
+    while (def->next)
       def = def->next;
   }
   return startDef;
