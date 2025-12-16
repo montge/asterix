@@ -169,6 +169,53 @@ add_executable(test_integration_cat252
     test_integration_cat252.cpp
 )
 
+# List of all test executables for bulk operations
+set(ALL_TEST_TARGETS
+    test_category
+    test_dataitem
+    test_utils
+    test_dataitembits
+    test_dataitemformatexplicit
+    test_datarecord
+    test_dataitemformatrepetitive
+    test_dataitemformatvariable
+    test_dataitemformatbds
+    test_dataitemformatcompound
+    test_asterixdefinition
+    test_tracer
+    test_datablock
+    test_dataitemformatfixed
+    test_xmlparser
+    test_inputparser
+    test_asterixdata
+    test_dataitemdescription
+    test_uap
+    test_uapitem
+    test_integration_cat048
+    test_integration_cat062
+    test_integration_cat065
+    test_integration_error_handling
+    test_integration_pcap_format
+    test_integration_cat011
+    test_integration_cat015
+    test_integration_cat019
+    test_integration_cat025
+    test_integration_cat031
+    test_integration_cat032
+    test_integration_cat063
+    test_integration_cat205
+    test_integration_cat240
+    test_integration_cat247
+    test_integration_cat252
+)
+
+# Add WIRESHARK_WRAPPER compile definition to all tests
+# This is required for ABI compatibility with the asterix library which is
+# compiled with WIRESHARK_WRAPPER defined, adding extra members to DataItemFormat
+foreach(test_target ${ALL_TEST_TARGETS})
+    target_compile_definitions(${test_target} PRIVATE WIRESHARK_WRAPPER)
+endforeach()
+
 # Link tests with Google Test and asterix library
 if(TARGET asterix_static)
     target_link_libraries(test_category GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})

@@ -106,7 +106,7 @@ protected:
  * Verify that CAT048 XML configuration can be loaded successfully
  */
 TEST_F(CAT048IntegrationTest, LoadXMLConfiguration) {
-    const char* configFile = "../asterix/config/asterix_cat048_1_21.xml";
+    const char* configFile = "../asterix/config/asterix_cat048_1_30.xml";
 
     ASSERT_TRUE(LoadXMLConfig(configFile)) << "Failed to load CAT048 XML configuration";
 
@@ -129,7 +129,7 @@ TEST_F(CAT048IntegrationTest, LoadXMLConfiguration) {
  */
 TEST_F(CAT048IntegrationTest, ParseCAT048BinaryData) {
     // Load configuration
-    const char* configFile = "../asterix/config/asterix_cat048_1_21.xml";
+    const char* configFile = "../asterix/config/asterix_cat048_1_30.xml";
     ASSERT_TRUE(LoadXMLConfig(configFile)) << "Failed to load configuration";
 
     // Read CAT048 sample data
@@ -169,7 +169,7 @@ TEST_F(CAT048IntegrationTest, ParseCAT048BinaryData) {
  */
 TEST_F(CAT048IntegrationTest, VerifyParsedDataStructure) {
     // Load configuration
-    const char* configFile = "../asterix/config/asterix_cat048_1_21.xml";
+    const char* configFile = "../asterix/config/asterix_cat048_1_30.xml";
     ASSERT_TRUE(LoadXMLConfig(configFile));
 
     // Read CAT048 sample data
@@ -215,7 +215,7 @@ TEST_F(CAT048IntegrationTest, VerifyParsedDataStructure) {
  */
 TEST_F(CAT048IntegrationTest, RejectInvalidData) {
     // Load configuration
-    const char* configFile = "../asterix/config/asterix_cat048_1_21.xml";
+    const char* configFile = "../asterix/config/asterix_cat048_1_30.xml";
     ASSERT_TRUE(LoadXMLConfig(configFile));
 
     // Create parser
@@ -254,7 +254,7 @@ TEST_F(CAT048IntegrationTest, RejectInvalidData) {
  */
 TEST_F(CAT048IntegrationTest, VerifyTextOutput) {
     // Load configuration
-    const char* configFile = "../asterix/config/asterix_cat048_1_21.xml";
+    const char* configFile = "../asterix/config/asterix_cat048_1_30.xml";
     ASSERT_TRUE(LoadXMLConfig(configFile));
 
     // Read and parse CAT048 sample data

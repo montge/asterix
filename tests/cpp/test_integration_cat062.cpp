@@ -131,7 +131,7 @@ protected:
  * Verify that CAT062 XML configuration can be loaded successfully
  */
 TEST_F(CAT062IntegrationTest, LoadXMLConfiguration) {
-    const char* configFile = "../asterix/config/asterix_cat062_1_18.xml";
+    const char* configFile = "../asterix/config/asterix_cat062_1_19.xml";
 
     ASSERT_TRUE(LoadXMLConfig(configFile)) << "Failed to load CAT062 XML configuration";
 
@@ -154,7 +154,7 @@ TEST_F(CAT062IntegrationTest, LoadXMLConfiguration) {
  */
 TEST_F(CAT062IntegrationTest, ParseCAT062BinaryData) {
     // Load configuration
-    const char* configFile = "../asterix/config/asterix_cat062_1_18.xml";
+    const char* configFile = "../asterix/config/asterix_cat062_1_19.xml";
     ASSERT_TRUE(LoadXMLConfig(configFile)) << "Failed to load configuration";
 
     // Read CAT062+065 combined sample data
@@ -201,7 +201,7 @@ TEST_F(CAT062IntegrationTest, ParseCAT062BinaryData) {
  */
 TEST_F(CAT062IntegrationTest, VerifyParsedDataStructure) {
     // Load configuration
-    const char* configFile = "../asterix/config/asterix_cat062_1_18.xml";
+    const char* configFile = "../asterix/config/asterix_cat062_1_19.xml";
     ASSERT_TRUE(LoadXMLConfig(configFile));
 
     // Read and extract CAT062 data
@@ -251,7 +251,7 @@ TEST_F(CAT062IntegrationTest, VerifyParsedDataStructure) {
  */
 TEST_F(CAT062IntegrationTest, RejectInvalidData) {
     // Load configuration
-    const char* configFile = "../asterix/config/asterix_cat062_1_18.xml";
+    const char* configFile = "../asterix/config/asterix_cat062_1_19.xml";
     ASSERT_TRUE(LoadXMLConfig(configFile));
 
     // Create parser
@@ -302,7 +302,7 @@ TEST_F(CAT062IntegrationTest, RejectInvalidData) {
  */
 TEST_F(CAT062IntegrationTest, VerifyTextOutput) {
     // Load configuration
-    const char* configFile = "../asterix/config/asterix_cat062_1_18.xml";
+    const char* configFile = "../asterix/config/asterix_cat062_1_19.xml";
     ASSERT_TRUE(LoadXMLConfig(configFile));
 
     // Read and extract CAT062 data

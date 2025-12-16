@@ -534,9 +534,9 @@ TEST_F(InputParserTest, ParseNextDataBlockLengthExceeds) {
 
     DataBlock* block = parser.parse_next_data_block(packet, pos, 10, timestamp, dataLength);
 
-    ASSERT_NE(block, nullptr);
-    // Should parse what's available
-    delete block;
+    // SECURITY FIX (VULN-004): Parser correctly rejects packets where declared
+    // length exceeds available data. This prevents buffer over-reads.
+    ASSERT_EQ(block, nullptr) << "Parser should return nullptr when declared length exceeds available data";
 }
 
 /**
