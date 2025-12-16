@@ -30,12 +30,8 @@ UAPItem::UAPItem()
 
 UAPItem::UAPItem(const UAPItem &obj)
         : DataItemFormat(obj.m_nID) {
-    std::list<DataItemFormat *>::iterator it = ((DataItemFormat &) obj).m_lSubItems.begin();
-
-    while (it != obj.m_lSubItems.end()) {
-        DataItemFormat *di = (DataItemFormat *) (*it);
-        m_lSubItems.push_back(di->clone());
-        it++;
+    for (const auto* subItem : obj.m_lSubItems) {
+        m_lSubItems.push_back(subItem->clone());
     }
 
     m_pParentFormat = obj.m_pParentFormat;
@@ -71,10 +67,10 @@ fulliautomatix_definitions* UAPItem::getWiresharkDefinitions()
   {
     char tmp[128];
 
-    snprintf(tmp, 128, "Item %s", m_strItemID.c_str());
+    snprintf(tmp, sizeof(tmp), "Item %s", m_strItemID.c_str());
     def->name = strdup(tmp);
 
-    snprintf(tmp, 128, "UAP%s", m_strItemID.c_str());
+    snprintf(tmp, sizeof(tmp), "UAP%s", m_strItemID.c_str());
     def->abbrev = strdup(tmp);
   }
   def->type = FA_FT_UINT8;

@@ -61,11 +61,8 @@ DataItemBits::DataItemBits(int id)
 
 DataItemBits::DataItemBits(const DataItemBits &obj)
         : DataItemFormat(obj.m_nID) {
-    std::list<DataItemFormat *>::iterator it = ((DataItemFormat &) obj).m_lSubItems.begin();
-    while (it != obj.m_lSubItems.end()) {
-        DataItemFormat *di = (DataItemFormat *) (*it);
-        m_lSubItems.push_back(di->clone());
-        it++;
+    for (const auto* subItem : obj.m_lSubItems) {
+        m_lSubItems.push_back(subItem->clone());
     }
 
     m_pParentFormat = obj.m_pParentFormat;
@@ -86,11 +83,8 @@ DataItemBits::DataItemBits(const DataItemBits &obj)
     m_bExtension = obj.m_bExtension;
     m_nPresenceOfField = obj.m_nPresenceOfField;
 
-    std::list<BitsValue *>::const_iterator bit = obj.m_lValue.begin();
-    while (bit != obj.m_lValue.end()) {
-        BitsValue *bv = (BitsValue *) (*bit);
+    for (const auto* bv : obj.m_lValue) {
         m_lValue.push_back(new BitsValue(bv->m_nVal, bv->m_strDescription));
-        bit++;
     }
     m_bFiltered = obj.m_bFiltered;
 }
@@ -903,10 +897,8 @@ const char *DataItemBits::getDescription(const char *field, const char *value = 
             return m_strName.c_str();
         } else {
             int val = atoi(value);
-            if (m_lValue.size() > 0) {
-                std::list<BitsValue *>::iterator it;
-                for (it = m_lValue.begin(); it != m_lValue.end(); it++) {
-                    BitsValue *bv = (BitsValue *) (*it);
+            if (!m_lValue.empty()) {
+                for (const auto* bv : m_lValue) {
                     if (bv->m_nVal == val)
                         return bv->m_strDescription.c_str();
                 }
@@ -944,7 +936,7 @@ def->abbrev = strdup(strAbbrev.c_str());
 
 def->strings = nullptr;
 
-if (m_lValue.size() > 0)
+if (!m_lValue.empty())
 {
 def->strings = (fulliautomatix_value_string*)malloc((1+m_lValue.size()) * sizeof(fulliautomatix_value_string));
 // Security fix: Check malloc return value to prevent null pointer dereference
@@ -952,12 +944,8 @@ if (def->strings == nullptr) {
     return def;
 }
 
-std::list<BitsValue*>::iterator it;
-BitsValue* bv = nullptr;
-int i=0;
-for ( it=m_lValue.begin() ; it != m_lValue.end(); it++ )
-{
-    bv = (BitsValue*)(*it);
+int i = 0;
+for (const auto* bv : m_lValue) {
     def->strings[i].value = bv->m_nVal;
     def->strings[i].strptr = strdup(bv->m_strDescription.c_str());
     i++;
