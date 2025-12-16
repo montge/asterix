@@ -1238,7 +1238,7 @@ fulliautomatix_data* DataItemBits::getData(unsigned char* pData, long nLength, i
 
     // Error case - unknown encoding
     return newDataMessage(nullptr, byteoffset + firstByte, numberOfBytes, 2,
-                          const_cast<char*>("Error: Unknown encoding."));
+                          "Error: Unknown encoding.");
 }
 #endif
 

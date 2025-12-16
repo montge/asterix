@@ -184,7 +184,7 @@ bool CAsterixRawSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor
 
     // parse packet
     if (oradis) {
-        unsigned char *pPacketPtr = const_cast<unsigned char *>(Descriptor.GetBuffer());
+        const unsigned char *pPacketPtr = Descriptor.GetBuffer();
         int m_nDataLength = Descriptor.GetBufferLen();
 
         while (m_nDataLength > 0) {

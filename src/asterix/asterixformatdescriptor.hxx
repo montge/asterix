@@ -76,7 +76,12 @@ public:
     InputParser m_InputParser;
     AsterixData *m_pAsterixData;
 
-    const unsigned char *GetNewBuffer(unsigned int len) {
+    /**
+     * @brief Get a new buffer for writing, allocating if necessary
+     * @param len Required buffer size in bytes
+     * @return Non-const pointer to buffer for writing
+     */
+    unsigned char *GetNewBuffer(unsigned int len) {
         if (len > m_nBufferSize || m_nBufferSize > DELETE_BUFFER_IF_LARGER) {
             if (m_pBuffer)
                 delete[] m_pBuffer;
@@ -88,7 +93,19 @@ public:
         return m_pBuffer;
     }
 
-    const unsigned char *GetBuffer() {
+    /**
+     * @brief Get read-only access to the buffer
+     * @return Const pointer to buffer for reading
+     */
+    const unsigned char *GetBuffer() const {
+        return m_pBuffer;
+    }
+
+    /**
+     * @brief Get writable access to the buffer
+     * @return Non-const pointer to buffer for writing
+     */
+    unsigned char *GetWritableBuffer() {
         return m_pBuffer;
     }
 
@@ -135,7 +152,7 @@ public:
     bool isFiltered(int cat, std::string item, const char *name) { return m_InputParser.isFiltered(cat, item, name); }
 
 private:
-    const unsigned char *m_pBuffer; // input buffer
+    unsigned char *m_pBuffer; // input buffer (non-const since we allocate/deallocate it)
     unsigned int m_nBufferSize; // input buffer size
     unsigned int m_nDataSize; // size of data in buffer
     double m_nTimeStamp; // Date and time when this packet was captured. This value is in seconds since January 1, 1970 00:00:00 GMT

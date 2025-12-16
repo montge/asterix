@@ -183,7 +183,7 @@ void fulliautomatix_destroy_definitions(fulliautomatix_definitions* pDef)
   }
 }
 
-fulliautomatix_data* newDataString(fulliautomatix_data* prev, int pid, int bytenr, int length, char* val)
+fulliautomatix_data* newDataString(fulliautomatix_data* prev, int pid, int bytenr, int length, const char* val)
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
   // Security fix: Check malloc return value to prevent null pointer dereference
@@ -205,7 +205,7 @@ fulliautomatix_data* newDataString(fulliautomatix_data* prev, int pid, int byten
   return newdata;
 }
 
-fulliautomatix_data* newDataMessage(fulliautomatix_data* prev, int bytenr, int length, int err, char* val)
+fulliautomatix_data* newDataMessage(fulliautomatix_data* prev, int bytenr, int length, int err, const char* val)
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
   // Security fix: Check malloc return value to prevent null pointer dereference
@@ -296,7 +296,7 @@ fulliautomatix_data* newDataSL(fulliautomatix_data* prev, int pid, int bytenr, i
   return newdata;
 }
 
-fulliautomatix_data* newDataTree(fulliautomatix_data* prev, int bytenr, int length, char* description)
+fulliautomatix_data* newDataTree(fulliautomatix_data* prev, int bytenr, int length, const char* description)
 {
   fulliautomatix_data* newdata = (fulliautomatix_data*)malloc(sizeof(fulliautomatix_data));
   // Security fix: Check malloc return value to prevent null pointer dereference

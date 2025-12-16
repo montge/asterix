@@ -92,7 +92,7 @@ void XMLParser::Error(const char *errstr) {
     tmpstr += "\n";
 
 #ifdef PYTHON_WRAPPER
-    PyErr_SetString(PyExc_SyntaxError, const_cast<char*>(tmpstr.c_str()));
+    PyErr_SetString(PyExc_SyntaxError, tmpstr.c_str());
 #else
     // Use "%s" format to prevent format string injection from XML content
     Tracer::Error("%s", tmpstr.c_str());

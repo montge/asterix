@@ -508,7 +508,7 @@ void fulliautomatix_data_destroy(fulliautomatix_data *pData);
  * @note Caller must eventually free via fulliautomatix_data_destroy()
  * @see newDataTreeEnd() for closing multi-level tree structures
  */
-fulliautomatix_data *newDataTree(fulliautomatix_data *prev, int bytenr, int length, char *description);
+fulliautomatix_data *newDataTree(fulliautomatix_data *prev, int bytenr, int length, const char *description);
 
 /**
  * @brief Mark the end of a tree node at a specific offset
@@ -584,7 +584,7 @@ fulliautomatix_data *newDataSL(fulliautomatix_data *prev, int pid, int bytenr, i
  * @note Internal function used by DataItemFormatFixed::getWiresharkData()
  * @see newDataBytes() for binary data
  */
-fulliautomatix_data *newDataString(fulliautomatix_data *prev, int pid, int bytenr, int length, char *val);
+fulliautomatix_data *newDataString(fulliautomatix_data *prev, int pid, int bytenr, int length, const char *val);
 
 /**
  * @brief Create a leaf node with raw byte array value
@@ -625,7 +625,7 @@ fulliautomatix_data *newDataBytes(fulliautomatix_data *prev, int pid, int bytenr
  * @note Internal function used by parsing error handlers
  * @see fulliautomatix_data::err for severity interpretation
  */
-fulliautomatix_data *newDataMessage(fulliautomatix_data *prev, int bytenr, int length, int err, char *val);
+fulliautomatix_data *newDataMessage(fulliautomatix_data *prev, int bytenr, int length, int err, const char *val);
 
 #ifdef __cplusplus
 }

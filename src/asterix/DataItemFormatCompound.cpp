@@ -295,7 +295,7 @@ fulliautomatix_data* DataItemFormatCompound::getData(unsigned char* pData, long,
     int primaryPartLength = pCompoundPrimary->getLength(pData);
     unsigned char* pSecData = pData + primaryPartLength;
 
-    lastData = firstData = newDataTree(nullptr, byteoffset, primaryPartLength, const_cast<char*>("Compound item header"));
+    lastData = firstData = newDataTree(nullptr, byteoffset, primaryPartLength, "Compound item header");
 
     lastData->next = pCompoundPrimary->getData(pData, primaryPartLength, byteoffset);
     while(lastData->next)

@@ -128,14 +128,14 @@ fulliautomatix_data* DataItem::getData(int byteoffset)
   snprintf(tmp, sizeof(tmp), "Data item %s - ", m_pDescription->m_strID.c_str());
   strDesc = tmp;
   strDesc += m_pDescription->m_strName;
-  lastData = firstData = newDataTree(nullptr, byteoffset, m_nLength, (char*)strDesc.c_str());
+  lastData = firstData = newDataTree(nullptr, byteoffset, m_nLength, strDesc.c_str());
   if (m_pDescription && m_pDescription->m_pFormat && m_pData)
   {
     lastData->next = m_pDescription->m_pFormat->getData(m_pData.get(), m_nLength, byteoffset);
   }
   else
   {
-    lastData->next = newDataMessage(nullptr, byteoffset, m_nLength, 2, const_cast<char*>("Error: Unknown item format."));
+    lastData->next = newDataMessage(nullptr, byteoffset, m_nLength, 2, "Error: Unknown item format.");
   }
   while (lastData->next)
   {
