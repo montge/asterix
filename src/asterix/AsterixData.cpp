@@ -39,9 +39,7 @@ AsterixData::~AsterixData() {
 bool AsterixData::getText(std::string &strResult, const unsigned int formatType) {
     static int i = 1;
 
-    std::list<DataBlock *>::iterator it;
-    for (it = m_lDataBlocks.begin(); it != m_lDataBlocks.end(); it++) {
-        DataBlock *db = (DataBlock *) (*it);
+    for (auto* db : m_lDataBlocks) {
         if (db != nullptr) {
             switch (formatType) {
                 case CAsterixFormat::ETxt:
@@ -58,25 +56,17 @@ bool AsterixData::getText(std::string &strResult, const unsigned int formatType)
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_data* AsterixData::getData()
 {
-  fulliautomatix_data *firstData=nullptr,*lastData=nullptr;
+  fulliautomatix_data *firstData = nullptr, *lastData = nullptr;
   int byteoffset = 0;
 
-  std::list<DataBlock*>::iterator it;
-  for ( it=m_lDataBlocks.begin() ; it != m_lDataBlocks.end(); it++ )
-  {
-    DataBlock* db = (DataBlock*)(*it);
-    if (db != nullptr)
-    {
-      if (!lastData)
-      {
+  for (auto* db : m_lDataBlocks) {
+    if (db != nullptr) {
+      if (!lastData) {
         firstData = lastData = db->getData(byteoffset);
-      }
-      else
-      {
+      } else {
         lastData->next = db->getData(byteoffset);
       }
-      while(lastData->next)
-      {
+      while (lastData->next) {
         lastData = lastData->next;
       }
       byteoffset = lastData->bytenr + lastData->length;
@@ -91,12 +81,8 @@ PyObject* AsterixData::getData(int verbose)
 {
     PyObject* hp = PyList_New(0);
 
-    std::list<DataBlock*>::iterator it;
-    for ( it=m_lDataBlocks.begin() ; it != m_lDataBlocks.end(); it++ )
-    {
-        DataBlock* db = (DataBlock*)(*it);
-        if (db != nullptr)
-        {
+    for (auto* db : m_lDataBlocks) {
+        if (db != nullptr) {
             db->getData(hp, verbose);
         }
     }
