@@ -195,9 +195,7 @@ bool DataRecord::getText(std::string &strResult, std::string &strHeader, const u
     // go through all present data items in this block
     bool ret = false;
 
-    std::list<DataItem *>::iterator it;
-    for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {
-        DataItem *di = (DataItem *) (*it);
+    for (auto* di : m_lDataItems) {
         if (di != nullptr) {
             if (di->getText(strNewResult, strHeader, formatType)) {
                 if (!ret) {
@@ -242,9 +240,7 @@ bool DataRecord::getText(std::string &strResult, std::string &strHeader, const u
 
 DataItem *DataRecord::getItem(std::string itemid) {
     // go through all present data items in this block
-    std::list<DataItem *>::iterator it;
-    for (it = m_lDataItems.begin(); it != m_lDataItems.end(); it++) {
-        DataItem *di = (DataItem *) (*it);
+    for (auto* di : m_lDataItems) {
         if (di && di->m_pDescription && di->m_pDescription->m_strID == itemid) {
             return di;
         }
@@ -259,7 +255,7 @@ fulliautomatix_data* DataRecord::getData(int byteoffset)
   int endOffset = byteoffset+m_nLength;
 
   char tmp[64];
-  snprintf(tmp, 64, "Data Record %d - %ld bytes", m_nID, m_nLength);
+  snprintf(tmp, sizeof(tmp), "Data Record %d - %ld bytes", m_nID, m_nLength);
 
   firstData = lastData = newDataTree(lastData, byteoffset, m_nLength, tmp);
 
@@ -274,18 +270,11 @@ fulliautomatix_data* DataRecord::getData(int byteoffset)
     lastData = newDataTree(lastData, byteoffset, m_nFSPECLength, (char*)"FSPEC");
 
     // go through all UAPitems items in this record
-    std::list<UAPItem*>::iterator uapit;
-    for ( uapit=pUAP->m_lUAPItems.begin(); uapit != pUAP->m_lUAPItems.end(); uapit++ )
-    {
-      UAPItem* uap = (UAPItem*)(*uapit);
+    for (auto* uap : pUAP->m_lUAPItems) {
       lastData->next = uap->getData(m_pFSPECData.get(), m_nFSPECLength, byteoffset);
-
-      if(lastData->next)
-      {
+      if (lastData->next) {
         lastData = lastData->next;
-      }
-      else
-      {
+      } else {
         break;
       }
     }
@@ -294,17 +283,11 @@ fulliautomatix_data* DataRecord::getData(int byteoffset)
     lastData = newDataTreeEnd(lastData, byteoffset);
 
     // go through all present data items in this record
-    std::list<DataItem*>::iterator it;
-    for ( it=m_lDataItems.begin() ; it != m_lDataItems.end(); it++ )
-    {
-      DataItem* di = (DataItem*)(*it);
-      if (di)
-      {
+    for (auto* di : m_lDataItems) {
+      if (di) {
         lastData->next = di->getData(byteoffset);
-        while(lastData->next)
-        {
-          if (lastData->next->err)
-          {
+        while (lastData->next) {
+          if (lastData->next->err) {
             firstData->err = lastData->next->err;
           }
           lastData = lastData->next;
@@ -362,21 +345,16 @@ PyObject* DataRecord::getData(int verbose)
     Py_DECREF(k5);
     Py_DECREF(v5);
 
-    if (m_bFormatOK)
-    {
+    if (m_bFormatOK) {
         // go through all present data items in this record
-        std::list<DataItem*>::iterator it;
-        for ( it=m_lDataItems.begin() ; it != m_lDataItems.end(); it++ )
-        {
-            DataItem* di = (DataItem*)(*it);
-            if (di)
-            {
+        for (auto* di : m_lDataItems) {
+            if (di) {
                 PyObject* v1 = di->getData(verbose);
                 if (v1 == nullptr) {
                     v1 = Py_BuildValue("s", "Error");
                 }
                 char tmp[20];
-                snprintf(tmp, 20, "I%s", di->m_pDescription->m_strID.c_str());
+                snprintf(tmp, sizeof(tmp), "I%s", di->m_pDescription->m_strID.c_str());
                 PyObject* k1 = Py_BuildValue("s", tmp);
                 PyDict_SetItem(p, k1, v1);
                 Py_DECREF(k1);
