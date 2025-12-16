@@ -248,7 +248,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
             return;
         }
 
-        DataItemFormat *pFormatFixed = new DataItemFormatFixed(p->m_pDataItem->m_nID);
+        auto *pFormatFixed = new DataItemFormatFixed(p->m_pDataItem->m_nID);
 
         if (p->m_pFormat != nullptr) {
             if (p->m_pFormat->isVariable()) {
@@ -290,7 +290,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
                 int len = atoi(attr[i + 1]);
 
                 if (len >= 0) {
-                    ((DataItemFormatFixed *) pFormatFixed)->m_nLength = len;
+                    pFormatFixed->m_nLength = len;
                 } else {
                     p->Error("XMLParser : Wrong DataItem length: ", attr[i + 1]);
                 }
@@ -450,7 +450,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
 
                 if (bit >= 0) {
                     pBits->m_nFrom = pBits->m_nTo = bit;
-                    if (((DataItemFormatFixed *) pBits->m_pParentFormat)->m_nLength * 8 < bit) {
+                    if (static_cast<DataItemFormatFixed *>(pBits->m_pParentFormat)->m_nLength * 8 < bit) {
                         p->Error("XMLParser : Bit out of fixed length");
                     }
                 } else {
@@ -461,7 +461,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
 
                 if (bit >= 0) {
                     pBits->m_nFrom = bit;
-                    if (((DataItemFormatFixed *) pBits->m_pParentFormat)->m_nLength * 8 < bit) {
+                    if (static_cast<DataItemFormatFixed *>(pBits->m_pParentFormat)->m_nLength * 8 < bit) {
                         p->Error("XMLParser : Bit out of fixed length");
                     }
                 } else {
@@ -472,7 +472,7 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
 
                 if (bit >= 0) {
                     pBits->m_nTo = bit;
-                    if (((DataItemFormatFixed *) pBits->m_pParentFormat)->m_nLength * 8 < bit) {
+                    if (static_cast<DataItemFormatFixed *>(pBits->m_pParentFormat)->m_nLength * 8 < bit) {
                         p->Error("XMLParser : Bit out of fixed length");
                     }
                 } else {
