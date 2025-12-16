@@ -24,6 +24,11 @@
 #include "Category.h"
 #include "Utils.h"
 
+// FSPEC (Field Specification) extension bit - indicates if FSPEC continues to next byte
+namespace {
+    constexpr unsigned char FSPEC_FX_BIT = 0x01;
+}
+
 Category::Category(int id)
         : m_id(id), m_bFiltered(false) {
 }
@@ -75,14 +80,14 @@ UAP *Category::getUAP(const unsigned char *data, unsigned long len) const {
                 unsigned long pos = 0;
 
                 // skip FSPEC
-                while (pos < len && (data[pos] & 0x01))
+                while (pos < len && (data[pos] & FSPEC_FX_BIT))
                     pos++;
 
                 pos++;
 
                 pos += (bittomatch - 1) / 8;
 
-                unsigned char mask = 0x01;
+                unsigned char mask = FSPEC_FX_BIT;
                 mask <<= (7 - (bittomatch - 1) % 8);
 
                 if (pos < len && (data[pos] & mask))
@@ -91,7 +96,7 @@ UAP *Category::getUAP(const unsigned char *data, unsigned long len) const {
                 unsigned long pos = 0;
 
                 // skip FSPEC
-                while (pos < len && (data[pos] & 0x01))
+                while (pos < len && (data[pos] & FSPEC_FX_BIT))
                     pos++;
 
                 pos++;
