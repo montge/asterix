@@ -1094,13 +1094,13 @@ char* DataItemBits::createWiresharkValueDescription(double scaled, unsigned long
     bool isWrongConst = m_bIsConst && static_cast<int>(value64) != m_nConst;
 
     if (isOutOfRange) {
-        snprintf(tmp, 128, " (%.7lf %s) Warning! Value out of range (%.7lf to %.7lf)",
+        snprintf(tmp, sizeof(tmp), " (%.7lf %s) Warning! Value out of range (%.7lf to %.7lf)",
                  scaled, m_strUnit.c_str(), m_dMinValue, m_dMaxValue);
     } else if (isWrongConst) {
-        snprintf(tmp, 128, " (%.7lf %s) Warning! Value should be %d",
+        snprintf(tmp, sizeof(tmp), " (%.7lf %s) Warning! Value should be %d",
                  scaled, m_strUnit.c_str(), m_nConst);
     } else {
-        snprintf(tmp, 128, " (%.7lf %s)", scaled, m_strUnit.c_str());
+        snprintf(tmp, sizeof(tmp), " (%.7lf %s)", scaled, m_strUnit.c_str());
     }
 
     return strdup(tmp);

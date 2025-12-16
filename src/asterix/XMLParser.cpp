@@ -86,7 +86,7 @@ void XMLParser::Error(const char *errstr, const char *param1) {
 
 void XMLParser::Error(const char *errstr) {
     char strLine[1024];
-    snprintf(strLine, 1024, " in file: %s line: %d", m_pFileName, (int) XML_GetCurrentLineNumber(m_Parser));
+    snprintf(strLine, sizeof(strLine), " in file: %s line: %d", m_pFileName, (int) XML_GetCurrentLineNumber(m_Parser));
     std::string tmpstr(errstr);
     tmpstr += strLine;
     tmpstr += "\n";

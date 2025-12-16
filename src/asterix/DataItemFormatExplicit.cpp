@@ -48,7 +48,6 @@ long DataItemFormatExplicit::getLength(const unsigned char *pData) {
 
 bool DataItemFormatExplicit::getText(std::string &strResult, std::string &strHeader, const unsigned int formatType,
                                      unsigned char *pData, long nLength) {
-    std::list<DataItemFormat *>::iterator it;
     int bodyLength = 0;
     bool ret = false;
 
@@ -60,8 +59,7 @@ bool DataItemFormatExplicit::getText(std::string &strResult, std::string &strHea
     pData++; // skip explicit length byte (it is already in nLength)
 
     // calculate the size of all sub items
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormat *di = *it;
+    for (auto* di : m_lSubItems) {
         bodyLength += di->getLength(pData + bodyLength); // calculate length of body
     }
 
@@ -86,8 +84,7 @@ bool DataItemFormatExplicit::getText(std::string &strResult, std::string &strHea
     }
 
     for (int i = 0; i < nFullLength; i += bodyLength) {
-        for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-            DataItemFormat *di = *it;
+        for (auto* di : m_lSubItems) {
             ret |= di->getText(tmpStr, strHeader, formatType, pData, bodyLength);
             pData += bodyLength;
 
@@ -125,38 +122,31 @@ bool DataItemFormatExplicit::getText(std::string &strResult, std::string &strHea
 std::string DataItemFormatExplicit::printDescriptors(std::string header) {
     std::string strDef;
 
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormat *dip = *it;
+    for (auto* dip : m_lSubItems) {
         strDef += dip->printDescriptors(header);
     }
     return strDef;
 }
 
 bool DataItemFormatExplicit::filterOutItem(const char *name) {
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormat *dip = *it;
-        if (true == dip->filterOutItem(name))
+    for (auto* dip : m_lSubItems) {
+        if (dip->filterOutItem(name))
             return true;
     }
     return false;
 }
 
 bool DataItemFormatExplicit::isFiltered(const char *name) {
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormat *dip = *it;
-        if (true == dip->isFiltered(name))
+    for (auto* dip : m_lSubItems) {
+        if (dip->isFiltered(name))
             return true;
     }
     return false;
 }
 
 const char *DataItemFormatExplicit::getDescription(const char *field, const char *value = nullptr) {
-    std::list<DataItemFormat *>::iterator it;
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        auto *bv = static_cast<DataItemBits *>(*it);
+    for (auto* subItem : m_lSubItems) {
+        auto *bv = static_cast<DataItemBits *>(subItem);
         const char *desc = bv->getDescription(field, value);
         if (desc != nullptr)
             return desc;
@@ -209,20 +199,18 @@ fulliautomatix_data* DataItemFormatExplicit::getData(unsigned char* pData, long,
 
 PyObject* DataItemFormatExplicit::getObject(unsigned char* pData, long nLength, int verbose)
 {
-    std::list<DataItemFormat *>::iterator it;
     int bodyLength = 0;
 
     if (nLength <= 1) {
         char errorText[256];
-        snprintf(errorText, 255, "Not enough data in Explicit. There is %ld byte.", nLength);
+        snprintf(errorText, sizeof(errorText), "Not enough data in Explicit. There is %ld byte.", nLength);
         return Py_BuildValue("s", errorText);
     }
 
     pData++; // skip explicit length byte (it is already in nLength)
 
     // calculate the size of all sub items
-    for (it = m_lSubItems.begin(); it != m_lSubItems.end(); it++) {
-        DataItemFormat *di = *it;
+    for (auto* di : m_lSubItems) {
         bodyLength += di->getLength(pData + bodyLength); // calculate length of body
     }
 
@@ -231,7 +219,7 @@ PyObject* DataItemFormatExplicit::getObject(unsigned char* pData, long nLength, 
     // full length must be multiple of body length
     if (bodyLength == 0 || nFullLength % bodyLength != 0) {
         char errorText[256];
-        snprintf(errorText, 255, "Wrong data length in Explicit. Needed=%d and there is %d bytes.", bodyLength, nFullLength);
+        snprintf(errorText, sizeof(errorText), "Wrong data length in Explicit. Needed=%d and there is %d bytes.", bodyLength, nFullLength);
         return Py_BuildValue("s", errorText);
     }
 
