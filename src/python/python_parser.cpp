@@ -243,9 +243,9 @@ PyObject *python_describe(int category, const char *item = nullptr, const char *
 	DataItemDescription* di = nullptr;
 
     std::string item_number = format("%s", &item[1]);
-	for ( it=cat->m_lDataItems.begin() ; it != cat->m_lDataItems.end(); it++ )
+	for (it = cat->m_lDataItems.begin(); it != cat->m_lDataItems.end(); ++it)
     {
-        di = (DataItemDescription*)(*it);
+        di = *it;
         if (di->m_strID.compare(item_number) == 0)
             break;
         di = nullptr;

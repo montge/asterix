@@ -261,7 +261,7 @@ fulliautomatix_definitions* DataItemFormatCompound::getWiresharkDefinitions()
     while(def->next)
     def = def->next;
 
-    for (; it != m_lSubItems.end(); it++ )
+    for (; it != m_lSubItems.end(); ++it)
     {
         auto* dip = *it;  // Already DataItemFormat*
         def->next = dip->getWiresharkDefinitions();
@@ -304,7 +304,7 @@ fulliautomatix_data* DataItemFormatCompound::getData(unsigned char* pData, long,
 
     byteoffset += primaryPartLength;
 
-    for ( it=pCompoundPrimary->m_lSubItems.begin(); it != pCompoundPrimary->m_lSubItems.end(); it++ )
+    for (it = pCompoundPrimary->m_lSubItems.begin(); it != pCompoundPrimary->m_lSubItems.end(); ++it)
     {
         int secondaryPart = 1;
         it2 = m_lSubItems.begin();
@@ -369,7 +369,7 @@ void DataItemFormatCompound::insertToDict(PyObject* p, unsigned char* pData, lon
     int primaryPartLength = pCompoundPrimary->getLength(pData);
     unsigned char* pSecData = pData + primaryPartLength;
 
-    for ( it=pCompoundPrimary->m_lSubItems.begin(); it != pCompoundPrimary->m_lSubItems.end(); it++ )
+    for (it = pCompoundPrimary->m_lSubItems.begin(); it != pCompoundPrimary->m_lSubItems.end(); ++it)
     {
         int secondaryPart = 1;
         it2 = m_lSubItems.begin();
