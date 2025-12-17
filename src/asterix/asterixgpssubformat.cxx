@@ -57,7 +57,7 @@
  */
 bool CAsterixGPSSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, [[maybe_unused]] bool &discard,
                                       [[maybe_unused]] bool oradis) {
-    CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
+    auto &Descriptor = static_cast<CAsterixFormatDescriptor &>(formatDescriptor);
     size_t readSize = 0;
 
     if (device.IsPacketDevice()) { // if using packet device read complete packet
@@ -209,7 +209,7 @@ bool CAsterixGPSSubformat::WritePacket([[maybe_unused]] CBaseFormatDescriptor &f
  */
 bool CAsterixGPSSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool &discard,
                                          bool oradis) {
-    CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
+    auto &Descriptor = static_cast<CAsterixFormatDescriptor &>(formatDescriptor);
 
     // check data size
     if (Descriptor.GetBufferLen() < 3) {

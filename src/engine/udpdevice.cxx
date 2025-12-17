@@ -133,7 +133,7 @@ CUdpDevice::CUdpDevice(CDescriptor &descriptor) {
     element = descriptor.GetFirst();
 
     while (true) {
-        if (nullptr == element) {
+        if (element == nullptr) {
             for (unsigned int i = 0; i < _socketDesc.size(); i++) {
                 if (_socketDesc[i] > _maxValSocketDesc) {
                     _maxValSocketDesc = _socketDesc[i];

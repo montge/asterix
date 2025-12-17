@@ -74,7 +74,7 @@ extern bool gSynchronous;
 
 bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, [[maybe_unused]] bool &discard,
                                        [[maybe_unused]] bool oradis) {
-    CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
+    auto &Descriptor = static_cast<CAsterixFormatDescriptor &>(formatDescriptor);
     unsigned short m_nDataLength = 0;
     static time_t lastFileTimeSec = 0;
     static useconds_t lastFileTimeUSec = 0;
@@ -189,7 +189,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
         pPacketPtr += 8; // Source
     }
 
-    unsigned short protoType = *((unsigned short *) pPacketPtr);
+    unsigned short protoType = *reinterpret_cast<unsigned short *>(pPacketPtr);
     pPacketPtr += 2;
 
     if (Descriptor.m_bInvertByteOrder) {
@@ -215,7 +215,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
 
     pPacketPtr += 1; //TOS
 
-    unsigned short IPtotalLength = *((unsigned short *) pPacketPtr); // Total length
+    unsigned short IPtotalLength = *reinterpret_cast<unsigned short *>(pPacketPtr); // Total length
     pPacketPtr += 2;
 
     if (bIPInvertByteOrder) {
@@ -246,7 +246,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
         pPacketPtr += 2; // source port
         pPacketPtr += 2; // destination port
 
-        m_nDataLength = *((unsigned short *) pPacketPtr); // length
+        m_nDataLength = *reinterpret_cast<unsigned short *>(pPacketPtr); // length
         pPacketPtr += 2;
 
         if (bIPInvertByteOrder) {

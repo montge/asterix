@@ -114,7 +114,7 @@ bool DataItemFormatCompound::getText(std::string &strResult, std::string &strHea
     ++it2;
     if (it2 == m_lSubItems.end()) {
         Tracer::Error("Missing secondary subfields of Compund");
-        return 0;
+        return false;
     }
 
     switch (formatType) {
