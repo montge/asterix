@@ -234,7 +234,8 @@ bool CSerialDevice::IoCtrl(const unsigned int command, [[maybe_unused]] const vo
 void CSerialDevice::Init(const char *device) {
     _opened = false;
     _fileDesc = -1;
-    ResetAllErrors();
+    // Use explicit base class call to avoid virtual dispatch during construction (S1699)
+    CBaseDevice::ResetAllErrors();
 
     // Validate input parameter
     if (device == nullptr) {

@@ -282,7 +282,8 @@ bool CDiskDevice::Select(const unsigned int secondsToWait) {
 bool CDiskDevice::Init(const char *path) {
     _opened = false;
     _fileStream = nullptr;
-    ResetAllErrors();
+    // Use explicit base class call to avoid virtual dispatch during construction (S1699)
+    CBaseDevice::ResetAllErrors();
 
     const char *fname = path;
 

@@ -48,13 +48,13 @@ UAPItem::~UAPItem() {
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
 fulliautomatix_definitions* UAPItem::getWiresharkDefinitions()
 {
-  // Use auto to avoid redundant type specification (SonarCloud S5827)
+  // Use calloc instead of malloc+memset for cleaner initialization (SonarCloud)
+  // Note: calloc is appropriate here for C interop with Wireshark plugin
   auto* def = static_cast<fulliautomatix_definitions*>(
-      malloc(sizeof(fulliautomatix_definitions)));
+      calloc(1, sizeof(fulliautomatix_definitions)));
   if (def == nullptr) {
       return nullptr;
   }
-  memset(def, 0, sizeof(fulliautomatix_definitions));
 
   def->pid = getPID();
 
