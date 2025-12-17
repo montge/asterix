@@ -129,7 +129,7 @@
 - [ ] 4.1.3 Add missing documentation
 
 ### 4.2 Incremental Cleanup
-- [ ] 4.2.1 Fix code smells during related changes
+- [x] 4.2.1 Fix code smells during related changes
 - [ ] 4.2.2 Track progress in SonarCloud dashboard
 
 ### 4.3 Memory Management (Deferred)
@@ -137,6 +137,16 @@
 - [ ] 4.3.2 Implement Rule of Five for resource classes (cpp:S3624)
 
 *Note: malloc in Wireshark wrapper is intentional for C API compatibility.*
+
+### 4.4 C-Style Casts (cpp:S1946)
+- [x] 4.4.1 Replace C-style reference casts with static_cast in subformat files
+- [x] 4.4.2 Replace C-style pointer casts with reinterpret_cast for type-punning
+- [x] 4.4.3 Fix remaining C-style casts in engine files
+
+### 4.5 Code Readability
+- [x] 4.5.1 Replace `for(;;)` with `while(true)` for infinite loops
+- [x] 4.5.2 Fix yoda conditions (constant on left side of comparison)
+- [x] 4.5.3 Fix incorrect return types (return 0 in bool functions)
 
 ## Phase 5: Verification
 
@@ -155,11 +165,11 @@
 | Bug Fixes | 14 | 10 |
 | Security Hotspots | 7 | 6 |
 | High-Impact Smells | 13 | 10 |
-| Remaining Smells | 5 | 0 |
+| Remaining Smells | 14 | 8 |
 | Verification | 6 | 0 |
-| **Total** | **45** | **26** |
+| **Total** | **54** | **34** |
 
-## Current SonarCloud Metrics (Dec 14, 2025)
+## Current SonarCloud Metrics (Dec 17, 2025)
 
 | Metric | Value | Target | Status |
 |--------|-------|--------|--------|
@@ -249,3 +259,42 @@
         stddevice.hxx, tcpdevice.hxx
     - Replaced `virtual` with `override` for clearer intent
     - Enables compiler to detect signature mismatches
+
+## Session Summary (Dec 17, 2025)
+
+### C-Style Casts Replaced (cpp:S1946)
+
+12. **C-style reference casts → static_cast**
+    - asterixgpssubformat.cxx: 2 casts (ReadPacket, ProcessPacket)
+    - asterixrawsubformat.cxx: 2 casts (ReadPacket, ProcessPacket)
+    - asterixpcapsubformat.cxx: 1 reference cast (ReadPacket)
+    - zeromqdevice.cxx: 2 casts (size_t, long)
+    - serialdevice.cxx: 1 cast (ssize_t comparison)
+
+13. **C-style pointer casts → reinterpret_cast**
+    - asterixpcapsubformat.cxx: 3 casts for network protocol parsing
+      (protoType, IPtotalLength, UDP length)
+
+**Commits:**
+- `0d9844d` - refactor(asterix): Replace C-style casts with static_cast in subformat files
+- `570ce16` - refactor(engine): Replace C-style cast with static_cast in serialdevice
+
+### Code Readability Improvements
+
+14. **Infinite loop modernization** (cpp:S5765)
+    - XMLParser.cpp: Replaced `for(;;)` with `while(true)`
+
+**Commit:**
+- `ec07c12` - refactor(asterix): Use while(true) instead of for(;;) in XMLParser
+
+15. **Yoda condition fix**
+    - udpdevice.cxx: Changed `nullptr == element` to `element == nullptr`
+
+16. **Return type fix**
+    - DataItemFormatCompound.cpp: Changed `return 0` to `return false` in bool function
+
+### Testing Results
+- All 705 unit tests pass
+- All 11 integration tests pass
+- Valgrind: 0 memory leaks
+- Build successful on Linux (GCC)
