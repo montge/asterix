@@ -71,45 +71,65 @@ UAP *Category::newUAP() {
     return uap;
 }
 
+// Helper: Skip FSPEC bytes and return position after FSPEC
+static unsigned long skipFSPEC(const unsigned char *data, unsigned long len) {
+    unsigned long pos = 0;
+    while (pos < len && (data[pos] & FSPEC_FX_BIT)) {
+        ++pos;
+    }
+    return pos + 1;  // Position after FSPEC
+}
+
+// Helper: Check if a specific bit is set in data after FSPEC
+static bool isBitSetAfterFSPEC(const unsigned char *data, unsigned long len, unsigned long bittomatch) {
+    unsigned long pos = skipFSPEC(data, len);
+    pos += (bittomatch - 1) / 8;
+
+    if (pos >= len) {
+        return false;
+    }
+
+    unsigned char mask = FSPEC_FX_BIT;
+    mask <<= (7 - (bittomatch - 1) % 8);
+    return (data[pos] & mask) != 0;
+}
+
+// Helper: Check if a specific byte matches expected value after FSPEC
+static bool isByteMatchAfterFSPEC(const unsigned char *data, unsigned long len,
+                                   unsigned long byteNr, unsigned char expectedValue) {
+    unsigned long pos = skipFSPEC(data, len);
+    pos += byteNr - 1;
+
+    if (pos >= len) {
+        return false;
+    }
+    return data[pos] == expectedValue;
+}
+
 UAP *Category::getUAP(const unsigned char *data, unsigned long len) const {
     for (auto* uap : m_lUAPs) {
-        if (uap) {
-            if (uap->m_nUseIfBitSet) { // check if bit matches
-                unsigned long bittomatch = uap->m_nUseIfBitSet;
+        if (!uap) {
+            continue;  // Early continue reduces nesting (SonarCloud)
+        }
 
-                unsigned long pos = 0;
-
-                // skip FSPEC
-                while (pos < len && (data[pos] & FSPEC_FX_BIT))
-                    pos++;
-
-                pos++;
-
-                pos += (bittomatch - 1) / 8;
-
-                unsigned char mask = FSPEC_FX_BIT;
-                mask <<= (7 - (bittomatch - 1) % 8);
-
-                if (pos < len && (data[pos] & mask))
-                    return uap;
-            } else if (uap->m_nUseIfByteNr) { // check if byte matches
-                unsigned long pos = 0;
-
-                // skip FSPEC
-                while (pos < len && (data[pos] & FSPEC_FX_BIT))
-                    pos++;
-
-                pos++;
-
-                pos += uap->m_nUseIfByteNr - 1;
-
-                if (pos < len && data[pos] == uap->m_nIsSetTo) {
-                    return uap;
-                }
-            } else { // no need to match
+        // Check if bit matches
+        if (uap->m_nUseIfBitSet) {
+            if (isBitSetAfterFSPEC(data, len, uap->m_nUseIfBitSet)) {
                 return uap;
             }
+            continue;
         }
+
+        // Check if byte matches
+        if (uap->m_nUseIfByteNr) {
+            if (isByteMatchAfterFSPEC(data, len, uap->m_nUseIfByteNr, uap->m_nIsSetTo)) {
+                return uap;
+            }
+            continue;
+        }
+
+        // No condition - return this UAP
+        return uap;
     }
     return nullptr;
 }
