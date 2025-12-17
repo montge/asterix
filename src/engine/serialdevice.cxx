@@ -168,7 +168,7 @@ bool CSerialDevice::Write(const void *data, size_t len) {
 
     // Write the message to the standard output (blocking)
     ssize_t bytesWrote = write(_fileDesc, data, len);
-    if (bytesWrote != (ssize_t)len) {
+    if (bytesWrote != static_cast<ssize_t>(len)) {
         LOGERROR(1, "Error writing to serial device.\n");
         CountWriteError();
         return false;
