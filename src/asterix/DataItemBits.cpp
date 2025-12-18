@@ -917,7 +917,7 @@ const char *DataItemBits::getDescription(const char *field, const char *value = 
         m_strShortName = m_strName;
 
 
-    if (m_strShortName.compare(field) == 0) {
+    if (m_strShortName == field) {
         if (value == nullptr) {
             return m_strName.c_str();
         } else {
@@ -941,12 +941,13 @@ m_strName = m_strShortName;
 else if (!m_strName.empty() && m_strShortName.empty())
 m_strShortName = m_strName;
 
+// Use calloc instead of malloc+memset for cleaner initialization (SonarCloud)
+// Note: calloc is appropriate here for C interop with Wireshark plugin
 fulliautomatix_definitions* def = static_cast<fulliautomatix_definitions*>(
-    malloc(sizeof(fulliautomatix_definitions)));
+    calloc(1, sizeof(fulliautomatix_definitions)));
 if (def == nullptr) {
     return nullptr;
 }
-memset(def, 0, sizeof(fulliautomatix_definitions));
 def->pid = getPID();
 def->name = strdup(m_strName.c_str());
 

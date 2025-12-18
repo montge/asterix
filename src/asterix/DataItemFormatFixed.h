@@ -382,7 +382,7 @@ public:
      * @par Override of Virtual
      * This overrides DataItemFormat::isFixed() which returns false.
      */
-    bool isFixed() { return true; }; // true if this is Fixed format
+    bool isFixed() const override { return true; }
 
     /**
      * @brief Get human-readable description for a field value

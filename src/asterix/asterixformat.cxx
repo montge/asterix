@@ -131,7 +131,7 @@ CAsterixFormat::WritePacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice
         case EJSONE:
         case ETxt:
         case EOut: {
-            CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
+            auto &Descriptor = static_cast<CAsterixFormatDescriptor &>(formatDescriptor);
 
             if (Descriptor.m_pAsterixData == nullptr) {
                 LOGERROR(1, "Asterix data packet not present\n");
@@ -223,6 +223,10 @@ bool CAsterixFormat::HeartbeatProcessing(
     return false;
 }
 
+// Format attribute enables compile-time checking of format strings at call sites
+#if defined(__GNUC__) || defined(__clang__)
+__attribute__((format(printf, 1, 2)))
+#endif
 static void debug_trace(char const *format, ...) {
     char buffer[1024];
     va_list args;

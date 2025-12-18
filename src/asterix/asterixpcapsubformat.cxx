@@ -55,7 +55,7 @@
 
   // Implement usleep for Windows (usleep takes microseconds, Sleep takes milliseconds)
   inline void usleep(useconds_t usec) {
-    Sleep((DWORD)(usec / 1000)); // Convert microseconds to milliseconds
+    Sleep(static_cast<DWORD>(usec / 1000)); // Convert microseconds to milliseconds
   }
 #else
   #include <sys/time.h>
@@ -74,7 +74,7 @@ extern bool gSynchronous;
 
 bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, [[maybe_unused]] bool &discard,
                                        [[maybe_unused]] bool oradis) {
-    CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
+    auto &Descriptor = static_cast<CAsterixFormatDescriptor &>(formatDescriptor);
     unsigned short m_nDataLength = 0;
     static time_t lastFileTimeSec = 0;
     static useconds_t lastFileTimeUSec = 0;
@@ -88,7 +88,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
         lastFileTimeUSec = 0;
 
         // Read file header
-        if (!device.Read((void *) &m_ePcapFileHeader, sizeof(m_ePcapFileHeader))) {
+        if (!device.Read(&m_ePcapFileHeader, sizeof(m_ePcapFileHeader))) {
             LOGERROR(1, "Couldn't read PCAP file header.\n");
             return false;
         }
@@ -119,7 +119,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
     //////////////////////////////////////////////////////////////////////////////////////
     pcaprec_hdr_t m_ePcapRecHeader;
 
-    if (!device.Read((void *) &m_ePcapRecHeader, sizeof(m_ePcapRecHeader))) {
+    if (!device.Read(&m_ePcapRecHeader, sizeof(m_ePcapRecHeader))) {
         LOGERROR(1, "Couldn't read PCAP header.\n");
         return false;
     }
@@ -170,7 +170,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
      * Memory lifecycle: Buffer persists in Descriptor until format object destroyed.
      */
     unsigned char *pPacketBuffer = Descriptor.GetNewBuffer(nPacketBufferSize);
-    if (!device.Read((void *) pPacketBuffer, nPacketBufferSize)) {
+    if (!device.Read(pPacketBuffer, nPacketBufferSize)) {
         LOGERROR(1, "Couldn't read PCAP packet.\n");
         // No delete needed - buffer is managed by Descriptor
         return false;
@@ -189,7 +189,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
         pPacketPtr += 8; // Source
     }
 
-    unsigned short protoType = *((unsigned short *) pPacketPtr);
+    unsigned short protoType = *reinterpret_cast<unsigned short *>(pPacketPtr);
     pPacketPtr += 2;
 
     if (Descriptor.m_bInvertByteOrder) {
@@ -215,7 +215,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
 
     pPacketPtr += 1; //TOS
 
-    unsigned short IPtotalLength = *((unsigned short *) pPacketPtr); // Total length
+    unsigned short IPtotalLength = *reinterpret_cast<unsigned short *>(pPacketPtr); // Total length
     pPacketPtr += 2;
 
     if (bIPInvertByteOrder) {
@@ -246,7 +246,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
         pPacketPtr += 2; // source port
         pPacketPtr += 2; // destination port
 
-        m_nDataLength = *((unsigned short *) pPacketPtr); // length
+        m_nDataLength = *reinterpret_cast<unsigned short *>(pPacketPtr); // length
         pPacketPtr += 2;
 
         if (bIPInvertByteOrder) {

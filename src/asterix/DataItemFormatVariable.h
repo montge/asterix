@@ -274,9 +274,9 @@ public:
      * @note This method APPENDS to strResult and strHeader, does not clear them.
      *       Each fixed part's getText() is called to parse individual octets.
      */
-    virtual bool
+    bool
     getText(std::string &strResult, std::string &strHeader, const unsigned int formatType, unsigned char *pData,
-            long nLength);
+            long nLength) override;
 
     /**
      * @brief Generate a printable description of the variable format structure
@@ -294,7 +294,7 @@ public:
      * "    Fixed(1): ADDR[8-2] FX[1]\n"
      * @endcode
      */
-    virtual std::string printDescriptors(std::string header);
+    std::string printDescriptors(std::string header) override;
 
     /**
      * @brief Mark a specific field for filtering
@@ -306,7 +306,7 @@ public:
      * @note Delegates to DataItemFormatFixed::filterOutItem() for each part.
      *       Used by CLI filter mechanism to show only specific fields.
      */
-    virtual bool filterOutItem(const char *name);
+    bool filterOutItem(const char *name) override;
 
     /**
      * @brief Check if a specific field passes the filter
@@ -317,7 +317,7 @@ public:
      * @note Delegates to DataItemFormatFixed::isFiltered() for each part.
      *       Returns true if ANY part passes the filter.
      */
-    virtual bool isFiltered(const char *name);
+    bool isFiltered(const char *name) override;
 
     /**
      * @brief Identify this format as Variable type
@@ -329,7 +329,7 @@ public:
      *
      * @see DataItemFormat::isVariable()
      */
-    bool isVariable() { return true; };
+    bool isVariable() const override { return true; }
 
     /**
      * @brief Get human-readable description for a field value
@@ -348,7 +348,7 @@ public:
      * // Returns: "Normal operation" (from XML <BitsValue val="1">)
      * @endcode
      */
-    virtual const char *getDescription(const char *field, const char *value);
+    const char *getDescription(const char *field, const char *value) override;
 
 #if defined(WIRESHARK_WRAPPER) || defined(ETHEREAL_WRAPPER)
     /**
@@ -362,7 +362,7 @@ public:
      *
      * @see DataItemFormatFixed::getWiresharkDefinitions()
      */
-    fulliautomatix_definitions* getWiresharkDefinitions();
+    fulliautomatix_definitions* getWiresharkDefinitions() override;
 
     /**
      * @brief Get Wireshark dissector data structure (Wireshark plugin only)
@@ -378,7 +378,7 @@ public:
      *
      * @see DataItemFormatFixed::getData()
      */
-    fulliautomatix_data* getData(unsigned char* pData, long len, int byteoffset);
+    fulliautomatix_data* getData(unsigned char* pData, long len, int byteoffset) override;
 #endif
 
 #if defined(PYTHON_WRAPPER)
@@ -407,7 +407,7 @@ public:
      * @see DataItemFormatFixed::getObject()
      * @see DataItemFormatFixed::insertToDict()
      */
-    PyObject* getObject(unsigned char* pData, long nLength, int verbose);
+    PyObject* getObject(unsigned char* pData, long nLength, int verbose) override;
 
     /**
      * @brief Insert parsed data into existing Python dictionary (Python binding only)
@@ -425,7 +425,7 @@ public:
      *          The intended behavior was to delegate to fixed parts, but this
      *          caused issues with variable item representation.
      */
-    void insertToDict(PyObject* p, unsigned char* pData, long nLength, int verbose);
+    void insertToDict(PyObject* p, unsigned char* pData, long nLength, int verbose) override;
 #endif
 };
 
