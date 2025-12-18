@@ -25,9 +25,12 @@
 - `f1c6142` - Fix memory leak in asterixformat.cxx (delete pDefinition on fopen failure)
 
 ### 1.4 Fix Logic Errors
-- [ ] 1.4.1 Identify logic error bugs
-- [ ] 1.4.2 Fix incorrect conditions, off-by-one errors, etc.
+- [x] 1.4.1 Identify logic error bugs
+- [x] 1.4.2 Fix incorrect conditions, off-by-one errors, etc.
 - [ ] 1.4.3 Add unit tests for edge cases
+
+**Commits:**
+- `d09e794` - fix(asterix): Add null pointer checks for m_pFormat in Category.cpp
 
 ### 1.5 Fix Remaining Bugs
 - [x] 1.5.1 Address uninitialized variable bugs
@@ -162,12 +165,12 @@
 
 | Phase | Tasks | Completed |
 |-------|-------|-----------|
-| Bug Fixes | 14 | 11 |
+| Bug Fixes | 14 | 13 |
 | Security Hotspots | 7 | 6 |
 | High-Impact Smells | 13 | 10 |
 | Remaining Smells | 14 | 14 |
 | Verification | 6 | 0 |
-| **Total** | **54** | **41** |
+| **Total** | **54** | **43** |
 
 ## Current SonarCloud Metrics (Dec 17, 2025)
 
@@ -371,6 +374,28 @@
 
 **Commits:**
 - `55ce64b` - refactor(main): Replace redundant strlen check with null char check
+
+### Testing Results
+- All 11 integration tests pass
+- Valgrind: 0 memory leaks
+- Build successful on Linux (GCC)
+
+## Session Summary (Dec 17, 2025 - Part 5)
+
+### Null Pointer Dereference Fixes (Logic Errors)
+
+23. **Category.cpp null pointer checks**
+    - Added defensive null checks for `m_pFormat` before dereferencing in 5 functions:
+      - `getDescription()`: Return nullptr if format is null
+      - `printDescriptors()`: Skip items with null format
+      - `filterOutItem()`: Return false if format is null
+      - `isFiltered()`: Add null check in condition
+      - `getWiresharkDefinitions()`: Skip items with null format, add null check in while loop
+    - `m_pFormat` is initialized to nullptr in DataItemDescription constructor
+    - Prevents potential null pointer dereferences flagged by SonarCloud
+
+**Commits:**
+- `d09e794` - fix(asterix): Add null pointer checks for m_pFormat in Category.cpp
 
 ### Testing Results
 - All 11 integration tests pass
