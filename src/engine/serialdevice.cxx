@@ -209,25 +209,18 @@ bool CSerialDevice::Select(const unsigned int secondsToWait) {
 
 
 bool CSerialDevice::IoCtrl(const unsigned int command, [[maybe_unused]] const void *data, [[maybe_unused]] size_t len) {
-    static bool result;
-
     switch (command) {
         case EReset:
-            result = false;
-            break;
+            return false;
         case EAllDone:
             //TODO
-            result = true;
-            break;
+            return true;
         case EPacketDone:
             //TODO
-            result = false;
-            break;
+            return false;
         default:
-            result = false;
+            return false;
     }
-
-    return result;
 }
 
 

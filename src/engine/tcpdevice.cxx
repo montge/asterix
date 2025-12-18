@@ -367,28 +367,20 @@ bool CTcpDevice::Select(const unsigned int secondsToWait) {
 
 
 bool CTcpDevice::IoCtrl(const unsigned int command, [[maybe_unused]] const void *data, [[maybe_unused]] size_t len) {
-    static bool result;
-
     switch (command) {
         case EReset:
             Disconnect(true); // normal disconnection, do linger
-            result = !_connected;
-            break;
+            return !_connected;
         case EAllDone:
             sleep(1); // according to ICD, this delay is not needed, but is is suggested in T04-TPB-CSW
-            result = Disconnect(true); // normal disconnection, do linger
-            break;
+            return Disconnect(true); // normal disconnection, do linger
         case EPacketDone:
-            result = false;
-            break;
+            return false;
         case EIsLastPacket:
-            result = !_connected;
-            break;
+            return !_connected;
         default:
-            result = false;
+            return false;
     }
-
-    return result;
 }
 
 

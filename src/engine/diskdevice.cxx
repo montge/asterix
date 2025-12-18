@@ -613,21 +613,20 @@ void CDiskDevice::Close() {
 
 
 bool CDiskDevice::IoCtrl(const unsigned int command, const void *data, size_t len) {
-    static bool result = false;
+    bool result = false;
 
     switch (command) {
         case EReset:
-            if (_opened && _fileStream) {
-                if (_input) // seek to the beginning of the input file
-                {
-                    _onstart = result = (fseek(_fileStream, 0, SEEK_SET) == 0);
-                }
+            if (_opened && _fileStream && _input) {
+                // seek to the beginning of the input file
+                result = (fseek(_fileStream, 0, SEEK_SET) == 0);
+                _onstart = result;
             }
             ResetAllErrors();
             break;
         case EPacketDone:
             if ((data != nullptr) && (len == sizeof(unsigned int)))
-                _seqNo = *(unsigned int *) data;
+                _seqNo = *static_cast<const unsigned int *>(data);
 
             if ((!_input) && (_mode & DD_MODE_PACKETFILE))
                 result = DoneWithFile();
