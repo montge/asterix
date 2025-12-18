@@ -72,10 +72,10 @@ bool CAsterixFinalSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor,
     static unsigned long lastFileTimeMSec = 0;
     static unsigned long lastMyTimeMSec = 0;
 
-    CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
+    auto &Descriptor = static_cast<CAsterixFormatDescriptor &>(formatDescriptor);
 
     // Read final record header
-    if (!device.Read((void *) &finalRecordHeader, sizeof(finalRecordHeader))) {
+    if (!device.Read(&finalRecordHeader, sizeof(finalRecordHeader))) {
         LOGERROR(1, "Couldn't read packet header.\n");
         return false;
     }
@@ -116,16 +116,16 @@ bool CAsterixFinalSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor,
         }
     }
 
-    const unsigned char *pBuffer = Descriptor.GetNewBuffer(neededLen);
+    unsigned char *pBuffer = Descriptor.GetNewBuffer(neededLen);
 
     // Read packet
-    if (!device.Read((void *) pBuffer, neededLen)) {
+    if (!device.Read(pBuffer, neededLen)) {
         LOGERROR(1, "Couldn't read packet.\n");
         return false;
     }
 
     // Read padding bytes
-    if (!device.Read((void *) padding, sizeof(padding))) {
+    if (!device.Read(padding, sizeof(padding))) {
         LOGERROR(1, "Couldn't read packet padding.\n");
         return false;
     }

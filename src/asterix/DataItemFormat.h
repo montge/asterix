@@ -278,25 +278,25 @@ public:
      */
 
     /** @brief Check if this is a Fixed format (constant length) */
-    virtual bool isFixed() { return false; };
+    virtual bool isFixed() const { return false; }
 
     /** @brief Check if this is a Repetitive format (count byte + repeated elements) */
-    virtual bool isRepetitive() { return false; };
+    virtual bool isRepetitive() const { return false; }
 
     /** @brief Check if this is a BDS format (Comm-B Data Buffer register) */
-    virtual bool isBDS() { return false; };
+    virtual bool isBDS() const { return false; }
 
     /** @brief Check if this is a Variable format (FX extension bits) */
-    virtual bool isVariable() { return false; };
+    virtual bool isVariable() const { return false; }
 
     /** @brief Check if this is an Explicit format (explicit length field) */
-    virtual bool isExplicit() { return false; };
+    virtual bool isExplicit() const { return false; }
 
     /** @brief Check if this is a Compound format (sub-item presence bitmap) */
-    virtual bool isCompound() { return false; };
+    virtual bool isCompound() const { return false; }
 
     /** @brief Check if this is a Bits format (bit-level field description) */
-    virtual bool isBits() { return false; };
+    virtual bool isBits() const { return false; }
 
     /** @} */
 

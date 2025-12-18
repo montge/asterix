@@ -60,18 +60,18 @@
  */
 
 bool CAsterixHDLCSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, [[maybe_unused]] bool &discard) {
-    CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
+    auto &Descriptor = static_cast<CAsterixFormatDescriptor &>(formatDescriptor);
 
     // read available data to read buffer
     size_t readSize = MAX_RXBUF;
 
-    if (!device.Read((void *) RxBuf, &readSize)) {
+    if (!device.Read(RxBuf, &readSize)) {
         LOGERROR(1, "Couldn't read HDLC packet.\n");
         return false;
     }
 
     // get output buffer
-    const unsigned char *pBuffer = Descriptor.GetNewBuffer(MAX_CBUF);
+    unsigned char *pBuffer = Descriptor.GetNewBuffer(MAX_CBUF);
     int nOutPos = 0;
 
     // copy read buffer to circular buffer
@@ -84,7 +84,7 @@ bool CAsterixHDLCSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
         unsigned char *ptrFrame = get_next_hdlc_frame(&len);
 
         if (ptrFrame) { // store packet in internal buffer
-            memcpy((void *) &pBuffer[nOutPos], ptrFrame, len);
+            memcpy(&pBuffer[nOutPos], ptrFrame, len);
             nOutPos += len;
             Descriptor.SetDataLen(Descriptor.GetDataLen() + len);
         } else {
@@ -107,7 +107,7 @@ bool CAsterixHDLCSubformat::WritePacket([[maybe_unused]] CBaseFormatDescriptor &
  * Parse packet read from input channel and stored to Descriptor.m_pBuffer
  */
 bool CAsterixHDLCSubformat::ProcessPacket(CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool &discard) {
-    CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
+    auto &Descriptor = static_cast<CAsterixFormatDescriptor &>(formatDescriptor);
 
     if (Descriptor.GetDataLen() < 3) {
         return true;
