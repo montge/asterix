@@ -64,7 +64,7 @@ long DataItemFormatCompound::getLength(const unsigned char *pData) {
     auto *pCompoundPrimary = static_cast<DataItemFormatVariable *>(*it2);
     ++it2;
     if (it2 == m_lSubItems.end()) {
-        Tracer::Error("Missing secondary subfields of Compund");
+        Tracer::Error("Missing secondary subfields of Compound");
         return 0;
     }
 
@@ -113,7 +113,7 @@ bool DataItemFormatCompound::getText(std::string &strResult, std::string &strHea
     auto *pCompoundPrimary = static_cast<DataItemFormatVariable *>(*it2);
     ++it2;
     if (it2 == m_lSubItems.end()) {
-        Tracer::Error("Missing secondary subfields of Compund");
+        Tracer::Error("Missing secondary subfields of Compound");
         return false;
     }
 
