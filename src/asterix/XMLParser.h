@@ -580,6 +580,56 @@ private:
      * @return false if attribute not found (reports error)
      */
     bool GetAttribute(const char *elementName, const char *attrName, int *ptrInt);
+
+    // =========================================================================
+    // Element Handler Methods (refactored from ElementHandlerStart)
+    // =========================================================================
+
+    /**
+     * @brief Add a format to the current parent format or data item
+     *
+     * Common logic for adding Fixed, Variable, Compound, Repetitive, Explicit,
+     * and BDS format objects to their parent container.
+     *
+     * @param pNewFormat The new format object to add
+     * @param formatName Name of the format for error messages (e.g., "Fixed")
+     * @param allowedInVariable Whether this format can be nested in Variable
+     * @param allowedInRepetitive Whether this format can be nested in Repetitive
+     * @param allowedInExplicit Whether this format can be nested in Explicit
+     * @param allowedInCompound Whether this format can be nested in Compound
+     * @param allowedAsFirstInCompound Whether this can be the first item in Compound
+     * @return true if format was added successfully, false on error
+     */
+    bool addFormatToParent(DataItemFormat *pNewFormat, const char *formatName,
+                           bool allowedInVariable, bool allowedInRepetitive,
+                           bool allowedInExplicit, bool allowedInCompound,
+                           bool allowedAsFirstInCompound);
+
+    // Element start handlers
+    void handleCategoryStart(const char **attr);
+    void handleDataItemStart(const char **attr);
+    void handleDataItemFormatStart(const char **attr);
+    void handleFixedStart(const char **attr);
+    void handleVariableStart(const char **attr);
+    void handleCompoundStart(const char **attr);
+    void handleRepetitiveStart(const char **attr);
+    void handleExplicitStart(const char **attr);
+    void handleBDSStart(const char **attr);
+    void handleBitsStart(const char **attr);
+    void handleBitsValueStart(const char **attr);
+    void handleBitsUnitStart(const char **attr);
+    void handleBitsConstStart(const char **attr);
+    void handleUAPStart(const char **attr);
+    void handleUAPItemStart(const char **attr);
+
+    // Element end handlers
+    void handleCategoryEnd();
+    void handleDataItemEnd();
+    void handleFormatEnd(const char *formatName);
+    void handleBitsEnd();
+    void handleBitsValueEnd();
+    void handleUAPEnd();
+    void handleUAPItemEnd();
 };
 
 #endif /* XMLPARSER_H_ */

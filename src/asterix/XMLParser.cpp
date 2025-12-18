@@ -101,11 +101,530 @@ void XMLParser::Error(const char *errstr) {
     m_bErrorDetectedStopParsing = true;
 }
 
+// =========================================================================
+// Helper Methods for Element Handlers
+// =========================================================================
+
+bool XMLParser::addFormatToParent(DataItemFormat *pNewFormat, const char *formatName,
+                                   bool allowedInVariable, bool allowedInRepetitive,
+                                   bool allowedInExplicit, bool allowedInCompound,
+                                   bool allowedAsFirstInCompound) {
+    if (m_pFormat != nullptr) {
+        // Adding to an existing parent format
+        if (m_pFormat->isVariable()) {
+            if (!allowedInVariable) {
+                std::string errMsg = "XMLParser : Error in handling ";
+                errMsg += formatName;
+                errMsg += " format";
+                Error(errMsg.c_str(), m_pDataItem->m_strName.c_str());
+                delete pNewFormat;
+                return false;
+            }
+            m_pFormat->m_lSubItems.push_back(pNewFormat);
+        } else if (m_pFormat->isRepetitive()) {
+            if (!allowedInRepetitive) {
+                std::string errMsg = "XMLParser : Error in handling ";
+                errMsg += formatName;
+                errMsg += " format";
+                Error(errMsg.c_str(), m_pDataItem->m_strName.c_str());
+                delete pNewFormat;
+                return false;
+            }
+            if (!m_pFormat->m_lSubItems.empty()) {
+                std::string errMsg = "XMLParser : Duplicate ";
+                errMsg += formatName;
+                errMsg += " item in Repetitive";
+                Error(errMsg.c_str());
+            }
+            m_pFormat->m_lSubItems.push_back(pNewFormat);
+        } else if (m_pFormat->isExplicit()) {
+            if (!allowedInExplicit) {
+                std::string errMsg = "XMLParser : Error in handling ";
+                errMsg += formatName;
+                errMsg += " format";
+                Error(errMsg.c_str(), m_pDataItem->m_strName.c_str());
+                delete pNewFormat;
+                return false;
+            }
+            if (!m_pFormat->m_lSubItems.empty()) {
+                std::string errMsg = "XMLParser : Duplicate ";
+                errMsg += formatName;
+                errMsg += " item in Explicit";
+                Error(errMsg.c_str());
+            }
+            m_pFormat->m_lSubItems.push_back(pNewFormat);
+        } else if (m_pFormat->isCompound()) {
+            if (!allowedInCompound) {
+                std::string errMsg = "XMLParser : Error in handling ";
+                errMsg += formatName;
+                errMsg += " format";
+                Error(errMsg.c_str(), m_pDataItem->m_strName.c_str());
+                delete pNewFormat;
+                return false;
+            }
+            if (m_pFormat->m_lSubItems.empty() && !allowedAsFirstInCompound) {
+                std::string errMsg = "XMLParser : First part of <Compound> must be <Variable> and not <";
+                errMsg += formatName;
+                errMsg += ">";
+                Error(errMsg.c_str());
+                delete pNewFormat;
+                return false;
+            }
+            m_pFormat->m_lSubItems.push_back(pNewFormat);
+        } else {
+            std::string errMsg = "XMLParser : Error in handling ";
+            errMsg += formatName;
+            errMsg += " format in item ";
+            Error(errMsg.c_str(), m_pDataItem->m_strName.c_str());
+            delete pNewFormat;
+            return false;
+        }
+        pNewFormat->m_pParentFormat = m_pFormat;
+        m_pFormat = pNewFormat;
+    } else {
+        // Top-level format for the data item
+        if (m_pDataItem->m_pFormat) {
+            Error("XMLParser : Duplicate format in item ", m_pDataItem->m_strName.c_str());
+        }
+        m_pDataItem->m_pFormat = pNewFormat;
+        m_pFormat = pNewFormat;
+    }
+    return true;
+}
+
+// =========================================================================
+// Element Start Handlers
+// =========================================================================
+
+void XMLParser::handleCategoryStart(const char **attr) {
+    for (int i = 0; attr[i]; i += 2) {
+        if (strcmp(attr[i], "id") == 0) {
+            int id = 0;
+            if (strcmp(attr[i + 1], "BDS") == 0)
+                id = BDS_CAT_ID;
+            else
+                id = atoi(attr[i + 1]);
+
+            if (id >= 0 && id <= MAX_CATEGORIES) {
+                m_pCategory = new Category(id);
+            } else {
+                Error("XMLParser : Wrong category: ", attr[i + 1]);
+                break;
+            }
+        } else if (strcmp(attr[i], "name") == 0) {
+            m_pCategory->m_strName = attr[i + 1];
+        } else if (strcmp(attr[i], "ver") == 0) {
+            m_pCategory->m_strVer = attr[i + 1];
+        } else {
+            Error("XMLParser : Unknown attribute: ", attr[i]);
+        }
+    }
+}
+
+void XMLParser::handleDataItemStart(const char **attr) {
+    if (m_pCategory == nullptr) {
+        Error("XMLParser : <DataItem> without <Category> ");
+        return;
+    }
+    for (int i = 0; attr[i]; i += 2) {
+        if (strcmp(attr[i], "id") == 0) {
+            m_pDataItem = m_pCategory->getDataItemDescription(attr[i + 1]);
+        } else if (strcmp(attr[i], "rule") == 0) {
+            if (m_pDataItem) {
+                if (strcmp(attr[i + 1], "optional") == 0)
+                    m_pDataItem->m_eRule = DataItemDescription::DATAITEM_OPTIONAL;
+                else if (strcmp(attr[i + 1], "mandatory") == 0)
+                    m_pDataItem->m_eRule = DataItemDescription::DATAITEM_MANDATORY;
+                else
+                    m_pDataItem->m_eRule = DataItemDescription::DATAITEM_UNKNOWN;
+            } else {
+                Error("XMLParser : DataItem missing for rule");
+            }
+        } else {
+            Error("XMLParser : Unknown attribute: ", attr[i]);
+        }
+    }
+}
+
+void XMLParser::handleDataItemFormatStart(const char **attr) {
+    for (int i = 0; attr[i]; i += 2) {
+        if (strcmp(attr[i], "desc") == 0) {
+            if (m_pDataItem) {
+                m_pDataItem->m_strFormat = attr[i + 1];
+            } else {
+                Error("XMLParser : <Format> without <DataItem>");
+            }
+        } else {
+            Error("XMLParser : Unknown attribute for <DataItemFormat>: ", attr[i]);
+        }
+    }
+}
+
+void XMLParser::handleFixedStart(const char **attr) {
+    if (!m_pDataItem) {
+        Error("XMLParser : <Fixed> without <DataItem>");
+        return;
+    }
+
+    auto *pFormatFixed = new DataItemFormatFixed(m_pDataItem->m_nID);
+
+    // Fixed is allowed in: Variable, Repetitive(single), Explicit(single), Compound(not first)
+    if (!addFormatToParent(pFormatFixed, "Fixed", true, true, true, true, false)) {
+        return;
+    }
+
+    for (int i = 0; attr[i]; i += 2) {
+        if (strcmp(attr[i], "length") == 0) {
+            int len = atoi(attr[i + 1]);
+            if (len >= 0) {
+                pFormatFixed->m_nLength = len;
+            } else {
+                Error("XMLParser : Wrong DataItem length: ", attr[i + 1]);
+            }
+        } else {
+            Error("XMLParser : Unknown attribute for Fixed: ", attr[i]);
+        }
+    }
+}
+
+void XMLParser::handleVariableStart(const char **attr) {
+    (void)attr;  // Variable has no attributes
+    if (!m_pDataItem) {
+        Error("XMLParser : <Variable> without <DataItem>");
+        return;
+    }
+
+    auto *pFormatVariable = new DataItemFormatVariable(m_pDataItem->m_nID);
+
+    // Variable is allowed in: Compound(including first), Explicit(single)
+    // Not allowed in: Variable, Repetitive
+    addFormatToParent(pFormatVariable, "Variable", false, false, true, true, true);
+}
+
+void XMLParser::handleCompoundStart(const char **attr) {
+    (void)attr;  // Compound has no attributes
+    if (!m_pDataItem) {
+        Error("XMLParser : <Compound> without <DataItem>");
+        return;
+    }
+
+    auto *pFormatCompound = new DataItemFormatCompound(m_pDataItem->m_nID);
+
+    // Compound is allowed in: Compound(not first), Explicit(single)
+    // Not allowed in: Variable, Repetitive
+    addFormatToParent(pFormatCompound, "Compound", false, false, true, true, false);
+}
+
+void XMLParser::handleRepetitiveStart(const char **attr) {
+    (void)attr;  // Repetitive has no attributes
+    if (!m_pDataItem) {
+        Error("XMLParser : <Repetitive> without <DataItem>");
+        return;
+    }
+
+    auto *pFormatRepetitive = new DataItemFormatRepetitive(m_pDataItem->m_nID);
+
+    // Repetitive is allowed in: Compound(not first), Explicit(single)
+    // Not allowed in: Variable, Repetitive
+    addFormatToParent(pFormatRepetitive, "Repetitive", false, false, true, true, false);
+}
+
+void XMLParser::handleExplicitStart(const char **attr) {
+    (void)attr;  // Explicit has no attributes
+    if (!m_pDataItem) {
+        Error("XMLParser : <Explicit> without <DataItem>");
+        return;
+    }
+
+    auto *pFormatExplicit = new DataItemFormatExplicit(m_pDataItem->m_nID);
+
+    // Explicit is allowed in: Compound(not first)
+    // Not allowed in: Variable, Repetitive, Explicit
+    addFormatToParent(pFormatExplicit, "Explicit", false, false, false, true, false);
+}
+
+void XMLParser::handleBDSStart(const char **attr) {
+    (void)attr;  // BDS has no attributes
+    Category *m_pBDSCategory = m_pDef->getCategory(BDS_CAT_ID);
+
+    std::list<DataItemDescription *>::iterator it = m_pBDSCategory->m_lDataItems.begin();
+    if (it == m_pBDSCategory->m_lDataItems.end()) {
+        Error("XMLParser : Missing BDS definition file.");
+        return;
+    }
+
+    if (!m_pDataItem) {
+        Error("XMLParser : <BDS> without <DataItem>");
+        return;
+    }
+
+    auto *pFormatBDS = new DataItemFormatBDS(m_pDataItem->m_nID);
+
+    for (; it != m_pBDSCategory->m_lDataItems.end(); ++it) {
+        auto *dip = *it;
+        pFormatBDS->m_lSubItems.push_back(dip->m_pFormat->clone());
+    }
+
+    // BDS is allowed in: Variable, Repetitive(single), Explicit(single), Compound(not first)
+    addFormatToParent(pFormatBDS, "BDS", true, true, true, true, false);
+}
+
+void XMLParser::handleBitsStart(const char **attr) {
+    if (!m_pFormat) {
+        Error("XMLParser : <Bits> without <Format>");
+        return;
+    }
+    if (!m_pFormat->isFixed()) {
+        Error("XMLParser : <Bits> without <Fixed>");
+        return;
+    }
+
+    auto *pBits = new DataItemBits();
+    m_pFormat->m_lSubItems.push_back(pBits);
+    pBits->m_pParentFormat = m_pFormat;
+    m_pFormat = pBits;
+
+    for (int i = 0; attr[i]; i += 2) {
+        if (strcmp(attr[i], "bit") == 0) {
+            int bit = atoi(attr[i + 1]);
+            if (bit >= 0) {
+                pBits->m_nFrom = pBits->m_nTo = bit;
+                if (static_cast<DataItemFormatFixed *>(pBits->m_pParentFormat)->m_nLength * 8 < bit) {
+                    Error("XMLParser : Bit out of fixed length");
+                }
+            } else {
+                Error("XMLParser : Wrong bit: ", attr[i + 1]);
+            }
+        } else if (strcmp(attr[i], "from") == 0) {
+            int bit = atoi(attr[i + 1]);
+            if (bit >= 0) {
+                pBits->m_nFrom = bit;
+                if (static_cast<DataItemFormatFixed *>(pBits->m_pParentFormat)->m_nLength * 8 < bit) {
+                    Error("XMLParser : Bit out of fixed length");
+                }
+            } else {
+                Error("XMLParser : Wrong bit from: ", attr[i + 1]);
+            }
+        } else if (strcmp(attr[i], "to") == 0) {
+            int bit = atoi(attr[i + 1]);
+            if (bit >= 0) {
+                pBits->m_nTo = bit;
+                if (static_cast<DataItemFormatFixed *>(pBits->m_pParentFormat)->m_nLength * 8 < bit) {
+                    Error("XMLParser : Bit out of fixed length");
+                }
+            } else {
+                Error("XMLParser : Wrong bit to: ", attr[i + 1]);
+            }
+        } else if (strcmp(attr[i], "encode") == 0) {
+            if (strcmp(attr[i + 1], "unsigned") == 0) {
+                pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+            } else if (strcmp(attr[i + 1], "6bitschar") == 0) {
+                pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_SIX_BIT_CHAR;
+            } else if (strcmp(attr[i + 1], "hex") == 0) {
+                pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_HEX_BIT_CHAR;
+            } else if (strcmp(attr[i + 1], "octal") == 0) {
+                pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_OCTAL;
+            } else if (strcmp(attr[i + 1], "signed") == 0) {
+                pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_SIGNED;
+            } else if (strcmp(attr[i + 1], "ascii") == 0) {
+                pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_ASCII;
+            } else {
+                Error("XMLParser : Wrong encode: ", attr[i]);
+            }
+        } else if (strcmp(attr[i], "fx") == 0) {
+            pBits->m_bExtension = (atoi(attr[i + 1]) != 0);
+        } else {
+            Error("XMLParser : Unknown attribute: ", attr[i]);
+        }
+    }
+}
+
+void XMLParser::handleBitsValueStart(const char **attr) {
+    if (m_pFormat == nullptr || !m_pFormat->isBits()) {
+        Error("XMLParser : <BitsValue> without <Bits>");
+        return;
+    }
+
+    for (int i = 0; attr[i]; i += 2) {
+        if (strcmp(attr[i], "val") == 0) {
+            int val = atoi(attr[i + 1]);
+            m_pBitsValue = new BitsValue(val);
+            (static_cast<DataItemBits *>(m_pFormat))->m_lValue.push_back(m_pBitsValue);
+        }
+    }
+    GetCData(m_pBitsValue ? &m_pBitsValue->m_strDescription : nullptr);
+}
+
+void XMLParser::handleBitsUnitStart(const char **attr) {
+    if (m_pFormat == nullptr || !m_pFormat->isBits()) {
+        Error("XMLParser : <BitsUnit> without <Bits>");
+        return;
+    }
+
+    for (int i = 0; attr[i]; i += 2) {
+        if (strcmp(attr[i], "scale") == 0) {
+            (static_cast<DataItemBits *>(m_pFormat))->m_dScale = atof(attr[i + 1]);
+        } else if (strcmp(attr[i], "min") == 0) {
+            (static_cast<DataItemBits *>(m_pFormat))->m_dMinValue = atof(attr[i + 1]);
+            (static_cast<DataItemBits *>(m_pFormat))->m_bMinValueSet = true;
+        } else if (strcmp(attr[i], "max") == 0) {
+            (static_cast<DataItemBits *>(m_pFormat))->m_dMaxValue = atof(attr[i + 1]);
+            (static_cast<DataItemBits *>(m_pFormat))->m_bMaxValueSet = true;
+        }
+    }
+
+    GetCData(&(static_cast<DataItemBits *>(m_pFormat))->m_strUnit);
+}
+
+void XMLParser::handleBitsConstStart(const char **attr) {
+    (void)attr;  // BitsConst has no attributes
+    if (m_pFormat == nullptr || !m_pFormat->isBits()) {
+        Error("XMLParser : <BitsConst> without <Bits>");
+        return;
+    }
+
+    (static_cast<DataItemBits *>(m_pFormat))->m_bIsConst = true;
+    GetCData(&(static_cast<DataItemBits *>(m_pFormat))->m_nConst);
+}
+
+void XMLParser::handleUAPStart(const char **attr) {
+    if (m_pCategory == nullptr) {
+        Error("XMLParser : Missing <UAP> outside <Category>");
+        return;
+    }
+
+    m_pUAP = m_pCategory->newUAP();
+
+    for (int i = 0; attr[i]; i += 2) {
+        if (strcmp(attr[i], "use_if_bit_set") == 0) {
+            m_pUAP->m_nUseIfBitSet = atoi(attr[i + 1]);
+        } else if (strcmp(attr[i], "use_if_byte_nr") == 0) {
+            m_pUAP->m_nUseIfByteNr = atoi(attr[i + 1]);
+        } else if (strcmp(attr[i], "is_set_to") == 0) {
+            m_pUAP->m_nIsSetTo = atoi(attr[i + 1]);
+        } else {
+            Error("XMLParser : Unknown property for UAP: ", attr[i + 1]);
+        }
+    }
+}
+
+void XMLParser::handleUAPItemStart(const char **attr) {
+    if (m_pCategory == nullptr) {
+        Error("XMLParser : Missing <UAPItem> outside <Category>");
+        return;
+    }
+    if (m_pUAP == nullptr) {
+        Error("XMLParser : Missing <UAPItem> outside <UAP>");
+        return;
+    }
+
+    m_pUAPItem = m_pUAP->newUAPItem();
+
+    for (int i = 0; attr[i]; i += 2) {
+        if (strcmp(attr[i], "bit") == 0) {
+            m_pUAPItem->m_nBit = atoi(attr[i + 1]);
+        } else if (strcmp(attr[i], "frn") == 0) {
+            if (strcmp(attr[i + 1], "FX") == 0) {
+                m_pUAPItem->m_bFX = true;
+            } else {
+                m_pUAPItem->m_bFX = false;
+                m_pUAPItem->m_nFRN = atoi(attr[i + 1]);
+            }
+        } else if (strcmp(attr[i], "len") == 0) {
+            m_pUAPItem->m_nLen = atoi(attr[i + 1]);
+        } else {
+            Error("XMLParser : Unknown property for UAPItem: ", attr[i + 1]);
+        }
+    }
+
+    GetCData(m_pUAPItem ? &m_pUAPItem->m_strItemID : nullptr);
+}
+
+// =========================================================================
+// Element End Handlers
+// =========================================================================
+
+void XMLParser::handleCategoryEnd() {
+    if (m_pCategory) {
+        m_pDef->setCategory(m_pCategory);
+        m_pCategory = nullptr;
+    } else {
+        Error("Closing unopened tag: ", "Category");
+    }
+}
+
+void XMLParser::handleDataItemEnd() {
+    if (m_pDataItem) {
+        m_pDataItem = nullptr;
+    } else {
+        Error("Closing unopened tag: ", "DataItem");
+    }
+}
+
+void XMLParser::handleFormatEnd(const char *formatName) {
+    bool validFormat = false;
+
+    if (strcmp(formatName, "Fixed") == 0) {
+        validFormat = m_pFormat != nullptr && m_pFormat->isFixed();
+    } else if (strcmp(formatName, "Variable") == 0) {
+        validFormat = m_pFormat != nullptr && m_pFormat->isVariable();
+    } else if (strcmp(formatName, "Explicit") == 0) {
+        validFormat = m_pFormat != nullptr && m_pFormat->isExplicit();
+    } else if (strcmp(formatName, "Repetitive") == 0) {
+        validFormat = m_pFormat != nullptr && m_pFormat->isRepetitive();
+    } else if (strcmp(formatName, "BDS") == 0) {
+        validFormat = m_pFormat != nullptr && m_pFormat->isBDS();
+    } else if (strcmp(formatName, "Compound") == 0) {
+        validFormat = m_pFormat != nullptr && m_pFormat->isCompound();
+    }
+
+    if (validFormat) {
+        m_pFormat = m_pFormat->m_pParentFormat;
+    } else {
+        Error("Closing unopened tag: ", formatName);
+    }
+}
+
+void XMLParser::handleBitsEnd() {
+    if (m_pFormat != nullptr && m_pFormat->isBits()) {
+        m_pFormat = m_pFormat->m_pParentFormat;
+    } else {
+        Error("Closing unopened tag: ", "Bits");
+    }
+}
+
+void XMLParser::handleBitsValueEnd() {
+    if (m_pBitsValue) {
+        m_pBitsValue = nullptr;
+    } else {
+        Error("Closing unopened tag: ", "BitsValue");
+    }
+}
+
+void XMLParser::handleUAPEnd() {
+    if (m_pUAP) {
+        m_pUAP = nullptr;
+    } else {
+        Error("Closing unopened tag: ", "UAP");
+    }
+}
+
+void XMLParser::handleUAPItemEnd() {
+    if (m_pUAPItem) {
+        m_pUAPItem = nullptr;
+    } else {
+        Error("Closing unopened tag: ", "UAPItem");
+    }
+}
+
+// =========================================================================
+// Main Element Handler (delegates to individual handlers)
+// =========================================================================
+
 /*!
  * Handling of element start
  */
 void XMLParser::ElementHandlerStart(void *data, const char *el, const char **attr) {
-    int i;
     XMLParser *p = static_cast<XMLParser *>(data);
 
     if (!p) {
@@ -120,503 +639,54 @@ void XMLParser::ElementHandlerStart(void *data, const char *el, const char **att
     if (p->m_bErrorDetectedStopParsing)
         return;
 
-    if (strcmp(el, "Category") == 0) { // <!ELEMENT Category (CatID,CatName,CatVer,DataItemDescription*,UAP)>
-        for (i = 0; attr[i]; i += 2) {
-            if (strcmp(attr[i], "id") == 0) { // <!ATTLIST id CDATA #REQUIRED>
-                int id = 0;
-
-                if (strcmp(attr[i + 1], "BDS") == 0)
-                    id = BDS_CAT_ID;
-                else
-                    id = atoi(attr[i + 1]);
-
-                if (id >= 0 && id <= MAX_CATEGORIES) {
-                    p->m_pCategory = new Category(id);
-                } else {
-                    p->Error("XMLParser : Wrong category: ", attr[i + 1]);
-                    break;
-                }
-            } else if (strcmp(attr[i], "name") == 0) { // <!ATTLIST name CDATA #REQUIRED>
-                p->m_pCategory->m_strName = attr[i + 1];
-            } else if (strcmp(attr[i], "ver") == 0) { // <!ATTLIST ver CDATA #REQUIRED>
-                p->m_pCategory->m_strVer = attr[i + 1];
-            } else {
-                p->Error("XMLParser : Unknown attribute: ", attr[i]);
-            }
-        }
-    } else if (strcmp(el,
-                       "DataItem") == 0) { // <!ELEMENT DataItemDescription (DataItemName,DataItemDefinition,DataItemFormat,DataItemNote?)>
-        if (p->m_pCategory == nullptr) {
-            p->Error("XMLParser : <DataItem> without <Category> ");
-        } else {
-            for (i = 0; attr[i]; i += 2) {
-                if (strcmp(attr[i], "id") == 0) { //<!ATTLIST DataItemDescription id CDATA #REQUIRED>
-                    p->m_pDataItem = p->m_pCategory->getDataItemDescription(attr[i + 1]);
-                } else if (strcmp(attr[i],
-                                   "rule") == 0) { // <!ATTLIST DataItemDescription rule (mandatory|optional|unknown) "unknown">
-                    if (p->m_pDataItem) {
-                        if (strcmp(attr[i + 1], "optional") == 0)
-                            p->m_pDataItem->m_eRule = DataItemDescription::DATAITEM_OPTIONAL;
-                        else if (strcmp(attr[i + 1], "mandatory") == 0)
-                            p->m_pDataItem->m_eRule = DataItemDescription::DATAITEM_MANDATORY;
-                        else
-                            p->m_pDataItem->m_eRule = DataItemDescription::DATAITEM_UNKNOWN;
-                    } else {
-                        p->Error("XMLParser : DataItem missing for rule");
-                    }
-                } else {
-                    p->Error("XMLParser : Unknown attribute: ", attr[i]);
-                }
-            }
-        }
-    } else if (p->GetAttribute(el, "DataItemName", p->m_pDataItem ? &p->m_pDataItem->m_strName
-                                                                  : nullptr)) { // <!ELEMENT DataItemName (#PCDATA)>
-    } else if (p->GetAttribute(el, "DataItemDefinition", p->m_pDataItem ? &p->m_pDataItem->m_strDefinition
-                                                                        : nullptr)) { // <!ELEMENT DataItemDefinition (#PCDATA)>
-    } else if (p->GetAttribute(el, "DataItemNote", p->m_pDataItem ? &p->m_pDataItem->m_strNote
-                                                                  : nullptr)) { // <!ELEMENT DataItemNote (#PCDATA)>
-    } else if (strcmp(el, "DataItemFormat") == 0) { // <!ELEMENT DataItemFormat (Fixed|Variable|Compound)>
-        for (i = 0; attr[i]; i += 2) {
-            if (strcmp(attr[i], "desc") == 0) { // <!ATTLIST DataItemFormat desc CDATA "" >
-                if (p->m_pDataItem) {
-                    p->m_pDataItem->m_strFormat = attr[i + 1];
-                } else {
-                    p->Error("XMLParser : <Format> without <DataItem>");
-                }
-            } else {
-                p->Error("XMLParser : Unknown attribute for <DataItemFormat>: ", attr[i]);
-            }
-        }
-    } else if (strcmp(el, "BDS") == 0) { // <!ELEMENT BDS (Bits+)>
-        Category *m_pBDSCategory = p->m_pDef->getCategory(BDS_CAT_ID);
-
-        std::list<DataItemDescription *>::iterator it = m_pBDSCategory->m_lDataItems.begin();
-        if (it == m_pBDSCategory->m_lDataItems.end()) {
-            p->Error("XMLParser : Missing BDS definition file.");
-            return;
-        }
-
-        if (!p->m_pDataItem) {
-            p->Error("XMLParser : <BDS> without <DataItem>");
-            return;
-        }
-
-        DataItemFormat *pFormatBDS = new DataItemFormatBDS(p->m_pDataItem->m_nID);
-
-        for (; it != m_pBDSCategory->m_lDataItems.end(); ++it) {
-            auto *dip = *it;
-            pFormatBDS->m_lSubItems.push_back(dip->m_pFormat->clone());
-        }
-
-        if (p->m_pFormat != nullptr) {
-            if (p->m_pFormat->isVariable()) {
-                p->m_pFormat->m_lSubItems.push_back(pFormatBDS);
-            } else if (p->m_pFormat->isRepetitive()) {
-                if (!p->m_pFormat->m_lSubItems.empty()) {
-                    p->Error("XMLParser : Duplicate BDS item in Repetitive");
-                }
-                p->m_pFormat->m_lSubItems.push_back(pFormatBDS);
-            } else if (p->m_pFormat->isExplicit()) {
-                if (!p->m_pFormat->m_lSubItems.empty()) {
-                    p->Error("XMLParser : Duplicate BDS item in Explicit");
-                }
-                p->m_pFormat->m_lSubItems.push_back(pFormatBDS);
-            } else if (p->m_pFormat->isCompound()) {
-                if (p->m_pFormat->m_lSubItems.empty()) {
-                    p->Error("XMLParser : First part of <Compound> must be <Variable> and not <BDS>");
-                    delete pFormatBDS;
-                    return;
-                }
-                p->m_pFormat->m_lSubItems.push_back(pFormatBDS);
-            } else {
-                p->Error("XMLParser : Error in handling BDS format in item ", p->m_pDataItem->m_strName.c_str());
-                delete pFormatBDS;
-                return;
-            }
-            pFormatBDS->m_pParentFormat = p->m_pFormat;
-            p->m_pFormat = pFormatBDS;
-        } else {
-            if (p->m_pDataItem->m_pFormat) {
-                p->Error("XMLParser : Duplicate format in item ", p->m_pDataItem->m_strName.c_str());
-            }
-            p->m_pDataItem->m_pFormat = pFormatBDS;
-            p->m_pFormat = pFormatBDS;
-        }
-    } else if (strcmp(el, "Fixed") == 0) { // <!ELEMENT Fixed (Bits+)>
-        if (!p->m_pDataItem) {
-            p->Error("XMLParser : <Fixed> without <DataItem>");
-            return;
-        }
-
-        auto *pFormatFixed = new DataItemFormatFixed(p->m_pDataItem->m_nID);
-
-        if (p->m_pFormat != nullptr) {
-            if (p->m_pFormat->isVariable()) {
-                p->m_pFormat->m_lSubItems.push_back(pFormatFixed);
-            } else if (p->m_pFormat->isRepetitive()) {
-                if (!p->m_pFormat->m_lSubItems.empty()) {
-                    p->Error("XMLParser : Duplicate Fixed item in Repetitive");
-                }
-                p->m_pFormat->m_lSubItems.push_back(pFormatFixed);
-            } else if (p->m_pFormat->isExplicit()) {
-                if (!p->m_pFormat->m_lSubItems.empty()) {
-                    p->Error("XMLParser : Duplicate Fixed item in Explicit");
-                }
-                p->m_pFormat->m_lSubItems.push_back(pFormatFixed);
-            } else if (p->m_pFormat->isCompound()) {
-                if (p->m_pFormat->m_lSubItems.empty()) {
-                    p->Error("XMLParser : First part of <Compound> must be <Variable> and not <Fixed>");
-                    delete pFormatFixed;
-                    return;
-                }
-                p->m_pFormat->m_lSubItems.push_back(pFormatFixed);
-            } else {
-                p->Error("XMLParser : Error in handling Fixed format in item ", p->m_pDataItem->m_strName.c_str());
-                delete pFormatFixed;
-                return;
-            }
-            pFormatFixed->m_pParentFormat = p->m_pFormat;
-            p->m_pFormat = pFormatFixed;
-        } else {
-            if (p->m_pDataItem->m_pFormat) {
-                p->Error("XMLParser : Duplicate format in item ", p->m_pDataItem->m_strName.c_str());
-            }
-            p->m_pDataItem->m_pFormat = pFormatFixed;
-            p->m_pFormat = pFormatFixed;
-        }
-
-        for (i = 0; attr[i]; i += 2) {
-            if (strcmp(attr[i], "length") == 0) { // <!ATTLIST Fixed length CDATA "1" >
-                int len = atoi(attr[i + 1]);
-
-                if (len >= 0) {
-                    pFormatFixed->m_nLength = len;
-                } else {
-                    p->Error("XMLParser : Wrong DataItem length: ", attr[i + 1]);
-                }
-            } else {
-                p->Error("XMLParser : Unknown attribute for Fixed: ", attr[i]);
-            }
-        }
-    } else if (strcmp(el, "Explicit") == 0) { // <!ELEMENT Explicit (Bits+)>
-        if (!p->m_pDataItem) {
-            p->Error("XMLParser : <Explicit> without <DataItem>");
-            return;
-        }
-
-        DataItemFormat *pFormatExplicit = new DataItemFormatExplicit(p->m_pDataItem->m_nID);
-
-        if (p->m_pFormat != nullptr) {
-            if (p->m_pFormat->isCompound()) {
-                if (p->m_pFormat->m_lSubItems.empty()) {
-                    p->Error("XMLParser : First part of <Compound> must be <Variable> and not <Explicit>");
-                    delete pFormatExplicit;
-                    return;
-                }
-                p->m_pFormat->m_lSubItems.push_back(pFormatExplicit);
-            } else {
-                p->Error("XMLParser : Error in handling Explicit format", p->m_pDataItem->m_strName.c_str());
-                delete pFormatExplicit;
-                return;
-            }
-            pFormatExplicit->m_pParentFormat = p->m_pFormat;
-            p->m_pFormat = pFormatExplicit;
-        } else {
-            if (p->m_pDataItem->m_pFormat) {
-                p->Error("XMLParser : Duplicate format in item ", p->m_pDataItem->m_strName.c_str());
-            }
-            p->m_pDataItem->m_pFormat = pFormatExplicit;
-            p->m_pFormat = pFormatExplicit;
-        }
-    } else if (strcmp(el, "Repetitive") == 0) { // <!ELEMENT Repetitive (Bits+)>
-        if (!p->m_pDataItem) {
-            p->Error("XMLParser : <Repetitive> without <DataItem>");
-            return;
-        }
-
-        DataItemFormat *pFormatRepetitive = new DataItemFormatRepetitive(p->m_pDataItem->m_nID);
-
-        if (p->m_pFormat != nullptr) {
-            if (p->m_pFormat->isCompound()) {
-                if (p->m_pFormat->m_lSubItems.empty()) {
-                    p->Error("XMLParser : First part of <Compound> must be <Variable> and not <Repetitive>");
-                    delete pFormatRepetitive;
-                    return;
-                }
-                p->m_pFormat->m_lSubItems.push_back(pFormatRepetitive);
-            } else if (p->m_pFormat->isExplicit()) {
-                if (!p->m_pFormat->m_lSubItems.empty()) {
-                    p->Error("XMLParser : Duplicate format item in Explicit");
-                }
-                p->m_pFormat->m_lSubItems.push_back(pFormatRepetitive);
-            } else {
-                p->Error("XMLParser : Error in handling Repetitive format", p->m_pDataItem->m_strName.c_str());
-                delete pFormatRepetitive;
-                return;
-            }
-            pFormatRepetitive->m_pParentFormat = p->m_pFormat;
-            p->m_pFormat = pFormatRepetitive;
-        } else {
-            if (p->m_pDataItem->m_pFormat) {
-                p->Error("XMLParser : Duplicate format in item ", p->m_pDataItem->m_strName.c_str());
-            }
-            p->m_pDataItem->m_pFormat = pFormatRepetitive;
-            p->m_pFormat = pFormatRepetitive;
-        }
-    } else if (strcmp(el, "Variable") == 0) { // <!ELEMENT Variable (Part+)>
-        if (!p->m_pDataItem) {
-            p->Error("XMLParser : <Variable> without <DataItem>");
-            return;
-        }
-
-        DataItemFormat *pFormatVariable = new DataItemFormatVariable(p->m_pDataItem->m_nID);
-
-        if (p->m_pFormat != nullptr) {
-            if (p->m_pFormat->isCompound()) {
-                p->m_pFormat->m_lSubItems.push_back(pFormatVariable);
-            } else if (p->m_pFormat->isExplicit()) {
-                if (!p->m_pFormat->m_lSubItems.empty()) {
-                    p->Error("XMLParser : Duplicate format item in Explicit");
-                }
-                p->m_pFormat->m_lSubItems.push_back(pFormatVariable);
-            } else {
-                p->Error("XMLParser : Error in handling Variable format", p->m_pDataItem->m_strName.c_str());
-                delete pFormatVariable;
-                return;
-            }
-            pFormatVariable->m_pParentFormat = p->m_pFormat;
-            p->m_pFormat = pFormatVariable;
-        } else {
-            if (p->m_pDataItem->m_pFormat) {
-                p->Error("XMLParser : Duplicate format in item ", p->m_pDataItem->m_strName.c_str());
-            }
-            p->m_pDataItem->m_pFormat = pFormatVariable;
-            p->m_pFormat = pFormatVariable;
-        }
-    } else if (strcmp(el, "Compound") == 0) { // <!ELEMENT Compound (CPart+)>
-        if (!p->m_pDataItem) {
-            p->Error("XMLParser : <Compound> without <DataItem>");
-            return;
-        }
-
-        DataItemFormat *pFormatCompound = new DataItemFormatCompound(p->m_pDataItem->m_nID);
-
-        if (p->m_pFormat != nullptr) {
-            if (p->m_pFormat->isCompound()) {
-                if (p->m_pFormat->m_lSubItems.empty()) {
-                    p->Error("XMLParser : First part of <Compound> must be <Variable> and not <Compound>");
-                    delete pFormatCompound;
-                    return;
-                }
-                p->m_pFormat->m_lSubItems.push_back(pFormatCompound);
-            } else if (p->m_pFormat->isExplicit()) {
-                if (!p->m_pFormat->m_lSubItems.empty()) {
-                    p->Error("XMLParser : Duplicate format item in Explicit");
-                }
-                p->m_pFormat->m_lSubItems.push_back(pFormatCompound);
-            } else {
-                p->Error("XMLParser : Error in handling Compound format", p->m_pDataItem->m_strName.c_str());
-                delete pFormatCompound;
-                return;
-            }
-            pFormatCompound->m_pParentFormat = p->m_pFormat;
-            p->m_pFormat = pFormatCompound;
-        } else {
-            if (p->m_pDataItem->m_pFormat) {
-                p->Error("XMLParser : Duplicate format in item ", p->m_pDataItem->m_strName.c_str());
-            }
-            p->m_pDataItem->m_pFormat = pFormatCompound;
-            p->m_pFormat = pFormatCompound;
-        }
+    if (strcmp(el, "Category") == 0) {
+        p->handleCategoryStart(attr);
+    } else if (strcmp(el, "DataItem") == 0) {
+        p->handleDataItemStart(attr);
+    } else if (p->GetAttribute(el, "DataItemName", p->m_pDataItem ? &p->m_pDataItem->m_strName : nullptr)) {
+        // Handled by GetAttribute
+    } else if (p->GetAttribute(el, "DataItemDefinition", p->m_pDataItem ? &p->m_pDataItem->m_strDefinition : nullptr)) {
+        // Handled by GetAttribute
+    } else if (p->GetAttribute(el, "DataItemNote", p->m_pDataItem ? &p->m_pDataItem->m_strNote : nullptr)) {
+        // Handled by GetAttribute
+    } else if (strcmp(el, "DataItemFormat") == 0) {
+        p->handleDataItemFormatStart(attr);
+    } else if (strcmp(el, "BDS") == 0) {
+        p->handleBDSStart(attr);
+    } else if (strcmp(el, "Fixed") == 0) {
+        p->handleFixedStart(attr);
+    } else if (strcmp(el, "Explicit") == 0) {
+        p->handleExplicitStart(attr);
+    } else if (strcmp(el, "Repetitive") == 0) {
+        p->handleRepetitiveStart(attr);
+    } else if (strcmp(el, "Variable") == 0) {
+        p->handleVariableStart(attr);
+    } else if (strcmp(el, "Compound") == 0) {
+        p->handleCompoundStart(attr);
     } else if (strcmp(el, "Bits") == 0) {
-        if (!p->m_pFormat) {
-            p->Error("XMLParser : <Bits> without <Format>");
-            return;
-        } else if (!p->m_pFormat->isFixed()) {
-            p->Error("XMLParser : <Bits> without <Fixed>");
-            return;
-        }
-
-        DataItemBits *pBits = new DataItemBits();
-        p->m_pFormat->m_lSubItems.push_back(pBits);
-
-        pBits->m_pParentFormat = p->m_pFormat;
-        p->m_pFormat = pBits;
-
-        for (i = 0; attr[i]; i += 2) {
-            if (strcmp(attr[i], "bit") == 0) { // <!ATTLIST Bits bit CDATA "0">
-
-                int bit = atoi(attr[i + 1]);
-
-                if (bit >= 0) {
-                    pBits->m_nFrom = pBits->m_nTo = bit;
-                    if (static_cast<DataItemFormatFixed *>(pBits->m_pParentFormat)->m_nLength * 8 < bit) {
-                        p->Error("XMLParser : Bit out of fixed length");
-                    }
-                } else {
-                    p->Error("XMLParser : Wrong bit: ", attr[i + 1]);
-                }
-            } else if (strcmp(attr[i], "from") == 0) { // <!ATTLIST Bits from CDATA "0">
-                int bit = atoi(attr[i + 1]);
-
-                if (bit >= 0) {
-                    pBits->m_nFrom = bit;
-                    if (static_cast<DataItemFormatFixed *>(pBits->m_pParentFormat)->m_nLength * 8 < bit) {
-                        p->Error("XMLParser : Bit out of fixed length");
-                    }
-                } else {
-                    p->Error("XMLParser : Wrong bit from: ", attr[i + 1]);
-                }
-            } else if (strcmp(attr[i], "to") == 0) { // <!ATTLIST Bits to CDATA "0">
-                int bit = atoi(attr[i + 1]);
-
-                if (bit >= 0) {
-                    pBits->m_nTo = bit;
-                    if (static_cast<DataItemFormatFixed *>(pBits->m_pParentFormat)->m_nLength * 8 < bit) {
-                        p->Error("XMLParser : Bit out of fixed length");
-                    }
-                } else {
-                    p->Error("XMLParser : Wrong bit to: ", attr[i + 1]);
-                }
-            } else if (strcmp(attr[i],
-                               "encode") == 0) { // <!ATTLIST Bits encode (signed|6bitschar|octal|unsigned|ascii|hex) "unsigned">
-                if (strcmp(attr[i + 1], "unsigned") == 0) {
-                    pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
-                } else if (strcmp(attr[i + 1], "6bitschar") == 0) {
-                    pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_SIX_BIT_CHAR;
-                } else if (strcmp(attr[i + 1], "hex") == 0) {
-                    pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_HEX_BIT_CHAR;
-                } else if (strcmp(attr[i + 1], "octal") == 0) {
-                    pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_OCTAL;
-                } else if (strcmp(attr[i + 1], "signed") == 0) {
-                    pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_SIGNED;
-                } else if (strcmp(attr[i + 1], "ascii") == 0) {
-                    pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_ASCII;
-                } else {
-                    p->Error("XMLParser : Wrong encode: ", attr[i]);
-                }
-            } else if (strcmp(attr[i], "fx") == 0) {
-                pBits->m_bExtension = (atoi(attr[i + 1]) != 0);
-            } else {
-                p->Error("XMLParser : Unknown attribute: ", attr[i]);
-            }
-        }
+        p->handleBitsStart(attr);
     } else if (p->GetAttribute(el, "BitsShortName", (p->m_pFormat && p->m_pFormat->isBits())
                                                     ? &(static_cast<DataItemBits *>(p->m_pFormat))->m_strShortName
-                                                    : nullptr)) { // <!ELEMENT BitsShortName (#PCDATA)>
+                                                    : nullptr)) {
+        // Handled by GetAttribute
     } else if (p->GetAttribute(el, "BitsName",
                                (p->m_pFormat && p->m_pFormat->isBits()) ? &(static_cast<DataItemBits *>(p->m_pFormat))->m_strName
-                                                                        : nullptr)) { // <!ELEMENT BitsName (#PCDATA)>
+                                                                        : nullptr)) {
+        // Handled by GetAttribute
     } else if (p->GetAttribute(el, "BitsPresence", (p->m_pFormat && p->m_pFormat->isBits())
                                                    ? &(static_cast<DataItemBits *>(p->m_pFormat))->m_nPresenceOfField
-                                                   : nullptr)) { // <!ELEMENT CPBitsPresence (#PCDATA)>
-    } else if (strcmp(el, "BitsValue") == 0) { // <!ELEMENT BitsValue (#PCDATA)>
-
-        if (p->m_pFormat == nullptr || !p->m_pFormat->isBits()) {
-            p->Error("XMLParser : <BitsValue> without <Bits>");
-            return;
-        }
-
-        for (i = 0; attr[i]; i += 2) {
-            if (strcmp(attr[i], "val") == 0) { // <!ATTLIST BitsValue val CDATA "0" >
-                int val = atoi(attr[i + 1]);
-                p->m_pBitsValue = new BitsValue(val);
-                (static_cast<DataItemBits *>(p->m_pFormat))->m_lValue.push_back(p->m_pBitsValue);
-            }
-            /* TODO <!ATTLIST BitsValue from CDATA "0" > <!ATTLIST BitsValue to CDATA "0" >
-      else if (strcmp(attr[i], "from") == 0)
-      { // <!ATTLIST BitsValue from CDATA "0" >
-        int val = atoi(attr[i+1]);
-        p->m_pBitsValue = new BitsValue(val); // TODO from
-        p->m_pBits->m_lValue.push_back(p->m_pBitsValue);
-      }
-      else if (strcmp(attr[i], "to") == 0)
-      { // <!ATTLIST BitsValue to CDATA "0" >
-        int val = atoi(attr[i+1]);
-        p->m_pBitsValue = new BitsValue(val);// TODO to
-        p->m_pBits->m_lValue.push_back(p->m_pBitsValue);
-      }
-             */
-        }
-        p->GetAttribute(el, "BitsValue", p->m_pBitsValue ? &p->m_pBitsValue->m_strDescription : nullptr);
-    } else if (strcmp(el,
-                       "BitsUnit") == 0) { // <!ELEMENT BitsUnit (#PCDATA)> <!ELEMENT PBitsUnit (#PCDATA)> <!ELEMENT CPBitsUnit (#PCDATA)>
-
-        if (p->m_pFormat == nullptr || !p->m_pFormat->isBits()) {
-            p->Error("XMLParser : <BitsUnit> without <Bits>");
-            return;
-        }
-
-        for (i = 0; attr[i]; i += 2) {
-            if (strcmp(attr[i], "scale") == 0) { // <!ATTLIST BitsUnit scale CDATA "1" >
-                (static_cast<DataItemBits *>(p->m_pFormat))->m_dScale = atof(attr[i + 1]);
-            } else if (strcmp(attr[i], "min") == 0) { // <!ATTLIST BitsUnit min CDATA "0" >
-                (static_cast<DataItemBits *>(p->m_pFormat))->m_dMinValue = atof(attr[i + 1]);
-                (static_cast<DataItemBits *>(p->m_pFormat))->m_bMinValueSet = true;
-            } else if (strcmp(attr[i], "max") == 0) { // <!ATTLIST BitsUnit max CDATA "0" >
-                (static_cast<DataItemBits *>(p->m_pFormat))->m_dMaxValue = atof(attr[i + 1]);
-                (static_cast<DataItemBits *>(p->m_pFormat))->m_bMaxValueSet = true;
-            }
-        }
-
-        p->GetAttribute(el, "BitsUnit", &(static_cast<DataItemBits *>(p->m_pFormat))->m_strUnit);
+                                                   : nullptr)) {
+        // Handled by GetAttribute
+    } else if (strcmp(el, "BitsValue") == 0) {
+        p->handleBitsValueStart(attr);
+    } else if (strcmp(el, "BitsUnit") == 0) {
+        p->handleBitsUnitStart(attr);
     } else if (strcmp(el, "BitsConst") == 0) {
-        if (p->m_pFormat == nullptr || !p->m_pFormat->isBits()) {
-            p->Error("XMLParser : <BitsConst> without <Bits>");
-            return;
-        }
-
-        (static_cast<DataItemBits *>(p->m_pFormat))->m_bIsConst = true;
-        p->GetAttribute(el, "BitsConst", &(static_cast<DataItemBits *>(p->m_pFormat))->m_nConst);
+        p->handleBitsConstStart(attr);
     } else if (strcmp(el, "UAP") == 0) {
-        if (p->m_pCategory == nullptr) {
-            p->Error("XMLParser : Missing <UAP> outside <Category>");
-            return;
-        }
-
-        p->m_pUAP = p->m_pCategory->newUAP();
-
-        for (i = 0; attr[i]; i += 2) {
-            if (strcmp(attr[i], "use_if_bit_set") == 0) { // <!ATTLIST UAP use_if_bit_set CDATA "0">
-                p->m_pUAP->m_nUseIfBitSet = atoi(attr[i + 1]);
-            } else if (strcmp(attr[i], "use_if_byte_nr") == 0) { // <!ATTLIST UAP use_if_byte_nr CDATA "0">
-                p->m_pUAP->m_nUseIfByteNr = atoi(attr[i + 1]);
-            } else if (strcmp(attr[i], "is_set_to") == 0) { // <!ATTLIST UAP is_set_to CDATA "0">
-                p->m_pUAP->m_nIsSetTo = atoi(attr[i + 1]);
-            } else {
-                p->Error("XMLParser : Unknown property for UAP: ", attr[i + 1]);
-            }
-        }
-    } else if (strcmp(el, "UAPItem") == 0) { // <!ELEMENT UAPItem (#PCDATA)>
-        if (p->m_pCategory == nullptr) {
-            p->Error("XMLParser : Missing <UAPItem> outside <Category>");
-            return;
-        }
-        if (p->m_pUAP == nullptr) {
-            p->Error("XMLParser : Missing <UAPItem> outside <UAP>");
-            return;
-        }
-
-        p->m_pUAPItem = p->m_pUAP->newUAPItem();
-
-        for (i = 0; attr[i]; i += 2) {
-            if (strcmp(attr[i], "bit") == 0) { // <!ATTLIST UAPItem bit CDATA #REQUIRED>
-                p->m_pUAPItem->m_nBit = atoi(attr[i + 1]);
-            } else if (strcmp(attr[i], "frn") == 0) { // <!ATTLIST UAPItem frn CDATA #REQUIRED>
-                if (strcmp(attr[i + 1], "FX") == 0) {
-                    p->m_pUAPItem->m_bFX = true;
-                } else {
-                    p->m_pUAPItem->m_bFX = false;
-                    p->m_pUAPItem->m_nFRN = atoi(attr[i + 1]);
-                }
-            } else if (strcmp(attr[i], "len") == 0) { // <!ATTLIST UAPItem len CDATA #REQUIRED>
-                p->m_pUAPItem->m_nLen = atoi(attr[i + 1]);
-            } else {
-                p->Error("XMLParser : Unknown property for UAPItem: ", attr[i + 1]);
-            }
-        }
-
-        p->GetAttribute(el, "UAPItem", p->m_pUAPItem ? &p->m_pUAPItem->m_strItemID : nullptr);
+        p->handleUAPStart(attr);
+    } else if (strcmp(el, "UAPItem") == 0) {
+        p->handleUAPItemStart(attr);
     } else {
         p->Error("Unknown tag: ", el);
     }
@@ -641,97 +711,21 @@ void XMLParser::ElementHandlerEnd(void *data, const char *el) {
         return;
 
     if (strcmp(el, "Category") == 0) {
-        if (p->m_pCategory) {
-            p->m_pDef->setCategory(p->m_pCategory);
-            p->m_pCategory = nullptr;
-        } else {
-            p->Error("Closing unopened tag: ", el);
-        }
+        p->handleCategoryEnd();
     } else if (strcmp(el, "DataItem") == 0) {
-        if (p->m_pDataItem) {
-            p->m_pDataItem = nullptr;
-        } else {
-            p->Error("Closing unopened tag: ", el);
-        }
-    } else if (strcmp(el, "Fixed") == 0) {
-        if (p->m_pFormat != nullptr && p->m_pFormat->isFixed()) {
-            /* We do not check for fx bit any more because there are some formats that
-               do not have fx bit in primary part of variable item (e.g. I021/271).
-               Now if the fx is not defined it means that this is the last primary field.
-
-            if (p->m_pFormat->m_pParentFormat && p->m_pFormat->m_pParentFormat->isVariable())
-            { // check if fx bit is set
-                bool fxFound = false;
-                for (auto* subItem : p->m_pFormat->m_lSubItems) {
-                    auto* dip = static_cast<DataItemBits*>(subItem);
-                    if (dip->m_bExtension) {
-                        fxFound = true;
-                        break;
-                    }
-                }
-                if (!fxFound) {
-                    p->Error("Missing fx=1 in primary part of Variable item.");
-                }
-            }
-            */
-            p->m_pFormat = p->m_pFormat->m_pParentFormat;
-        } else {
-            p->Error("Closing unopened tag: ", el);
-        }
-    } else if (strcmp(el, "Variable") == 0) {
-        if (p->m_pFormat != nullptr && p->m_pFormat->isVariable()) {
-            p->m_pFormat = p->m_pFormat->m_pParentFormat;
-        } else {
-            p->Error("Closing unopened tag: ", el);
-        }
-    } else if (strcmp(el, "Explicit") == 0) {
-        if (p->m_pFormat != nullptr && p->m_pFormat->isExplicit()) {
-            p->m_pFormat = p->m_pFormat->m_pParentFormat;
-        } else {
-            p->Error("Closing unopened tag: ", el);
-        }
-    } else if (strcmp(el, "Repetitive") == 0) {
-        if (p->m_pFormat != nullptr && p->m_pFormat->isRepetitive()) {
-            p->m_pFormat = p->m_pFormat->m_pParentFormat;
-        } else {
-            p->Error("Closing unopened tag: ", el);
-        }
-    } else if (strcmp(el, "BDS") == 0) {
-        if (p->m_pFormat != nullptr && p->m_pFormat->isBDS()) {
-            p->m_pFormat = p->m_pFormat->m_pParentFormat;
-        } else {
-            p->Error("Closing unopened tag: ", el);
-        }
-    } else if (strcmp(el, "Compound") == 0) {
-        if (p->m_pFormat != nullptr && p->m_pFormat->isCompound()) {
-            p->m_pFormat = p->m_pFormat->m_pParentFormat;
-        } else {
-            p->Error("Closing unopened tag: ", el);
-        }
+        p->handleDataItemEnd();
+    } else if (strcmp(el, "Fixed") == 0 || strcmp(el, "Variable") == 0 ||
+               strcmp(el, "Explicit") == 0 || strcmp(el, "Repetitive") == 0 ||
+               strcmp(el, "BDS") == 0 || strcmp(el, "Compound") == 0) {
+        p->handleFormatEnd(el);
     } else if (strcmp(el, "Bits") == 0) {
-        if (p->m_pFormat != nullptr && p->m_pFormat->isBits()) {
-            p->m_pFormat = p->m_pFormat->m_pParentFormat;
-        } else {
-            p->Error("Closing unopened tag: ", el);
-        }
+        p->handleBitsEnd();
     } else if (strcmp(el, "BitsValue") == 0) {
-        if (p->m_pBitsValue) {
-            p->m_pBitsValue = nullptr;
-        } else {
-            p->Error("Closing unopened tag: ", el);
-        }
+        p->handleBitsValueEnd();
     } else if (strcmp(el, "UAP") == 0) {
-        if (p->m_pUAP) {
-            p->m_pUAP = nullptr;
-        } else {
-            p->Error("Closing unopened tag: ", el);
-        }
+        p->handleUAPEnd();
     } else if (strcmp(el, "UAPItem") == 0) {
-        if (p->m_pUAPItem) {
-            p->m_pUAPItem = nullptr;
-        } else {
-            p->Error("Closing unopened tag: ", el);
-        }
+        p->handleUAPItemEnd();
     }
 
     p->m_pstrCData = nullptr;
