@@ -775,7 +775,7 @@ bool XMLParser::Parse(FILE *pFile, AsterixDefinition *pDefinition, const char *f
     m_pDef = pDefinition;
     m_pFileName = filename;
 
-    for (;;) {
+    while (true) {
         int done;
         int len;
 

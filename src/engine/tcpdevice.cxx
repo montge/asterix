@@ -367,28 +367,20 @@ bool CTcpDevice::Select(const unsigned int secondsToWait) {
 
 
 bool CTcpDevice::IoCtrl(const unsigned int command, [[maybe_unused]] const void *data, [[maybe_unused]] size_t len) {
-    static bool result;
-
     switch (command) {
         case EReset:
             Disconnect(true); // normal disconnection, do linger
-            result = !_connected;
-            break;
+            return !_connected;
         case EAllDone:
             sleep(1); // according to ICD, this delay is not needed, but is is suggested in T04-TPB-CSW
-            result = Disconnect(true); // normal disconnection, do linger
-            break;
+            return Disconnect(true); // normal disconnection, do linger
         case EPacketDone:
-            result = false;
-            break;
+            return false;
         case EIsLastPacket:
-            result = !_connected;
-            break;
+            return !_connected;
         default:
-            result = false;
+            return false;
     }
-
-    return result;
 }
 
 
@@ -398,14 +390,14 @@ bool CTcpDevice::Connect() {
         // Device not connected - try to connect!
         if (_server) {
             // Server will wait (BLOCKING) for a client to connect if there is no pending connection
-            _socketDescSession = accept(_socketDesc, (struct sockaddr *)
-                    &_clientAddr, (socklen_t *) &_clientAddrLen);
+            _socketDescSession = accept(_socketDesc, reinterpret_cast<struct sockaddr *>(
+                    &_clientAddr), reinterpret_cast<socklen_t *>(&_clientAddrLen));
             if (_socketDescSession < 0) {
                 LOGERROR(1, "Error %d accepting connection. %s\n", errno, strerror(errno));
                 return false;
             }
             LOGNOTIFY(gVerbose, "Accepted connection from %s on socket %d\n",
-                      inet_ntoa(((struct sockaddr_in *) &_clientAddr)->sin_addr), _socketDescSession);
+                      inet_ntoa(reinterpret_cast<struct sockaddr_in *>(&_clientAddr)->sin_addr), _socketDescSession);
             _connected = true;
         } else {
             // Client will open and bind socket again
@@ -422,7 +414,7 @@ bool CTcpDevice::Connect() {
                 close(_socketDesc);
             }
 
-            if (bind(_socketDesc, (struct sockaddr *) &_clientAddr, sizeof(_clientAddr)) < 0) {
+            if (bind(_socketDesc, reinterpret_cast<struct sockaddr *>(&_clientAddr), sizeof(_clientAddr)) < 0) {
                 LOGERROR(1, "Cannot re-bind %s\n", inet_ntoa(_clientAddr.sin_addr));
                 close(_socketDesc);
                 return false;
@@ -431,7 +423,7 @@ bool CTcpDevice::Connect() {
 
 
             // Connect to the server
-            if (connect(_socketDesc, (struct sockaddr *) &_serverAddr, sizeof(_serverAddr)) < 0) {
+            if (connect(_socketDesc, reinterpret_cast<struct sockaddr *>(&_serverAddr), sizeof(_serverAddr)) < 0) {
                 LOGERROR(1, "Cannot connect to server %s (error %d). %s\n", inet_ntoa(_serverAddr.sin_addr), errno,
                          strerror(errno));
                 close(_socketDesc);
@@ -456,10 +448,10 @@ bool CTcpDevice::AcceptPending() {
     int fd_flags_block = fd_flags & ~FNDELAY;  // Blocking on
     int fd_flags_noblock = fd_flags | FNDELAY; // Blocking off
 
-    // Accept (NON-BLOCKING) if there is a pending connection        
+    // Accept (NON-BLOCKING) if there is a pending connection
     fcntl(_socketDesc, F_SETFL, fd_flags_noblock);
-    int socketDescNewSession = accept(_socketDesc, (struct sockaddr *)
-            &_clientAddr, (socklen_t *) &_clientAddrLen);
+    int socketDescNewSession = accept(_socketDesc, reinterpret_cast<struct sockaddr *>(
+            &_clientAddr), reinterpret_cast<socklen_t *>(&_clientAddrLen));
     fcntl(_socketDesc, F_SETFL, fd_flags_block);         // Get back to blocking mode
 
     if (socketDescNewSession < 0) {
@@ -469,13 +461,13 @@ bool CTcpDevice::AcceptPending() {
         return false;
     }
     LOGINFO(gVerbose, "Accepted pending connection from %s on socket %d\n",
-            inet_ntoa(((struct sockaddr_in *) &_clientAddr)->sin_addr), socketDescNewSession);
+            inet_ntoa(reinterpret_cast<struct sockaddr_in *>(&_clientAddr)->sin_addr), socketDescNewSession);
 
     // if there is already an accepted connection - force its disconnection
     if (_connected && (_socketDescSession >= 0)) {
         close(_socketDescSession);
         LOGINFO(gVerbose, "Closed connection from %s on socket %d\n",
-                inet_ntoa(((struct sockaddr_in *) &_clientAddr)->sin_addr), _socketDescSession);
+                inet_ntoa(reinterpret_cast<struct sockaddr_in *>(&_clientAddr)->sin_addr), _socketDescSession);
     }
     _socketDescSession = socketDescNewSession; // Initialize session socket descriptor
 
@@ -490,8 +482,8 @@ bool CTcpDevice::Disconnect(bool bLinger) {
     if (_connected) {
         // set 60 second linger time, if requested by bLinger argument
         struct linger sl = {
-                (short unsigned int) (bLinger ? 1 : 0),
-                (short unsigned int) (bLinger ? 60 * 100 : 0)
+                static_cast<short unsigned int>(bLinger ? 1 : 0),
+                static_cast<short unsigned int>(bLinger ? 60 * 100 : 0)
         };
 
         if (bLinger) {
@@ -512,7 +504,7 @@ bool CTcpDevice::Disconnect(bool bLinger) {
                 result = false;
             } else {
                 LOGNOTIFY(gVerbose, "Disconnected from client %s\n",
-                          inet_ntoa(((struct sockaddr_in *) &_clientAddr)->sin_addr));
+                          inet_ntoa(reinterpret_cast<struct sockaddr_in *>(&_clientAddr)->sin_addr));
                 result = true;
             }
         } else {
@@ -553,7 +545,7 @@ bool CTcpDevice::InitServer(const char *serverAddress, const int serverPort) {
         _serverAddr.sin_port = htons(serverPort);
     }
 
-    if (bind(_socketDesc, (struct sockaddr *) &_serverAddr, sizeof(_serverAddr)) < 0) {
+    if (bind(_socketDesc, reinterpret_cast<struct sockaddr *>(&_serverAddr), sizeof(_serverAddr)) < 0) {
         LOGERROR(1, "Cannot bind port number %d\n", serverPort);
         return false;
     }
@@ -602,7 +594,7 @@ bool CTcpDevice::InitClient(const char *serverAddress, const int serverPort, con
         _clientAddr.sin_port = htons(clientPort);
     }
 
-    if (bind(_socketDesc, (struct sockaddr *) &_clientAddr, sizeof(_clientAddr)) < 0) {
+    if (bind(_socketDesc, reinterpret_cast<struct sockaddr *>(&_clientAddr), sizeof(_clientAddr)) < 0) {
         LOGERROR(1, "Cannot bind %s\n", inet_ntoa(_clientAddr.sin_addr));
         return false;
     }

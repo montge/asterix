@@ -199,6 +199,9 @@ public:
      * @see Configure() to set custom output destination
      * @see SetLogLevel() to control output suppression
      */
+#if defined(__GNUC__) || defined(__clang__)
+    __attribute__((format(printf, 1, 2)))
+#endif
     static void Error(const char *format, ...);
 
     /**
