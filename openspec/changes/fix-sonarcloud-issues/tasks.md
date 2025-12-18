@@ -174,9 +174,9 @@
 | Bug Fixes | 14 | 14 |
 | Security Hotspots | 7 | 6 |
 | High-Impact Smells | 13 | 13 |
-| Remaining Smells | 14 | 14 |
+| Remaining Smells | 16 | 16 |
 | Verification | 6 | 2 |
-| **Total** | **54** | **49** |
+| **Total** | **56** | **51** |
 
 ## Current SonarCloud Metrics (Dec 17, 2025)
 
@@ -468,6 +468,33 @@
 
 **Commits:**
 - `20975eb` - refactor(asterix): Add explicit to BitsValue constructor and use initializer lists
+
+### Testing Results
+- All 705 unit tests pass
+- Build successful on Linux (GCC)
+
+## Session Summary (Dec 18, 2025 - Part 9)
+
+### Destructor Cleanup (cpp:S1720)
+
+28. **Remove redundant null check before delete**
+    - asterixformat.hxx: Removed unnecessary `if (ptr)` before `delete ptr`
+    - delete nullptr is safe per C++ standard
+
+**Commits:**
+- `b5ff640` - refactor(asterix): Remove redundant null check before delete
+
+### Missing Override Keywords (cpp:S3471)
+
+29. **Replace virtual with override in DataItemFormatVariable.h**
+    - Replaced `virtual` with `override` for all overridden methods:
+      - getText, printDescriptors, filterOutItem, isFiltered, getDescription
+      - getWiresharkDefinitions, getData, getObject, insertToDict
+    - Using override enables compiler to detect signature mismatches
+    - Makes inheritance hierarchy clearer
+
+**Commits:**
+- `9717a6b` - refactor(asterix): Replace virtual with override in derived class methods
 
 ### Testing Results
 - All 705 unit tests pass
