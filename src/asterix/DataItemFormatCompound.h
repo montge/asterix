@@ -534,7 +534,7 @@ public:
      * @par Override of Virtual
      * This overrides DataItemFormat::isCompound() which returns false.
      */
-    bool isCompound() { return true; };
+    bool isCompound() const override { return true; }
 
     /**
      * @brief Get human-readable description for a field value

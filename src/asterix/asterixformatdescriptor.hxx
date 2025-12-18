@@ -58,18 +58,12 @@ public:
     /**
      * Pure virtual destructor.
      */
-    virtual ~CAsterixFormatDescriptor() {
-        if (m_pBuffer) {
-            delete[] m_pBuffer;
-        }
-        if (m_pAsterixData) {
-            delete m_pAsterixData;
-        }
+    ~CAsterixFormatDescriptor() override {
+        delete[] m_pBuffer;
+        delete m_pAsterixData;
         // FIXED: Delete the AsterixDefinition that was allocated in CreateFormatDescriptor
         // The InputParser doesn't own this pointer, the format descriptor does
-        if (m_pDefinition) {
-            delete m_pDefinition;
-        }
+        delete m_pDefinition;
     }
 
     AsterixDefinition *m_pDefinition;  // Owned pointer - must be deleted in destructor
@@ -83,9 +77,7 @@ public:
      */
     unsigned char *GetNewBuffer(unsigned int len) {
         if (len > m_nBufferSize || m_nBufferSize > DELETE_BUFFER_IF_LARGER) {
-            if (m_pBuffer)
-                delete[] m_pBuffer;
-
+            delete[] m_pBuffer;
             m_pBuffer = new unsigned char[len];
         }
         m_nBufferSize = len;
@@ -143,9 +135,9 @@ public:
     ePcapNetworkType m_ePcapNetworkType;
     bool m_bInvertByteOrder;
 
-    std::string printDescriptor() { return m_InputParser.printDefinition(); }
+    std::string printDescriptor() override { return m_InputParser.printDefinition(); }
 
-    bool filterOutItem(int cat, std::string item, const char *name) {
+    bool filterOutItem(int cat, std::string item, const char *name) override {
         return m_InputParser.filterOutItem(cat, item, name);
     }
 

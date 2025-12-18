@@ -482,7 +482,7 @@ public:
      *
      * @see DataItemFormat::isRepetitive() For base class interface
      */
-    bool isRepetitive() { return true; };
+    bool isRepetitive() const override { return true; }
 
     /**
      * @brief Get human-readable description for a field value

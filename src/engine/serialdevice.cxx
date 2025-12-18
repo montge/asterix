@@ -168,7 +168,7 @@ bool CSerialDevice::Write(const void *data, size_t len) {
 
     // Write the message to the standard output (blocking)
     ssize_t bytesWrote = write(_fileDesc, data, len);
-    if (bytesWrote != (ssize_t)len) {
+    if (bytesWrote != static_cast<ssize_t>(len)) {
         LOGERROR(1, "Error writing to serial device.\n");
         CountWriteError();
         return false;
@@ -209,32 +209,26 @@ bool CSerialDevice::Select(const unsigned int secondsToWait) {
 
 
 bool CSerialDevice::IoCtrl(const unsigned int command, [[maybe_unused]] const void *data, [[maybe_unused]] size_t len) {
-    static bool result;
-
     switch (command) {
         case EReset:
-            result = false;
-            break;
+            return false;
         case EAllDone:
             //TODO
-            result = true;
-            break;
+            return true;
         case EPacketDone:
             //TODO
-            result = false;
-            break;
+            return false;
         default:
-            result = false;
+            return false;
     }
-
-    return result;
 }
 
 
 void CSerialDevice::Init(const char *device) {
     _opened = false;
     _fileDesc = -1;
-    ResetAllErrors();
+    // Use explicit base class call to avoid virtual dispatch during construction (S1699)
+    CBaseDevice::ResetAllErrors();
 
     // Validate input parameter
     if (device == nullptr) {

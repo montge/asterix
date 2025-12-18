@@ -57,17 +57,15 @@ public:
      * @brief Construct a BitsValue with only a numeric value
      * @param val The numeric value
      */
-    BitsValue(int val) { m_nVal = val; }
+    explicit BitsValue(int val) : m_nVal(val) {}
 
     /**
      * @brief Construct a BitsValue with value and description
      * @param val The numeric value
      * @param strDescription Human-readable description of this value
      */
-    BitsValue(int val, std::string strDescription) {
-        m_nVal = val;
-        m_strDescription = strDescription;
-    }
+    BitsValue(int val, std::string strDescription)
+        : m_nVal(val), m_strDescription(std::move(strDescription)) {}
 
     int m_nVal;                    //!< Numeric value (e.g., 0, 1, 2)
     std::string m_strDescription;  //!< Human-readable description (e.g., "Aircraft", "Ground Vehicle")
@@ -250,7 +248,7 @@ public:
      * @brief Runtime type identification - always returns true for DataItemBits
      * @return true (this is a bit-level descriptor)
      */
-    bool isBits() { return true; };
+    bool isBits() const override { return true; }
 
     /**
      * @brief Get human-readable description for a specific field value

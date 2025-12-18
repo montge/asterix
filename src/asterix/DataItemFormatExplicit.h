@@ -403,7 +403,7 @@ public:
      * @par Override of Virtual
      * This overrides DataItemFormat::isExplicit() which returns false.
      */
-    bool isExplicit() { return true; }; // true if this is Explicit format
+    bool isExplicit() const override { return true; }
 
     /**
      * @brief Get human-readable description for a field value

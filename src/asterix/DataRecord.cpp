@@ -138,7 +138,7 @@ DataRecord::DataRecord(Category *cat, int nID, unsigned long len, const unsigned
             strNewResult.append(hexbuf, 3);  // Append exactly 3 chars: "XX "
         }
         strNewResult += ']';
-        Tracer::Error(strNewResult.c_str());
+        Tracer::Error("%s", strNewResult.c_str());
     } else {
         unsigned int i;
         m_nCrc = crc32(data, m_nLength, 1);
