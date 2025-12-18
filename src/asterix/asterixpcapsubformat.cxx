@@ -55,7 +55,7 @@
 
   // Implement usleep for Windows (usleep takes microseconds, Sleep takes milliseconds)
   inline void usleep(useconds_t usec) {
-    Sleep((DWORD)(usec / 1000)); // Convert microseconds to milliseconds
+    Sleep(static_cast<DWORD>(usec / 1000)); // Convert microseconds to milliseconds
   }
 #else
   #include <sys/time.h>
