@@ -77,7 +77,7 @@ public:
     /**
      * Default class destructor.
      */
-    virtual ~CAsterixFormat() { delete m_pFormatDescriptor; }
+    ~CAsterixFormat() override { delete m_pFormatDescriptor; }
 
     bool ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device,
                     const unsigned int formatType, bool &discard) override;
