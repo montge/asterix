@@ -59,6 +59,8 @@ const char *Category::getDescription(const char *item, const char *field, const 
         if (di->m_strID.compare(item_number) == 0) {
             if (field == nullptr)
                 return di->m_strName.c_str();
+            if (di->m_pFormat == nullptr)
+                return nullptr;
             return di->m_pFormat->getDescription(field, value);
         }
     }
@@ -139,6 +141,8 @@ std::string Category::printDescriptors() const {
     char header[32];
 
     for (const auto* di : m_lDataItems) {
+        if (di->m_pFormat == nullptr)
+            continue;
         snprintf(header, sizeof(header), "CAT%03d:I%s:", m_id, di->m_strID.c_str());
         strDef += di->m_pFormat->printDescriptors(header);
     }
@@ -152,6 +156,8 @@ bool Category::filterOutItem(std::string item, const char *name) {
 
     for (auto* di : m_lDataItems) {
         if (di->m_strID == item) {
+            if (di->m_pFormat == nullptr)
+                return false;
             return di->m_pFormat->filterOutItem(name);
         }
     }
@@ -160,7 +166,7 @@ bool Category::filterOutItem(std::string item, const char *name) {
 
 bool Category::isFiltered(std::string item, const char *name) const {
     for (const auto* di : m_lDataItems) {
-        if (di->m_strID == item && di->m_pFormat->isFiltered(name)) {
+        if (di->m_strID == item && di->m_pFormat != nullptr && di->m_pFormat->isFiltered(name)) {
             return true;
         }
     }
@@ -186,12 +192,14 @@ fulliautomatix_definitions* Category::getWiresharkDefinitions()
 
   // get definitions for items
   for (auto* di : m_lDataItems) {
+    if (di->m_pFormat == nullptr)
+      continue;
     if (def) {
       def->next = di->m_pFormat->getWiresharkDefinitions();
     } else {
       startDef = def = di->m_pFormat->getWiresharkDefinitions();
     }
-    while (def->next) {
+    while (def && def->next) {
       def = def->next;
     }
   }
