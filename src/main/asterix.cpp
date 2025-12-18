@@ -442,8 +442,8 @@ int main(int argc, const char *argv[]) {
                 char item[129] = "";
                 char name[129] = "";
 
-                // skip commented lines
-                if (line[0] == '#' || strlen(line) <= 0)
+                // skip commented lines and empty lines
+                if (line[0] == '#' || line[0] == '\0')
                     continue;
 
                 // Thread-safe parsing using std::string instead of strtok
