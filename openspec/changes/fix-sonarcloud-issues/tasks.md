@@ -162,12 +162,12 @@
 
 | Phase | Tasks | Completed |
 |-------|-------|-----------|
-| Bug Fixes | 14 | 10 |
+| Bug Fixes | 14 | 11 |
 | Security Hotspots | 7 | 6 |
 | High-Impact Smells | 13 | 10 |
 | Remaining Smells | 14 | 14 |
 | Verification | 6 | 0 |
-| **Total** | **54** | **40** |
+| **Total** | **54** | **41** |
 
 ## Current SonarCloud Metrics (Dec 17, 2025)
 
@@ -364,6 +364,13 @@
 **Commits:**
 - `063cb2f` - refactor(asterix): Replace C-style DWORD cast with static_cast
 - `07285d6` - refactor(engine): Replace C-style casts with static_cast in win32_compat.h
+
+22. **Redundant strlen comparison fix**
+    - asterix.cpp: Changed `strlen(line) <= 0` to `line[0] == '\0'`
+    - strlen() returns size_t (unsigned), can never be negative
+
+**Commits:**
+- `55ce64b` - refactor(main): Replace redundant strlen check with null char check
 
 ### Testing Results
 - All 11 integration tests pass
