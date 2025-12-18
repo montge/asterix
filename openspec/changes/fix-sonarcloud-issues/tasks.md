@@ -174,9 +174,9 @@
 | Bug Fixes | 14 | 14 |
 | Security Hotspots | 7 | 6 |
 | High-Impact Smells | 13 | 13 |
-| Remaining Smells | 16 | 16 |
+| Remaining Smells | 18 | 18 |
 | Verification | 6 | 2 |
-| **Total** | **56** | **51** |
+| **Total** | **58** | **53** |
 
 ## Current SonarCloud Metrics (Dec 17, 2025)
 
@@ -495,6 +495,30 @@
 
 **Commits:**
 - `9717a6b` - refactor(asterix): Replace virtual with override in derived class methods
+
+### Testing Results
+- All 705 unit tests pass
+- Build successful on Linux (GCC)
+
+## Session Summary (Dec 18, 2025 - Part 10)
+
+### More Override Keyword Additions (cpp:S3471)
+
+30. **Replace virtual with override in CAsterixFormat**
+    - asterixformat.hxx: Replaced `virtual` with `override` for all overridden methods
+      from CBaseFormat (ReadPacket, WritePacket, ProcessPacket, HeartbeatProcessing,
+      CreateFormatDescriptor, GetFormatNo, GetStatus, OnResetInputChannel,
+      OnResetOutputChannel)
+    - Added override to destructor
+
+31. **Replace virtual with override in CAsterixFormatDescriptor**
+    - asterixformatdescriptor.hxx: Added override to destructor and overridden methods
+      (printDescriptor, filterOutItem)
+    - Removed redundant null checks before delete in destructor and GetNewBuffer
+
+**Commits:**
+- `66beef0` - refactor(asterix): Replace virtual with override and remove redundant null checks
+- `d538383` - refactor(asterix): Use override for CAsterixFormat destructor
 
 ### Testing Results
 - All 705 unit tests pass
