@@ -56,7 +56,7 @@ const char *Category::getDescription(const char *item, const char *field, const 
     std::string item_number = format("%s", &item[1]);
 
     for (const auto* di : m_lDataItems) {
-        if (di->m_strID.compare(item_number) == 0) {
+        if (di->m_strID == item_number) {
             if (field == nullptr)
                 return di->m_strName.c_str();
             if (di->m_pFormat == nullptr)

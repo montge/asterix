@@ -917,7 +917,7 @@ const char *DataItemBits::getDescription(const char *field, const char *value = 
         m_strShortName = m_strName;
 
 
-    if (m_strShortName.compare(field) == 0) {
+    if (m_strShortName == field) {
         if (value == nullptr) {
             return m_strName.c_str();
         } else {
