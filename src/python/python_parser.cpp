@@ -246,7 +246,7 @@ PyObject *python_describe(int category, const char *item = nullptr, const char *
 	for (it = cat->m_lDataItems.begin(); it != cat->m_lDataItems.end(); ++it)
     {
         di = *it;
-        if (di->m_strID.compare(item_number) == 0)
+        if (di->m_strID == item_number)
             break;
         di = nullptr;
     }
