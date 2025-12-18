@@ -173,10 +173,10 @@
 |-------|-------|-----------|
 | Bug Fixes | 14 | 14 |
 | Security Hotspots | 7 | 6 |
-| High-Impact Smells | 13 | 12 |
+| High-Impact Smells | 13 | 13 |
 | Remaining Smells | 14 | 14 |
 | Verification | 6 | 2 |
-| **Total** | **54** | **48** |
+| **Total** | **54** | **49** |
 
 ## Current SonarCloud Metrics (Dec 17, 2025)
 
@@ -454,4 +454,21 @@
 ### Testing Results
 - All 11 integration tests pass
 - Valgrind: 0 memory leaks
+- Build successful on Linux (GCC)
+
+## Session Summary (Dec 18, 2025 - Part 8)
+
+### Constructor Improvements (cpp:S1709)
+
+27. **Add explicit keyword and use initializer lists**
+    - DataItemBits.h: Added `explicit` to BitsValue(int) single-argument constructor
+      to prevent implicit conversions
+    - Changed constructors to use member initializer lists instead of assignments
+    - Added `std::move` for string parameter to avoid unnecessary copy
+
+**Commits:**
+- `20975eb` - refactor(asterix): Add explicit to BitsValue constructor and use initializer lists
+
+### Testing Results
+- All 705 unit tests pass
 - Build successful on Linux (GCC)
