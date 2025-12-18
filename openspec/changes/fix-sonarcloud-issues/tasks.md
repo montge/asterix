@@ -165,9 +165,9 @@
 | Bug Fixes | 14 | 10 |
 | Security Hotspots | 7 | 6 |
 | High-Impact Smells | 13 | 10 |
-| Remaining Smells | 14 | 10 |
+| Remaining Smells | 14 | 11 |
 | Verification | 6 | 0 |
-| **Total** | **54** | **36** |
+| **Total** | **54** | **37** |
 
 ## Current SonarCloud Metrics (Dec 17, 2025)
 
@@ -310,6 +310,16 @@
 
 **Commits:**
 - `1b4db96` - refactor(engine): Replace C-style casts with reinterpret_cast in socket API
+
+### Static Variable Refactoring (cpp:S1944)
+
+18. **Remove unnecessary static local variables**
+    - serialdevice.cxx: Refactored IoCtrl to use direct returns
+    - tcpdevice.cxx: Refactored IoCtrl to use direct returns
+    - diskdevice.cxx: Removed static, fixed logic bug in EReset case, added static_cast
+
+**Commits:**
+- `707397c` - refactor(engine): Remove unnecessary static local variables and fix C-style cast
 
 ### Testing Results
 - All 11 integration tests pass
