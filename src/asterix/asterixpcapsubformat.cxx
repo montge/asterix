@@ -88,7 +88,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
         lastFileTimeUSec = 0;
 
         // Read file header
-        if (!device.Read((void *) &m_ePcapFileHeader, sizeof(m_ePcapFileHeader))) {
+        if (!device.Read(&m_ePcapFileHeader, sizeof(m_ePcapFileHeader))) {
             LOGERROR(1, "Couldn't read PCAP file header.\n");
             return false;
         }
@@ -119,7 +119,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
     //////////////////////////////////////////////////////////////////////////////////////
     pcaprec_hdr_t m_ePcapRecHeader;
 
-    if (!device.Read((void *) &m_ePcapRecHeader, sizeof(m_ePcapRecHeader))) {
+    if (!device.Read(&m_ePcapRecHeader, sizeof(m_ePcapRecHeader))) {
         LOGERROR(1, "Couldn't read PCAP header.\n");
         return false;
     }
@@ -170,7 +170,7 @@ bool CAsterixPcapSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, 
      * Memory lifecycle: Buffer persists in Descriptor until format object destroyed.
      */
     unsigned char *pPacketBuffer = Descriptor.GetNewBuffer(nPacketBufferSize);
-    if (!device.Read((void *) pPacketBuffer, nPacketBufferSize)) {
+    if (!device.Read(pPacketBuffer, nPacketBufferSize)) {
         LOGERROR(1, "Couldn't read PCAP packet.\n");
         // No delete needed - buffer is managed by Descriptor
         return false;

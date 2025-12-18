@@ -64,10 +64,10 @@ bool CAsterixRawSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, C
     if (device.IsPacketDevice()) { // if using packet device read complete packet
         readSize = device.MaxPacketSize();
 
-        const unsigned char *pBuffer = Descriptor.GetNewBuffer(readSize);
+        unsigned char *pBuffer = Descriptor.GetNewBuffer(readSize);
 
         // Read packet
-        if (!device.Read((void *) pBuffer, &readSize)) {
+        if (!device.Read(pBuffer, &readSize)) {
             LOGERROR(1, "Couldn't read packet.\n");
             return false;
         }
@@ -84,7 +84,7 @@ bool CAsterixRawSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, C
             // Read ORADIS header (6 bytes)
             unsigned char oradisHeader[6];
             readSize = 6;
-            if (!device.Read((void *) oradisHeader, &readSize)) {
+            if (!device.Read(oradisHeader, &readSize)) {
                 LOGERROR(1, "Couldn't read ORADIS header.\n");
                 return false;
             }
@@ -104,13 +104,13 @@ bool CAsterixRawSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, C
             }
 
             readSize = dataLen - 6;
-            const unsigned char *pBuffer = Descriptor.GetNewBuffer(dataLen);
+            unsigned char *pBuffer = Descriptor.GetNewBuffer(dataLen);
 
             // copy header
-            memcpy((void *) pBuffer, (void *) oradisHeader, 6);
+            memcpy(pBuffer, oradisHeader, 6);
 
             // Read rest of packet
-            if (!device.Read((void *) &pBuffer[6], &readSize)) {
+            if (!device.Read(&pBuffer[6], &readSize)) {
                 LOGERROR(1, "Couldn't read packet.\n");
                 return false;
             }
@@ -118,7 +118,7 @@ bool CAsterixRawSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, C
             // Read Asterix header (3 bytes)
             unsigned char asterixHeader[3];
             readSize = 3;
-            if (!device.Read((void *) asterixHeader, &readSize)) {
+            if (!device.Read(asterixHeader, &readSize)) {
                 // LOGERROR(1, "Couldn't read Asterix header.\n");
                 return false;
             }
@@ -138,13 +138,13 @@ bool CAsterixRawSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, C
             }
 
             readSize = dataLen - 3;
-            const unsigned char *pBuffer = Descriptor.GetNewBuffer(dataLen);
+            unsigned char *pBuffer = Descriptor.GetNewBuffer(dataLen);
 
             // copy header
-            memcpy((void *) pBuffer, (void *) asterixHeader, 3);
+            memcpy(pBuffer, asterixHeader, 3);
 
             // Read rest of packet
-            if (!device.Read((void *) &pBuffer[3], &readSize)) {
+            if (!device.Read(&pBuffer[3], &readSize)) {
                 LOGERROR(1, "Couldn't read packet.\n");
                 return false;
             }

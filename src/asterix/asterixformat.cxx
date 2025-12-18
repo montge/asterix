@@ -131,7 +131,7 @@ CAsterixFormat::WritePacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice
         case EJSONE:
         case ETxt:
         case EOut: {
-            CAsterixFormatDescriptor &Descriptor((CAsterixFormatDescriptor &) formatDescriptor);
+            auto &Descriptor = static_cast<CAsterixFormatDescriptor &>(formatDescriptor);
 
             if (Descriptor.m_pAsterixData == nullptr) {
                 LOGERROR(1, "Asterix data packet not present\n");
