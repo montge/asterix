@@ -165,9 +165,9 @@
 | Bug Fixes | 14 | 10 |
 | Security Hotspots | 7 | 6 |
 | High-Impact Smells | 13 | 10 |
-| Remaining Smells | 14 | 11 |
+| Remaining Smells | 14 | 13 |
 | Verification | 6 | 0 |
-| **Total** | **54** | **37** |
+| **Total** | **54** | **39** |
 
 ## Current SonarCloud Metrics (Dec 17, 2025)
 
@@ -320,6 +320,31 @@
 
 **Commits:**
 - `707397c` - refactor(engine): Remove unnecessary static local variables and fix C-style cast
+
+### Testing Results
+- All 11 integration tests pass
+- Valgrind: 0 memory leaks
+- Build successful on Linux (GCC)
+
+## Session Summary (Dec 17, 2025 - Part 3)
+
+### Void Pointer Casts and Const-Correctness (cpp:S1946, cpp:S5945)
+
+19. **Remove unnecessary (void *) casts**
+    - asterixgpssubformat.cxx: 10 (void *) casts removed from device.Read() and memcpy()
+    - asterixrawsubformat.cxx: 7 (void *) casts removed from device.Read() and memcpy()
+    - asterixhdlcsubformat.cxx: 2 (void *) casts removed from device.Read() and memcpy()
+    - asterixfinalsubformat.cxx: 3 (void *) casts removed from device.Read()
+    - asterixpcapsubformat.cxx: 3 (void *) casts removed from device.Read()
+    - asterixformat.cxx: 1 C-style reference cast → static_cast
+
+20. **Fix const-correctness violations**
+    - Changed `const unsigned char *pBuffer = GetNewBuffer()` to `unsigned char *pBuffer`
+    - GetNewBuffer() returns non-const; using const then casting away was undefined behavior
+    - Affected files: all subformat files (gps, raw, hdlc, final)
+
+**Commits:**
+- `c673272` - refactor(asterix): Remove void* casts and fix const-correctness in subformat files
 
 ### Testing Results
 - All 11 integration tests pass
