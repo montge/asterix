@@ -231,9 +231,9 @@ parse_with_offset(PyObject *self, PyObject *args, PyObject *kwargs)
     // Check if offset + (blocks_count * estimated_block_size) would overflow
     // Conservative estimate: average ASTERIX block is ~256 bytes
     if (blocks_count > 0) {
-        unsigned long long estimated_end = (unsigned long long)offset +
-                                          (unsigned long long)blocks_count * 256ULL;
-        if (estimated_end > (unsigned long long)UINT_MAX) {
+        unsigned long long estimated_end = static_cast<unsigned long long>(offset) +
+                                          static_cast<unsigned long long>(blocks_count) * 256ULL;
+        if (estimated_end > static_cast<unsigned long long>(UINT_MAX)) {
             PyErr_SetString(PyExc_ValueError,
                 "Offset + blocks_count range would cause integer overflow");
             return nullptr;
