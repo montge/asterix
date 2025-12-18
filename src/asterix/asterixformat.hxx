@@ -77,31 +77,31 @@ public:
     /**
      * Default class destructor.
      */
-    virtual ~CAsterixFormat() { if (m_pFormatDescriptor) delete m_pFormatDescriptor; }
+    ~CAsterixFormat() override { delete m_pFormatDescriptor; }
 
-    virtual bool ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device,
-                            const unsigned int formatType, bool &discard);
+    bool ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device,
+                    const unsigned int formatType, bool &discard) override;
 
-    virtual bool WritePacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device,
-                             const unsigned int formatType, bool &discard);
+    bool WritePacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device,
+                     const unsigned int formatType, bool &discard) override;
 
-    virtual bool ProcessPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device,
-                               const unsigned int formatType, bool &discard);
+    bool ProcessPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device,
+                       const unsigned int formatType, bool &discard) override;
 
-    virtual bool HeartbeatProcessing(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device,
-                                     const unsigned int formatType);
+    bool HeartbeatProcessing(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device,
+                             const unsigned int formatType) override;
 
-    virtual CBaseFormatDescriptor *CreateFormatDescriptor
-            (const unsigned int formatType, const char *sFormatDescriptor);
+    CBaseFormatDescriptor *CreateFormatDescriptor
+            (const unsigned int formatType, const char *sFormatDescriptor) override;
 
-    virtual bool GetFormatNo(const char *formatName, unsigned int &formatNo);
+    bool GetFormatNo(const char *formatName, unsigned int &formatNo) override;
 
-    virtual int GetStatus(CBaseDevice &device,
-                          const unsigned int formatType, int query = 0);
+    int GetStatus(CBaseDevice &device,
+                  const unsigned int formatType, int query = 0) override;
 
-    virtual bool OnResetInputChannel(CBaseFormatDescriptor &formatDescriptor);
+    bool OnResetInputChannel(CBaseFormatDescriptor &formatDescriptor) override;
 
-    virtual bool OnResetOutputChannel(unsigned int channel, CBaseFormatDescriptor &formatDescriptor);
+    bool OnResetOutputChannel(unsigned int channel, CBaseFormatDescriptor &formatDescriptor) override;
 
 
 private:

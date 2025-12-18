@@ -240,7 +240,7 @@ bool CZeromqDevice::Read(void *data, size_t *len) {
         return false;
     }
 
-    *len = (size_t)nbytes;
+    *len = static_cast<size_t>(nbytes);
 
     LOGDEBUG(ZONE_UDPDEVICE, "ZeroMQ received %d bytes from %s\n",
              nbytes, _endpoint.c_str());
@@ -297,7 +297,7 @@ bool CZeromqDevice::Select(const unsigned int secondsToWait) {
 
     // Convert seconds to milliseconds for zmq_poll
     // 0 means infinite timeout in our API, but zmq_poll uses -1 for infinite
-    long timeout_ms = (secondsToWait == 0) ? -1 : (long)(secondsToWait * 1000);
+    long timeout_ms = (secondsToWait == 0) ? -1 : static_cast<long>(secondsToWait * 1000);
 
     // Reset poll events
     _pollItem.revents = 0;
