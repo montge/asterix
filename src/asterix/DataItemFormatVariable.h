@@ -329,7 +329,7 @@ public:
      *
      * @see DataItemFormat::isVariable()
      */
-    bool isVariable() { return true; };
+    bool isVariable() const override { return true; }
 
     /**
      * @brief Get human-readable description for a field value

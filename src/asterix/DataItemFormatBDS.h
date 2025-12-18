@@ -374,7 +374,7 @@ public:
      * @par Override of Virtual
      * This overrides DataItemFormat::isBDS() which returns false.
      */
-    bool isBDS() { return true; }; // true if this is BDS format
+    bool isBDS() const override { return true; }
 
     /**
      * @brief Get human-readable description for a BDS field value

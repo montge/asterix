@@ -250,7 +250,7 @@ public:
      * @brief Runtime type identification - always returns true for DataItemBits
      * @return true (this is a bit-level descriptor)
      */
-    bool isBits() { return true; };
+    bool isBits() const override { return true; }
 
     /**
      * @brief Get human-readable description for a specific field value
