@@ -165,9 +165,9 @@
 | Bug Fixes | 14 | 10 |
 | Security Hotspots | 7 | 6 |
 | High-Impact Smells | 13 | 10 |
-| Remaining Smells | 14 | 8 |
+| Remaining Smells | 14 | 10 |
 | Verification | 6 | 0 |
-| **Total** | **54** | **34** |
+| **Total** | **54** | **36** |
 
 ## Current SonarCloud Metrics (Dec 17, 2025)
 
