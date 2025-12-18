@@ -266,7 +266,7 @@ bool CUdpDevice::Read(void *data, size_t *len) {
             _countToRead--;
             // _socketDesc is going to be read, clear bits
             FD_CLR(_socketDesc[i], &_descToRead);
-            ssize_t lenread = recvfrom(_socketDesc[i], RECVFROM_CAST(data), *len, MSG_DONTWAIT, (struct sockaddr *) &clientAddr,
+            ssize_t lenread = recvfrom(_socketDesc[i], RECVFROM_CAST(data), *len, MSG_DONTWAIT, reinterpret_cast<struct sockaddr *>(&clientAddr),
                                        &clientLen);
             if (lenread < 0) {
                 // Don't use clientAddr in error - it may not be populated on failure
@@ -303,7 +303,7 @@ bool CUdpDevice::Write(const void *data, size_t len) {
     // Set the server address
 
     // Write the message (blocking)
-    if (sendto(_socketDesc[0], SENDTO_CAST(data), len, MSG_NOSIGNAL, (struct sockaddr *) &_mcastAddr, sizeof(_mcastAddr)) < 0) {
+    if (sendto(_socketDesc[0], SENDTO_CAST(data), len, MSG_NOSIGNAL, reinterpret_cast<struct sockaddr *>(&_mcastAddr), sizeof(_mcastAddr)) < 0) {
         LOGERROR(1, "Error %d writing to %s.\n",
                  errno, inet_ntoa(_mcastAddr.sin_addr));
 
@@ -388,12 +388,12 @@ bool CUdpDevice::InitServer(int socketDesc) {
     }
     serverAddr.sin_port = htons(_port);
 
-    if (bind(socketDesc, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
+    if (bind(socketDesc, reinterpret_cast<struct sockaddr *>(&serverAddr), sizeof(serverAddr)) < 0) {
         if (IN_MULTICAST(
                 ntohl(_mcastAddr.sin_addr.s_addr))) { // If failed to bind multicast address (note that it will always fail on Windows) then try with ANY port
             serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-            if (bind(socketDesc, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
+            if (bind(socketDesc, reinterpret_cast<struct sockaddr *>(&serverAddr), sizeof(serverAddr)) < 0) {
                 LOGERROR(1, "Cannot bind multicast address %s and port number %d\n", inet_ntoa(_mcastAddr.sin_addr),
                          _port);
                 return false;
@@ -447,7 +447,7 @@ bool CUdpDevice::InitClient(int socketDesc) {
     clientAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     clientAddr.sin_port = htons(0);
 
-    if (bind(socketDesc, (struct sockaddr *) &clientAddr, sizeof(clientAddr)) < 0) {
+    if (bind(socketDesc, reinterpret_cast<struct sockaddr *>(&clientAddr), sizeof(clientAddr)) < 0) {
         LOGERROR(1, "Cannot bind \n");
         return false;
     }
