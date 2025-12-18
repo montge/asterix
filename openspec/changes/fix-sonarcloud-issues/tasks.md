@@ -165,9 +165,9 @@
 | Bug Fixes | 14 | 10 |
 | Security Hotspots | 7 | 6 |
 | High-Impact Smells | 13 | 10 |
-| Remaining Smells | 14 | 13 |
+| Remaining Smells | 14 | 14 |
 | Verification | 6 | 0 |
-| **Total** | **54** | **39** |
+| **Total** | **54** | **40** |
 
 ## Current SonarCloud Metrics (Dec 17, 2025)
 
@@ -345,6 +345,25 @@
 
 **Commits:**
 - `c673272` - refactor(asterix): Remove void* casts and fix const-correctness in subformat files
+
+### Testing Results
+- All 11 integration tests pass
+- Valgrind: 0 memory leaks
+- Build successful on Linux (GCC)
+
+## Session Summary (Dec 17, 2025 - Part 4)
+
+### Additional C-Style Cast Fixes (cpp:S1946)
+
+21. **Windows compatibility code casts**
+    - asterixpcapsubformat.cxx: DWORD cast in usleep() → static_cast
+    - win32_compat.h: SOCKET cast in fcntl() → static_cast
+    - win32_compat.h: unsigned long long cast in gettimeofday() → static_cast
+    - win32_compat.h: long casts for tv_sec/tv_usec → static_cast
+
+**Commits:**
+- `063cb2f` - refactor(asterix): Replace C-style DWORD cast with static_cast
+- `07285d6` - refactor(engine): Replace C-style casts with static_cast in win32_compat.h
 
 ### Testing Results
 - All 11 integration tests pass
