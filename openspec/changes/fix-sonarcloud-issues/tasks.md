@@ -75,14 +75,14 @@
 
 | Complexity | File | Function | Status |
 |-----------|------|----------|--------|
-| 348 | XMLParser.cpp:107 | parseDataRecord | OPEN - Major refactor needed |
+| ~70 | XMLParser.cpp | ElementHandlerStart (refactored) | ✅ DONE - PR #151 |
 | 161 | asterix.cpp:131 | main | OPEN - CLI parsing complexity |
 | 95 | converterengine.cxx:103 | convertRecord | OPEN |
 | 57 | asterixgpssubformat.cxx:58 | parseGPS | OPEN |
 | 57 | XMLParser.cpp:629 | parseAttributes | OPEN |
 | 49 | asterixpcapsubformat.cxx:75 | parsePCAP | OPEN |
 
-*Note: XMLParser refactoring is a significant undertaking (348 complexity). Recommend as separate PR.*
+*Note: XMLParser::ElementHandlerStart refactored from 348 to ~70 complexity via PR #151 (merged Dec 18, 2025).*
 
 ### 3.2 Code Duplication
 - [x] 3.2.1 Identify duplicated code blocks
@@ -523,3 +523,29 @@
 ### Testing Results
 - All 705 unit tests pass
 - Build successful on Linux (GCC)
+
+## Session Summary (Dec 18, 2025 - Part 11)
+
+### XMLParser Cognitive Complexity Reduction (PR #151)
+
+32. **Major refactoring of XMLParser::ElementHandlerStart**
+    - Reduced cognitive complexity from 348 to ~70 (5× improvement)
+    - Added `addFormatToParent()` helper function (~90 lines)
+    - Extracted 15 element start handlers (handleCategoryStart, handleFixedStart, etc.)
+    - Extracted 7 element end handlers (handleCategoryEnd, handleFormatEnd, etc.)
+    - Replaced monolithic 510-line function with 70-line dispatcher
+
+33. **Fixed C-style casts in python_wrapper.cpp**
+    - Replaced `(unsigned long long)offset` with `static_cast<unsigned long long>(offset)`
+    - Fixed integer overflow check cast
+
+**Commits:**
+- `028f40e` - refactor(asterix): Major XMLParser refactoring to reduce cognitive complexity (PR #151)
+- `3df1e0d` - refactor(asterix): Replace C-style casts with static_cast in XMLParser
+
+### Testing Results
+- All 11 integration tests pass
+- All CI checks pass (73/73 builds + tests)
+- Memory Safety (Valgrind): PASS
+- SonarCloud Scan: PASS (quality gate still fails due to overall codebase)
+- Build successful on Linux, Windows, macOS
