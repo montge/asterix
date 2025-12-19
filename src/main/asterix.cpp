@@ -54,6 +54,165 @@ static void DisplayCopyright() {
             << "\n\nCopyright (c) 2013 Croatia Control Ltd. (www.crocontrol.hr)\nThis program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are welcome to redistribute it\nunder certain conditions. See COPYING file for details.\n";
 }
 
+// Helper: Check if input format option conflicts with current setting
+static bool checkInputFormatConflict(const std::string &option, const std::string &currentFormat, const char *newFormat) {
+    if (currentFormat != "ASTERIX_RAW") {
+        std::cerr << "Error: Option " << option << " not allowed because input format already defined as " << currentFormat << std::endl;
+        return true;
+    }
+    return false;
+}
+
+// Helper: Check if output format option conflicts with current setting
+static bool checkOutputFormatConflict(const std::string &option, const std::string &currentFormat) {
+    if (currentFormat != "ASTERIX_TXT") {
+        std::cerr << "Error: Option " << option << " not allowed because output format already defined as " << currentFormat << std::endl;
+        return true;
+    }
+    return false;
+}
+
+// Helper: Parse input format argument, returns empty string on error
+static std::string parseInputFormatArg(const std::string &arg, const std::string &currentFormat) {
+    if ((arg == "-P") || (arg == "--pcap")) {
+        return checkInputFormatConflict(arg, currentFormat, "ASTERIX_PCAP") ? "" : "ASTERIX_PCAP";
+    } else if ((arg == "-O") || (arg == "--oradis")) {
+        return checkInputFormatConflict(arg, currentFormat, "ASTERIX_ORADIS_RAW") ? "" : "ASTERIX_ORADIS_RAW";
+    } else if ((arg == "-R") || (arg == "--oradispcap")) {
+        return checkInputFormatConflict(arg, currentFormat, "ASTERIX_ORADIS_PCAP") ? "" : "ASTERIX_ORADIS_PCAP";
+    } else if ((arg == "-F") || (arg == "--final")) {
+        return checkInputFormatConflict(arg, currentFormat, "ASTERIX_FINAL") ? "" : "ASTERIX_FINAL";
+    } else if ((arg == "-H") || (arg == "--hdlc")) {
+        return checkInputFormatConflict(arg, currentFormat, "ASTERIX_HDLC") ? "" : "ASTERIX_HDLC";
+    } else if ((arg == "-G") || (arg == "--gps")) {
+        return checkInputFormatConflict(arg, currentFormat, "ASTERIX_GPS") ? "" : "ASTERIX_GPS";
+    }
+    return currentFormat; // Not an input format arg
+}
+
+// Helper: Parse output format argument, returns empty string on error
+static std::string parseOutputFormatArg(const std::string &arg, const std::string &currentFormat) {
+    if ((arg == "-l") || (arg == "--line")) {
+        return checkOutputFormatConflict(arg, currentFormat) ? "" : "ASTERIX_OUT";
+    } else if ((arg == "-x") || (arg == "--xml")) {
+        return checkOutputFormatConflict(arg, currentFormat) ? "" : "ASTERIX_XML";
+    } else if ((arg == "-xh") || (arg == "--xmlh")) {
+        return checkOutputFormatConflict(arg, currentFormat) ? "" : "ASTERIX_XMLH";
+    } else if ((arg == "-j") || (arg == "--json")) {
+        return checkOutputFormatConflict(arg, currentFormat) ? "" : "ASTERIX_JSON";
+    } else if ((arg == "-jh") || (arg == "--jsonh")) {
+        return checkOutputFormatConflict(arg, currentFormat) ? "" : "ASTERIX_JSONH";
+    } else if ((arg == "-je") || (arg == "--json-extensive")) {
+        return checkOutputFormatConflict(arg, currentFormat) ? "" : "ASTERIX_JSONE";
+    } else if ((arg == "-k") || (arg == "--kml")) {
+        return checkOutputFormatConflict(arg, currentFormat) ? "" : "ASTERIX_KML";
+    }
+    return currentFormat; // Not an output format arg
+}
+
+// Helper: Build input channel string from configuration
+static std::string buildInputString(const std::string &strFileInput, const std::string &strIPInput,
+                                    const std::string &strZMQInput, const std::string &strMQTTInput,
+                                    const std::string &strGRPCInput, const std::string &strDDSInput,
+                                    bool bLoopFile, const std::string &strInputFormat) {
+    std::string strInput;
+
+    if (!strFileInput.empty() && !strIPInput.empty()) {
+        strInput = "std;0;ASTERIX_RAW";
+    } else if (!strFileInput.empty()) {
+        strInput = "disk;" + strFileInput + "|0|";
+        strInput += bLoopFile ? "65;" : "1;";
+    } else if (!strIPInput.empty()) {
+        strInput = "udp;" + strIPInput + ";";
+    }
+#ifdef HAVE_ZEROMQ
+    else if (!strZMQInput.empty()) {
+        strInput = "zmq;" + strZMQInput + ";";
+    }
+#endif
+#ifdef HAVE_MQTT
+    else if (!strMQTTInput.empty()) {
+        strInput = "mqtt;" + strMQTTInput + ";";
+    }
+#endif
+#ifdef HAVE_GRPC
+    else if (!strGRPCInput.empty()) {
+        strInput = "grpc;" + strGRPCInput + ";";
+    }
+#endif
+#ifdef HAVE_CYCLONEDDS
+    else if (!strDDSInput.empty()) {
+        strInput = "dds;" + strDDSInput + ";";
+    }
+#endif
+    else {
+        strInput = "std;0;";
+    }
+
+    strInput += strInputFormat;
+    return strInput;
+}
+
+// Helper: Process filter file and configure filtering
+static bool processFilterFile(const std::string &strFilterFile, CBaseFormatDescriptor *desc) {
+    FILE *ff = fopen(strFilterFile.c_str(), "r");
+    if (ff == nullptr) {
+        std::cerr << "Error: Filter file " + strFilterFile + " not found." << std::endl;
+        return false;
+    }
+
+    char line[1025];
+    while (fgets(line, 1024, ff)) {
+        int cat = 0;
+        char item[129] = "";
+        char name[129] = "";
+
+        // Skip commented lines and empty lines
+        if (line[0] == '#' || line[0] == '\0')
+            continue;
+
+        // Thread-safe parsing using std::string instead of strtok
+        std::string lineStr(line);
+        size_t firstColon = lineStr.find(':');
+        size_t secondColon = (firstColon != std::string::npos) ? lineStr.find(':', firstColon + 1) : std::string::npos;
+
+        int ret = 0;
+        if (firstColon != std::string::npos && secondColon != std::string::npos) {
+            std::string catPart = lineStr.substr(0, firstColon);
+            std::string itemPart = lineStr.substr(firstColon + 1, secondColon - firstColon - 1);
+            std::string namePart = lineStr.substr(secondColon + 1);
+
+            if (sscanf(catPart.c_str(), "CAT%03d", &cat) == 1 &&
+                sscanf(itemPart.c_str(), "I%128s", item) == 1 &&
+                sscanf(namePart.c_str(), "%128s", name) == 1) {
+                ret = 1;
+            }
+        }
+
+        if (ret == 0) {
+            std::cerr << "Warning: Wrong Filter format. Shall be: \"CATxxx:Ixxx:NAME  DESCRIPTION\" or start with \"#\" for comment . It is: "
+                      << line << std::endl;
+            fclose(ff);
+            return false;
+        }
+
+        if (!desc->filterOutItem(cat, std::string(item), name)) {
+            std::cerr << "Warning: Filtering item not found: " << line << ":" << item << ":" << name << std::endl;
+        }
+    }
+    fclose(ff);
+    return true;
+}
+
+// Helper: Check for argument requiring a value
+static bool checkArgRequiresValue(const std::string &arg, int i, int argc) {
+    if (i >= argc - 1) {
+        std::cerr << "Error: " << arg << " option requires one argument." << std::endl;
+        return false;
+    }
+    return true;
+}
+
 static void show_usage(std::string name) {
     DisplayCopyright();
 
@@ -160,128 +319,44 @@ int main(int argc, const char *argv[]) {
         } else if ((arg == "-L") || (arg == "--list")) {
             bListDefinitions = true;
         } else if ((arg == "-LF") || (arg == "--filter")) {
-            if (i >= argc - 1) {
-                std::cerr << "Error: " + arg + " option requires one argument." << std::endl;
-                return 1;
-            }
+            if (!checkArgRequiresValue(arg, i, argc)) return 1;
             strFilterFile = argv[++i];
             gFiltering = true;
-        } else if ((arg == "-P") || (arg == "--pcap")) {
-            if (strInputFormat != "ASTERIX_RAW") {
-                std::cerr << "Error: Option -P not allowed because input format already defined as " + strInputFormat
-                          << std::endl;
+        } else if ((arg == "-P") || (arg == "--pcap") ||
+                   (arg == "-O") || (arg == "--oradis") ||
+                   (arg == "-R") || (arg == "--oradispcap") ||
+                   (arg == "-F") || (arg == "--final") ||
+                   (arg == "-H") || (arg == "--hdlc") ||
+                   (arg == "-G") || (arg == "--gps")) {
+            std::string newFormat = parseInputFormatArg(arg, strInputFormat);
+            if (newFormat.empty()) {
                 return 1;
             }
-            strInputFormat = "ASTERIX_PCAP";
-        } else if ((arg == "-O") || (arg == "--oradis")) {
-            if (strInputFormat != "ASTERIX_RAW") {
-                std::cerr << "Error: Option -O not allowed because input format already defined as " + strInputFormat
-                          << std::endl;
+            strInputFormat = newFormat;
+        } else if ((arg == "-l") || (arg == "--line") ||
+                   (arg == "-x") || (arg == "--xml") ||
+                   (arg == "-xh") || (arg == "--xmlh") ||
+                   (arg == "-j") || (arg == "--json") ||
+                   (arg == "-jh") || (arg == "--jsonh") ||
+                   (arg == "-je") || (arg == "--json-extensive") ||
+                   (arg == "-k") || (arg == "--kml")) {
+            std::string newFormat = parseOutputFormatArg(arg, strOutputFormat);
+            if (newFormat.empty()) {
                 return 1;
             }
-            strInputFormat = "ASTERIX_ORADIS_RAW";
-        } else if ((arg == "-R") || (arg == "--oradispcap")) {
-            if (strInputFormat != "ASTERIX_RAW") {
-                std::cerr << "Error: Option -R not allowed because input format already defined as " + strInputFormat
-                          << std::endl;
-                return 1;
-            }
-            strInputFormat = "ASTERIX_ORADIS_PCAP";
-        } else if ((arg == "-F") || (arg == "--final")) {
-            if (strInputFormat != "ASTERIX_RAW") {
-                std::cerr << "Error: Option -F not allowed because input format already defined as " + strInputFormat
-                          << std::endl;
-                return 1;
-            }
-            strInputFormat = "ASTERIX_FINAL";
-        } else if ((arg == "-H") || (arg == "--hdlc")) {
-            if (strInputFormat != "ASTERIX_RAW") {
-                std::cerr << "Error: Option -H not allowed because input format already defined as " + strInputFormat
-                          << std::endl;
-                return 1;
-            }
-            strInputFormat = "ASTERIX_HDLC";
-        } else if ((arg == "-G") || (arg == "--gps")) {
-            if (strInputFormat != "ASTERIX_RAW") {
-                std::cerr << "Error: Option -H not allowed because input format already defined as " + strInputFormat
-                          << std::endl;
-                return 1;
-            }
-            strInputFormat = "ASTERIX_GPS";
-        } else if ((arg == "-l") || (arg == "--line")) {
-            if (strOutputFormat != "ASTERIX_TXT") {
-                std::cerr << "Error: Option -l not allowed because output format already defined as " + strOutputFormat
-                          << std::endl;
-                return 1;
-            }
-            strOutputFormat = "ASTERIX_OUT";
-        } else if ((arg == "-x") || (arg == "--xml")) {
-            if (strOutputFormat != "ASTERIX_TXT") {
-                std::cerr << "Error: Option -x not allowed because output format already defined as " + strOutputFormat
-                          << std::endl;
-                return 1;
-            }
-            strOutputFormat = "ASTERIX_XML";
-        } else if ((arg == "-xh") || (arg == "--xmlh")) {
-            if (strOutputFormat != "ASTERIX_TXT") {
-                std::cerr << "Error: Option -xh not allowed because output format already defined as " + strOutputFormat
-                          << std::endl;
-                return 1;
-            }
-            strOutputFormat = "ASTERIX_XMLH";
-        } else if ((arg == "-j") || (arg == "--json")) {
-            if (strOutputFormat != "ASTERIX_TXT") {
-                std::cerr << "Error: Option -j not allowed because output format already defined as " + strOutputFormat
-                          << std::endl;
-                return 1;
-            }
-            strOutputFormat = "ASTERIX_JSON";
-        } else if ((arg == "-jh") || (arg == "--jsonh")) {
-            if (strOutputFormat != "ASTERIX_TXT") {
-                std::cerr << "Error: Option -jh not allowed because output format already defined as " + strOutputFormat
-                          << std::endl;
-                return 1;
-            }
-            strOutputFormat = "ASTERIX_JSONH";
-        } else if ((arg == "-je") || (arg == "--json-extensive")) {
-            if (strOutputFormat != "ASTERIX_TXT") {
-                std::cerr << "Error: Option -je not allowed because output format already defined as " + strOutputFormat
-                          << std::endl;
-                return 1;
-            }
-            strOutputFormat = "ASTERIX_JSONE";
-        } else if ((arg == "-k") || (arg == "--kml")) {
-            if (strOutputFormat != "ASTERIX_TXT") {
-                std::cerr << "Error: Option -k not allowed because output format already defined as " + strOutputFormat
-                          << std::endl;
-                return 1;
-            }
-            strOutputFormat = "ASTERIX_KML";
+            strOutputFormat = newFormat;
         } else if ((arg == "-d") || (arg == "--def") || (arg == "--definitions")) {
-            if (i >= argc - 1) {
-                std::cerr << "Error: " + arg + " option requires one argument." << std::endl;
-                return 1;
-            }
-
+            if (!checkArgRequiresValue(arg, i, argc)) return 1;
             strDefinitions = argv[++i];
         } else if ((arg == "-f")) {
-            if (i >= argc - 1) {
-                std::cerr << "Error: " + arg + " option requires one argument." << std::endl;
-                return 1;
-            }
+            if (!checkArgRequiresValue(arg, i, argc)) return 1;
             strFileInput = argv[++i];
         } else if ((arg == "-i")) {
-            if (i >= argc - 1) {
-                std::cerr << "Error: " + arg + " option requires one argument." << std::endl;
-                return 1;
-            }
+            if (!checkArgRequiresValue(arg, i, argc)) return 1;
             strIPInput = argv[++i];
         } else if ((arg == "-z") || (arg == "--zmq") || (arg == "--zeromq")) {
 #ifdef HAVE_ZEROMQ
-            if (i >= argc - 1) {
-                std::cerr << "Error: " + arg + " option requires one argument." << std::endl;
-                return 1;
-            }
+            if (!checkArgRequiresValue(arg, i, argc)) return 1;
             strZMQInput = argv[++i];
 #else
             std::cerr << "Error: ZeroMQ support not compiled in. Rebuild with -DENABLE_ZEROMQ=ON" << std::endl;
@@ -289,10 +364,7 @@ int main(int argc, const char *argv[]) {
 #endif
         } else if ((arg == "-m") || (arg == "--mqtt")) {
 #ifdef HAVE_MQTT
-            if (i >= argc - 1) {
-                std::cerr << "Error: " + arg + " option requires one argument." << std::endl;
-                return 1;
-            }
+            if (!checkArgRequiresValue(arg, i, argc)) return 1;
             strMQTTInput = argv[++i];
 #else
             std::cerr << "Error: MQTT support not compiled in. Rebuild with -DENABLE_MQTT=ON" << std::endl;
@@ -300,10 +372,7 @@ int main(int argc, const char *argv[]) {
 #endif
         } else if ((arg == "-g") || (arg == "--grpc")) {
 #ifdef HAVE_GRPC
-            if (i >= argc - 1) {
-                std::cerr << "Error: " + arg + " option requires one argument." << std::endl;
-                return 1;
-            }
+            if (!checkArgRequiresValue(arg, i, argc)) return 1;
             strGRPCInput = argv[++i];
 #else
             std::cerr << "Error: gRPC support not compiled in. Rebuild with -DENABLE_GRPC=ON" << std::endl;
@@ -311,10 +380,7 @@ int main(int argc, const char *argv[]) {
 #endif
         } else if ((arg == "--dds") || (arg == "--cyclonedds")) {
 #ifdef HAVE_CYCLONEDDS
-            if (i >= argc - 1) {
-                std::cerr << "Error: " + arg + " option requires one argument." << std::endl;
-                return 1;
-            }
+            if (!checkArgRequiresValue(arg, i, argc)) return 1;
             strDDSInput = argv[++i];
 #else
             std::cerr << "Error: Cyclone DDS support not compiled in. Rebuild with -DENABLE_CYCLONEDDS=ON" << std::endl;
@@ -334,71 +400,10 @@ int main(int argc, const char *argv[]) {
     }
     fclose(tmp);
 
-    // Create input string
-    std::string strInput = "std;0;";
-    std::string strInputFixed;
-    if (!strFileInput.empty() && !strIPInput.empty()) {
-        strInput = "std;0;ASTERIX_RAW";
-    }
-    if (!strFileInput.empty()) {
-        strInput = "disk;" + strFileInput + "|0|";
-
-        if (bLoopFile) {
-            strInput += "65;";
-        } else {
-            strInput += "1;";
-        }
-    } else if (!strIPInput.empty()) {
-/*
-		// count ':'
-		int cntr=0;
-		int indx=0;
-		while((indx=strIPInput.find(':', indx+1)) >= 0)
-		{
-			cntr++;
-		}
-
-		if (cntr == 2)
-			strInput = "udp " + strIPInput + "::S ";
-		else if (cntr == 3)
-			strInput = "udp " + strIPInput + ":S ";
-		else {
-			std::cerr << "Error: Wrong input address format  (shall be: mcastaddress:ipaddress:port[:srcaddress]" << std::endl;
-			exit (3);
-		}
-*/
-        strInput = "udp;" + strIPInput + ";"; // + ":S ";
-    }
-#ifdef HAVE_ZEROMQ
-    else if (!strZMQInput.empty()) {
-        // ZeroMQ input: format is type:endpoint[:bind]
-        // e.g., SUB:tcp://192.168.1.10:5555 or PULL:tcp://*:5556:bind
-        strInput = "zmq;" + strZMQInput + ";";
-    }
-#endif
-#ifdef HAVE_MQTT
-    else if (!strMQTTInput.empty()) {
-        // MQTT input: format is mode:host:port:topic[:qos[:clientid[:user:pass]]]
-        // e.g., SUB:localhost:1883:asterix/#
-        strInput = "mqtt;" + strMQTTInput + ";";
-    }
-#endif
-#ifdef HAVE_GRPC
-    else if (!strGRPCInput.empty()) {
-        // gRPC input: format is mode:endpoint[:tls]
-        // e.g., CLIENT:localhost:50051 or SERVER:0.0.0.0:50051
-        strInput = "grpc;" + strGRPCInput + ";";
-    }
-#endif
-#ifdef HAVE_CYCLONEDDS
-    else if (!strDDSInput.empty()) {
-        // DDS input: format is mode:domain:topic[:qos]
-        // e.g., SUB:0:AsterixData or SUB:0:AsterixCat048:reliable
-        strInput = "dds;" + strDDSInput + ";";
-    }
-#endif
-
-    strInput += strInputFormat;
+    // Create input string using helper function
+    std::string strInput = buildInputString(strFileInput, strIPInput, strZMQInput,
+                                            strMQTTInput, strGRPCInput, strDDSInput,
+                                            bLoopFile, strInputFormat);
 
     // Create output string
     std::string strOutput = "std 0 " + strOutputFormat;
@@ -423,60 +428,16 @@ int main(int argc, const char *argv[]) {
 
     // Finally execute converter engine
     if (CConverterEngine::Instance()->Initialize(inputChannel, outputChannel, nOutput, chFailover)) {
-        if (!strFilterFile.empty()) { // read filter file and configure items
+        // Process filter file if specified
+        if (!strFilterFile.empty()) {
             CBaseFormatDescriptor *desc = CChannelFactory::Instance()->GetInputChannel()->GetFormatDescriptor();
             if (desc == nullptr) {
                 std::cerr << "Error: Format description not found." << std::endl;
                 exit(2);
             }
-
-            FILE *ff = fopen(strFilterFile.c_str(), "r");
-            if (ff == nullptr) {
-                std::cerr << "Error: Filter file " + strFilterFile + " not found." << std::endl;
-                exit(2);
+            if (!processFilterFile(strFilterFile, desc)) {
+                exit(3);
             }
-            char line[1025];
-            while (fgets(line, 1024, ff)) {
-
-                int cat = 0;
-                char item[129] = "";
-                char name[129] = "";
-
-                // skip commented lines and empty lines
-                if (line[0] == '#' || line[0] == '\0')
-                    continue;
-
-                // Thread-safe parsing using std::string instead of strtok
-                std::string lineStr(line);
-                size_t firstColon = lineStr.find(':');
-                size_t secondColon = (firstColon != std::string::npos) ? lineStr.find(':', firstColon + 1) : std::string::npos;
-
-                int ret = 0;
-                if (firstColon != std::string::npos && secondColon != std::string::npos) {
-                    std::string catPart = lineStr.substr(0, firstColon);
-                    std::string itemPart = lineStr.substr(firstColon + 1, secondColon - firstColon - 1);
-                    std::string namePart = lineStr.substr(secondColon + 1);
-
-                    if (sscanf(catPart.c_str(), "CAT%03d", &cat) == 1 &&
-                        sscanf(itemPart.c_str(), "I%128s", item) == 1 &&
-                        sscanf(namePart.c_str(), "%128s", name) == 1) {
-                        ret = 1;
-                    }
-                }
-
-                if (ret == 0) {
-                    std::cerr <<
-                              "Warning: Wrong Filter format. Shall be: \"CATxxx:Ixxx:NAME  DESCRIPTION\" or start with \"#\" for comment . It is: " +
-                              std::string(line) << std::endl;
-                    exit(3);
-                }
-
-                if (!desc->filterOutItem(cat, std::string(item), name)) {
-                    std::cerr << "Warning: Filtering item not found: " + std::string(line) + ":" + std::string(item) +
-                                 ":" + std::string(name) << std::endl;
-                }
-            }
-            fclose(ff);
         }
 
         if (bListDefinitions) { // Parse definitions file and print all items
