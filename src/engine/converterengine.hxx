@@ -89,6 +89,14 @@ public:
     void Start();
 
     int ProcessStatus();
+
+private:
+    // Helper methods to reduce cognitive complexity of Start()
+    void waitForPacketWithHeartbeat(unsigned int nChannels);
+    bool handlePacketRead(bool &noMoreData);
+    bool handlePacketProcess(bool packetOk, bool noMoreData, bool &discard);
+    void dispatchToNormalChannels(unsigned int nChannels, bool noMoreData, bool packetOk);
+    void dispatchToFailoverChannels(unsigned int nChannels);
 };
 
 #endif

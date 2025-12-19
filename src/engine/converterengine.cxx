@@ -96,112 +96,137 @@ bool CConverterEngine::Initialize(const char *inputChannel, const char *outputCh
 }
 
 
+// Helper: Wait for packet with heartbeat processing
+void CConverterEngine::waitForPacketWithHeartbeat(unsigned int nChannels) {
+    bool packetReceived;
+    do {
+        packetReceived = CChannelFactory::Instance()->WaitForPacket(gHeartbeat);
+
+        // HeartbeatProcessing for all output channels is called *AT LEAST* every gHeartBeat
+        for (unsigned int i = 0; i < nChannels; ++i) {
+            if (!CChannelFactory::Instance()->HeartbeatProcessing(i)) {
+                LOGERROR(1, "Heartbeat() failed.\n");
+            }
+        }
+    } while (!packetReceived);
+}
+
+// Helper: Handle packet reading, returns true if packet read OK
+bool CConverterEngine::handlePacketRead(bool &noMoreData) {
+    if (CChannelFactory::Instance()->ReadPacket()) {
+        return true;
+    }
+
+    int sts = ProcessStatus();
+    noMoreData = (sts & STS_NO_DATA) != 0;
+
+    if (noMoreData) {
+        LOGINFO(1, "No more data available on input channel.\n");
+    }
+    return false;
+}
+
+// Helper: Handle packet processing, returns true to continue main loop
+bool CConverterEngine::handlePacketProcess(bool packetOk, bool noMoreData, bool &discard) {
+    if (!packetOk || noMoreData) {
+        return true;
+    }
+
+    if (!CChannelFactory::Instance()->ProcessPacket(discard)) {
+        LOGERROR(1, "ProcessPacket() failed.\n");
+        return (ProcessStatus() & (STS_FAIL_INPUT | STS_FAIL_DATA)) != 0;
+    }
+    return true;
+}
+
+// Helper: Dispatch to normal (non-failover) output channels
+void CConverterEngine::dispatchToNormalChannels(unsigned int nChannels, bool noMoreData, bool packetOk) {
+    for (unsigned int i = 0; i < nChannels; ++i) {
+        if (CChannelFactory::Instance()->IsFailoverOutputChannel(i)) {
+            break; // Stop at first failover channel
+        }
+
+        if (noMoreData) {
+            if (!CChannelFactory::Instance()->IoCtrl(static_cast<int>(i), CBaseDevice::EAllDone)) {
+                LOGERROR(1, "IoCtrl() failed.\n");
+            }
+        } else if (packetOk) {
+            if (!CChannelFactory::Instance()->WritePacket(i)) {
+                LOGERROR(1, "WritePacket() failed.\n");
+            }
+        }
+    }
+}
+
+// Helper: Handle failover output channels with automatic switching
+void CConverterEngine::dispatchToFailoverChannels(unsigned int nChannels) {
+    unsigned int ch = CChannelFactory::Instance()->GetActiveFailoverOutputChannel();
+    unsigned int startCh = ch;
+
+    while (ch < nChannels) {
+        if (CChannelFactory::Instance()->WritePacket(ch)) {
+            break; // Success
+        }
+
+        LOGERROR(1, "The current packet has been lost for failover output channel %d\n", static_cast<int>(ch));
+
+        int sts = ProcessStatus();
+
+        if (sts & STS_FAIL_OUTPUT) {
+            ch = CChannelFactory::Instance()->GetNextFailoverOutputChannel();
+            LOGNOTIFY(gVerbose, "Switching to failover output channel: %d\n", static_cast<int>(ch));
+
+            if (ch == startCh) {
+                break; // Cycled through all failover channels
+            }
+        }
+
+        if (sts & STS_FAIL_INPUT) {
+            break; // Input channel reset, discard current packet
+        }
+    }
+}
+
 // TODO:
 // - call appropriate method (todo- write method) to analyze if the packet needs to be discarded
 // - enable disconnection/reconnection with server (check CreateOutputChannel).
 //
 void CConverterEngine::Start() {
     unsigned int nChannels = CChannelFactory::Instance()->GetNOutputChannels();
-    bool discard = false, packetOk = false, packetReceived = false, noMoreData = false;
+    bool discard = false;
 
     LOGNOTIFY(gVerbose, "Converter Engine Started.\n");
 
     while (true) {
-        // 1. Wait for incomming packet on input channel
-        do {
-            packetReceived = CChannelFactory::Instance()->WaitForPacket(gHeartbeat);
+        // 1. Wait for incoming packet on input channel
+        waitForPacketWithHeartbeat(nChannels);
 
-            // 1.1 HeartbeatProcessing for all output channels is called *AT LEAST* every gHeartBeat
-            for (unsigned int i = 0; i < nChannels; i++) {
-                if (!CChannelFactory::Instance()->HeartbeatProcessing(i)) {
-                    LOGERROR(1, "Heartbeat() failed.\n");
-                }
-            }
-        } while (!packetReceived);
-
-        // 1a Check if there is more data
-        int rps = ProcessStatus();
-        noMoreData = rps & STS_NO_DATA;
-        if (noMoreData) {
+        // 1a. Check if there is more data
+        int sts = ProcessStatus();
+        if (sts & STS_NO_DATA) {
             break;
         }
 
         // 2. Read the incoming packet
-        if (!(packetOk = CChannelFactory::Instance()->ReadPacket())) {
-            int rps = ProcessStatus();
-            noMoreData = rps & STS_NO_DATA;
-            if (noMoreData) {
-                LOGINFO(1, "No more data available on input channel.\n");
-                break;
-            } else {
-                // LOGERROR(1, "ReadPacket() failed.\n");
+        bool noMoreData = false;
+        bool packetOk = handlePacketRead(noMoreData);
 
-                if (rps & (STS_FAIL_INPUT | STS_FAIL_DATA))
-                    continue;
-            }
+        if (noMoreData) {
+            break;
+        }
+        if (!packetOk && (ProcessStatus() & (STS_FAIL_INPUT | STS_FAIL_DATA))) {
+            continue;
         }
 
-        if (packetOk || noMoreData) {
-            // 3. Process the packet
-            if (packetOk && !noMoreData) {
-                if (!CChannelFactory::Instance()->ProcessPacket(discard)) {
-                    LOGERROR(1, "ProcessPacket() failed.\n");
+        // 3. Process the packet
+        if (!handlePacketProcess(packetOk, noMoreData, discard)) {
+            continue;
+        }
 
-                    if (ProcessStatus() & (STS_FAIL_INPUT | STS_FAIL_DATA))
-                        continue;
-                }
-            }
-
-            // Check if currently read packet needs to be discarded
-            if ((gForceRouting) || (!discard)) {
-                // 4. Dispatch the incoming packet to all normal output channels,
-                //    and to a single failover output channel
-                for (unsigned int i = 0; i < nChannels; i++) {
-                    if (noMoreData) {
-                        // notify output channels
-                        if (!CChannelFactory::Instance()->IoCtrl(static_cast<int>(i), CBaseDevice::EAllDone)) {
-                            LOGERROR(1, "IoCtrl() failed.\n");
-                        }
-                    } else if (packetOk) {
-                        if (CChannelFactory::Instance()->IsFailoverOutputChannel(i))
-                            break;
-
-                        if (!CChannelFactory::Instance()->WritePacket(i)) {
-                            LOGERROR(1, "WritePacket() failed.\n");
-                        }
-                    }
-                }
-
-                // handle failover output channels
-
-                unsigned int ch = CChannelFactory::Instance()->GetActiveFailoverOutputChannel();
-                unsigned int startCh = ch;
-
-                while (ch < nChannels) {
-                    // try writing to the active channel
-                    // LOGDEBUG(1, "Trying to write to output channel %d...\n", (int)ch);
-
-                    if (CChannelFactory::Instance()->WritePacket(ch))
-                        break; // successfull!
-
-                    // failed...
-                    LOGERROR(1, "The current packet has been lost for failover output channel %d\n", static_cast<int>(ch));
-
-                    int sts = ProcessStatus();
-
-                    if (sts & STS_FAIL_OUTPUT) {
-                        ch = CChannelFactory::Instance()->GetNextFailoverOutputChannel();
-
-                        LOGNOTIFY(gVerbose, "Switching to failover output channel: %d\n", static_cast<int>(ch));
-
-                        if (ch == startCh)
-                            break; // we've cycled through all failover channels
-                    }
-
-                    if (sts & STS_FAIL_INPUT)
-                        break; // input channel has been reset, so discard current packet and start over from reading
-                }
-            }
+        // 4. Dispatch to output channels if not discarded
+        if (gForceRouting || !discard) {
+            dispatchToNormalChannels(nChannels, noMoreData, packetOk);
+            dispatchToFailoverChannels(nChannels);
         }
     }
 }
