@@ -64,7 +64,10 @@ public:
     static bool Heartbeat(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool oradis = false);
 
 private:
-
+    // Helper methods to reduce cognitive complexity of ReadPacket
+    static bool readFromPacketDevice(CAsterixFormatDescriptor &Descriptor, CBaseDevice &device);
+    static bool readOradisFromFile(CAsterixFormatDescriptor &Descriptor, CBaseDevice &device, int leftBytes);
+    static bool readGPSFromFile(CAsterixFormatDescriptor &Descriptor, CBaseDevice &device, int leftBytes);
 };
 
 #endif

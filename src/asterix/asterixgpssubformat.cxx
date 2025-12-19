@@ -52,151 +52,151 @@
 #include "AsterixDefinition.h"
 #include "InputParser.h"
 
+// Helper: Read packet from a packet device (UDP, etc.)
+bool CAsterixGPSSubformat::readFromPacketDevice(CAsterixFormatDescriptor &Descriptor, CBaseDevice &device) {
+    size_t readSize = device.MaxPacketSize();
+    unsigned char *pBuffer = Descriptor.GetNewBuffer(readSize);
+
+    if (!device.Read(pBuffer, &readSize)) {
+        LOGERROR(1, "Couldn't read packet.\n");
+        return false;
+    }
+
+    Descriptor.SetBufferLen(readSize);
+
+    if (Descriptor.GetBufferLen() >= device.MaxPacketSize()) {
+        LOGERROR(1, "Packet too big! Size = %d, limit = %d.\n", Descriptor.GetBufferLen(), device.MaxPacketSize());
+    }
+    return true;
+}
+
+// Helper: Read ORADIS-formatted packet from file
+bool CAsterixGPSSubformat::readOradisFromFile(CAsterixFormatDescriptor &Descriptor, CBaseDevice &device, int leftBytes) {
+    // Read ORADIS header (6 bytes)
+    unsigned char oradisHeader[6];
+    size_t readSize = 6;
+    if (!device.Read(oradisHeader, &readSize)) {
+        LOGERROR(1, "Couldn't read ORADIS header.\n");
+        return false;
+    }
+
+    // Calculate ORADIS packet size
+    unsigned short dataLen = (oradisHeader[0] << 8) | oradisHeader[1];
+
+    if (dataLen <= 6) {
+        LOGERROR(1, "Wrong ORADIS data length (%d)\n", dataLen);
+        return false;
+    }
+    if (leftBytes != 0 && dataLen > leftBytes) {
+        LOGERROR(1, "Not enough data for packet! Size = %d, left = %d.\n", dataLen, leftBytes);
+        return false;
+    }
+
+    readSize = dataLen - 6;
+    unsigned char *pBuffer = Descriptor.GetNewBuffer(dataLen);
+    memcpy(pBuffer, oradisHeader, 6);
+
+    if (!device.Read(&pBuffer[6], &readSize)) {
+        LOGERROR(1, "Couldn't read packet.\n");
+        return false;
+    }
+
+    return true;
+}
+
+// Helper: Read GPS-formatted packet from file
+bool CAsterixGPSSubformat::readGPSFromFile(CAsterixFormatDescriptor &Descriptor, CBaseDevice &device, int leftBytes) {
+    unsigned char GPSPost[10];
+    size_t readSize;
+
+    // Read GPS header on first packet (2200 bytes)
+    if (device.IsOnStart()) {
+        unsigned char gpsHeader[2200];
+        readSize = 2200;
+        if (!device.Read(gpsHeader, &readSize)) {
+            LOGERROR(1, "Couldn't read GPS header.\n");
+            return false;
+        }
+    }
+
+    // Read Asterix header (3 bytes)
+    unsigned char asterixHeader[3];
+    readSize = 3;
+    if (!device.Read(asterixHeader, &readSize)) {
+        LOGERROR(1, "Couldn't read Asterix header.\n");
+        return false;
+    }
+
+    // Calculate Asterix packet size
+    unsigned short dataLen = (asterixHeader[1] << 8) | asterixHeader[2];
+
+    // Validate data length
+    if (dataLen <= 3) {
+        LOGERROR(1, "Wrong Asterix data length (%d)\n", dataLen);
+        readSize = 10;
+        device.Read(GPSPost, &readSize); // Try to skip GPS post bytes
+        return false;
+    }
+    if (leftBytes != 0 && dataLen > leftBytes) {
+        LOGERROR(1, "Not enough data for packet! Size = %d, left = %d.\n", dataLen, leftBytes);
+        readSize = 10;
+        device.Read(GPSPost, &readSize); // Try to skip GPS post bytes
+        return false;
+    }
+
+    // Read packet data
+    readSize = dataLen - 3;
+    unsigned char *pBuffer = Descriptor.GetNewBuffer(dataLen);
+    memcpy(pBuffer, asterixHeader, 3);
+
+    if (!device.Read(&pBuffer[3], &readSize)) {
+        LOGERROR(1, "Couldn't read packet.\n");
+        return false;
+    }
+
+    // Check for GPS post bytes
+    if (leftBytes != 0 && 10 > leftBytes) {
+        LOGERROR(1, "Not enough data for GPS post bytes Size = 10, left = %d.\n", leftBytes);
+        return false;
+    }
+
+    // Read GPS post bytes (10 bytes)
+    readSize = 10;
+    if (!device.Read(GPSPost, &readSize)) {
+        LOGERROR(1, "Couldn't read GPS post bytes.\n");
+        return false;
+    }
+
+    // Extract timestamp from GPS post bytes
+    double dTimeStamp = ((GPSPost[6] << 16) + (GPSPost[7] << 8) + GPSPost[8]) / 128.0;
+#ifdef _DEBUG
+    LOGDEBUG(1, "GPS Bytes [%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X]\n",
+             GPSPost[0], GPSPost[1], GPSPost[2], GPSPost[3], GPSPost[4],
+             GPSPost[5], GPSPost[6], GPSPost[7], GPSPost[8], GPSPost[9]);
+    LOGDEBUG(1, "GPS Timestamp [%lf]\n", dTimeStamp);
+#endif
+    Descriptor.SetTimeStamp(dTimeStamp);
+
+    return true;
+}
+
 /*
  * Read packet and store it in Descriptor.m_pBuffer
  */
-bool CAsterixGPSSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, [[maybe_unused]] bool &discard,
-                                      [[maybe_unused]] bool oradis) {
+bool CAsterixGPSSubformat::ReadPacket(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device,
+                                      [[maybe_unused]] bool &discard, [[maybe_unused]] bool oradis) {
     auto &Descriptor = static_cast<CAsterixFormatDescriptor &>(formatDescriptor);
-    size_t readSize = 0;
 
-    if (device.IsPacketDevice()) { // if using packet device read complete packet
-        readSize = device.MaxPacketSize();
-
-        unsigned char *pBuffer = Descriptor.GetNewBuffer(readSize);
-
-        // Read packet
-        if (!device.Read(pBuffer, &readSize)) {
-            LOGERROR(1, "Couldn't read packet.\n");
-            return false;
-        }
-
-        Descriptor.SetBufferLen(readSize);
-
-        if (Descriptor.GetBufferLen() >= device.MaxPacketSize()) {
-            LOGERROR(1, "Packet too big! Size = %d, limit = %d.\n", Descriptor.GetBufferLen(), device.MaxPacketSize());
-        }
-    } else { // if this is not packet device (e.g. it is file), read one by one Asterix record
-        int leftBytes = device.BytesLeftToRead();
-
-        if (oradis) {
-            // Read ORADIS header (6 bytes)
-            unsigned char oradisHeader[6];
-            readSize = 6;
-            if (!device.Read(oradisHeader, &readSize)) {
-                LOGERROR(1, "Couldn't read ORADIS header.\n");
-                return false;
-            }
-
-            // Calculate ORADIS packet size
-            unsigned short dataLen = oradisHeader[0]; // length
-            dataLen <<= 8;
-            dataLen |= oradisHeader[1];
-
-            if (dataLen <= 6) {
-                LOGERROR(1, "Wrong ORADIS data length (%d)\n", dataLen);
-                return false;
-            }
-            if (leftBytes != 0 && dataLen > leftBytes) {
-                LOGERROR(1, "Not enough data for packet! Size = %d, left = %d.\n", dataLen, leftBytes);
-                return false;
-            }
-
-            readSize = dataLen - 6;
-            unsigned char *pBuffer = Descriptor.GetNewBuffer(dataLen);
-
-            // copy header
-            memcpy(pBuffer, oradisHeader, 6);
-
-            // Read rest of packet
-            if (!device.Read(&pBuffer[6], &readSize)) {
-                LOGERROR(1, "Couldn't read packet.\n");
-                return false;
-            }
-        } else {
-            // Space for GPS postbytes (10 bytes)
-            unsigned char GPSPost[10];
-
-            // Do only once, read GPS header (2200 bytes)
-            if (device.IsOnStart()) {
-                unsigned char gpsHeader[2200];
-                readSize = 2200;
-                if (!device.Read(gpsHeader, &readSize)) {
-                    LOGERROR(1, "Couldn't read GPS header.\n");
-                    return false;
-                }
-            }
-
-            // Read Asterix header (3 bytes)
-            unsigned char asterixHeader[3];
-            readSize = 3;
-            if (!device.Read(asterixHeader, &readSize)) {
-                LOGERROR(1, "Couldn't read Asterix header.\n");
-                return false;
-            }
-
-            // Calculate Asterix packet size
-            unsigned short dataLen = asterixHeader[1]; // length
-            dataLen <<= 8;
-            dataLen |= asterixHeader[2];
-
-            if (dataLen <= 3) {
-                LOGERROR(1, "Wrong Asterix data length (%d)\n", dataLen);
-                readSize = 10;
-                // skip GPS post after failure
-                if (!device.Read(GPSPost, &readSize)) {
-                    LOGERROR(1, "Couldn't read GPS post bytes.\n");
-                    return false; // double fail
-                }
-                return false;
-            }
-            if (leftBytes != 0 && dataLen > leftBytes) {
-                LOGERROR(1, "Not enough data for packet! Size = %d, left = %d.\n", dataLen, leftBytes);
-                readSize = 10;
-                // skip GPS post after failure
-                if (!device.Read(GPSPost, &readSize)) {
-                    LOGERROR(1, "Couldn't read GPS post bytes.\n");
-                    return false; // double fail
-                }
-                return false;
-            }
-
-            readSize = dataLen - 3;
-            unsigned char *pBuffer = Descriptor.GetNewBuffer(dataLen);
-
-            // copy header
-            memcpy(pBuffer, asterixHeader, 3);
-
-            // Read rest of packet
-            if (!device.Read(&pBuffer[3], &readSize)) {
-                LOGERROR(1, "Couldn't read packet.\n");
-                return false;
-            }
-
-            if (leftBytes != 0 && 10 > leftBytes) // size of GPS post bytes
-            {
-                LOGERROR(1, "Not enough data for GPS post bytes Size = 10, left = %d.\n", leftBytes);
-                return false;
-            }
-
-            readSize = 10;
-            if (!device.Read(GPSPost, &readSize)) {
-                LOGERROR(1, "Couldn't read GPS post bytes.\n");
-                return false;
-            }
-
-            double dTimeStamp = ((GPSPost[6] << 16) + (GPSPost[7] << 8) + (GPSPost[8])) / 128.0;
-#ifdef _DEBUG
-            LOGDEBUG(1, "GPS Bytes [%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X]\n", GPSPost[0], GPSPost[1],
-                GPSPost[2], GPSPost[3], GPSPost[4], GPSPost[5], GPSPost[6], GPSPost[7],
-                GPSPost[8], GPSPost[9]);
-            LOGDEBUG(1, "GPS Timestamp [%lf]\n", dTimeStamp);
-#endif
-            Descriptor.SetTimeStamp(dTimeStamp);
-
-        }
+    if (device.IsPacketDevice()) {
+        return readFromPacketDevice(Descriptor, device);
     }
-    return true;
+
+    // File device: read one Asterix record at a time
+    int leftBytes = device.BytesLeftToRead();
+    if (oradis) {
+        return readOradisFromFile(Descriptor, device, leftBytes);
+    }
+    return readGPSFromFile(Descriptor, device, leftBytes);
 }
 
 bool CAsterixGPSSubformat::WritePacket([[maybe_unused]] CBaseFormatDescriptor &formatDescriptor, [[maybe_unused]] CBaseDevice &device, [[maybe_unused]] bool &discard,

@@ -24,6 +24,11 @@
 #ifndef ASTERIXPCAPSUBFORMAT_HXX__
 #define ASTERIXPCAPSUBFORMAT_HXX__
 
+#include <ctime>
+#ifdef _WIN32
+typedef unsigned long useconds_t;
+#endif
+
 class CBaseDevice;
 
 class CAsterixFormatDescriptor;
@@ -54,7 +59,7 @@ public:
     static bool Heartbeat(CBaseFormatDescriptor &formatDescriptor, CBaseDevice &device, bool oradis = false);
 
 private:
-
+    // PCAP header structures (must be declared before helper methods that use them)
     typedef struct pcap_hdr_s {
         unsigned int magic_number;   /* magic number */
         unsigned short version_major;  /* major version number */
@@ -71,6 +76,22 @@ private:
         unsigned int incl_len;       /* number of octets of packet saved in file */
         unsigned int orig_len;       /* actual length of packet */
     } pcaprec_hdr_t;
+
+    // Helper methods to reduce cognitive complexity of ReadPacket
+    static bool readPcapFileHeader(CAsterixFormatDescriptor &Descriptor, CBaseDevice &device);
+    static void handleSynchronousDelay(const pcaprec_hdr_t &recHeader,
+                                       time_t &lastFileTimeSec, useconds_t &lastFileTimeUSec,
+                                       time_t &lastMyTimeSec, useconds_t &lastMyTimeUSec);
+    static unsigned char* parseNetworkHeader(unsigned char *pPacketBuffer,
+                                             CAsterixFormatDescriptor &Descriptor,
+                                             bool &bIPInvertByteOrder);
+    static bool parseIPHeader(unsigned char *&pPacketPtr, bool bIPInvertByteOrder,
+                              unsigned short &IPtotalLength);
+    static bool parseUDPHeader(unsigned char *&pPacketPtr, bool bIPInvertByteOrder,
+                               unsigned short IPtotalLength, unsigned short &dataLength);
+    static void parseOradisData(CAsterixFormatDescriptor &Descriptor,
+                                unsigned char *pPacketPtr, unsigned short dataLength,
+                                unsigned long nTimestamp);
 
     static short convert_short(short in) {
         short out;
