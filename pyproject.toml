@@ -113,6 +113,8 @@ omit = [
     "asterix/examples/*",
     "*/tests/*",
     "*/test/*",
+    "*/test_*.py",
+    "asterix/radar_integration/decoder/test_*.py",
     "setup.py",
 ]
 
