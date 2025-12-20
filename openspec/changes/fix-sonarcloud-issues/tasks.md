@@ -68,7 +68,7 @@
 ### 3.1 Cognitive Complexity
 - [x] 3.1.1 Identify functions with complexity >25
 - [x] 3.1.2 Refactor XMLParser::ElementHandlerStart (507 lines)
-- [ ] 3.1.3 Refactor other high-complexity methods
+- [x] 3.1.3 Refactor other high-complexity methods
 - [ ] 3.1.4 Verify complexity reduced below threshold
 
 **Cognitive Complexity Analysis (30 functions above threshold):**
@@ -76,13 +76,14 @@
 | Complexity | File | Function | Status |
 |-----------|------|----------|--------|
 | ~70 | XMLParser.cpp | ElementHandlerStart (refactored) | ✅ DONE - PR #151 |
-| 161 | asterix.cpp:131 | main | OPEN - CLI parsing complexity |
-| 95 | converterengine.cxx:103 | convertRecord | OPEN |
-| 57 | asterixgpssubformat.cxx:58 | parseGPS | OPEN |
+| 161→~60 | asterix.cpp:131 | main | ✅ DONE - Dec 19, 2025 |
+| 95→~25 | converterengine.cxx:103 | Start | ✅ DONE - Dec 19, 2025 |
+| 57→~10 | asterixgpssubformat.cxx:58 | ReadPacket | ✅ DONE - Dec 19, 2025 |
 | 57 | XMLParser.cpp:629 | parseAttributes | OPEN |
-| 49 | asterixpcapsubformat.cxx:75 | parsePCAP | OPEN |
+| 49→~15 | asterixpcapsubformat.cxx:75 | ReadPacket | ✅ DONE - Dec 19, 2025 |
 
 *Note: XMLParser::ElementHandlerStart refactored from 348 to ~70 complexity via PR #151 (merged Dec 18, 2025).*
+*Note: Four additional high-complexity methods refactored on Dec 19, 2025 via helper function extraction.*
 
 ### 3.2 Code Duplication
 - [x] 3.2.1 Identify duplicated code blocks
@@ -173,10 +174,10 @@
 |-------|-------|-----------|
 | Bug Fixes | 14 | 14 |
 | Security Hotspots | 7 | 6 |
-| High-Impact Smells | 13 | 13 |
+| High-Impact Smells | 14 | 14 |
 | Remaining Smells | 18 | 18 |
 | Verification | 6 | 2 |
-| **Total** | **58** | **53** |
+| **Total** | **59** | **54** |
 
 ## Current SonarCloud Metrics (Dec 17, 2025)
 
@@ -549,3 +550,52 @@
 - Memory Safety (Valgrind): PASS
 - SonarCloud Scan: PASS (quality gate still fails due to overall codebase)
 - Build successful on Linux, Windows, macOS
+
+## Session Summary (Dec 19, 2025)
+
+### Cognitive Complexity Reduction (4 Functions)
+
+34. **asterixpcapsubformat.cxx ReadPacket refactoring**
+    - Extracted 6 helper methods: readPcapFileHeader, handleSynchronousDelay,
+      parseNetworkHeader, parseIPHeader, parseUDPHeader, parseOradisData
+    - Reduced complexity from ~49 to ~15
+
+35. **asterixgpssubformat.cxx ReadPacket refactoring**
+    - Extracted 3 helper methods: readFromPacketDevice, readOradisFromFile, readGPSFromFile
+    - Reduced complexity from ~57 to ~10
+
+36. **converterengine.cxx Start refactoring**
+    - Extracted 5 helper methods: waitForPacketWithHeartbeat, handlePacketRead,
+      handlePacketProcess, dispatchToNormalChannels, dispatchToFailoverChannels
+    - Reduced complexity from ~95 to ~25
+
+37. **asterix.cpp main refactoring**
+    - Added 7 static helper functions: checkInputFormatConflict, checkOutputFormatConflict,
+      parseInputFormatArg, parseOutputFormatArg, buildInputString, processFilterFile,
+      checkArgRequiresValue
+    - Reduced complexity from ~161 to ~60
+
+**Commits:**
+- `010cffa` - refactor(asterix): Extract helper methods from PCAP and GPS subformat parsers
+- `04eedf3` - refactor(engine): Extract helper methods from CConverterEngine::Start
+- `c66b166` - refactor(main): Extract helper functions to reduce main() complexity
+
+### CI/CD Fixes
+
+38. **Fix Nightly Builds DEB packaging failure**
+    - Added include(GNUInstallDirs) for platform-appropriate install paths
+    - Changed install destinations to use CMAKE_INSTALL_LIBDIR, CMAKE_INSTALL_INCLUDEDIR,
+      CMAKE_INSTALL_BINDIR, CMAKE_INSTALL_DATADIR, CMAKE_INSTALL_DOCDIR
+    - Fixes libraries installing to /usr/lib/ instead of /usr/lib/x86_64-linux-gnu/ on Debian
+
+39. **Fix Rust CI/CD security audit permissions**
+    - Added `issues: write` permission to rust-ci.yml
+    - Allows rustsec/audit-check action to create issues for vulnerabilities
+
+**Commits:**
+- `75c98b0` - fix(ci): Use GNUInstallDirs for proper multiarch paths and add issues permission
+
+### Testing Results
+- All 11 integration tests pass
+- Valgrind: 0 memory leaks
+- Build successful on Linux (GCC)
