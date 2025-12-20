@@ -47,6 +47,12 @@ Complete radar simulation and surveillance data integration suite for ASTERIX.
 - ✅ **JSBSim** - High-fidelity flight dynamics (100+ aircraft)
 - ✅ **PX4-Autopilot** - Compatible via MAVLink
 
+### RadarSimPy Integration (NEW!)
+- ✅ **Physics-based simulation** - Real radar signal processing
+- ✅ **Adapter pattern** - Unified interface with MockRadar fallback
+- ✅ **Configurable radar** - Frequency, power, bandwidth, pulse parameters
+- ✅ **Optional dependency** - Graceful fallback when not installed
+
 ---
 
 ## 📦 Installation
@@ -66,6 +72,10 @@ python3 -c "from asterix.radar_integration import MockRadar; print('✅ Ready!')
 pip install matplotlib    # For advanced visualizations
 pip install pymavlink     # For ArduPilot integration
 pip install jsbsim        # For JSBSim integration
+
+# RadarSimPy (physics-based simulation)
+# Download from: https://radarsimx.com/radarsimx/radarsimpy/
+# Place 'radarsimpy' folder in your project directory
 ```
 
 ---
@@ -146,6 +156,59 @@ run_scenario_to_asterix(
     initial_lat=52.5,
     duration=300.0,
     output_file='cessna_flight.ast'
+)
+```
+
+### RadarSimPy Integration
+
+```python
+from asterix.radar_integration import (
+    check_radarsimpy_available,
+    create_radar_simulator,
+    PointTarget,
+)
+
+# Check availability (RadarSimPy is optional)
+print(f"RadarSimPy: {'available' if check_radarsimpy_available() else 'not installed'}")
+
+# Create simulator (falls back to MockRadar if RadarSimPy unavailable)
+simulator = create_radar_simulator(lat=52.5, lon=13.4, alt=100.0)
+
+# Define point targets in radar-centered Cartesian coordinates
+targets = [
+    PointTarget(
+        location=(50000, 30000, 10000),  # x, y, z in meters
+        velocity=(100, 0, 0),            # vx, vy, vz in m/s
+        rcs=10.0,                        # Radar cross section (dBsm)
+    ),
+]
+
+# Simulate radar detections
+plots = simulator.simulate_targets(targets)
+
+# Use with encoders as usual
+from asterix.radar_integration.encoder import encode_cat048
+asterix_data = encode_cat048(plots, sac=0, sic=1)
+```
+
+**With RadarSimPy installed:**
+```python
+from asterix.radar_integration import RadarSimPyAdapter
+
+adapter = RadarSimPyAdapter(
+    lat=52.5, lon=13.4, alt=100.0,
+    frequency=1.3e9,       # L-band (1.3 GHz)
+    bandwidth=1e6,         # 1 MHz
+    tx_power=40.0,         # 40 dBm
+    pulse_length=10e-6,    # 10 μs
+)
+
+# Generate track with physics-based simulation
+track = adapter.generate_track(
+    start_location=(50000, 0, 10000),
+    velocity=(100, 50, 0),
+    duration_s=60.0,
+    rcs=10.0
 )
 ```
 
