@@ -19,6 +19,8 @@ import tempfile
 import os
 from unittest.mock import patch, MagicMock
 
+import pytest
+
 from asterix.radar_integration.benchmark import (
     BenchmarkResult,
     BenchmarkSuite,
@@ -228,6 +230,8 @@ class TestBenchmarkSuite(unittest.TestCase):
         self.assertEqual(self.suite.results[0].name, "Test 1")
         self.assertEqual(self.suite.results[1].name, "Test 2")
 
+    @pytest.mark.slow
+    @pytest.mark.benchmark
     @patch('builtins.print')
     def test_benchmark_mock_radar_generation(self, mock_print):
         """Test benchmark_mock_radar_generation method."""
@@ -298,6 +302,8 @@ class TestBenchmarkSuite(unittest.TestCase):
         for result in suite.results:
             self.assertEqual(result.category, "Visualization")
 
+    @pytest.mark.slow
+    @pytest.mark.benchmark
     @patch('builtins.print')
     def test_run_all(self, mock_print):
         """Test run_all method."""

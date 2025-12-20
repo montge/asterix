@@ -20,10 +20,17 @@
 - `f576694` - Remove hardcoded paths from examples and documentation
 
 ### 1.3 Optimize Test Suite
-- [ ] 1.3.1 Profile slowest tests in radar_integration/test/
-- [ ] 1.3.2 Reduce redundant test iterations
-- [ ] 1.3.3 Add pytest markers for slow tests (skip in quick CI)
-- [ ] 1.3.4 Verify 351 tests complete in <5 minutes
+- [x] 1.3.1 Profile slowest tests in radar_integration/test/
+- [x] 1.3.2 Reduce redundant test iterations (not needed - tests already fast)
+- [x] 1.3.3 Add pytest markers for slow tests (skip in quick CI)
+- [x] 1.3.4 Verify 351 tests complete in <5 minutes (523 tests in 3.36s)
+
+**Test Optimization (Dec 19, 2025):**
+- Slowest tests: benchmark_run_all (0.43s), matplotlib visualizations (0.30-0.33s)
+- Added pytest markers in pyproject.toml: slow, visualization, benchmark
+- Marked TestMatplotlibVisualization class with @pytest.mark.slow @pytest.mark.visualization
+- Marked test_run_all, test_benchmark_mock_radar_generation with @pytest.mark.slow @pytest.mark.benchmark
+- Quick run with `-m "not slow"`: 35 passed in 1.39s (vs 42 in 3.36s)
 
 ## Phase 2: Code Quality (Priority: MEDIUM)
 
@@ -74,8 +81,8 @@
 
 | Phase | Tasks | Completed |
 |-------|-------|-----------|
-| CI/CD Optimization | 10 | 6 |
+| CI/CD Optimization | 10 | 10 |
 | Code Quality | 8 | 7 |
 | RadarSimPy Integration | 7 | 0 |
 | Test Coverage | 4 | 0 |
-| **Total** | **29** | **13** |
+| **Total** | **29** | **17** |

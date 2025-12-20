@@ -13,6 +13,8 @@ import unittest
 import sys
 import os
 
+import pytest
+
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -76,6 +78,8 @@ class TestASCIIVisualization(unittest.TestCase):
         self.assertIn('100 km', output)
 
 
+@pytest.mark.slow
+@pytest.mark.visualization
 class TestMatplotlibVisualization(unittest.TestCase):
     """Test matplotlib-based visualizations (if available)."""
 
