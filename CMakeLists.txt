@@ -60,6 +60,13 @@ project(asterix
     DESCRIPTION "ASTERIX protocol decoder library and tools"
     LANGUAGES C CXX)
 
+# Use GNUInstallDirs for platform-appropriate installation paths
+# This provides CMAKE_INSTALL_LIBDIR which resolves to:
+# - lib/x86_64-linux-gnu on Debian/Ubuntu (multiarch)
+# - lib64 on RHEL/Fedora 64-bit
+# - lib on other platforms
+include(GNUInstallDirs)
+
 # Build options
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(BUILD_STATIC_LIBS "Build static libraries" ON)
@@ -500,9 +507,10 @@ if(BUILD_SHARED_LIBS)
     # Install shared library
     # On macOS, LIBRARY DESTINATION installs .dylib files
     # For versioned libraries, CMake automatically handles the symlinks
+    # Uses CMAKE_INSTALL_LIBDIR for platform-appropriate paths (e.g., lib/x86_64-linux-gnu on Debian)
     install(TARGETS asterix_shared
-        LIBRARY DESTINATION lib
-        PUBLIC_HEADER DESTINATION include/asterix
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/asterix
     )
 endif()
 
@@ -540,9 +548,10 @@ if(BUILD_STATIC_LIBS)
 
     # Install static library
     # ARCHIVE DESTINATION installs .a files on all platforms including macOS
+    # Uses CMAKE_INSTALL_LIBDIR for platform-appropriate paths
     install(TARGETS asterix_static
-        ARCHIVE DESTINATION lib
-        PUBLIC_HEADER DESTINATION include/asterix
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/asterix
     )
 endif()
 
@@ -584,7 +593,7 @@ if(BUILD_EXECUTABLE)
 
     # Install executable
     install(TARGETS asterix_exe
-        RUNTIME DESTINATION bin
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
 
     # On Windows with vcpkg, install required DLLs
@@ -598,7 +607,7 @@ if(BUILD_EXECUTABLE)
 
         if(EXPAT_DLL_RELEASE)
             install(FILES "${EXPAT_DLL_RELEASE}"
-                DESTINATION bin
+                DESTINATION ${CMAKE_INSTALL_BINDIR}
                 CONFIGURATIONS Release RelWithDebInfo MinSizeRel
             )
         endif()
@@ -612,7 +621,7 @@ if(BUILD_EXECUTABLE)
 
         if(EXPAT_DLL_DEBUG)
             install(FILES "${EXPAT_DLL_DEBUG}"
-                DESTINATION bin
+                DESTINATION ${CMAKE_INSTALL_BINDIR}
                 CONFIGURATIONS Debug
             )
         endif()
@@ -621,7 +630,7 @@ endif()
 
 # Install configuration files
 install(DIRECTORY asterix/config/
-    DESTINATION share/asterix/config
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/asterix/config
     FILES_MATCHING PATTERN "*.xml" PATTERN "*.dtd" PATTERN "*.ini"
 )
 
@@ -655,13 +664,13 @@ install(CODE "
 
 # Install sample data (optional)
 install(DIRECTORY asterix/sample_data/
-    DESTINATION share/asterix/samples
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/asterix/samples
     FILES_MATCHING PATTERN "*"
 )
 
 # Install sample output files (for test comparisons)
 install(DIRECTORY asterix/sample_output/
-    DESTINATION share/asterix/sample_output
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/asterix/sample_output
     FILES_MATCHING PATTERN "*.txt" PATTERN "*.xml"
 )
 
@@ -670,7 +679,7 @@ install(FILES
     README.md
     CLAUDE.md
     docs/DO-278_IMPLEMENTATION_GUIDE.md
-    DESTINATION share/doc/asterix
+    DESTINATION ${CMAKE_INSTALL_DOCDIR}
 )
 
 # Testing (if enabled)

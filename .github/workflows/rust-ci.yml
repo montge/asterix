@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  issues: write  # Required for rustsec/audit-check to create issues
 
 env:
   CARGO_TERM_COLOR: always
