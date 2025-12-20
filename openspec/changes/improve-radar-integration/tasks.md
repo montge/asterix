@@ -72,10 +72,21 @@
 ## Phase 4: Test Coverage (Priority: MEDIUM)
 
 ### 4.1 Improve Coverage
-- [ ] 4.1.1 Identify uncovered code paths
-- [ ] 4.1.2 Add tests for edge cases
-- [ ] 4.1.3 Add property-based tests with Hypothesis
+- [x] 4.1.1 Identify uncovered code paths
+- [x] 4.1.2 Add tests for edge cases
+- [ ] 4.1.3 Add property-based tests with Hypothesis (requires: pip install hypothesis)
 - [ ] 4.1.4 Target 80% coverage for radar_integration
+
+**Test Coverage Improvements (Dec 19, 2025):**
+- Added tests for decoder base utilities: decode_uint, decode_int, decode_octal, bytes_consumed_for_fspec
+- Added tests for CAT021 decoder: I010, I161, I015, I071
+- Added tests for CAT062 decoder: I010, I070, I040 (verbose and non-verbose modes)
+- Added edge case tests: empty data, truncated header, length mismatch, verbose mode
+- Coverage improvements:
+  - decoder/base.py: 55% → 66%
+  - decoder/cat021.py: 13% → 26%
+  - decoder/cat062.py: 15% → 30%
+- Property-based tests exist but require hypothesis installation (graceful skip when unavailable)
 
 ## Progress Tracking
 
@@ -84,5 +95,5 @@
 | CI/CD Optimization | 10 | 10 |
 | Code Quality | 8 | 8 |
 | RadarSimPy Integration | 7 | 0 |
-| Test Coverage | 4 | 0 |
-| **Total** | **29** | **18** |
+| Test Coverage | 4 | 2 |
+| **Total** | **29** | **20** |

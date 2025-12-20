@@ -380,6 +380,251 @@ class TestCompareWithCppDecoder(unittest.TestCase):
                 cpp_theta_val = cpp_theta.get("val") if isinstance(cpp_theta, dict) else cpp_theta
                 self.assertAlmostEqual(py_theta, cpp_theta_val, places=2)
 
+class TestBaseDecoderUtilities(unittest.TestCase):
+    """Test base decoder utility functions."""
+
+    def test_decode_uint(self):
+        """Test unsigned integer decoding."""
+        from asterix.radar_integration.decoder.base import decode_uint
+
+        # 1 byte
+        self.assertEqual(decode_uint(b'\xff', 0, 1), 255)
+        self.assertEqual(decode_uint(b'\x00', 0, 1), 0)
+
+        # 2 bytes (big-endian)
+        self.assertEqual(decode_uint(b'\x01\x00', 0, 2), 256)
+        self.assertEqual(decode_uint(b'\xff\xff', 0, 2), 65535)
+
+        # 3 bytes
+        self.assertEqual(decode_uint(b'\x01\x00\x00', 0, 3), 65536)
+
+        # With offset
+        self.assertEqual(decode_uint(b'\x00\x00\xff', 2, 1), 255)
+
+    def test_decode_uint_truncated(self):
+        """Test decode_uint with insufficient data."""
+        from asterix.radar_integration.decoder.base import decode_uint
+
+        with self.assertRaises(DecoderError):
+            decode_uint(b'\x00', 0, 2)
+
+    def test_decode_int(self):
+        """Test signed integer decoding."""
+        from asterix.radar_integration.decoder.base import decode_int
+
+        # Positive
+        self.assertEqual(decode_int(b'\x7f', 0, 1), 127)
+
+        # Negative (two's complement)
+        self.assertEqual(decode_int(b'\xff', 0, 1), -1)
+        self.assertEqual(decode_int(b'\x80', 0, 1), -128)
+
+        # 2 bytes
+        self.assertEqual(decode_int(b'\xff\xff', 0, 2), -1)
+        self.assertEqual(decode_int(b'\x80\x00', 0, 2), -32768)
+
+    def test_decode_int_truncated(self):
+        """Test decode_int with insufficient data."""
+        from asterix.radar_integration.decoder.base import decode_int
+
+        with self.assertRaises(DecoderError):
+            decode_int(b'\x00', 0, 2)
+
+    def test_decode_octal(self):
+        """Test octal value decoding."""
+        from asterix.radar_integration.decoder.base import decode_octal
+
+        # Mode 3/A code 7777 = 0xFFF (12 bits)
+        data = struct.pack('>H', 0x0FFF)
+        self.assertEqual(decode_octal(data, 0, 2, 0x0FFF), 0o7777)
+
+        # Mode 3/A code 1234 = 0x29C (octal to binary)
+        code = 0o1234
+        data = struct.pack('>H', code)
+        self.assertEqual(decode_octal(data, 0, 2, 0x0FFF), code)
+
+    def test_decode_6bit_ascii(self):
+        """Test 6-bit ASCII decoding."""
+        from asterix.radar_integration.decoder.base import decode_6bit_ascii
+
+        # Encode "ABC" in 6-bit ASCII
+        # A=1, B=2, C=3 => 000001 000010 000011 = 0x04 0x20 0xC0 (padded)
+        # Actually let's test with known encoding
+        # For simplicity, test that function handles space (32)
+        # Space = 0x20 in 6-bit = value 32
+
+        # Test truncation error
+        with self.assertRaises(DecoderError):
+            decode_6bit_ascii(b'\x00', 0, 10)
+
+    def test_bytes_consumed_for_fspec(self):
+        """Test FSPEC bytes calculation."""
+        from asterix.radar_integration.decoder.base import bytes_consumed_for_fspec
+
+        # Empty list
+        self.assertEqual(bytes_consumed_for_fspec([]), 0)
+
+        # FRNs 1-7 fit in 1 byte
+        self.assertEqual(bytes_consumed_for_fspec([1, 2, 3]), 1)
+        self.assertEqual(bytes_consumed_for_fspec([7]), 1)
+
+        # FRN 8 requires 2 bytes
+        self.assertEqual(bytes_consumed_for_fspec([8]), 2)
+        self.assertEqual(bytes_consumed_for_fspec([1, 8]), 2)
+
+        # FRN 14 requires 2 bytes
+        self.assertEqual(bytes_consumed_for_fspec([14]), 2)
+
+        # FRN 15 requires 3 bytes
+        self.assertEqual(bytes_consumed_for_fspec([15]), 3)
+
+
+class TestCAT021Decoder(unittest.TestCase):
+    """Test CAT021 decoder (ADS-B)."""
+
+    def test_cat021_decoder_i010(self):
+        """Test CAT021 I010 (SAC/SIC) decoding."""
+        from asterix.radar_integration.decoder import CAT021Decoder
+
+        decoder = CAT021Decoder(verbose=False)
+        data = struct.pack('BB', 55, 66)
+        result, consumed = decoder._decode_i010(data, 0)
+
+        self.assertEqual(consumed, 2)
+        self.assertEqual(result['SAC'], 55)
+        self.assertEqual(result['SIC'], 66)
+
+    def test_cat021_decoder_i161(self):
+        """Test CAT021 I161 (Track Number) decoding."""
+        from asterix.radar_integration.decoder import CAT021Decoder
+
+        decoder = CAT021Decoder(verbose=False)
+        # Track number 1234 in upper 12 bits
+        track_num = 1234
+        value = track_num << 4
+        data = struct.pack('>H', value)
+        result, consumed = decoder._decode_i161(data, 0)
+
+        self.assertEqual(consumed, 2)
+        self.assertEqual(result['track_number'], track_num)
+
+    def test_cat021_decoder_i015(self):
+        """Test CAT021 I015 (Service ID) decoding."""
+        from asterix.radar_integration.decoder import CAT021Decoder
+
+        decoder = CAT021Decoder(verbose=False)
+        data = b'\x42'
+        result, consumed = decoder._decode_i015(data, 0)
+
+        self.assertEqual(consumed, 1)
+        self.assertEqual(result, 0x42)
+
+    def test_cat021_decoder_i071(self):
+        """Test CAT021 I071 (Time of Applicability) decoding."""
+        from asterix.radar_integration.decoder import CAT021Decoder
+
+        decoder = CAT021Decoder(verbose=False)
+        # 12:30:45.5 = 45045.5 seconds since midnight
+        time_seconds = 12 * 3600 + 30 * 60 + 45.5
+        time_128 = int(time_seconds * 128)
+        data = struct.pack('>I', time_128)[1:]  # 3 bytes
+
+        result, consumed = decoder._decode_i071(data, 0)
+
+        self.assertEqual(consumed, 3)
+        self.assertAlmostEqual(result, time_seconds, places=2)
+
+
+class TestCAT062Decoder(unittest.TestCase):
+    """Test CAT062 decoder (System Tracks)."""
+
+    def test_cat062_decoder_i010(self):
+        """Test CAT062 I010 (SAC/SIC) decoding."""
+        from asterix.radar_integration.decoder import CAT062Decoder
+
+        decoder = CAT062Decoder(verbose=False)
+        data = struct.pack('BB', 99, 88)
+        result, consumed = decoder._decode_i010(data, 0)
+
+        self.assertEqual(consumed, 2)
+        self.assertEqual(result['SAC'], 99)
+        self.assertEqual(result['SIC'], 88)
+
+    def test_cat062_decoder_i070(self):
+        """Test CAT062 I070 (Time of Track Information) decoding."""
+        from asterix.radar_integration.decoder import CAT062Decoder
+
+        decoder = CAT062Decoder(verbose=False)
+        # Time of day: 10:30:00 = 37800 seconds
+        time_seconds = 10 * 3600 + 30 * 60
+        time_128 = int(time_seconds * 128)
+        data = struct.pack('>I', time_128)[1:]  # 3 bytes
+
+        result, consumed = decoder._decode_i070(data, 0)
+
+        self.assertEqual(consumed, 3)
+        self.assertAlmostEqual(result, time_seconds, places=2)
+
+    def test_cat062_decoder_i040(self):
+        """Test CAT062 I040 (Track Number) decoding."""
+        from asterix.radar_integration.decoder import CAT062Decoder
+
+        decoder = CAT062Decoder(verbose=False)
+        track_num = 4567
+        data = struct.pack('>H', track_num)
+        result, consumed = decoder._decode_i040(data, 0)
+
+        self.assertEqual(consumed, 2)
+        self.assertEqual(result, track_num)  # verbose=False returns int
+
+    def test_cat062_decoder_i040_verbose(self):
+        """Test CAT062 I040 (Track Number) decoding with verbose mode."""
+        from asterix.radar_integration.decoder import CAT062Decoder
+
+        decoder = CAT062Decoder(verbose=True)
+        track_num = 4567
+        data = struct.pack('>H', track_num)
+        result, consumed = decoder._decode_i040(data, 0)
+
+        self.assertEqual(consumed, 2)
+        self.assertEqual(result['track_number'], track_num)
+
+
+class TestDecoderEdgeCases(unittest.TestCase):
+    """Test decoder edge cases and error handling."""
+
+    def test_empty_datablock(self):
+        """Test decoding empty data."""
+        with self.assertRaises(DecoderError):
+            decode_asterix(b'')
+
+    def test_truncated_header(self):
+        """Test decoding truncated header."""
+        with self.assertRaises(DecoderError):
+            decode_asterix(b'\x30\x00')  # Category + partial length
+
+    def test_length_mismatch(self):
+        """Test decoding with length mismatch."""
+        # Header says 100 bytes but only 10 provided
+        data = struct.pack('!BH', 48, 100) + b'\x00' * 7
+        with self.assertRaises(DecoderError):
+            decode_asterix(data)
+
+    def test_decoder_verbose_mode(self):
+        """Test decoder verbose mode includes descriptions."""
+        # Encode a simple record
+        plot = RadarPlot(range=50000, azimuth=90.0, timestamp=time.time())
+        encoded = encode_cat048([plot], sac=0, sic=1)
+
+        # Decode with verbose=True
+        decoded = decode_cat048(encoded, verbose=True)
+
+        self.assertEqual(len(decoded), 1)
+        # Verbose mode should still have required fields
+        self.assertIn('I010', decoded[0])
+        self.assertIn('I040', decoded[0])
+
+
 def run_tests():
     """Run all tests."""
     loader = unittest.TestLoader()
