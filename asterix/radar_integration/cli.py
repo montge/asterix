@@ -25,6 +25,8 @@ License: GPL-3.0
 """
 
 import argparse
+from typing import Any
+
 from asterix.radar_integration import MockRadar
 from asterix.radar_integration.encoder import (
     encode_cat001, encode_cat021,
@@ -34,7 +36,7 @@ from asterix.radar_integration.visualization import plot_radar_ascii
 from asterix.radar_integration.statistics import compute_scenario_stats
 
 
-def cmd_generate(args):
+def cmd_generate(args: argparse.Namespace) -> None:
     """Generate mock radar data and encode to ASTERIX."""
     print(f"Generating {args.count} radar plots...")
 
@@ -90,7 +92,7 @@ def cmd_generate(args):
         print(f"  Coverage: {stats['azimuth_stats']['coverage_deg']:.0f}°")
 
 
-def cmd_visualize(args):
+def cmd_visualize(args: argparse.Namespace) -> None:
     """Visualize ASTERIX data or mock scenario."""
     if args.file:
         # Decode ASTERIX file and visualize
@@ -120,7 +122,7 @@ def cmd_visualize(args):
         print(f"Range: {stats['range_stats']['mean']/1000:.1f} km average")
 
 
-def cmd_benchmark(args):
+def cmd_benchmark(args: argparse.Namespace) -> None:
     """Run performance benchmarks."""
     from asterix.radar_integration.benchmark import BenchmarkSuite
 
@@ -132,7 +134,7 @@ def cmd_benchmark(args):
         suite.save_results(args.save)
 
 
-def cmd_info(_args):
+def cmd_info(_args: Any) -> None:
     """Show package information."""
     print("ASTERIX Radar Integration Suite")
     print("=" * 60)
@@ -154,7 +156,7 @@ def cmd_info(_args):
     print("For help: python3 -m asterix.radar_integration.cli --help")
 
 
-def main():
+def main() -> None:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
         description='ASTERIX Radar Integration CLI',
