@@ -59,15 +59,34 @@
 ## Phase 3: RadarSimPy Integration (Priority: LOW)
 
 ### 3.1 Design Integration
-- [ ] 3.1.1 Research RadarSimPy API
-- [ ] 3.1.2 Design adapter pattern for radar simulation
-- [ ] 3.1.3 Define optional dependency handling
+- [x] 3.1.1 Research RadarSimPy API
+- [x] 3.1.2 Design adapter pattern for radar simulation
+- [x] 3.1.3 Define optional dependency handling
 
 ### 3.2 Implementation
-- [ ] 3.2.1 Create RadarSimPy adapter module
-- [ ] 3.2.2 Implement realistic target generation
-- [ ] 3.2.3 Add integration tests with RadarSimPy
+- [x] 3.2.1 Create RadarSimPy adapter module
+- [x] 3.2.2 Implement realistic target generation
+- [x] 3.2.3 Add integration tests with RadarSimPy
 - [ ] 3.2.4 Document RadarSimPy usage
+
+**RadarSimPy Integration (Dec 19, 2025):**
+- Researched RadarSimPy v14.0.0 API (Radar, Transmitter, Receiver, sim_radar)
+- Created `radarsimpy_adapter.py` with adapter pattern:
+  - `RadarSimulatorBase` - Abstract base class for radar simulators
+  - `RadarSimPyAdapter` - Physics-based simulation (requires RadarSimPy installation)
+  - `MockRadarAdapter` - Fallback wrapper for MockRadar
+  - `PointTarget` - Dataclass for target specification
+  - `create_radar_simulator()` - Factory function with graceful fallback
+  - `check_radarsimpy_available()` - Optional dependency detection
+- Updated `__init__.py` to export adapter functions
+- Added 24 unit tests in `test_radarsimpy_adapter.py`:
+  - PointTarget dataclass tests
+  - MockRadarAdapter simulation tests
+  - Availability detection tests
+  - Factory function tests
+  - Interface compliance tests
+  - Encoder integration tests (CAT048/CAT062)
+  - Reproducibility tests with random seeds
 
 ## Phase 4: Test Coverage (Priority: MEDIUM)
 
@@ -94,6 +113,6 @@
 |-------|-------|-----------|
 | CI/CD Optimization | 10 | 10 |
 | Code Quality | 8 | 8 |
-| RadarSimPy Integration | 7 | 0 |
+| RadarSimPy Integration | 7 | 6 |
 | Test Coverage | 4 | 2 |
-| **Total** | **29** | **20** |
+| **Total** | **29** | **26** |

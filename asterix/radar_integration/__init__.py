@@ -73,6 +73,21 @@ try:
 except ImportError:
     _HAS_STATISTICS = False
 
+# RadarSimPy adapter (optional dependency)
+try:
+    from .radarsimpy_adapter import (
+        RadarSimPyAdapter as RadarSimPyAdapter,
+        MockRadarAdapter as MockRadarAdapter,
+        RadarSimulatorBase as RadarSimulatorBase,
+        PointTarget as PointTarget,
+        check_radarsimpy_available as check_radarsimpy_available,
+        create_radar_simulator as create_radar_simulator,
+        print_radarsimpy_info as print_radarsimpy_info,
+    )
+    _HAS_RADARSIMPY_ADAPTER = True
+except ImportError:
+    _HAS_RADARSIMPY_ADAPTER = False
+
 __all__ = [
     'MockRadar',
     'RadarPlot',
@@ -99,4 +114,16 @@ if _HAS_STATISTICS:
         'compare_scenarios',
     ])
 
-__version__ = '0.2.0'
+# Add RadarSimPy adapter functions if available
+if _HAS_RADARSIMPY_ADAPTER:
+    __all__.extend([
+        'RadarSimPyAdapter',
+        'MockRadarAdapter',
+        'RadarSimulatorBase',
+        'PointTarget',
+        'check_radarsimpy_available',
+        'create_radar_simulator',
+        'print_radarsimpy_info',
+    ])
+
+__version__ = '0.3.0'
