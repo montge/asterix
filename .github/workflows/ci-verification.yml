@@ -219,20 +219,19 @@ jobs:
       run: |
         # Extract coverage percentage from coverage.xml if it exists
         if [ -f "coverage.xml" ]; then
-          COVERAGE=$(python3 -c "
-import xml.etree.ElementTree as ET
-tree = ET.parse('coverage.xml')
-root = tree.getroot()
-line_rate = float(root.get('line-rate', 0))
-branch_rate = float(root.get('branch-rate', 0))
-print(f'Line: {line_rate*100:.1f}%')
-print(f'Branch: {branch_rate*100:.1f}%')
-if line_rate < 0.80:
-    print('::warning::Python line coverage is below 80%')
-if branch_rate < 0.80:
-    print('::warning::Python branch coverage is below 80%')
-")
-          echo "$COVERAGE"
+          python3 << 'COVERAGE_CHECK'
+        import xml.etree.ElementTree as ET
+        tree = ET.parse('coverage.xml')
+        root = tree.getroot()
+        line_rate = float(root.get('line-rate', 0))
+        branch_rate = float(root.get('branch-rate', 0))
+        print(f'Line: {line_rate*100:.1f}%')
+        print(f'Branch: {branch_rate*100:.1f}%')
+        if line_rate < 0.80:
+            print('::warning::Python line coverage is below 80%')
+        if branch_rate < 0.80:
+            print('::warning::Python branch coverage is below 80%')
+        COVERAGE_CHECK
         fi
       continue-on-error: true
 
