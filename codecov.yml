@@ -1,0 +1,213 @@
+# Codecov Configuration for ASTERIX
+# https://docs.codecov.com/docs/codecov-yaml
+#
+# Coverage targets:
+# - Overall project: 90% minimum
+# - Per-module/patch: 80% minimum (branches)
+# - All programming languages: C++, Python, Rust
+
+codecov:
+  require_ci_to_pass: yes
+  notify:
+    wait_for_ci: yes
+
+# Coverage thresholds - STRICT enforcement
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+
+  status:
+    # Overall project coverage
+    project:
+      default:
+        target: 90%           # 90% overall target
+        threshold: 1%         # Allow 1% drop from base
+        base: auto
+        if_ci_failed: error
+        informational: false
+
+      # Language-specific project targets
+      cpp:
+        target: 85%           # C++ - legacy code, slightly lower target
+        threshold: 2%
+        flags:
+          - cpp
+        paths:
+          - src/
+
+      python:
+        target: 90%           # Python - higher target
+        threshold: 1%
+        flags:
+          - python
+        paths:
+          - asterix/
+
+      rust:
+        target: 90%           # Rust - highest coverage target
+        threshold: 1%
+        flags:
+          - rust
+        paths:
+          - asterix-rs/src/
+
+    # New code (patch) coverage - 80% minimum for branches
+    patch:
+      default:
+        target: 80%           # 80% minimum on new code
+        threshold: 5%
+        base: auto
+        if_ci_failed: error
+        informational: false
+
+      cpp:
+        target: 75%           # C++ patches - slightly lower
+        threshold: 5%
+        flags:
+          - cpp
+
+      python:
+        target: 80%
+        threshold: 5%
+        flags:
+          - python
+
+      rust:
+        target: 80%
+        threshold: 5%
+        flags:
+          - rust
+
+# Flag configuration for different languages/tools
+flags:
+  # C++ coverage flags
+  cpp:
+    paths:
+      - src/asterix/
+      - src/engine/
+      - src/main/
+    carryforward: true
+
+  cpp-gcov:
+    paths:
+      - src/asterix/
+      - src/engine/
+      - src/main/
+    carryforward: true
+
+  cpp-lcov:
+    paths:
+      - src/asterix/
+      - src/engine/
+      - src/main/
+    carryforward: true
+
+  # Python coverage flags
+  python:
+    paths:
+      - asterix/
+    carryforward: true
+
+  python-pytest:
+    paths:
+      - asterix/
+    carryforward: true
+
+  # Rust coverage flags
+  rust:
+    paths:
+      - asterix-rs/src/
+    carryforward: true
+
+  tarpaulin:
+    paths:
+      - asterix-rs/src/
+    carryforward: true
+
+  llvm-cov:
+    paths:
+      - asterix-rs/src/
+    carryforward: true
+
+# Files/paths to ignore from coverage
+ignore:
+  # Test files
+  - "**/*test*"
+  - "**/tests/**"
+  - "**/test/**"
+  - "asterix-rs/tests/**"
+  - "asterix/test/**"
+
+  # Examples and benchmarks
+  - "**/examples/**"
+  - "**/benches/**"
+  - "asterix-rs/examples/**"
+  - "asterix-rs/benches/**"
+  - "asterix/examples/**"
+
+  # Build artifacts
+  - "**/target/**"
+  - "**/build/**"
+  - "**/install/**"
+
+  # Generated code
+  - "asterix-rs/build.rs"
+  - "**/bindings/**"
+
+  # Python packaging
+  - "setup.py"
+  - "**/setup.py"
+
+  # Configuration files
+  - "**/*.ini"
+  - "**/*.xml"
+  - "**/*.dtd"
+
+# Comment on PRs with detailed coverage report
+comment:
+  layout: "reach,diff,flags,tree,footer"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+
+# GitHub Checks integration
+github_checks:
+  annotations: true
+
+# Parsers configuration
+parsers:
+  gcov:
+    branch_detection:
+      conditional: yes
+      loop: yes
+      method: no
+      macro: no
+
+# Component-based coverage tracking
+component_management:
+  default_rules:
+    statuses:
+      - type: project
+        target: auto
+      - type: patch
+        target: 80%
+  individual_components:
+    - component_id: cpp-core
+      name: C++ Core Library
+      paths:
+        - src/asterix/**
+        - src/engine/**
+    - component_id: cpp-main
+      name: C++ Application
+      paths:
+        - src/main/**
+    - component_id: python-module
+      name: Python Module
+      paths:
+        - asterix/**
+    - component_id: rust-bindings
+      name: Rust Bindings
+      paths:
+        - asterix-rs/src/**
