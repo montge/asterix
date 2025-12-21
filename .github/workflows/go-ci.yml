@@ -93,6 +93,15 @@ jobs:
         path: asterix-go/coverage.out
         retention-days: 7
 
+    - name: Upload coverage to Codecov
+      if: matrix.os == 'ubuntu-latest' && matrix.go == '1.23'
+      uses: codecov/codecov-action@v5
+      with:
+        file: asterix-go/coverage.out
+        flags: go,go-cover
+        name: go-coverage
+        fail_ci_if_error: false
+
   # =============================================================================
   # QUALITY CHECKS
   # =============================================================================

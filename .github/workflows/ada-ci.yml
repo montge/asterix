@@ -184,3 +184,52 @@ jobs:
               echo "⚠ $file may need documentation"
             fi
           done
+
+  # Coverage reporting
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-24.04
+    continue-on-error: true  # Coverage tooling may have issues
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnat gprbuild libaunit-dev libexpat1-dev cmake g++ lcov
+
+      - name: Build C++ library
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build --parallel $(nproc)
+          cmake --install build --prefix install
+
+      - name: Create build directories
+        run: |
+          mkdir -p asterix-ada/obj/debug
+          mkdir -p asterix-ada/lib/debug
+
+      - name: Build Ada with coverage
+        working-directory: asterix-ada
+        run: |
+          gprbuild -P asterix_decoder.gpr -XASTERIX_BUILD_MODE=debug -j$(nproc) \
+            -cargs -fprofile-arcs -ftest-coverage \
+            -largs -lgcov || echo "Coverage build completed with warnings"
+
+      - name: Generate coverage report
+        working-directory: asterix-ada
+        run: |
+          lcov --capture --directory obj --output-file coverage.info || echo "No coverage data yet"
+          lcov --remove coverage.info '/usr/*' --output-file coverage.info || true
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          file: asterix-ada/coverage.info
+          flags: ada
+          name: ada-coverage
+          fail_ci_if_error: false

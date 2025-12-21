@@ -4,7 +4,7 @@
 # Coverage targets:
 # - Overall project: 90% minimum
 # - Per-module/patch: 80% minimum (branches)
-# - All programming languages: C++, Python, Rust
+# - All programming languages: C++, Python, Rust, Node.js, Go, Ada, Ruby
 
 codecov:
   require_ci_to_pass: yes
@@ -51,6 +51,30 @@ coverage:
           - rust
         paths:
           - asterix-rs/src/
+
+      nodejs:
+        target: 85%           # Node.js - FFI bindings
+        threshold: 2%
+        flags:
+          - nodejs
+        paths:
+          - asterix-node/lib/
+
+      go:
+        target: 85%           # Go - FFI bindings
+        threshold: 2%
+        flags:
+          - go
+        paths:
+          - asterix-go/
+
+      ruby:
+        target: 80%           # Ruby - FFI bindings (SimpleCov 80% minimum)
+        threshold: 2%
+        flags:
+          - ruby
+        paths:
+          - asterix-ruby/lib/
 
     # New code (patch) coverage - 80% minimum for branches
     patch:
@@ -128,6 +152,45 @@ flags:
   llvm-cov:
     paths:
       - asterix-rs/src/
+    carryforward: true
+
+  # Node.js coverage flags
+  nodejs:
+    paths:
+      - asterix-node/lib/
+    carryforward: true
+
+  nyc:
+    paths:
+      - asterix-node/lib/
+    carryforward: true
+
+  # Go coverage flags
+  go:
+    paths:
+      - asterix-go/
+    carryforward: true
+
+  go-cover:
+    paths:
+      - asterix-go/
+    carryforward: true
+
+  # Ruby coverage flags
+  ruby:
+    paths:
+      - asterix-ruby/lib/
+    carryforward: true
+
+  simplecov:
+    paths:
+      - asterix-ruby/lib/
+    carryforward: true
+
+  # Ada coverage flags (gnatcov)
+  ada:
+    paths:
+      - asterix-ada/src/
     carryforward: true
 
 # Files/paths to ignore from coverage
@@ -211,3 +274,19 @@ component_management:
       name: Rust Bindings
       paths:
         - asterix-rs/src/**
+    - component_id: nodejs-bindings
+      name: Node.js Bindings
+      paths:
+        - asterix-node/lib/**
+    - component_id: go-bindings
+      name: Go Bindings
+      paths:
+        - asterix-go/**
+    - component_id: ruby-bindings
+      name: Ruby Bindings
+      paths:
+        - asterix-ruby/lib/**
+    - component_id: ada-bindings
+      name: Ada Bindings
+      paths:
+        - asterix-ada/src/**

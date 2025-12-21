@@ -1,0 +1,335 @@
+name: Ruby Bindings CI/CD
+
+on:
+  push:
+    branches: [ master, develop, 'feature/**', 'ruby/**' ]
+    paths:
+      - 'asterix-ruby/**'
+      - 'src/**'
+      - '.github/workflows/ruby-ci.yml'
+  pull_request:
+    branches: [ master, develop ]
+    paths:
+      - 'asterix-ruby/**'
+      - 'src/**'
+      - '.github/workflows/ruby-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # =============================================================================
+  # BUILD AND TEST
+  # =============================================================================
+  test:
+    name: Test Ruby ${{ matrix.ruby }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        ruby: ['3.1', '3.2', '3.3']
+        exclude:
+          # Only test latest Ruby on macOS to reduce matrix
+          - os: macos-latest
+            ruby: '3.1'
+          - os: macos-latest
+            ruby: '3.2'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+        bundler-cache: false
+
+    - name: Install dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev cmake build-essential
+
+    - name: Install dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew update
+        brew install expat cmake
+
+    - name: Build C++ library
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build --parallel
+        cmake --install build
+
+    - name: Install gem dependencies
+      run: |
+        cd asterix-ruby
+        bundle install
+
+    - name: Build Ruby extension
+      run: |
+        cd asterix-ruby
+        bundle exec rake compile
+
+    - name: Run RSpec tests
+      run: |
+        cd asterix-ruby
+        bundle exec rspec --format documentation
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        files: asterix-ruby/coverage/.resultset.json
+        flags: ruby,simplecov
+        name: ruby-${{ matrix.os }}-${{ matrix.ruby }}
+        fail_ci_if_error: false
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+    - name: Upload coverage artifact
+      uses: actions/upload-artifact@v6
+      with:
+        name: ruby-coverage-${{ matrix.os }}-${{ matrix.ruby }}
+        path: asterix-ruby/coverage/
+        retention-days: 7
+
+  # =============================================================================
+  # QUALITY CHECKS
+  # =============================================================================
+  quality:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+        bundler-cache: false
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev cmake build-essential
+
+    - name: Build C++ library
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build --parallel
+        cmake --install build
+
+    - name: Install gem dependencies
+      run: |
+        cd asterix-ruby
+        bundle install
+
+    - name: Run RuboCop linter
+      run: |
+        cd asterix-ruby
+        bundle exec rubocop --format progress --display-cop-names
+
+    - name: Check for security issues
+      run: |
+        cd asterix-ruby
+        bundle exec bundle-audit check --update
+      continue-on-error: true
+
+    - name: Verify gemspec metadata
+      run: |
+        cd asterix-ruby
+        gem build asterix.gemspec
+        gem specification asterix_decoder-*.gem | grep -E "(name|version|authors|license)"
+
+  # =============================================================================
+  # DOCUMENTATION
+  # =============================================================================
+  documentation:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+        bundler-cache: false
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev cmake build-essential
+
+    - name: Build C++ library
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build --parallel
+        cmake --install build
+
+    - name: Install gem dependencies
+      run: |
+        cd asterix-ruby
+        bundle install
+
+    - name: Build YARD documentation
+      run: |
+        cd asterix-ruby
+        bundle exec yard doc --output-dir doc
+        echo "Documentation generated successfully"
+
+    - name: Upload documentation
+      uses: actions/upload-artifact@v6
+      with:
+        name: ruby-documentation
+        path: asterix-ruby/doc/
+        retention-days: 30
+
+  # =============================================================================
+  # BUILD EXAMPLES
+  # =============================================================================
+  examples:
+    name: Test Examples
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+        bundler-cache: false
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev cmake build-essential
+
+    - name: Build C++ library
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build --parallel
+        cmake --install build
+
+    - name: Install gem dependencies
+      run: |
+        cd asterix-ruby
+        bundle install
+
+    - name: Build Ruby extension
+      run: |
+        cd asterix-ruby
+        bundle exec rake compile
+
+    - name: Test examples
+      run: |
+        cd asterix-ruby
+        if [ -d "examples" ]; then
+          for example in examples/*.rb; do
+            if [ -f "$example" ]; then
+              echo "Checking syntax: $example"
+              ruby -c "$example"
+            fi
+          done
+        else
+          echo "No examples directory found, skipping..."
+        fi
+
+  # =============================================================================
+  # GEM BUILD
+  # =============================================================================
+  gem-build:
+    name: Build Gem Package
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+        bundler-cache: false
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libexpat1-dev cmake build-essential
+
+    - name: Build C++ library
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+        cmake --build build --parallel
+        cmake --install build
+
+    - name: Install gem dependencies
+      run: |
+        cd asterix-ruby
+        bundle install
+
+    - name: Build gem
+      run: |
+        cd asterix-ruby
+        gem build asterix.gemspec
+
+    - name: Upload gem artifact
+      uses: actions/upload-artifact@v6
+      with:
+        name: ruby-gem
+        path: asterix-ruby/asterix_decoder-*.gem
+        retention-days: 30
+
+  # =============================================================================
+  # BUILD SUMMARY
+  # =============================================================================
+  ruby-build-summary:
+    name: Ruby Build Summary
+    runs-on: ubuntu-latest
+    needs: [test, quality, documentation, examples, gem-build]
+    if: always()
+
+    steps:
+    - name: Check results
+      run: |
+        echo "=========================================="
+        echo "   RUBY BINDINGS BUILD SUMMARY"
+        echo "=========================================="
+        echo ""
+        echo "Tests:           ${{ needs.test.result }}"
+        echo "Quality:         ${{ needs.quality.result }}"
+        echo "Documentation:   ${{ needs.documentation.result }}"
+        echo "Examples:        ${{ needs.examples.result }}"
+        echo "Gem Build:       ${{ needs.gem-build.result }}"
+        echo ""
+
+        CRITICAL_FAILED=0
+        if [[ "${{ needs.test.result }}" != "success" ]]; then
+          echo "CRITICAL: Tests failed"
+          CRITICAL_FAILED=1
+        fi
+
+        if [[ "${{ needs.gem-build.result }}" != "success" ]]; then
+          echo "CRITICAL: Gem build failed"
+          CRITICAL_FAILED=1
+        fi
+
+        if [[ $CRITICAL_FAILED -eq 1 ]]; then
+          echo ""
+          echo "BUILD FAILED: Critical checks did not pass"
+          exit 1
+        else
+          echo "Core checks passed!"
+          exit 0
+        fi
