@@ -75,6 +75,31 @@ package body Integration_Tests is
            ("Test_Is_Category_Defined",
             Integration_Tests.Descriptions.Test_Is_Category_Defined'Access));
 
+      AUnit.Test_Suites.Add_Test
+        (Result'Access,
+         Desc_Caller.Create
+           ("Test_Describe_Item",
+            Integration_Tests.Descriptions.Test_Describe_Item'Access));
+
+      AUnit.Test_Suites.Add_Test
+        (Result'Access,
+         Desc_Caller.Create
+           ("Test_Describe_Item_Invalid",
+            Integration_Tests.Descriptions.Test_Describe_Item_Invalid'Access));
+
+      AUnit.Test_Suites.Add_Test
+        (Result'Access,
+         Desc_Caller.Create
+           ("Test_Describe_Value",
+            Integration_Tests.Descriptions.Test_Describe_Value'Access));
+
+      AUnit.Test_Suites.Add_Test
+        (Result'Access,
+         Desc_Caller.Create
+           ("Test_Describe_Value_Invalid",
+            Integration_Tests.Descriptions
+              .Test_Describe_Value_Invalid'Access));
+
       return Result'Access;
    end Suite;
 

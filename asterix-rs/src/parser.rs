@@ -459,6 +459,8 @@ fn json_value_to_parsed_value(value: &serde_json::Value) -> Result<ParsedValue> 
 mod tests {
     use super::*;
 
+    // ========== parse() tests ==========
+
     #[test]
     fn test_parse_empty_data() {
         let data: &[u8] = &[];
@@ -468,6 +470,164 @@ mod tests {
     }
 
     #[test]
+    fn test_parse_oversized_data() {
+        // Create data larger than MAX_ASTERIX_MESSAGE_SIZE (65536 bytes)
+        let data = vec![0u8; MAX_ASTERIX_MESSAGE_SIZE + 1];
+        let result = parse(&data, ParseOptions::default());
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(msg.contains("too large"));
+            assert!(msg.contains("65537"));
+        } else {
+            panic!("Expected InvalidData error");
+        }
+    }
+
+    #[test]
+    fn test_parse_max_size_boundary() {
+        // Exactly at the max size should not error on size check
+        // (will fail later due to invalid data, but that's expected)
+        let data = vec![0u8; MAX_ASTERIX_MESSAGE_SIZE];
+        let result = parse(&data, ParseOptions::default());
+        // Should fail with NullPointer (C++ parser rejects invalid data)
+        // but NOT with "too large" error
+        assert!(result.is_err());
+        if let Err(e) = result {
+            let msg = format!("{:?}", e);
+            assert!(!msg.contains("too large"));
+        }
+    }
+
+    #[test]
+    fn test_parse_single_byte() {
+        // Single byte is too short to be valid ASTERIX
+        let data = vec![0x30];
+        let result = parse(&data, ParseOptions::default());
+        assert!(result.is_err());
+        // Should fail with NullPointer (C++ parser rejects data too short for header)
+    }
+
+    // ========== parse_with_offset() tests ==========
+
+    #[test]
+    fn test_parse_with_offset_empty_data() {
+        let data: &[u8] = &[];
+        let result = parse_with_offset(data, 0, 10, ParseOptions::default());
+        assert!(result.is_err());
+        assert!(matches!(result, Err(AsterixError::InvalidData(_))));
+    }
+
+    #[test]
+    fn test_parse_with_offset_oversized_data() {
+        let data = vec![0u8; MAX_ASTERIX_MESSAGE_SIZE + 1];
+        let result = parse_with_offset(&data, 0, 10, ParseOptions::default());
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(msg.contains("too large"));
+        } else {
+            panic!("Expected InvalidData error");
+        }
+    }
+
+    #[test]
+    fn test_parse_with_offset_beyond_data_length() {
+        let data = vec![0x30, 0x00, 0x10];
+        let result = parse_with_offset(&data, 10, 1, ParseOptions::default());
+        assert!(result.is_err());
+        if let Err(AsterixError::ParseError { offset, message }) = result {
+            assert_eq!(offset, 10);
+            assert!(message.contains("exceeds data length"));
+        } else {
+            panic!("Expected ParseError with offset info");
+        }
+    }
+
+    #[test]
+    fn test_parse_with_offset_at_data_length() {
+        let data = vec![0x30, 0x00, 0x10];
+        let result = parse_with_offset(&data, 3, 1, ParseOptions::default());
+        assert!(result.is_err());
+        if let Err(AsterixError::ParseError { offset, message }) = result {
+            assert_eq!(offset, 3);
+            assert!(message.contains("exceeds data length"));
+        } else {
+            panic!("Expected ParseError");
+        }
+    }
+
+    #[test]
+    fn test_parse_with_offset_u32_overflow() {
+        let data = vec![0x30; 100];
+        let offset = (u32::MAX as usize) + 1;
+        let result = parse_with_offset(&data, offset, 1, ParseOptions::default());
+        assert!(result.is_err());
+        if let Err(AsterixError::ParseError { message, .. }) = result {
+            assert!(message.contains("exceeds FFI maximum"));
+            assert!(message.contains("u32::MAX"));
+        } else {
+            panic!("Expected ParseError for u32 overflow");
+        }
+    }
+
+    #[test]
+    fn test_parse_with_offset_blocks_count_u32_overflow() {
+        let data = vec![0x30; 100];
+        let blocks_count = (u32::MAX as usize) + 1;
+        let result = parse_with_offset(&data, 0, blocks_count, ParseOptions::default());
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(msg.contains("blocks_count"));
+            assert!(msg.contains("exceeds FFI maximum"));
+        } else {
+            panic!("Expected InvalidData for blocks_count overflow");
+        }
+    }
+
+    #[test]
+    fn test_parse_with_offset_blocks_count_exceeds_max() {
+        let data = vec![0x30; 100];
+        let blocks_count = MAX_BLOCKS_PER_CALL + 1;
+        let result = parse_with_offset(&data, 0, blocks_count, ParseOptions::default());
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(msg.contains("blocks_count"));
+            assert!(msg.contains("exceeds maximum"));
+            assert!(msg.contains("10001"));
+        } else {
+            panic!("Expected InvalidData for blocks_count > MAX_BLOCKS_PER_CALL");
+        }
+    }
+
+    #[test]
+    fn test_parse_with_offset_zero_blocks() {
+        // blocks_count = 0 should be valid (means parse all)
+        let data = vec![0x30; 100];
+        let result = parse_with_offset(&data, 0, 0, ParseOptions::default());
+        // Should fail due to invalid data, not due to blocks_count validation
+        assert!(result.is_err());
+        if let Err(e) = result {
+            let msg = format!("{:?}", e);
+            assert!(!msg.contains("blocks_count"));
+        }
+    }
+
+    #[test]
+    fn test_parse_with_offset_valid_offset() {
+        // Offset in middle of data should pass validation
+        let data = vec![0x30; 100];
+        let result = parse_with_offset(&data, 50, 1, ParseOptions::default());
+        // Should fail due to invalid ASTERIX data, not offset validation
+        assert!(result.is_err());
+        if let Err(e) = result {
+            let msg = format!("{:?}", e);
+            // Should NOT contain offset validation errors
+            assert!(!msg.contains("exceeds data length"));
+        }
+    }
+
+    // ========== ParseOptions tests ==========
+
+    #[test]
     fn test_parse_options_default() {
         let opts = ParseOptions::default();
         assert!(!opts.verbose);
@@ -475,11 +635,192 @@ mod tests {
         assert_eq!(opts.max_records, None);
     }
 
+    #[test]
+    fn test_parse_options_verbose() {
+        let opts = ParseOptions {
+            verbose: true,
+            filter_category: None,
+            max_records: None,
+        };
+        assert!(opts.verbose);
+    }
+
+    #[test]
+    fn test_parse_options_filter_category() {
+        let opts = ParseOptions {
+            verbose: false,
+            filter_category: Some(62),
+            max_records: None,
+        };
+        assert_eq!(opts.filter_category, Some(62));
+    }
+
+    #[test]
+    fn test_parse_options_max_records() {
+        let opts = ParseOptions {
+            verbose: false,
+            filter_category: None,
+            max_records: Some(1000),
+        };
+        assert_eq!(opts.max_records, Some(1000));
+    }
+
+    #[test]
+    fn test_parse_options_all_fields() {
+        let opts = ParseOptions {
+            verbose: true,
+            filter_category: Some(48),
+            max_records: Some(500),
+        };
+        assert!(opts.verbose);
+        assert_eq!(opts.filter_category, Some(48));
+        assert_eq!(opts.max_records, Some(500));
+    }
+
+    // ========== JSON parsing tests ==========
+
     #[cfg(feature = "serde")]
     #[test]
     fn test_parse_items_from_json() {
         let json = r#"{"I062/010": {"SAC": 1, "SIC": 2}}"#;
         let items = parse_items_from_json(json).unwrap();
         assert!(items.contains_key("I062/010"));
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_parse_items_from_json_empty() {
+        let json = "";
+        let items = parse_items_from_json(json).unwrap();
+        assert!(items.is_empty());
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_parse_items_from_json_empty_object() {
+        let json = "{}";
+        let items = parse_items_from_json(json).unwrap();
+        assert!(items.is_empty());
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_parse_items_from_json_empty_array() {
+        let json = "[]";
+        let items = parse_items_from_json(json).unwrap();
+        assert!(items.is_empty());
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_parse_items_from_json_whitespace_only() {
+        let json = "   \n\t  ";
+        let items = parse_items_from_json(json).unwrap();
+        assert!(items.is_empty());
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_parse_items_from_json_unbalanced_braces() {
+        let json = r#"{"I062/010": {"SAC": 1"#;
+        let result = parse_items_from_json(json);
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(msg.contains("unbalanced braces"));
+        } else {
+            panic!("Expected InvalidData for unbalanced braces");
+        }
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_parse_items_from_json_ndjson() {
+        // Newline-delimited JSON (NDJSON) - should parse only first line
+        let json = r#"{"I062/010": {"SAC": 1}}
+{"I048/020": {"TYP": 2}}"#;
+        let items = parse_items_from_json(json).unwrap();
+        assert!(items.contains_key("I062/010"));
+        // Second line should be ignored
+        assert!(!items.contains_key("I048/020"));
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_parse_items_from_json_invalid_json() {
+        let json = r#"not valid json at all"#;
+        let result = parse_items_from_json(json);
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(msg.contains("Failed to parse JSON"));
+        } else {
+            panic!("Expected InvalidData for invalid JSON");
+        }
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_parse_items_from_json_nested_category() {
+        // Test CAT prefix handling
+        let json = r#"{"CAT062": {"I062/010": {"SAC": 1, "SIC": 2}}}"#;
+        let items = parse_items_from_json(json).unwrap();
+        assert!(items.contains_key("I062/010"));
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_json_value_to_parsed_value_integer() {
+        use serde_json::json;
+        let value = json!(42);
+        let parsed = json_value_to_parsed_value(&value).unwrap();
+        assert!(matches!(parsed, ParsedValue::Integer(42)));
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_json_value_to_parsed_value_float() {
+        use serde_json::json;
+        let value = json!(3.14);
+        let parsed = json_value_to_parsed_value(&value).unwrap();
+        assert!(matches!(parsed, ParsedValue::Float(f) if (f - 3.14).abs() < 0.001));
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_json_value_to_parsed_value_string() {
+        use serde_json::json;
+        let value = json!("test");
+        let parsed = json_value_to_parsed_value(&value).unwrap();
+        assert!(matches!(parsed, ParsedValue::String(s) if s == "test"));
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_json_value_to_parsed_value_boolean() {
+        use serde_json::json;
+        let value = json!(true);
+        let parsed = json_value_to_parsed_value(&value).unwrap();
+        assert!(matches!(parsed, ParsedValue::Boolean(true)));
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_json_value_to_parsed_value_array() {
+        use serde_json::json;
+        let value = json!([1, 2, 3]);
+        let parsed = json_value_to_parsed_value(&value).unwrap();
+        if let ParsedValue::Array(arr) = parsed {
+            assert_eq!(arr.len(), 3);
+        } else {
+            panic!("Expected Array");
+        }
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_json_value_to_parsed_value_null() {
+        use serde_json::json;
+        let value = json!(null);
+        let parsed = json_value_to_parsed_value(&value).unwrap();
+        assert!(matches!(parsed, ParsedValue::String(s) if s == "null"));
     }
 }

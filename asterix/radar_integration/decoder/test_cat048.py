@@ -576,6 +576,18 @@ class TestCAT048I090(unittest.TestCase):
 
         self.assertIn('not validated', result['description'])
 
+    def test_decode_i090_garbled_description(self):
+        """Test I090 description when garbled."""
+        fl = 150.0
+        fl_raw = int(fl * 4)
+        value = fl_raw | 0x4000  # Set G bit (garbled)
+        data = struct.pack('>H', value)
+
+        result, consumed = self.decoder._decode_i090(data, 0)
+
+        self.assertIn('garbled', result['description'])
+        self.assertTrue(result['G'])
+
     def test_decode_i090_truncated(self):
         """Test I090 with truncated data."""
         with self.assertRaises(DecoderError):
@@ -726,14 +738,59 @@ class TestCAT048I130(unittest.TestCase):
         with self.assertRaises(DecoderError):
             self.decoder._decode_i130(b'', 0)
 
-    def test_decode_i130_truncated_subfield(self):
-        """Test I130 with missing subfield data."""
+    def test_decode_i130_truncated_srl(self):
+        """Test I130 with missing SRL subfield data."""
         primary = 0b01000000  # SRL present
         data = bytes([primary])  # Missing SRL byte
 
         with self.assertRaises(DecoderError) as ctx:
             self.decoder._decode_i130(data, 0)
         self.assertIn('SRL truncated', str(ctx.exception))
+
+    def test_decode_i130_truncated_srr(self):
+        """Test I130 with missing SRR subfield data."""
+        primary = 0b00100000  # SRR present
+        data = bytes([primary])  # Missing SRR byte
+
+        with self.assertRaises(DecoderError) as ctx:
+            self.decoder._decode_i130(data, 0)
+        self.assertIn('SRR truncated', str(ctx.exception))
+
+    def test_decode_i130_truncated_sam(self):
+        """Test I130 with missing SAM subfield data."""
+        primary = 0b00010000  # SAM present
+        data = bytes([primary])  # Missing SAM byte
+
+        with self.assertRaises(DecoderError) as ctx:
+            self.decoder._decode_i130(data, 0)
+        self.assertIn('SAM truncated', str(ctx.exception))
+
+    def test_decode_i130_truncated_prl(self):
+        """Test I130 with missing PRL subfield data."""
+        primary = 0b00001000  # PRL present
+        data = bytes([primary])  # Missing PRL byte
+
+        with self.assertRaises(DecoderError) as ctx:
+            self.decoder._decode_i130(data, 0)
+        self.assertIn('PRL truncated', str(ctx.exception))
+
+    def test_decode_i130_truncated_pam(self):
+        """Test I130 with missing PAM subfield data."""
+        primary = 0b00000100  # PAM present
+        data = bytes([primary])  # Missing PAM byte
+
+        with self.assertRaises(DecoderError) as ctx:
+            self.decoder._decode_i130(data, 0)
+        self.assertIn('PAM truncated', str(ctx.exception))
+
+    def test_decode_i130_truncated_rpd(self):
+        """Test I130 with missing RPD subfield data."""
+        primary = 0b00000010  # RPD present
+        data = bytes([primary])  # Missing RPD byte
+
+        with self.assertRaises(DecoderError) as ctx:
+            self.decoder._decode_i130(data, 0)
+        self.assertIn('RPD truncated', str(ctx.exception))
 
 
 class TestCAT048I220(unittest.TestCase):
@@ -887,6 +944,77 @@ class TestCAT048I250(unittest.TestCase):
         with self.assertRaises(DecoderError) as ctx:
             self.decoder._decode_i250(data, 0)
         self.assertIn('truncated', str(ctx.exception).lower())
+
+
+class TestCAT048DataItemDispatch(unittest.TestCase):
+    """Test _decode_data_item dispatch logic."""
+
+    def setUp(self):
+        """Set up decoder for tests."""
+        self.decoder = CAT048Decoder(verbose=False)
+
+    def test_dispatch_i020(self):
+        """Test dispatch to I020 decoder (FRN 3)."""
+        data = bytes([0b01000000])  # TYP=2 (PSR)
+        result, consumed = self.decoder._decode_data_item(3, data, 0)
+        self.assertEqual(result['TYP'], 2)
+        self.assertEqual(consumed, 1)
+
+    def test_dispatch_i040(self):
+        """Test dispatch to I040 decoder (FRN 4)."""
+        data = struct.pack('>HH', 100, 200)
+        result, consumed = self.decoder._decode_data_item(4, data, 0)
+        self.assertIn('RHO', result)
+        self.assertIn('THETA', result)
+        self.assertEqual(consumed, 4)
+
+    def test_dispatch_i070(self):
+        """Test dispatch to I070 decoder (FRN 5)."""
+        data = struct.pack('>H', 0o1234)
+        result, consumed = self.decoder._decode_data_item(5, data, 0)
+        self.assertEqual(result['code'], 0o1234)
+        self.assertEqual(consumed, 2)
+
+    def test_dispatch_i090(self):
+        """Test dispatch to I090 decoder (FRN 6)."""
+        fl = 350.0
+        fl_raw = int(fl * 4)
+        data = struct.pack('>H', fl_raw)
+        result, consumed = self.decoder._decode_data_item(6, data, 0)
+        self.assertAlmostEqual(result['FL'], fl, places=2)
+        self.assertEqual(consumed, 2)
+
+    def test_dispatch_i130(self):
+        """Test dispatch to I130 decoder (FRN 7)."""
+        data = bytes([0b00100000, 42])  # SRR present, value=42
+        result, consumed = self.decoder._decode_data_item(7, data, 0)
+        self.assertEqual(result['SRR'], 42)
+        self.assertEqual(consumed, 2)
+
+    def test_dispatch_i220(self):
+        """Test dispatch to I220 decoder (FRN 8)."""
+        address = 0xABCDEF
+        data = struct.pack('>I', address)[1:]
+        result, consumed = self.decoder._decode_data_item(8, data, 0)
+        self.assertEqual(result, address)
+        self.assertEqual(consumed, 3)
+
+    def test_dispatch_i240(self):
+        """Test dispatch to I240 decoder (FRN 9)."""
+        data = bytes([0x04, 0x62, 0x31, 0x4D, 0x16, 0x00])
+        result, consumed = self.decoder._decode_data_item(9, data, 0)
+        self.assertIsInstance(result, str)
+        self.assertEqual(consumed, 6)
+
+    def test_dispatch_i250(self):
+        """Test dispatch to I250 decoder (FRN 10)."""
+        rep = 1
+        mb_data = bytes([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08])
+        data = bytes([rep]) + mb_data
+        result, consumed = self.decoder._decode_data_item(10, data, 0)
+        self.assertEqual(result['REP'], 1)
+        self.assertEqual(len(result['MB_DATA']), 1)
+        self.assertEqual(consumed, 9)
 
 
 class TestCAT048UnsupportedItems(unittest.TestCase):

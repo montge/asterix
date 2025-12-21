@@ -13,8 +13,6 @@
 --  Copyright (c) 2024 ASTERIX Contributors
 --  SPDX-License-Identifier: GPL-3.0-or-later
 
-with Asterix;
-
 package Asterix.SPARK_Types
   with SPARK_Mode => On
 is

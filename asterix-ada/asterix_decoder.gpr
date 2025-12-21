@@ -19,7 +19,7 @@ library project Asterix_Decoder is
    --  Library configuration
    for Library_Name use "asterix_ada";
    for Library_Kind use "static";
-   for Library_Interface use ("Asterix", "Asterix.FFI", "Asterix.Records", "Asterix.Errors");
+   for Library_Interface use ("Asterix", "Asterix.FFI", "Asterix.Records", "Asterix.Errors", "Asterix.SPARK_Types");
 
    --  Languages
    for Languages use ("Ada");

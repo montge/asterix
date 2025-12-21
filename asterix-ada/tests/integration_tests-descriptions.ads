@@ -16,4 +16,16 @@ package Integration_Tests.Descriptions is
    procedure Test_Is_Category_Defined (T : in out Test_Case);
    --  Test Is_Category_Defined for known categories
 
+   procedure Test_Describe_Item (T : in out Test_Case);
+   --  Test Describe_Item returns valid descriptions for known items
+
+   procedure Test_Describe_Item_Invalid (T : in out Test_Case);
+   --  Test Describe_Item with invalid item names
+
+   procedure Test_Describe_Value (T : in out Test_Case);
+   --  Test Describe_Value returns descriptions for field values
+
+   procedure Test_Describe_Value_Invalid (T : in out Test_Case);
+   --  Test Describe_Value with invalid parameters
+
 end Integration_Tests.Descriptions;
