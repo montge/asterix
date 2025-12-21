@@ -172,6 +172,192 @@ func TestDescribe(t *testing.T) {
 	}
 }
 
+func TestDescribeWithItem(t *testing.T) {
+	if err := Init(""); err != nil {
+		t.Fatalf("Init failed: %v", err)
+	}
+
+	// Test with actual category and item
+	// Category 48 (Monoradar Target Reports), Item I010 (Data Source Identifier)
+	desc, err := Describe(48, "I010", "", "")
+	if err != nil {
+		t.Errorf("Describe(48, I010) failed: %v", err)
+	}
+	if desc == "" {
+		t.Logf("Describe(48, I010) returned empty description (may need XML config)")
+	} else {
+		t.Logf("Category 48, I010 description: %s", desc)
+	}
+
+	// Test with Category 62 (System Track Data), Item I010
+	desc, err = Describe(62, "I010", "", "")
+	if err != nil {
+		t.Errorf("Describe(62, I010) failed: %v", err)
+	}
+	t.Logf("Category 62, I010 description: %s", desc)
+
+	// Test with non-existent item (should not error, just return empty or not found)
+	desc, err = Describe(48, "IXXX", "", "")
+	if err != nil {
+		t.Errorf("Describe with non-existent item should not error: %v", err)
+	}
+	t.Logf("Non-existent item description: %s", desc)
+}
+
+func TestDescribeWithField(t *testing.T) {
+	if err := Init(""); err != nil {
+		t.Fatalf("Init failed: %v", err)
+	}
+
+	// Test with category, item, and field
+	// I010 has SAC and SIC fields
+	desc, err := Describe(48, "I010", "SAC", "")
+	if err != nil {
+		t.Errorf("Describe(48, I010, SAC) failed: %v", err)
+	}
+	if desc == "" {
+		t.Logf("Describe(48, I010, SAC) returned empty description (may need XML config)")
+	} else {
+		t.Logf("Category 48, I010, SAC description: %s", desc)
+	}
+
+	desc, err = Describe(48, "I010", "SIC", "")
+	if err != nil {
+		t.Errorf("Describe(48, I010, SIC) failed: %v", err)
+	}
+	t.Logf("Category 48, I010, SIC description: %s", desc)
+
+	// Test with non-existent field
+	desc, err = Describe(48, "I010", "BADFIELD", "")
+	if err != nil {
+		t.Errorf("Describe with non-existent field should not error: %v", err)
+	}
+	t.Logf("Non-existent field description: %s", desc)
+}
+
+func TestDescribeWithValue(t *testing.T) {
+	if err := Init(""); err != nil {
+		t.Fatalf("Init failed: %v", err)
+	}
+
+	// Test with all parameters (category, item, field, value)
+	// This tests the full describe path with a value
+	desc, err := Describe(48, "I010", "SAC", "0")
+	if err != nil {
+		t.Errorf("Describe(48, I010, SAC, 0) failed: %v", err)
+	}
+	if desc == "" {
+		t.Logf("Describe(48, I010, SAC, 0) returned empty description (may need XML config)")
+	} else {
+		t.Logf("Category 48, I010, SAC=0 description: %s", desc)
+	}
+
+	// Test with different value
+	desc, err = Describe(48, "I010", "SIC", "1")
+	if err != nil {
+		t.Errorf("Describe(48, I010, SIC, 1) failed: %v", err)
+	}
+	t.Logf("Category 48, I010, SIC=1 description: %s", desc)
+
+	// Test with hex value
+	desc, err = Describe(48, "I010", "SAC", "0xFF")
+	if err != nil {
+		t.Errorf("Describe with hex value failed: %v", err)
+	}
+	t.Logf("Hex value description: %s", desc)
+}
+
+func TestDescribeEmptyStrings(t *testing.T) {
+	if err := Init(""); err != nil {
+		t.Fatalf("Init failed: %v", err)
+	}
+
+	// Test with empty strings vs nil (empty strings are passed as C NULL in the implementation)
+	desc1, err1 := Describe(48, "", "", "")
+	if err1 != nil {
+		t.Errorf("Describe with empty strings failed: %v", err1)
+	}
+
+	desc2, err2 := Describe(48, "", "", "")
+	if err2 != nil {
+		t.Errorf("Describe with empty strings (second call) failed: %v", err2)
+	}
+
+	// Results should be consistent
+	if desc1 != desc2 {
+		t.Errorf("Describe results should be consistent: got %q vs %q", desc1, desc2)
+	}
+
+	// Test partial empty strings
+	desc3, err3 := Describe(48, "I010", "", "")
+	if err3 != nil {
+		t.Errorf("Describe with partial empty strings failed: %v", err3)
+	}
+	t.Logf("Partial empty strings description: %s", desc3)
+
+	// Test with value but no field (may not be meaningful, but shouldn't crash)
+	desc4, err4 := Describe(48, "I010", "", "0")
+	if err4 != nil {
+		t.Errorf("Describe with value but no field failed: %v", err4)
+	}
+	t.Logf("Value but no field description: %s", desc4)
+}
+
+func TestDescribeConcurrent(t *testing.T) {
+	if err := Init(""); err != nil {
+		t.Fatalf("Init failed: %v", err)
+	}
+
+	// Test 10 goroutines calling Describe simultaneously
+	const numGoroutines = 10
+	results := make(chan struct {
+		desc string
+		err  error
+	}, numGoroutines)
+
+	// Launch concurrent describe calls
+	for i := 0; i < numGoroutines; i++ {
+		go func(id int) {
+			// Vary the parameters to test different code paths
+			var desc string
+			var err error
+
+			switch id % 4 {
+			case 0:
+				desc, err = Describe(48, "", "", "")
+			case 1:
+				desc, err = Describe(48, "I010", "", "")
+			case 2:
+				desc, err = Describe(62, "I010", "SAC", "")
+			case 3:
+				desc, err = Describe(48, "I010", "SIC", "1")
+			}
+
+			results <- struct {
+				desc string
+				err  error
+			}{desc, err}
+		}(i)
+	}
+
+	// Collect results
+	errorCount := 0
+	for i := 0; i < numGoroutines; i++ {
+		result := <-results
+		if result.err != nil {
+			errorCount++
+			t.Logf("Goroutine returned error: %v", result.err)
+		}
+	}
+
+	if errorCount > 0 {
+		t.Errorf("Concurrent Describe calls failed: %d errors out of %d calls",
+			errorCount, numGoroutines)
+	} else {
+		t.Logf("All %d concurrent Describe calls succeeded", numGoroutines)
+	}
+}
+
 func TestDescribeInvalidCategory(t *testing.T) {
 	if err := Init(""); err != nil {
 		t.Fatalf("Init failed: %v", err)

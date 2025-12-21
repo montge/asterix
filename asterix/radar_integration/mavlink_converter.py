@@ -198,16 +198,24 @@ class MAVLinkToAsterixConverter:
         # Convert speeds to knots
         airspeed_kt = self.state.airspeed * 1.94384
 
+        # Convert groundspeed to knots
+        groundspeed_kts = self.state.groundspeed * 1.94384
+
         return {
-            'lat': self.state.lat,
-            'lon': self.state.lon,
+            'SAC': self.sac,
+            'SIC': self.sic,
+            'latitude': self.state.lat,
+            'longitude': self.state.lon,
             'aircraft_address': aircraft_address,
             'callsign': f'SIM{self.state.system_id:03d}',  # Mock callsign
             'flight_level': flight_level,
+            'altitude_ft': altitude_ft,
             'gnss_height_ft': altitude_ft,
             'airspeed_kt': airspeed_kt,
             'true_airspeed_kt': airspeed_kt,  # Approximate
+            'heading': self.state.heading,
             'magnetic_heading_deg': self.state.heading,
+            'groundspeed_kts': groundspeed_kts,
             'vertical_rate_fpm': vertical_rate_fpm,
             'track_number': track_number,
             'timestamp': self.state.timestamp
@@ -223,12 +231,20 @@ class MAVLinkToAsterixConverter:
         # Convert altitude to feet
         altitude_ft = self.state.alt_msl * 3.28084
 
+        # Convert groundspeed to knots
+        groundspeed_kts = self.state.groundspeed * 1.94384
+
         return {
-            'lat': self.state.lat,
-            'lon': self.state.lon,
+            'SAC': self.sac,
+            'SIC': self.sic,
+            'latitude': self.state.lat,
+            'longitude': self.state.lon,
             'altitude_ft': altitude_ft,
+            'heading': self.state.heading,
+            'groundspeed_kts': groundspeed_kts,
             'vx': self.state.vy,  # MAVLink vy = East
             'vy': self.state.vx,  # MAVLink vx = North
+            'track_number': self.track_number,
             'callsign': f'SIM{self.state.system_id:03d}',
             'adep': 'SITL',  # Mock departure
             'ades': 'SITL',  # Mock destination

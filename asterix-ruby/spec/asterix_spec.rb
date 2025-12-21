@@ -69,6 +69,35 @@ RSpec.describe Asterix do
       end
     end
 
+    context 'boundary conditions' do
+      it 'accepts data at exactly 65KB limit' do
+        # Create data with exactly 65536 bytes (65KB)
+        # First 11 bytes: valid CAT048 ASTERIX packet header + minimal data
+        # Remaining bytes: padding to reach exactly 65536
+        valid_header = [0x30, 0x00, 0x0B, 0xFD, 0x00, 0x19, 0xC9, 0x35, 0x6D, 0x4D, 0xA0].pack('C*')
+        padding = "\x00" * (65536 - valid_header.bytesize)
+        boundary_data = valid_header + padding
+
+        expect(boundary_data.bytesize).to eq(65536)
+        records = Asterix.parse(boundary_data)
+        expect(records).to be_an(Array)
+      end
+
+      it 'parses different ASTERIX categories (CAT001)' do
+        # CAT001 sample data (minimal valid packet)
+        cat001_data = [0x01, 0x00, 0x0C, 0x80, 0x00, 0x19, 0xC9, 0x01, 0x02, 0x03, 0x04, 0x05].pack('C*')
+        records = Asterix.parse(cat001_data)
+        expect(records).to be_an(Array)
+      end
+
+      it 'parses different ASTERIX categories (CAT062)' do
+        # CAT062 sample data (minimal valid packet)
+        cat062_data = [0x3E, 0x00, 0x0D, 0xC0, 0x00, 0x19, 0xC9, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06].pack('C*')
+        records = Asterix.parse(cat062_data)
+        expect(records).to be_an(Array)
+      end
+    end
+
     context 'encoding handling' do
       it 'accepts binary string' do
         binary_data = sample_cat048_data.force_encoding(Encoding::ASCII_8BIT)
@@ -156,6 +185,38 @@ RSpec.describe Asterix do
         end.to raise_error(ArgumentError, /exceeds maximum/)
       end
     end
+
+    context 'boundary conditions' do
+      it 'handles offset exactly at data end' do
+        # When offset == data.length, should return empty array and same offset
+        offset = sample_data.bytesize
+        records, new_offset = Asterix.parse_with_offset(sample_data, offset: offset)
+        expect(records).to be_an(Array)
+        expect(records).to be_empty
+        expect(new_offset).to eq(offset)
+      end
+
+      it 'handles blocks_count of 1 (minimum valid)' do
+        records, new_offset = Asterix.parse_with_offset(sample_data, blocks_count: 1)
+        expect(records).to be_an(Array)
+        expect(new_offset).to be > 0
+        expect(new_offset).to be <= sample_data.bytesize
+      end
+
+      it 'handles blocks_count of 10000 (maximum valid)' do
+        # blocks_count at maximum (10000) should not raise error
+        records, new_offset = Asterix.parse_with_offset(sample_data, blocks_count: 10_000)
+        expect(records).to be_an(Array)
+        expect(new_offset).to be_an(Integer)
+      end
+
+      it 'handles blocks_count exactly at boundary (10001 should fail)' do
+        # Just over maximum should raise error
+        expect do
+          Asterix.parse_with_offset(sample_data, blocks_count: 10_001)
+        end.to raise_error(ArgumentError, /exceeds maximum/)
+      end
+    end
   end
 
   describe '.describe' do
@@ -201,6 +262,28 @@ RSpec.describe Asterix do
 
       it 'raises ArgumentError for non-string item' do
         expect { Asterix.describe(48, 123) }.to raise_error(ArgumentError, /must be a String or nil/)
+      end
+    end
+
+    context 'boundary conditions' do
+      it 'accepts category 1 (minimum valid)' do
+        # Category 1 is the minimum valid ASTERIX category
+        desc = Asterix.describe(1)
+        expect(desc).to be_a(String)
+      end
+
+      it 'accepts category 255 (maximum valid)' do
+        # Category 255 is the maximum valid ASTERIX category
+        desc = Asterix.describe(255)
+        expect(desc).to be_a(String)
+      end
+
+      it 'rejects category 0 (below minimum)' do
+        expect { Asterix.describe(0) }.to raise_error(ArgumentError, /Invalid ASTERIX category/)
+      end
+
+      it 'rejects category 256 (above maximum)' do
+        expect { Asterix.describe(256) }.to raise_error(ArgumentError, /Invalid ASTERIX category/)
       end
     end
   end

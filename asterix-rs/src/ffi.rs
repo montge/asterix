@@ -408,6 +408,10 @@ fn get_default_config_dir() -> String {
 mod tests {
     use super::*;
 
+    // ========================================================================
+    // Config Directory Tests
+    // ========================================================================
+
     #[test]
     fn test_get_default_config_dir() {
         let config_dir = get_default_config_dir();
@@ -416,9 +420,353 @@ mod tests {
     }
 
     #[test]
+    fn test_get_default_config_dir_platform_specific() {
+        let config_dir = get_default_config_dir();
+
+        #[cfg(target_os = "linux")]
+        {
+            // Should contain one of: XDG_CONFIG_HOME, HOME/.config, or /etc
+            assert!(
+                config_dir.contains("/.config/asterix/config")
+                    || config_dir == "/etc/asterix/config"
+            );
+        }
+
+        #[cfg(target_os = "macos")]
+        {
+            assert!(
+                config_dir.contains("Library/Application Support/asterix/config")
+                    || config_dir == "/usr/local/etc/asterix/config"
+            );
+        }
+
+        #[cfg(target_os = "windows")]
+        {
+            assert_eq!(config_dir, r"C:\Program Files\asterix\config");
+        }
+    }
+
+    // ========================================================================
+    // Path Validation Tests (Security)
+    // ========================================================================
+
+    #[test]
+    fn test_init_config_dir_rejects_empty_path() {
+        let result = init_config_dir("");
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert_eq!(msg, "Directory path cannot be empty");
+        } else {
+            panic!("Expected InvalidData error for empty path");
+        }
+    }
+
+    #[test]
+    fn test_init_config_dir_rejects_path_traversal_unix() {
+        // Test Unix-style path traversal
+        let result = init_config_dir("../../../etc/passwd");
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(msg.contains("path traversal"));
+        } else {
+            panic!("Expected InvalidData error for path traversal");
+        }
+    }
+
+    #[test]
+    fn test_init_config_dir_rejects_path_traversal_windows() {
+        // Test Windows-style path traversal
+        let result = init_config_dir("..\\..\\Windows\\System32");
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(msg.contains("path traversal"));
+        } else {
+            panic!("Expected InvalidData error for path traversal");
+        }
+    }
+
+    #[test]
+    fn test_init_config_dir_rejects_dotdot_alone() {
+        let result = init_config_dir("..");
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(msg.contains("path traversal"));
+        } else {
+            panic!("Expected InvalidData error for '..'");
+        }
+    }
+
+    #[test]
+    fn test_init_config_dir_rejects_too_long_path() {
+        let long_path = "a".repeat(4097);
+        let result = init_config_dir(&long_path);
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(msg.contains("too long"));
+        } else {
+            panic!("Expected InvalidData error for long path");
+        }
+    }
+
+    #[test]
+    fn test_load_category_rejects_empty_path() {
+        let result = load_category("");
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert_eq!(msg, "Filename cannot be empty");
+        } else {
+            panic!("Expected InvalidData error for empty filename");
+        }
+    }
+
+    #[test]
+    fn test_load_category_rejects_path_traversal_unix() {
+        let result = load_category("../../../etc/passwd");
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(msg.contains("path traversal"));
+        } else {
+            panic!("Expected InvalidData error for path traversal");
+        }
+    }
+
+    #[test]
+    fn test_load_category_rejects_path_traversal_windows() {
+        let result = load_category("..\\..\\malicious.xml");
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(msg.contains("path traversal"));
+        } else {
+            panic!("Expected InvalidData error for path traversal");
+        }
+    }
+
+    #[test]
+    fn test_load_category_rejects_dotdot_alone() {
+        let result = load_category("..");
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(msg.contains("path traversal"));
+        } else {
+            panic!("Expected InvalidData error for '..'");
+        }
+    }
+
+    #[test]
+    fn test_load_category_rejects_too_long_path() {
+        let long_path = "a".repeat(4097);
+        let result = load_category(&long_path);
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(msg.contains("too long"));
+        } else {
+            panic!("Expected InvalidData error for long filename");
+        }
+    }
+
+    // ========================================================================
+    // LogLevel Tests
+    // ========================================================================
+
+    #[test]
+    fn test_log_level_enum_values() {
+        assert_eq!(LogLevel::Silent as i32, 0);
+        assert_eq!(LogLevel::Error as i32, 1);
+        assert_eq!(LogLevel::Warn as i32, 2);
+        assert_eq!(LogLevel::Info as i32, 3);
+        assert_eq!(LogLevel::Debug as i32, 4);
+    }
+
+    #[test]
+    fn test_log_level_ordering() {
+        assert!(LogLevel::Silent < LogLevel::Error);
+        assert!(LogLevel::Error < LogLevel::Warn);
+        assert!(LogLevel::Warn < LogLevel::Info);
+        assert!(LogLevel::Info < LogLevel::Debug);
+    }
+
+    #[test]
+    fn test_log_level_equality() {
+        assert_eq!(LogLevel::Error, LogLevel::Error);
+        assert_ne!(LogLevel::Error, LogLevel::Warn);
+    }
+
+    #[test]
+    fn test_log_level_clone_copy() {
+        let level = LogLevel::Info;
+        let cloned = level;
+        let copied = level;
+
+        assert_eq!(level, cloned);
+        assert_eq!(level, copied);
+    }
+
+    #[test]
+    fn test_log_level_debug_format() {
+        let level = LogLevel::Debug;
+        let debug_str = format!("{:?}", level);
+        assert_eq!(debug_str, "Debug");
+    }
+
+    // ========================================================================
+    // describe() Validation Tests
+    // ========================================================================
+
+    #[test]
+    fn test_describe_rejects_category_zero() {
+        let result = describe(0, None, None, None);
+        assert!(result.is_err());
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(msg.contains("Invalid ASTERIX category: 0"));
+            assert!(msg.contains("valid range: 1-255"));
+        } else {
+            panic!("Expected InvalidData error for category 0");
+        }
+    }
+
+    #[test]
+    fn test_describe_accepts_valid_categories() {
+        // These will fail at the C++ boundary (no init), but should pass Rust validation
+        for category in [1u8, 48, 62, 255] {
+            let result = describe(category, None, None, None);
+            // Will fail with InternalError (C++ not initialized), not InvalidData
+            if let Err(AsterixError::InvalidData(msg)) = result {
+                panic!("Category {category} should be valid, got error: {msg}");
+            }
+        }
+    }
+
+    #[test]
+    fn test_describe_none_parameters() {
+        // Category 1 is valid, should fail at C++ boundary (not initialized)
+        let result = describe(1, None, None, None);
+        // Should NOT be InvalidData (validation passed)
+        assert!(
+            !matches!(result, Err(AsterixError::InvalidData(_))),
+            "None parameters should be valid"
+        );
+    }
+
+    #[test]
+    fn test_describe_some_parameters() {
+        // Category 48 with some parameters
+        let result = describe(48, Some("I010"), Some("SAC"), Some("0"));
+        // Should NOT be InvalidData (validation passed)
+        assert!(
+            !matches!(result, Err(AsterixError::InvalidData(_))),
+            "Valid parameters should pass validation"
+        );
+    }
+
+    // ========================================================================
+    // C String Conversion Tests
+    // ========================================================================
+
+    #[test]
     fn test_c_string_creation() {
         let test_str = "test/path";
         let c_str = std::ffi::CString::new(test_str).unwrap();
         assert_eq!(c_str.to_str().unwrap(), test_str);
+    }
+
+    #[test]
+    fn test_c_string_rejects_null_bytes() {
+        let invalid_str = "path\0with\0nulls";
+        let result = std::ffi::CString::new(invalid_str);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_c_string_empty() {
+        let c_str = std::ffi::CString::new("").unwrap();
+        assert_eq!(c_str.to_str().unwrap(), "");
+    }
+
+    #[test]
+    fn test_c_string_utf8() {
+        let utf8_str = "config/élément_français.xml";
+        let c_str = std::ffi::CString::new(utf8_str).unwrap();
+        assert_eq!(c_str.to_str().unwrap(), utf8_str);
+    }
+
+    // ========================================================================
+    // Edge Case Tests
+    // ========================================================================
+
+    #[test]
+    fn test_init_config_dir_max_valid_length() {
+        // 4096 is the maximum, should be accepted (but will fail at C++ boundary)
+        let path = "a".repeat(4096);
+        let result = init_config_dir(&path);
+        // Should NOT be InvalidData for length (path is exactly at limit)
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(
+                !msg.contains("too long"),
+                "Path of 4096 chars should be accepted"
+            );
+        }
+    }
+
+    #[test]
+    fn test_load_category_max_valid_length() {
+        let path = "a".repeat(4096);
+        let result = load_category(&path);
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(
+                !msg.contains("too long"),
+                "Path of 4096 chars should be accepted"
+            );
+        }
+    }
+
+    #[test]
+    fn test_init_config_dir_allows_relative_paths_without_dotdot() {
+        // Relative paths without ".." should be allowed (will fail at C++ boundary)
+        let result = init_config_dir("./config");
+        // Should NOT be InvalidData for path traversal
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(
+                !msg.contains("path traversal"),
+                "Relative path './config' should be allowed"
+            );
+        }
+    }
+
+    #[test]
+    fn test_load_category_allows_absolute_paths() {
+        // Absolute paths without ".." should be allowed
+        let result = load_category("/etc/asterix/config/asterix_cat048.xml");
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(
+                !msg.contains("path traversal"),
+                "Absolute path should be allowed"
+            );
+        }
+    }
+
+    #[test]
+    fn test_init_config_dir_allows_dotdot_in_middle() {
+        // ".." in middle of path is allowed (from path.join)
+        let result = init_config_dir("/home/user/../config");
+        if let Err(AsterixError::InvalidData(msg)) = result {
+            assert!(
+                !msg.contains("path traversal"),
+                "Path with '..' in middle should be allowed"
+            );
+        }
+    }
+
+    // ========================================================================
+    // is_category_defined() Tests (safe wrapper)
+    // ========================================================================
+
+    #[test]
+    fn test_is_category_defined_all_categories() {
+        // Without init, all categories should be undefined
+        // This tests the safe wrapper (no panic on any category value)
+        for category in 0..=255u8 {
+            let _ = is_category_defined(category);
+            // Should not panic
+        }
     }
 }

@@ -241,23 +241,30 @@ class TestMAVLinkToAsterixConverter(unittest.TestCase):
             with self.assertRaises((ImportError, ModuleNotFoundError)):
                 converter.connect("udpin:localhost:14550")
 
-    @patch("asterix.radar_integration.mavlink_converter.mavutil")
-    def test_connect_with_mock_mavutil(self, mock_mavutil):
+    def test_connect_with_mock_mavutil(self):
         """Test connect creates connection with mavutil."""
-        mock_connection = Mock()
-        mock_mavutil.mavlink_connection.return_value = mock_connection
-
-        converter = MAVLinkToAsterixConverter()
-
+        # Try to import pymavlink to see if it's available
         try:
+            import pymavlink
+        except ImportError:
+            self.skipTest("pymavlink not installed")
+
+        # Mock pymavlink.mavutil
+        with patch("pymavlink.mavutil") as mock_mavutil:
+            mock_connection = Mock()
+            mock_msg = Mock()
+            mock_msg.get_srcSystem.return_value = 1
+
+            mock_mavutil.mavlink_connection.return_value = mock_connection
+            mock_connection.wait_heartbeat.return_value = mock_msg
+
+            converter = MAVLinkToAsterixConverter()
             converter.connect("udpin:localhost:14550")
+
             mock_mavutil.mavlink_connection.assert_called_once_with(
                 "udpin:localhost:14550"
             )
             self.assertEqual(converter.connection, mock_connection)
-        except (ImportError, ModuleNotFoundError):
-            # Skip if pymavlink not installed
-            self.skipTest("pymavlink not installed")
 
     def test_state_timestamp_update(self):
         """Test that state timestamp is updated correctly."""

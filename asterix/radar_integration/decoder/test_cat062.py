@@ -358,6 +358,17 @@ class TestCAT062DataItems(unittest.TestCase):
 
         self.assertIn("I390 truncated", str(cm.exception))
 
+    def test_i390_via_decode_data_item(self):
+        """Test I390 called via _decode_data_item dispatcher (FRN 21)."""
+        # This tests line 105: return self._decode_i390(data, offset)
+        data = bytes([0x80])  # Primary subfield byte
+
+        with self.assertRaises(DecoderError) as cm:
+            self.decoder_verbose._decode_data_item(21, data, 0)
+
+        self.assertIn("I390", str(cm.exception))
+        self.assertIn("not fully implemented", str(cm.exception))
+
 
 class TestCAT062UnsupportedFRN(unittest.TestCase):
     """Test handling of unsupported FRNs."""
