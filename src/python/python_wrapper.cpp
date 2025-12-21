@@ -150,8 +150,9 @@ parse(PyObject *self, PyObject *args, PyObject *kwargs) {
     const char *data;
     Py_ssize_t len;
     int verbose;
+    int strict;
 
-    if (!PyArg_ParseTuple(args, "s#i", &data, &len, &verbose))
+    if (!PyArg_ParseTuple(args, "s#ii", &data, &len, &verbose, &strict))
         return nullptr;
 
     // CRITICAL-003 FIX: Validate buffer length
@@ -174,7 +175,7 @@ parse(PyObject *self, PyObject *args, PyObject *kwargs) {
         return nullptr;
     }
 
-    PyObject *lstBlocks = python_parse((const unsigned char *) data, len, verbose);
+    PyObject *lstBlocks = python_parse((const unsigned char *) data, len, verbose, strict);
     if (PyErr_Occurred())
         return nullptr;
     if (lstBlocks == nullptr)
@@ -194,8 +195,9 @@ parse_with_offset(PyObject *self, PyObject *args, PyObject *kwargs)
     unsigned int offset;
     unsigned int blocks_count;
     int verbose;
+    int strict;
 
-    if (!PyArg_ParseTuple(args, "s#IIi", &data, &len, &offset, &blocks_count, &verbose))
+    if (!PyArg_ParseTuple(args, "s#IIii", &data, &len, &offset, &blocks_count, &verbose, &strict))
         return nullptr;
 
     // CRITICAL-003 FIX: Validate buffer length (same as parse())
@@ -247,7 +249,7 @@ parse_with_offset(PyObject *self, PyObject *args, PyObject *kwargs)
         return nullptr;
     }
 
-    PyObject *py_output = python_parse_with_offset((const unsigned char *) data, len, offset, blocks_count, verbose);
+    PyObject *py_output = python_parse_with_offset((const unsigned char *) data, len, offset, blocks_count, verbose, strict);
     if (PyErr_Occurred())
         return nullptr;
     if (py_output == nullptr) {

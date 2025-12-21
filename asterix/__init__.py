@@ -73,6 +73,17 @@ from datetime import datetime
 from .version import __version__ as __version__
 
 
+def _get_strict_default() -> bool:
+    """Get default strict mode from environment variable.
+
+    Returns:
+        bool: True if ASTERIX_STRICT environment variable is set to '1' or 'true',
+              False otherwise (default for production safety).
+    """
+    env_value = os.getenv('ASTERIX_STRICT', '0').lower()
+    return env_value in ('1', 'true', 'yes', 'on')
+
+
 # def set_callback(callback):
 #    return _asterix.set_callback(callback)
 
@@ -121,7 +132,7 @@ def init(filename: str) -> int:
     return _asterix.init(filename)
 
 
-def parse(data: bytes, verbose: bool = True) -> list:
+def parse(data: bytes, verbose: bool = True, strict: bool = None) -> list:
     """Parse raw ASTERIX data from bytes.
 
     Parses ASTERIX binary data and returns a list of decoded records. Each record
@@ -139,6 +150,10 @@ def parse(data: bytes, verbose: bool = True) -> list:
         verbose (bool, optional): If True, include descriptions, meanings, and
             min/max values for each data item. If False, return only raw values.
             Defaults to True.
+        strict (bool, optional): If True, raise RuntimeError on any parsing error
+            (invalid data, unknown categories, malformed records). If False,
+            silently skip problematic records and continue parsing.
+            Defaults to ASTERIX_STRICT environment variable, or False if not set.
 
     Returns:
         list: List of dictionaries, one per ASTERIX record. Each dictionary contains:
@@ -148,6 +163,10 @@ def parse(data: bytes, verbose: bool = True) -> list:
             - 'ts' (int): Timestamp in milliseconds since epoch
             - 'hexdata' (str): Hexadecimal representation of raw data
             - 'I...' (dict/list): Data items (e.g., 'I010', 'I040') with parsed values
+
+    Raises:
+        RuntimeError: If strict=True and parsing errors are encountered.
+        ValueError: If input data is empty or too large.
 
     Example:
         >>> import asterix
@@ -162,16 +181,22 @@ def parse(data: bytes, verbose: bool = True) -> list:
         >>> records = asterix.parse(data)
         >>> print(f"Category: {records[0]['category']}")
         Category: 48
-        >>> print(f"Items: {[k for k in records[0].keys() if k.startswith('I')]}")
-        Items: ['I010', 'I040', 'I070', 'I220', ...]
-        >>> # Parse without descriptions (faster, less memory)
-        >>> records_compact = asterix.parse(data, verbose=False)
+        >>> # Strict mode for testing/debugging
+        >>> try:
+        ...     records = asterix.parse(corrupted_data, strict=True)
+        ... except RuntimeError as e:
+        ...     print(f"Parse error: {e}")
+        >>> # Enable strict mode via environment variable
+        >>> # export ASTERIX_STRICT=1
+        >>> records = asterix.parse(data)  # Uses env default
     """
     verbose_flag = 1 if verbose else 0
-    return _asterix.parse(bytes(data), verbose_flag)
+    strict_flag = 1 if (strict if strict is not None else _get_strict_default()) else 0
+    return _asterix.parse(bytes(data), verbose_flag, strict_flag)
 
 
-def parse_with_offset(data: bytes, offset: int = 0, blocks_count: int = 1000, verbose: bool = True) -> tuple:
+def parse_with_offset(data: bytes, offset: int = 0, blocks_count: int = 1000,
+                      verbose: bool = True, strict: bool = None) -> tuple:
     """Parse raw ASTERIX data with incremental offset tracking.
 
     This function enables incremental/streaming parsing of large ASTERIX data streams.
@@ -193,12 +218,20 @@ def parse_with_offset(data: bytes, offset: int = 0, blocks_count: int = 1000, ve
             in this call. Limits memory usage for large streams. Defaults to 1000.
         verbose (bool, optional): If True, include descriptions and metadata for
             each data item. If False, return only raw values. Defaults to True.
+        strict (bool, optional): If True, raise RuntimeError on any parsing error
+            (invalid data, unknown categories, malformed records). If False,
+            silently skip problematic records and continue parsing.
+            Defaults to ASTERIX_STRICT environment variable, or False if not set.
 
     Returns:
         tuple: A 2-element tuple containing:
             - records (list): List of parsed ASTERIX records (same format as parse())
             - new_offset (int): Byte offset where parsing stopped. Use this value
               as offset parameter in next call for incremental parsing.
+
+    Raises:
+        RuntimeError: If strict=True and parsing errors are encountered.
+        ValueError: If offset exceeds data length or input is invalid.
 
     Example:
         >>> import asterix
@@ -221,8 +254,9 @@ def parse_with_offset(data: bytes, offset: int = 0, blocks_count: int = 1000, ve
         ...
         >>> print(f"Total records parsed: {len(all_records)}")
     """
-    verbose_flag = 0 if not verbose else 1
-    return _asterix.parse_with_offset(bytes(data), offset, blocks_count, verbose_flag)
+    verbose_flag = 1 if verbose else 0
+    strict_flag = 1 if (strict if strict is not None else _get_strict_default()) else 0
+    return _asterix.parse_with_offset(bytes(data), offset, blocks_count, verbose_flag, strict_flag)
 
 
 def describeXML(parsed, descriptions=False):

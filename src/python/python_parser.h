@@ -34,10 +34,10 @@ extern "C" {
 int python_start(const char *ini_file_path);
 int python_init(const char *ini_file_path);
 PyObject *python_describe(int category, const char *item, const char *field, const char *value);
-PyObject *python_parse(const unsigned char *pBuf, Py_ssize_t len, int verbose);
+PyObject *python_parse(const unsigned char *pBuf, Py_ssize_t len, int verbose, int strict);
 PyObject *
 python_parse_with_offset(const unsigned char *pBuf, Py_ssize_t len, unsigned int offset, unsigned int blocks_count,
-                         int verbose);
+                         int verbose, int strict);
 void asterix_start(const char *ini_filename, const char *filename);
 
 #ifdef __cplusplus

@@ -32,6 +32,7 @@
 #include "AsterixDefinition.h"
 #include "XMLParser.h"
 #include "InputParser.h"
+#include <string>
 
 #ifdef _WIN32
   #include <time.h>
@@ -103,7 +104,7 @@ int python_init(const char *xml_config_file) {
     }
 }
 
-PyObject *python_parse(const unsigned char *pBuf, Py_ssize_t len, int verbose) {
+PyObject *python_parse(const unsigned char *pBuf, Py_ssize_t len, int verbose, int strict) {
     // MEDIUM-005 FIX: Add exception handling to prevent crashes
     try {
         // get current timstamp in ms since epoch
@@ -113,10 +114,33 @@ PyObject *python_parse(const unsigned char *pBuf, Py_ssize_t len, int verbose) {
 
         if (inputParser) {
             AsterixData *pData = inputParser->parsePacket(pBuf, len, nTimestamp);
-            if (pData) { // convert to Python format
+            if (pData) {
+                // Check for parse errors in strict mode
+                if (strict) {
+                    // Check if any records had parsing errors
+                    for (auto* block : pData->m_lDataBlocks) {
+                        if (block) {
+                            for (auto* record : block->m_lDataRecords) {
+                                if (record && !record->m_bFormatOK) {
+                                    std::string error_msg = "Parse error in CAT" +
+                                        std::to_string(block->m_pCategory ? block->m_pCategory->m_id : 0) +
+                                        ": malformed record";
+                                    delete pData;
+                                    PyErr_SetString(PyExc_RuntimeError, error_msg.c_str());
+                                    return nullptr;
+                                }
+                            }
+                        }
+                    }
+                }
+                // convert to Python format
                 PyObject *lst = pData->getData(verbose);
                 delete pData;
                 return lst;
+            } else if (strict) {
+                // No data returned - could indicate parse failure
+                PyErr_SetString(PyExc_RuntimeError, "Parse error: no valid ASTERIX data found");
+                return nullptr;
             }
         }
         return nullptr;
@@ -136,7 +160,7 @@ PyObject *python_parse(const unsigned char *pBuf, Py_ssize_t len, int verbose) {
 
 PyObject *
 python_parse_with_offset(const unsigned char *pBuf, Py_ssize_t len, unsigned int offset, unsigned int blocks_count,
-                         int verbose)
+                         int verbose, int strict)
 /* AUTHOR: Krzysztof Rutkowski, ICM UW, krutk@icm.edu.pl
 */
 {
@@ -176,6 +200,19 @@ python_parse_with_offset(const unsigned char *pBuf, Py_ssize_t len, unsigned int
                     DataBlock *block = inputParser->parse_next_data_block(
                             pBuf_offset, m_nPos, len, nTimestamp, m_nDataLength);
                     if (block) {
+                        // Check for parse errors in strict mode
+                        if (strict) {
+                            for (auto* record : block->m_lDataRecords) {
+                                if (record && !record->m_bFormatOK) {
+                                    std::string error_msg = "Parse error in CAT" +
+                                        std::to_string(block->m_pCategory ? block->m_pCategory->m_id : 0) +
+                                        ": malformed record at offset " + std::to_string(m_nPos);
+                                    delete pData;
+                                    PyErr_SetString(PyExc_RuntimeError, error_msg.c_str());
+                                    return nullptr;
+                                }
+                            }
+                        }
                         pData->m_lDataBlocks.push_back(block);
                         current_blocks_count++;
                     }
