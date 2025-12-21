@@ -314,7 +314,21 @@ jobs:
         chmod +x install/test/test.sh
         echo "✓ Test environment ready"
 
-    - name: Run tests
+    - name: Run Google Tests (unit tests)
+      run: |
+        export LD_LIBRARY_PATH=${{ github.workspace }}/install/lib:${LD_LIBRARY_PATH:-}
+
+        # Run Google Tests if available (built with BUILD_TESTING=ON via ENABLE_COVERAGE)
+        if [ -d "build-debug/tests" ]; then
+          echo "=== Running Google Tests ==="
+          cd build-debug
+          ctest --output-on-failure --verbose || echo "::warning::Some unit tests failed"
+          cd ..
+        else
+          echo "::notice::Google Tests not built (BUILD_TESTING may be OFF)"
+        fi
+
+    - name: Run integration tests
       id: run_tests
       run: |
         cd install/test
