@@ -31,6 +31,8 @@ jobs:
   build-and-test:
     name: Build & Test (Ubuntu)
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -124,6 +126,8 @@ jobs:
     name: Alire Build
     runs-on: ubuntu-24.04
     continue-on-error: true  # Alire may not be configured yet
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -161,6 +165,8 @@ jobs:
     name: Generate Documentation
     runs-on: ubuntu-24.04
     needs: build-and-test
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -190,6 +196,8 @@ jobs:
     name: Coverage
     runs-on: ubuntu-24.04
     continue-on-error: true  # Coverage tooling may have issues
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
