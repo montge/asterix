@@ -97,13 +97,13 @@ CDiskDevice::CDiskDevice(CDescriptor &descriptor)
     }
 
     // Input delay, for testing: specifies the delay between consequent Read() or Write() operations
-    if ((inputDelay != nullptr) && (strlen(inputDelay) > 0)) {
+    if ((inputDelay != nullptr) && (strlen(inputDelay) > 0)) {  // NOSONAR: null checked first
         _inputDelay = atoi(inputDelay);
         _input = true;
     }
 
     // specifies the mode of operation on files, directories or groups of files
-    if ((smode != nullptr) && (strlen(smode) > 0)) {
+    if ((smode != nullptr) && (strlen(smode) > 0)) {  // NOSONAR: null checked first
         _mode = atoi(smode);
     }
 
@@ -421,7 +421,7 @@ bool CDiskDevice::DoneWithFile(bool allDone) {
 
     if (_mode & DD_MODE_MARKDONE) {
         // rename the file that has been processed
-        if (strlen(_fileName) >= MAXPATHLEN-32) {
+        if (strlen(_fileName) >= MAXPATHLEN-32) {  // NOSONAR: _fileName is always null-terminated member
             LOGERROR(1, "File path too long to be renamed.\n");
         }
         else {

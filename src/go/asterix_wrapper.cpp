@@ -124,9 +124,9 @@ int asterix_init(const char* config_path) {
             g_pInputParser = std::make_unique<InputParser>(g_pDefinition.get());
         }
 
-        if (config_path && strlen(config_path) > 0) {
+        if (config_path && strlen(config_path) > 0) {  // NOSONAR: null checked first
             // Validate path length
-            if (strlen(config_path) > ASTERIX_MAX_PATH_LENGTH) {
+            if (strlen(config_path) > ASTERIX_MAX_PATH_LENGTH) {  // NOSONAR: null checked above
                 g_lastError = "Configuration path too long";
                 return ASTERIX_ERR_INVALID;
             }
@@ -322,7 +322,7 @@ char* asterix_describe(int category, const char* item, const char* field, [[mayb
 
         std::string description;
 
-        if (!item || strlen(item) == 0) {
+        if (!item || strlen(item) == 0) {  // NOSONAR: null checked first via short-circuit
             // Return category description
             description = pCat->m_strName;
         } else {
@@ -332,7 +332,7 @@ char* asterix_describe(int category, const char* item, const char* field, [[mayb
                 return nullptr;
             }
 
-            if (!field || strlen(field) == 0) {
+            if (!field || strlen(field) == 0) {  // NOSONAR: null checked first via short-circuit
                 // Return item description
                 description = pItem->m_strName;
             } else {

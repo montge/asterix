@@ -331,14 +331,14 @@ def encode_cat048(
             # Generate random Mode 3/A code for demonstration
             # nosec B311 - random is intentionally used for demo data, not security
             import random  # nosec B311
-            mode3a = random.randint(0, 0o7777)  # nosec B311
+            mode3a = random.randint(0, 0o7777)  # nosec B311  # NOSONAR: intentional for demo data
 
         aircraft_address = None
         if include_aircraft_address:
             # Generate random Mode S address for demonstration
             # nosec B311 - random is intentionally used for demo data, not security
             import random  # nosec B311
-            aircraft_address = random.randint(0x400000, 0xFFFFFF)  # nosec B311
+            aircraft_address = random.randint(0x400000, 0xFFFFFF)  # nosec B311  # NOSONAR: intentional for demo data
 
         record = encode_cat048_record(
             range_m=range_m,

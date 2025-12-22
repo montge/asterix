@@ -44,7 +44,7 @@ static unsigned char* newErrorString(const char* str) {
     if (str == nullptr) {
         str = "???";
     }
-    size_t len = strlen(str) + 1;
+    size_t len = strlen(str) + 1;  // NOSONAR: str is non-null (checked above or literal)
     auto result = new unsigned char[len];
     memcpy(result, str, len);
     return result;
@@ -54,7 +54,7 @@ static char* newErrorStringChar(const char* str) {
     if (str == nullptr) {
         str = "???";
     }
-    size_t len = strlen(str) + 1;
+    size_t len = strlen(str) + 1;  // NOSONAR: str is non-null (checked above or literal)
     auto result = new char[len];
     memcpy(result, str, len);
     return result;
