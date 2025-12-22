@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'asterix/version'
 require 'asterix_ext'
 
 # ASTERIX (All Purpose STructured EUROCONTROL SuRveillance Information EXchange) decoder
@@ -44,9 +45,6 @@ require 'asterix_ext'
 #   - Ensure all ASTERIX operations happen in a single thread
 #
 module Asterix
-  # Version of the ASTERIX decoder
-  VERSION = '2.8.10'
-
   # Default configuration directory (relative to gem root)
   DEFAULT_CONFIG_DIR = File.expand_path('../config', __dir__)
 

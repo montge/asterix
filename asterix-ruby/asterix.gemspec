@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'lib/asterix'
+require_relative 'lib/asterix/version'
 
 Gem::Specification.new do |spec|
   spec.name = 'asterix_decoder'

@@ -359,7 +359,10 @@ jobs:
         echo "=== Generating C++ coverage report ==="
 
         # Capture coverage data from build directory
-        lcov --capture --directory build-debug --output-file coverage-raw.info --rc lcov_branch_coverage=1
+        # Use --ignore-errors mismatch to handle GCC/lcov version compatibility issues
+        lcov --capture --directory build-debug --output-file coverage-raw.info \
+          --rc lcov_branch_coverage=1 \
+          --ignore-errors mismatch
 
         # Remove system headers and test files from coverage
         lcov --remove coverage-raw.info \
@@ -368,10 +371,11 @@ jobs:
           '*/tests/*' \
           '*/install/*' \
           --output-file coverage.info \
-          --rc lcov_branch_coverage=1
+          --rc lcov_branch_coverage=1 \
+          --ignore-errors mismatch
 
         # Generate HTML report for artifact upload
-        genhtml coverage.info --output-directory coverage-html --branch-coverage
+        genhtml coverage.info --output-directory coverage-html --branch-coverage --ignore-errors mismatch
 
         # Display coverage summary
         lcov --list coverage.info
