@@ -121,7 +121,10 @@ fn test_ccsds_mode_debug() {
 
 #[test]
 fn test_ccsds_error_packet_too_short() {
-    let err = CcsdsError::PacketTooShort { actual: 3, minimum: 6 };
+    let err = CcsdsError::PacketTooShort {
+        actual: 3,
+        minimum: 6,
+    };
     let msg = format!("{}", err);
     assert!(msg.contains("3") && msg.contains("6"));
 }
@@ -169,7 +172,10 @@ fn test_ccsds_error_asterix() {
 
 #[test]
 fn test_ccsds_error_debug() {
-    let err = CcsdsError::PacketTooShort { actual: 1, minimum: 6 };
+    let err = CcsdsError::PacketTooShort {
+        actual: 1,
+        minimum: 6,
+    };
     let debug_str = format!("{:?}", err);
     assert!(debug_str.contains("PacketTooShort"));
 }
@@ -287,7 +293,7 @@ fn test_parse_ccsds_header_zero_length_data() {
         0x03, 0x30, // APID 0x330
         0xC0, 0x00, // SeqCount 0
         0x00, 0x00, // Data Length = 0 (means 1 byte)
-        0x30,       // 1 byte of data
+        0x30, // 1 byte of data
     ];
 
     let result = parse_ccsds_header(&packet);

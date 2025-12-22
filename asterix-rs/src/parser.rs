@@ -506,11 +506,17 @@ mod tests {
         match result {
             Ok(records) => {
                 // Empty records expected for invalid (all zeros) data
-                assert!(records.is_empty(), "Invalid data should produce empty records");
+                assert!(
+                    records.is_empty(),
+                    "Invalid data should produce empty records"
+                );
             }
             Err(e) => {
                 let msg = format!("{:?}", e);
-                assert!(!msg.contains("too large"), "Should not fail size validation");
+                assert!(
+                    !msg.contains("too large"),
+                    "Should not fail size validation"
+                );
             }
         }
     }
@@ -523,7 +529,10 @@ mod tests {
         let result = parse(&data, ParseOptions::default());
         // Should return empty records (C++ parser handles gracefully)
         match result {
-            Ok(records) => assert!(records.is_empty(), "Single byte should produce empty records"),
+            Ok(records) => assert!(
+                records.is_empty(),
+                "Single byte should produce empty records"
+            ),
             Err(_) => {} // Error also acceptable for data too short
         }
     }
@@ -629,11 +638,17 @@ mod tests {
         match result {
             Ok(parse_result) => {
                 // Empty records expected for invalid data
-                assert!(parse_result.records.is_empty(), "Invalid data should produce empty records");
+                assert!(
+                    parse_result.records.is_empty(),
+                    "Invalid data should produce empty records"
+                );
             }
             Err(e) => {
                 let msg = format!("{:?}", e);
-                assert!(!msg.contains("blocks_count"), "Should not fail blocks_count validation");
+                assert!(
+                    !msg.contains("blocks_count"),
+                    "Should not fail blocks_count validation"
+                );
             }
         }
     }
@@ -648,11 +663,17 @@ mod tests {
         match result {
             Ok(parse_result) => {
                 // Empty records expected for invalid data at offset
-                assert!(parse_result.records.is_empty(), "Invalid data should produce empty records");
+                assert!(
+                    parse_result.records.is_empty(),
+                    "Invalid data should produce empty records"
+                );
             }
             Err(e) => {
                 let msg = format!("{:?}", e);
-                assert!(!msg.contains("exceeds data length"), "Should not fail offset validation");
+                assert!(
+                    !msg.contains("exceeds data length"),
+                    "Should not fail offset validation"
+                );
             }
         }
     }
