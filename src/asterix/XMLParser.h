@@ -605,6 +605,10 @@ private:
                            bool allowedInExplicit, bool allowedInCompound,
                            bool allowedAsFirstInCompound);
 
+    // Helper methods for handleBitsStart complexity reduction
+    void parseBitRange(DataItemBits *pBits, const char *attrValue, int &target, const char *errorLabel);
+    bool parseEncodeAttribute(DataItemBits *pBits, const char *value);
+
     // Element start handlers
     void handleCategoryStart(const char **attr);
     void handleDataItemStart(const char **attr);

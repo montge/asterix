@@ -369,6 +369,37 @@ void XMLParser::handleBDSStart(const char **attr) {
     addFormatToParent(pFormatBDS, "BDS", true, true, true, true, false);
 }
 
+void XMLParser::parseBitRange(DataItemBits *pBits, const char *attrValue, int &target, const char *errorLabel) {
+    int bit = atoi(attrValue);
+    if (bit >= 0) {
+        target = bit;
+        if (static_cast<DataItemFormatFixed *>(pBits->m_pParentFormat)->m_nLength * 8 < bit) {
+            Error("XMLParser : Bit out of fixed length");
+        }
+    } else {
+        Error(errorLabel, attrValue);
+    }
+}
+
+bool XMLParser::parseEncodeAttribute(DataItemBits *pBits, const char *value) {
+    if (strcmp(value, "unsigned") == 0) {
+        pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+    } else if (strcmp(value, "6bitschar") == 0) {
+        pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_SIX_BIT_CHAR;
+    } else if (strcmp(value, "hex") == 0) {
+        pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_HEX_BIT_CHAR;
+    } else if (strcmp(value, "octal") == 0) {
+        pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_OCTAL;
+    } else if (strcmp(value, "signed") == 0) {
+        pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_SIGNED;
+    } else if (strcmp(value, "ascii") == 0) {
+        pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_ASCII;
+    } else {
+        return false;
+    }
+    return true;
+}
+
 void XMLParser::handleBitsStart(const char **attr) {
     if (!m_pFormat) {
         Error("XMLParser : <Bits> without <Format>");
@@ -386,49 +417,14 @@ void XMLParser::handleBitsStart(const char **attr) {
 
     for (int i = 0; attr[i]; i += 2) {
         if (strcmp(attr[i], "bit") == 0) {
-            int bit = atoi(attr[i + 1]);
-            if (bit >= 0) {
-                pBits->m_nFrom = pBits->m_nTo = bit;
-                if (static_cast<DataItemFormatFixed *>(pBits->m_pParentFormat)->m_nLength * 8 < bit) {
-                    Error("XMLParser : Bit out of fixed length");
-                }
-            } else {
-                Error("XMLParser : Wrong bit: ", attr[i + 1]);
-            }
+            parseBitRange(pBits, attr[i + 1], pBits->m_nFrom, "XMLParser : Wrong bit: ");
+            pBits->m_nTo = pBits->m_nFrom;
         } else if (strcmp(attr[i], "from") == 0) {
-            int bit = atoi(attr[i + 1]);
-            if (bit >= 0) {
-                pBits->m_nFrom = bit;
-                if (static_cast<DataItemFormatFixed *>(pBits->m_pParentFormat)->m_nLength * 8 < bit) {
-                    Error("XMLParser : Bit out of fixed length");
-                }
-            } else {
-                Error("XMLParser : Wrong bit from: ", attr[i + 1]);
-            }
+            parseBitRange(pBits, attr[i + 1], pBits->m_nFrom, "XMLParser : Wrong bit from: ");
         } else if (strcmp(attr[i], "to") == 0) {
-            int bit = atoi(attr[i + 1]);
-            if (bit >= 0) {
-                pBits->m_nTo = bit;
-                if (static_cast<DataItemFormatFixed *>(pBits->m_pParentFormat)->m_nLength * 8 < bit) {
-                    Error("XMLParser : Bit out of fixed length");
-                }
-            } else {
-                Error("XMLParser : Wrong bit to: ", attr[i + 1]);
-            }
+            parseBitRange(pBits, attr[i + 1], pBits->m_nTo, "XMLParser : Wrong bit to: ");
         } else if (strcmp(attr[i], "encode") == 0) {
-            if (strcmp(attr[i + 1], "unsigned") == 0) {
-                pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
-            } else if (strcmp(attr[i + 1], "6bitschar") == 0) {
-                pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_SIX_BIT_CHAR;
-            } else if (strcmp(attr[i + 1], "hex") == 0) {
-                pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_HEX_BIT_CHAR;
-            } else if (strcmp(attr[i + 1], "octal") == 0) {
-                pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_OCTAL;
-            } else if (strcmp(attr[i + 1], "signed") == 0) {
-                pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_SIGNED;
-            } else if (strcmp(attr[i + 1], "ascii") == 0) {
-                pBits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_ASCII;
-            } else {
+            if (!parseEncodeAttribute(pBits, attr[i + 1])) {
                 Error("XMLParser : Wrong encode: ", attr[i]);
             }
         } else if (strcmp(attr[i], "fx") == 0) {
