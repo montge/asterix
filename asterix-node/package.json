@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "node-addon-api": "^8.0.0",
-    "node-gyp": "^10.0.0"
+    "node-gyp": "^12.2.0"
   },
   "devDependencies": {
     "mocha": "^10.0.0",
