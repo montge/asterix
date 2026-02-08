@@ -94,6 +94,7 @@ fn test_ccsds_mode_telecommand() {
 #[test]
 fn test_ccsds_mode_clone() {
     let mode = CcsdsMode::Telemetry;
+    #[allow(clippy::clone_on_copy)]
     let cloned = mode.clone();
     assert!(matches!(cloned, CcsdsMode::Telemetry));
 }
@@ -101,7 +102,7 @@ fn test_ccsds_mode_clone() {
 #[test]
 fn test_ccsds_mode_debug() {
     let mode = CcsdsMode::Telemetry;
-    let debug_str = format!("{:?}", mode);
+    let debug_str = format!("{mode:?}");
     assert!(debug_str.contains("Telemetry"));
 }
 
@@ -112,49 +113,49 @@ fn test_ccsds_mode_debug() {
 #[test]
 fn test_ccsds_error_packet_error() {
     let err = CcsdsError::PacketError("packet too short".to_string());
-    let msg = format!("{}", err);
+    let msg = format!("{err}");
     assert!(msg.contains("packet"));
 }
 
 #[test]
 fn test_ccsds_error_decode_error() {
     let err = CcsdsError::DecodeError("bad version".to_string());
-    let msg = format!("{}", err);
+    let msg = format!("{err}");
     assert!(msg.contains("bad version"));
 }
 
 #[test]
 fn test_ccsds_error_encode_error() {
     let err = CcsdsError::EncodeError("encode failed".to_string());
-    let msg = format!("{}", err);
+    let msg = format!("{err}");
     assert!(msg.contains("encode"));
 }
 
 #[test]
 fn test_ccsds_error_invalid_apid() {
     let err = CcsdsError::InvalidApid("bad apid".to_string());
-    let msg = format!("{}", err);
+    let msg = format!("{err}");
     assert!(msg.to_lowercase().contains("apid"));
 }
 
 #[test]
 fn test_ccsds_error_serialization() {
     let err = CcsdsError::SerializationError("ser failed".to_string());
-    let msg = format!("{}", err);
+    let msg = format!("{err}");
     assert!(msg.to_lowercase().contains("serialization"));
 }
 
 #[test]
 fn test_ccsds_error_channel_closed() {
     let err = CcsdsError::ChannelClosed;
-    let msg = format!("{}", err);
+    let msg = format!("{err}");
     assert!(msg.to_lowercase().contains("closed"));
 }
 
 #[test]
 fn test_ccsds_error_debug() {
     let err = CcsdsError::PacketError("test".to_string());
-    let debug_str = format!("{:?}", err);
+    let debug_str = format!("{err:?}");
     assert!(debug_str.contains("PacketError"));
 }
 
@@ -400,7 +401,7 @@ fn test_ccsds_sample_debug() {
         packet_type: CcsdsMode::Telemetry,
     };
 
-    let debug_str = format!("{:?}", sample);
+    let debug_str = format!("{sample:?}");
     assert!(debug_str.contains("CcsdsSample"));
     assert!(debug_str.contains("816")); // 0x330 = 816
 }

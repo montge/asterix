@@ -512,7 +512,7 @@ mod tests {
                 );
             }
             Err(e) => {
-                let msg = format!("{:?}", e);
+                let msg = format!("{e:?}");
                 assert!(
                     !msg.contains("too large"),
                     "Should not fail size validation"
@@ -644,7 +644,7 @@ mod tests {
                 );
             }
             Err(e) => {
-                let msg = format!("{:?}", e);
+                let msg = format!("{e:?}");
                 assert!(
                     !msg.contains("blocks_count"),
                     "Should not fail blocks_count validation"
@@ -669,7 +669,7 @@ mod tests {
                 );
             }
             Err(e) => {
-                let msg = format!("{:?}", e);
+                let msg = format!("{e:?}");
                 assert!(
                     !msg.contains("exceeds data length"),
                     "Should not fail offset validation"

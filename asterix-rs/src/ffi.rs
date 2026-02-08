@@ -604,7 +604,7 @@ mod tests {
     #[test]
     fn test_log_level_debug_format() {
         let level = LogLevel::Debug;
-        let debug_str = format!("{:?}", level);
+        let debug_str = format!("{level:?}");
         assert_eq!(debug_str, "Debug");
     }
 
