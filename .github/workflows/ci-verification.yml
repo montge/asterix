@@ -372,7 +372,8 @@ jobs:
           '*/install/*' \
           --output-file coverage.info \
           --rc lcov_branch_coverage=1 \
-          --ignore-errors mismatch
+          --ignore-errors mismatch \
+          --ignore-errors unused
 
         # Generate HTML report for artifact upload
         genhtml coverage.info --output-directory coverage-html --branch-coverage --ignore-errors mismatch

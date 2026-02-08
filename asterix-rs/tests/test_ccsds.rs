@@ -20,8 +20,9 @@ fn test_ccsds_config_default() {
     assert!(matches!(config.mode, CcsdsMode::Telemetry));
     assert!(!config.enable_crc);
     assert!(config.multicast_addr.is_none());
-    assert_eq!(config.port, 0);
-    assert!(config.interface.is_none());
+    assert_eq!(config.udp_port, Some(7447));
+    assert!(!config.use_secondary_header);
+    assert_eq!(config.max_packet_length, 65536);
 }
 
 #[test]
@@ -42,47 +43,36 @@ fn test_ccsds_config_telecommand() {
 
 #[test]
 fn test_ccsds_config_with_base_apid() {
-    let config = CcsdsConfig::default().with_base_apid(0x400);
+    let config = CcsdsConfig::with_base_apid(0x400);
 
     assert_eq!(config.base_apid, 0x400);
 }
 
 #[test]
-fn test_ccsds_config_with_crc() {
-    let config = CcsdsConfig::default().with_crc(true);
-
-    assert!(config.enable_crc);
-}
-
-#[test]
 fn test_ccsds_config_with_multicast() {
-    let config = CcsdsConfig::default().with_multicast("224.0.0.1", 10000);
+    let config = CcsdsConfig::with_multicast("224.0.0.1", 10000);
 
     assert_eq!(config.multicast_addr, Some("224.0.0.1".to_string()));
-    assert_eq!(config.port, 10000);
+    assert_eq!(config.udp_port, Some(10000));
 }
 
 #[test]
-fn test_ccsds_config_with_interface() {
-    let config = CcsdsConfig::default().with_interface("eth0");
-
-    assert_eq!(config.interface, Some("eth0".to_string()));
-}
-
-#[test]
-fn test_ccsds_config_builder_chain() {
-    let config = CcsdsConfig::telemetry()
-        .with_base_apid(0x350)
-        .with_crc(true)
-        .with_multicast("224.1.2.3", 12345)
-        .with_interface("lo");
+fn test_ccsds_config_custom_construction() {
+    let config = CcsdsConfig {
+        mode: CcsdsMode::Telemetry,
+        base_apid: 0x350,
+        enable_crc: true,
+        multicast_addr: Some("224.1.2.3".to_string()),
+        udp_port: Some(12345),
+        use_secondary_header: false,
+        max_packet_length: 65536,
+    };
 
     assert!(matches!(config.mode, CcsdsMode::Telemetry));
     assert_eq!(config.base_apid, 0x350);
     assert!(config.enable_crc);
     assert_eq!(config.multicast_addr, Some("224.1.2.3".to_string()));
-    assert_eq!(config.port, 12345);
-    assert_eq!(config.interface, Some("lo".to_string()));
+    assert_eq!(config.udp_port, Some(12345));
 }
 
 // =============================================================================
@@ -120,64 +110,61 @@ fn test_ccsds_mode_debug() {
 // =============================================================================
 
 #[test]
-fn test_ccsds_error_packet_too_short() {
-    let err = CcsdsError::PacketTooShort {
-        actual: 3,
-        minimum: 6,
-    };
+fn test_ccsds_error_packet_error() {
+    let err = CcsdsError::PacketError("packet too short".to_string());
     let msg = format!("{}", err);
-    assert!(msg.contains("3") && msg.contains("6"));
+    assert!(msg.contains("packet"));
 }
 
 #[test]
-fn test_ccsds_error_invalid_header() {
-    let err = CcsdsError::InvalidHeader("bad version".to_string());
+fn test_ccsds_error_decode_error() {
+    let err = CcsdsError::DecodeError("bad version".to_string());
     let msg = format!("{}", err);
     assert!(msg.contains("bad version"));
 }
 
 #[test]
-fn test_ccsds_error_crc_mismatch() {
-    let err = CcsdsError::CrcMismatch {
-        expected: 0x1234,
-        actual: 0x5678,
-    };
+fn test_ccsds_error_encode_error() {
+    let err = CcsdsError::EncodeError("encode failed".to_string());
     let msg = format!("{}", err);
-    assert!(msg.contains("1234") || msg.contains("5678"));
+    assert!(msg.contains("encode"));
 }
 
 #[test]
-fn test_ccsds_error_fragmentation() {
-    let err = CcsdsError::FragmentationError("missing segment".to_string());
+fn test_ccsds_error_invalid_apid() {
+    let err = CcsdsError::InvalidApid("bad apid".to_string());
     let msg = format!("{}", err);
-    assert!(msg.contains("missing segment"));
+    assert!(msg.to_lowercase().contains("apid"));
 }
 
 #[test]
-fn test_ccsds_error_io() {
-    let io_err = std::io::Error::new(std::io::ErrorKind::NotFound, "file not found");
-    let err = CcsdsError::IoError(io_err);
+fn test_ccsds_error_serialization() {
+    let err = CcsdsError::SerializationError("ser failed".to_string());
     let msg = format!("{}", err);
-    assert!(msg.contains("file not found") || msg.contains("IO"));
+    assert!(msg.to_lowercase().contains("serialization"));
 }
 
 #[test]
-fn test_ccsds_error_asterix() {
-    use asterix::AsterixError;
-    let asterix_err = AsterixError::InvalidData("bad data".to_string());
-    let err = CcsdsError::AsterixError(asterix_err);
+fn test_ccsds_error_channel_closed() {
+    let err = CcsdsError::ChannelClosed;
     let msg = format!("{}", err);
-    assert!(msg.contains("bad data") || msg.contains("ASTERIX"));
+    assert!(msg.to_lowercase().contains("closed"));
 }
 
 #[test]
 fn test_ccsds_error_debug() {
-    let err = CcsdsError::PacketTooShort {
-        actual: 1,
-        minimum: 6,
-    };
+    let err = CcsdsError::PacketError("test".to_string());
     let debug_str = format!("{:?}", err);
-    assert!(debug_str.contains("PacketTooShort"));
+    assert!(debug_str.contains("PacketError"));
+}
+
+#[test]
+fn test_ccsds_error_to_asterix_error() {
+    use asterix::AsterixError;
+    let err = CcsdsError::EncodeError("encode failed".to_string());
+    let asterix_err: AsterixError = err.into();
+    let msg = asterix_err.to_string();
+    assert!(msg.contains("encode"));
 }
 
 // =============================================================================
@@ -213,13 +200,8 @@ fn test_parse_ccsds_header_too_short() {
     let result = parse_ccsds_header(&packet);
     assert!(result.is_err());
 
-    match result {
-        Err(CcsdsError::PacketTooShort { actual, minimum }) => {
-            assert_eq!(actual, 3);
-            assert_eq!(minimum, 6);
-        }
-        _ => panic!("Expected PacketTooShort error"),
-    }
+    let err_msg = result.unwrap_err().to_string();
+    assert!(err_msg.to_lowercase().contains("too short"));
 }
 
 #[test]
@@ -350,10 +332,13 @@ fn test_category_from_apid_max_category() {
 }
 
 #[test]
-fn test_category_from_apid_overflow_wraps() {
-    // Large APID difference wraps in u8
+fn test_category_from_apid_out_of_range() {
+    // APID below base range returns 0
+    let category = category_from_apid(0x200, 0x300);
+    assert_eq!(category, 0);
+
+    // APID above base + 256 range returns 0
     let category = category_from_apid(0x500, 0x300);
-    // 0x500 - 0x300 = 0x200 = 512, which wraps to 0 in u8
     assert_eq!(category, 0);
 }
 
@@ -366,16 +351,20 @@ fn test_ccsds_sample_creation() {
     use asterix::transport::ccsds::CcsdsSample;
 
     let sample = CcsdsSample {
+        category: 48,
         apid: 0x330,
         sequence_count: 42,
-        timestamp_us: 1234567890,
         data: vec![0x30, 0x00, 0x04],
+        timestamp: 1234567890,
+        packet_type: CcsdsMode::Telemetry,
     };
 
     assert_eq!(sample.apid, 0x330);
     assert_eq!(sample.sequence_count, 42);
-    assert_eq!(sample.timestamp_us, 1234567890);
+    assert_eq!(sample.timestamp, 1234567890);
     assert_eq!(sample.data.len(), 3);
+    assert_eq!(sample.category, 48);
+    assert!(matches!(sample.packet_type, CcsdsMode::Telemetry));
 }
 
 #[test]
@@ -383,15 +372,19 @@ fn test_ccsds_sample_clone() {
     use asterix::transport::ccsds::CcsdsSample;
 
     let sample = CcsdsSample {
-        apid: 0x330,
+        category: 62,
+        apid: 0x33E,
         sequence_count: 1,
-        timestamp_us: 100,
         data: vec![1, 2, 3],
+        timestamp: 100,
+        packet_type: CcsdsMode::Telecommand,
     };
 
     let cloned = sample.clone();
     assert_eq!(cloned.apid, sample.apid);
     assert_eq!(cloned.data, sample.data);
+    assert_eq!(cloned.category, 62);
+    assert!(matches!(cloned.packet_type, CcsdsMode::Telecommand));
 }
 
 #[test]
@@ -399,10 +392,12 @@ fn test_ccsds_sample_debug() {
     use asterix::transport::ccsds::CcsdsSample;
 
     let sample = CcsdsSample {
+        category: 48,
         apid: 0x330,
         sequence_count: 1,
-        timestamp_us: 100,
         data: vec![1, 2, 3],
+        timestamp: 100,
+        packet_type: CcsdsMode::Telemetry,
     };
 
     let debug_str = format!("{:?}", sample);
