@@ -1,7 +1,26 @@
 # code-quality Specification
 
 ## Purpose
-TBD - created by archiving change improve-code-quality. Update Purpose after archive.
+
+Define and enforce model software quality standards for the ASTERIX decoder - a safety-critical ATM (Air Traffic Management) application. This spec establishes measurable quality gates for static analysis, code coverage, complexity, memory safety, and dependency management across all three language bindings (C++, Python, Rust).
+
+## Current Status (2026-02-07)
+
+| Metric | Current | Target | Gap |
+|--------|---------|--------|-----|
+| Bugs | 0 (2 false positives) | 0 | PASS |
+| Vulnerabilities | 0 | 0 | PASS |
+| Code Smells | ~1,400 | 0 | ~1,400 remaining |
+| Overall Coverage | 21.4% | 90% | Major gap |
+| Duplication | 1.8% | <3% | PASS |
+| Security Hotspots | 45 reviewed | All reviewed | PASS |
+| Cognitive Complexity | 1 violation (XMLParser::parseAttributes at 57) | max 25/function | 1 violation |
+
+### Known Deferred Items
+- Smart pointer migration (cpp:S5025) - large refactor, ~578 issues
+- Naming convention standardization - deferred from fix-sonarcloud-issues
+- Coverage improvement 21.4% -> 90% - explicitly out of scope in prior changes, needs dedicated effort
+- SonarCloud quality gate UI configuration - pending manual action
 ## Requirements
 ### Requirement: Model Software Quality Standards
 
@@ -114,6 +133,10 @@ The system SHALL maintain up-to-date dependencies with automated security monito
 #### Scenario: Dependabot updates
 - **WHEN** Dependabot creates a dependency update PR
 - **THEN** the PR SHALL be reviewed and merged within 2 weeks if CI passes
+
+#### Scenario: Dependabot blocked by CI
+- **WHEN** Dependabot PRs cannot be merged due to pre-existing CI failures
+- **THEN** the CI failure SHALL be treated as P0 priority and fixed before other feature work
 
 #### Scenario: Security vulnerabilities
 - **WHEN** a dependency has known security vulnerabilities

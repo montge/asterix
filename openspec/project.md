@@ -8,7 +8,8 @@ ASTERIX (All Purpose STructured EUROCONTROL SuRveillance Information EXchange) i
 
 - **C++23/C17**: Core parsing engine (high-performance)
 - **Python 3.10-3.14**: Python bindings module (`asterix_decoder` on PyPI)
-- **Rust 1.70+**: Rust bindings crate (`asterix-decoder` on crates.io)
+- **Rust 1.70+**: Rust bindings crate (`asterix-decoder` on crates.io) - includes CAN, CCSDS, DDS, D-Bus, Zenoh transport modules
+- **Node.js 20+**: Node.js bindings via N-API (`asterix-node/`)
 - **CMake 3.20+**: Build system
 - **libexpat**: XML parsing for ASTERIX category definitions
 
@@ -30,11 +31,18 @@ Three-layer design:
 
 ### Testing Strategy
 
-- **C++ Integration Tests**: `install/test/test.sh` (11 test cases)
-- **Python Tests**: `python -m unittest`
-- **Rust Tests**: `cargo test --all-features`
+- **C++ Integration Tests**: `install/test/test.sh` (11 test cases), plus Google Test unit tests in `tests/cpp/`
+- **Python Tests**: `python -m unittest` (927+ tests)
+- **Rust Tests**: `cargo test --all-features` (coverage ~76.2% via tarpaulin)
+- **Node.js Tests**: `npm test` from `asterix-node/`
 - **Memory Safety**: Valgrind leak testing required for FFI changes
-- **Coverage Target**: >80% for new code, 90% overall target
+- **Coverage Target**: >80% for new code, 90% overall target (current overall: 21.4%)
+
+### Known CI Issues (2026-02-07)
+
+- **Rust stable CI broken on master**: `test_ccsds.rs` out of sync with CCSDS API (19 compilation errors). Blocks all Dependabot PR merges.
+- **DO-278 CI**: lcov `exclude` pattern `*/test/*` unused error (strict mode)
+- **14 Dependabot PRs pending**: 2 security (tar, rsa), 2 security-adjacent (rustix, rustls-pki-types), 10 routine cargo bumps
 
 ### Git Workflow
 
