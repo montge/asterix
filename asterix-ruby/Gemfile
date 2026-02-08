@@ -11,5 +11,5 @@ group :development, :test do
 end
 
 group :test do
-  gem 'codecov', '~> 0.6', require: false
+  # Coverage uploads handled by codecov/codecov-action in CI
 end
