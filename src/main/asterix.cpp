@@ -114,6 +114,7 @@ static std::string parseOutputFormatArg(const std::string &arg, const std::strin
 static std::string buildInputString(const std::string &strFileInput, const std::string &strIPInput,
                                     const std::string &strZMQInput, const std::string &strMQTTInput,
                                     const std::string &strGRPCInput, const std::string &strDDSInput,
+                                    const std::string &strCANInput,
                                     bool bLoopFile, const std::string &strInputFormat) {
     std::string strInput;
 
@@ -143,6 +144,11 @@ static std::string buildInputString(const std::string &strFileInput, const std::
 #ifdef HAVE_CYCLONEDDS
     else if (!strDDSInput.empty()) {
         strInput = "dds;" + strDDSInput + ";";
+    }
+#endif
+#ifdef HAVE_SOCKETCAN
+    else if (!strCANInput.empty()) {
+        strInput = "can;" + strCANInput + ";";
     }
 #endif
     else {
@@ -284,6 +290,15 @@ static void show_usage(std::string name) {
             << "\n\t\t\tFor example: --dds SUB:0:AsterixData"
             << "\n\t\t\tFor example: --dds SUB:0:AsterixCat048:reliable"
 #endif
+#ifdef HAVE_SOCKETCAN
+            << "\n\t-c,--can\tSocketCAN interface (Linux only). Format: interface[:fd[:timeout_ms]]"
+            << "\n\t\t\tinterface: CAN interface name (e.g., can0, vcan0)"
+            << "\n\t\t\tfd: 'fd' for CAN FD frames, omit for classic CAN"
+            << "\n\t\t\ttimeout_ms: fragment reassembly timeout (default 1000)"
+            << "\n\t\t\tFor example: -c vcan0"
+            << "\n\t\t\tFor example: -c can0:fd"
+            << "\n\t\t\tFor example: -c can0:fd:5000"
+#endif
             << std::endl;
 }
 
@@ -295,6 +310,7 @@ int main(int argc, const char *argv[]) {
     std::string strMQTTInput;
     std::string strGRPCInput;
     std::string strDDSInput;
+    std::string strCANInput;
     std::string strFilterFile;
     std::string strInputFormat = "ASTERIX_RAW";
     std::string strOutputFormat = "ASTERIX_TXT";
@@ -386,6 +402,14 @@ int main(int argc, const char *argv[]) {
             std::cerr << "Error: Cyclone DDS support not compiled in. Rebuild with -DENABLE_CYCLONEDDS=ON" << std::endl;
             return 1;
 #endif
+        } else if ((arg == "-c") || (arg == "--can") || (arg == "--socketcan")) {
+#ifdef HAVE_SOCKETCAN
+            if (!checkArgRequiresValue(arg, i, argc)) return 1;
+            strCANInput = argv[++i];
+#else
+            std::cerr << "Error: SocketCAN support not compiled in. Rebuild with -DENABLE_SOCKETCAN=ON" << std::endl;
+            return 1;
+#endif
         }
     }
 
@@ -403,7 +427,7 @@ int main(int argc, const char *argv[]) {
     // Create input string using helper function
     std::string strInput = buildInputString(strFileInput, strIPInput, strZMQInput,
                                             strMQTTInput, strGRPCInput, strDDSInput,
-                                            bLoopFile, strInputFormat);
+                                            strCANInput, bLoopFile, strInputFormat);
 
     // Create output string
     std::string strOutput = "std 0 " + strOutputFormat;
