@@ -382,6 +382,119 @@ TEST_F(TracerTest, CallbackCanBeChanged) {
     EXPECT_EQ(g_callback_count, 1);
 }
 
+/**
+ * Test Case: TC-CPP-TRACER-022
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify SetLogLevel() and GetLogLevel() default value
+ */
+TEST_F(TracerTest, DefaultLogLevel) {
+    Tracer::Delete();
+    Tracer::instance();
+
+    // Default log level should be 1 (errors only)
+    EXPECT_EQ(Tracer::GetLogLevel(), 1);
+}
+
+/**
+ * Test Case: TC-CPP-TRACER-023
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify SetLogLevel() changes level
+ */
+TEST_F(TracerTest, SetLogLevelChangesLevel) {
+    Tracer::SetLogLevel(3);
+    EXPECT_EQ(Tracer::GetLogLevel(), 3);
+
+    Tracer::SetLogLevel(0);
+    EXPECT_EQ(Tracer::GetLogLevel(), 0);
+
+    Tracer::SetLogLevel(4);
+    EXPECT_EQ(Tracer::GetLogLevel(), 4);
+}
+
+/**
+ * Test Case: TC-CPP-TRACER-024
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify silent mode (log level 0) suppresses output
+ */
+TEST_F(TracerTest, SilentModeSuppressesOutput) {
+    Tracer::Configure(test_printf_callback);
+    g_callback_count = 0;
+
+    // Set silent mode
+    Tracer::SetLogLevel(0);
+
+    Tracer::Error("This should be suppressed");
+
+    // No callback should have been invoked
+    EXPECT_EQ(g_callback_count, 0);
+    EXPECT_TRUE(g_captured_output.empty());
+}
+
+/**
+ * Test Case: TC-CPP-TRACER-025
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify restoring log level re-enables output
+ */
+TEST_F(TracerTest, RestoreLogLevelReenablesOutput) {
+    Tracer::Configure(test_printf_callback);
+
+    // Silence, then restore
+    Tracer::SetLogLevel(0);
+    g_callback_count = 0;
+    Tracer::Error("Suppressed");
+    EXPECT_EQ(g_callback_count, 0);
+
+    Tracer::SetLogLevel(1);
+    Tracer::Error("Restored");
+    EXPECT_EQ(g_callback_count, 1);
+    EXPECT_EQ(g_captured_output, "Restored");
+}
+
+/**
+ * Test Case: TC-CPP-TRACER-026
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify m_logLevel is initialized correctly after Delete/recreate
+ */
+TEST_F(TracerTest, LogLevelResetAfterDelete) {
+    Tracer::SetLogLevel(4);
+    EXPECT_EQ(Tracer::GetLogLevel(), 4);
+
+    Tracer::Delete();
+    // After delete and recreate, should be default (1)
+    EXPECT_EQ(Tracer::GetLogLevel(), 1);
+}
+
+/**
+ * Test Case: TC-CPP-TRACER-027
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify Delete() on already-null instance is safe
+ */
+TEST_F(TracerTest, DeleteOnNullInstanceIsSafe) {
+    Tracer::Delete();
+    EXPECT_EQ(Tracer::g_TracerInstance, nullptr);
+
+    // Second delete should not crash
+    Tracer::Delete();
+    EXPECT_EQ(Tracer::g_TracerInstance, nullptr);
+}
+
+/**
+ * Test Case: TC-CPP-TRACER-028
+ * Requirement: REQ-HLR-ERR-002
+ * Description: Verify silent mode with default puts() handler
+ */
+TEST_F(TracerTest, SilentModeWithDefaultHandler) {
+    // No callback configured - uses default puts()
+    Tracer::SetLogLevel(0);
+
+    testing::internal::CaptureStdout();
+    Tracer::Error("Should be silent");
+    std::string output = testing::internal::GetCapturedStdout();
+
+    // Output should be empty when silent
+    EXPECT_TRUE(output.empty());
+}
+
 // Main function for running tests
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

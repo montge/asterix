@@ -206,6 +206,155 @@ TEST(UtilsTest, CRC32ASTERIXPacket) {
     EXPECT_EQ(crc, crc2);
 }
 
+/**
+ * Test Case: TC-CPP-UTILS-014
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify format() with empty string
+ */
+TEST(UtilsTest, FormatEmptyString) {
+    std::string result = format("");
+    EXPECT_EQ(result, "");
+}
+
+/**
+ * Test Case: TC-CPP-UTILS-015
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify format() heap fallback path with string >512 chars
+ */
+TEST(UtilsTest, FormatLargeStringHeapFallback) {
+    // Create a format string that will produce output > 512 bytes
+    // This tests the heap allocation fallback path in format()
+    std::string large_pattern(600, 'X');
+    std::string result = format("%s", large_pattern.c_str());
+
+    EXPECT_EQ(result.length(), 600);
+    EXPECT_EQ(result, large_pattern);
+}
+
+/**
+ * Test Case: TC-CPP-UTILS-016
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify format() with exactly 511 chars (fits in stack buffer)
+ */
+TEST(UtilsTest, FormatExactlyFitsStackBuffer) {
+    std::string pattern(511, 'Y');
+    std::string result = format("%s", pattern.c_str());
+
+    EXPECT_EQ(result.length(), 511);
+    EXPECT_EQ(result, pattern);
+}
+
+/**
+ * Test Case: TC-CPP-UTILS-017
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify format() with exactly 512 chars (boundary - needs heap)
+ */
+TEST(UtilsTest, FormatBoundaryStackToHeap) {
+    std::string pattern(512, 'Z');
+    std::string result = format("%s", pattern.c_str());
+
+    EXPECT_EQ(result.length(), 512);
+    EXPECT_EQ(result, pattern);
+}
+
+/**
+ * Test Case: TC-CPP-UTILS-018
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify format() with very large string (2000+ chars)
+ */
+TEST(UtilsTest, FormatVeryLargeString) {
+    std::string pattern(2000, 'W');
+    std::string result = format("%s", pattern.c_str());
+
+    EXPECT_EQ(result.length(), 2000);
+    EXPECT_EQ(result, pattern);
+}
+
+/**
+ * Test Case: TC-CPP-UTILS-019
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify format() with multiple large arguments
+ */
+TEST(UtilsTest, FormatMultipleLargeArgs) {
+    std::string arg1(200, 'A');
+    std::string arg2(200, 'B');
+    std::string arg3(200, 'C');
+    std::string result = format("%s-%s-%s", arg1.c_str(), arg2.c_str(), arg3.c_str());
+
+    // Total length: 200 + 1 + 200 + 1 + 200 = 602, needs heap
+    EXPECT_EQ(result.length(), 602);
+    EXPECT_NE(result.find(arg1), std::string::npos);
+    EXPECT_NE(result.find(arg2), std::string::npos);
+    EXPECT_NE(result.find(arg3), std::string::npos);
+}
+
+/**
+ * Test Case: TC-CPP-UTILS-020
+ * Requirement: REQ-HLR-002
+ * Description: Verify CRC32 with single byte data
+ */
+TEST(UtilsTest, CRC32SingleByte) {
+    unsigned char data[] = {0x00};
+    uint32_t crc = crc32(data, sizeof(data));
+
+    // Should be deterministic
+    uint32_t crc2 = crc32(data, sizeof(data));
+    EXPECT_EQ(crc, crc2);
+}
+
+/**
+ * Test Case: TC-CPP-UTILS-021
+ * Requirement: REQ-HLR-002
+ * Description: Verify CRC32 with all-zero data
+ */
+TEST(UtilsTest, CRC32AllZeroData) {
+    unsigned char data[16] = {0};
+    uint32_t crc = crc32(data, sizeof(data));
+
+    // All zeros should produce non-zero CRC
+    EXPECT_NE(crc, 0);
+}
+
+/**
+ * Test Case: TC-CPP-UTILS-022
+ * Requirement: REQ-HLR-002
+ * Description: Verify CRC32 with all-ones data
+ */
+TEST(UtilsTest, CRC32AllOnesData) {
+    unsigned char data[16];
+    memset(data, 0xFF, sizeof(data));
+    uint32_t crc = crc32(data, sizeof(data));
+
+    // Should be deterministic
+    uint32_t crc2 = crc32(data, sizeof(data));
+    EXPECT_EQ(crc, crc2);
+
+    // All zeros and all ones should give different CRCs
+    unsigned char zeros[16] = {0};
+    uint32_t crc_zeros = crc32(zeros, sizeof(zeros));
+    EXPECT_NE(crc, crc_zeros);
+}
+
+/**
+ * Test Case: TC-CPP-UTILS-023
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify format() with printf-style padding
+ */
+TEST(UtilsTest, FormatWithPadding) {
+    std::string result = format("%08d", 42);
+    EXPECT_EQ(result, "00000042");
+}
+
+/**
+ * Test Case: TC-CPP-UTILS-024
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify format() with string width specifier
+ */
+TEST(UtilsTest, FormatWithStringWidth) {
+    std::string result = format("%-20s|", "test");
+    EXPECT_EQ(result, "test                |");
+}
+
 // Main function for running tests
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
