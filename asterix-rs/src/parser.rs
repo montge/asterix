@@ -528,13 +528,13 @@ mod tests {
         let data = vec![0x30];
         let result = parse(&data, ParseOptions::default());
         // Should return empty records (C++ parser handles gracefully)
-        match result {
-            Ok(records) => assert!(
+        if let Ok(records) = result {
+            assert!(
                 records.is_empty(),
                 "Single byte should produce empty records"
-            ),
-            Err(_) => {} // Error also acceptable for data too short
+            );
         }
+        // Error also acceptable for data too short
     }
 
     // ========== parse_with_offset() tests ==========
@@ -832,9 +832,9 @@ mod tests {
     #[test]
     fn test_json_value_to_parsed_value_float() {
         use serde_json::json;
-        let value = json!(3.14);
+        let value = json!(3.25);
         let parsed = json_value_to_parsed_value(&value).unwrap();
-        assert!(matches!(parsed, ParsedValue::Float(f) if (f - 3.14).abs() < 0.001));
+        assert!(matches!(parsed, ParsedValue::Float(f) if (f - 3.25).abs() < 0.001));
     }
 
     #[cfg(feature = "serde")]
