@@ -16,12 +16,12 @@ _Validated 2026-02-07: All design references confirmed accurate. Gaps addressed 
 **File**: `CMakeLists.txt`
 **Validation**: `cmake -B build -DENABLE_SOCKETCAN=ON` shows "SocketCAN support: ON"
 
-- [ ] Add `option(ENABLE_SOCKETCAN "Enable SocketCAN transport support (Linux only)" OFF)`
-- [ ] Add `check_include_file("linux/can.h" HAVE_CAN_H)` via CMake `CheckIncludeFile` module
-- [ ] Add platform guard: warn and disable on non-Linux (Windows, macOS)
-- [ ] Add `HAVE_SOCKETCAN` compile definition when enabled and header found
-- [ ] Add `candevice.cxx` to source list conditionally
-- [ ] Add status output in build summary
+- [x] Add `option(ENABLE_SOCKETCAN "Enable SocketCAN transport support (Linux only)" OFF)`
+- [x] Add `check_include_file("linux/can.h" HAVE_CAN_H)` via CMake `CheckIncludeFile` module
+- [x] Add platform guard: warn and disable on non-Linux (Windows, macOS)
+- [x] Add `HAVE_SOCKETCAN` compile definition when enabled and header found
+- [x] Add `candevice.cxx` to source list conditionally
+- [x] Add status output in build summary
 
 ---
 
@@ -31,32 +31,32 @@ _Validated 2026-02-07: All design references confirmed accurate. Gaps addressed 
 **File**: `src/engine/candevice.hxx`
 **Validation**: Compiles without errors
 
-- [ ] Include guards and feature guards (`#ifdef HAVE_SOCKETCAN`, `#ifndef _WIN32`)
-- [ ] Include SocketCAN headers (`linux/can.h`, `linux/can/raw.h`)
-- [ ] Define constants (CAN_PAYLOAD_SIZE=7, CANFD_PAYLOAD_SIZE=63)
-- [ ] Define CanFrameType enum (Classic, FD)
-- [ ] Define ReassemblyState struct with fragment map and timestamp
-- [ ] Declare CCanDevice class extending CBaseDevice
-- [ ] Declare static helper methods for CAN ID and fragment header encoding
+- [x] Include guards and feature guards (`#ifdef HAVE_SOCKETCAN`, `#ifndef _WIN32`)
+- [x] Include SocketCAN headers (`linux/can.h`, `linux/can/raw.h`)
+- [x] Define constants (CAN_PAYLOAD_SIZE=7, CANFD_PAYLOAD_SIZE=63)
+- [x] Define CanFrameType enum (Classic, FD)
+- [x] Define ReassemblyState struct with fragment map and timestamp
+- [x] Declare CCanDevice class extending CBaseDevice
+- [x] Declare static helper methods for CAN ID and fragment header encoding
 
 ### Task 2.2: Implement CCanDevice
 **File**: `src/engine/candevice.cxx`
 **Validation**: Unit tests pass
 
-- [ ] Constructor with CDescriptor parsing (`interface[:fd[:timeout]]`)
-- [ ] `Init()`: Create SocketCAN socket, bind to interface
-- [ ] `Read()`: Receive frames, reassemble fragments, return complete messages
-- [ ] `Write()`: No-op stub returning false (CAN output is out of scope, see proposal)
-- [ ] `Select()`: Timeout handling with select()
-- [ ] `CleanupExpiredStates()`: Remove stale reassembly states
-- [ ] Static helpers: `BuildCanId()`, `ParseCanId()`, `BuildFragmentHeader()`, `ParseFragmentHeader()`
+- [x] Constructor with CDescriptor parsing (`interface[:fd[:timeout]]`)
+- [x] `Init()`: Create SocketCAN socket, bind to interface
+- [x] `Read()`: Receive frames, reassemble fragments, return complete messages
+- [x] `Write()`: No-op stub returning false (CAN output is out of scope, see proposal)
+- [x] `Select()`: Timeout handling with select()
+- [x] `CleanupExpiredStates()`: Remove stale reassembly states
+- [x] Static helpers: `BuildCanId()`, `ParseCanId()`, `BuildFragmentHeader()`, `ParseFragmentHeader()`
 
 ### Task 2.3: Register CAN device in factory
 **File**: `src/engine/devicefactory.cxx`
 **Validation**: `./asterix --help` shows CAN option (when compiled)
 
-- [ ] Add `#include "candevice.hxx"` (guarded)
-- [ ] Add case for "can"/"socketcan" in `CreateDevice()`
+- [x] Add `#include "candevice.hxx"` (guarded)
+- [x] Add case for "can"/"socketcan" in `CreateDevice()`
 
 ---
 

@@ -49,6 +49,11 @@
 #ifdef HAVE_CYCLONEDDS
 #include "cycloneddsdevice.hxx"
 #endif
+#ifdef HAVE_SOCKETCAN
+#ifndef _WIN32
+#include "candevice.hxx"
+#endif
+#endif
 
 
 CSingleton<CDeviceFactory> CDeviceFactory::_Instance;
@@ -112,6 +117,11 @@ bool CDeviceFactory::CreateDevice(const char *deviceName, const char *deviceDesc
     } else if (strcasecmp(deviceName, "dds") == 0 || strcasecmp(deviceName, "cyclonedds") == 0) {
         CDescriptor descriptor(deviceDescriptor, ":");
         _Device[_nDevices] = std::make_unique<CCycloneDdsDevice>(descriptor);
+#endif
+#ifdef HAVE_SOCKETCAN
+    } else if (strcasecmp(deviceName, "can") == 0 || strcasecmp(deviceName, "socketcan") == 0) {
+        CDescriptor descriptor(deviceDescriptor, ":");
+        _Device[_nDevices] = std::make_unique<CCanDevice>(descriptor);
 #endif
     } else {
         LOGERROR(1, "Unknown device '%s'\n", deviceName);
