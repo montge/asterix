@@ -2,17 +2,17 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:f7bd38f8-74eb-4ef7-9380-a578d63c68e9",
+  "serialNumber": "urn:uuid:b770d0bb-5f58-4223-9934-033028ecaa49",
   "version": 1,
   "metadata": {
-    "timestamp": "2025-12-21T21:45:58Z",
+    "timestamp": "2026-02-08T01:37:40Z",
     "tools": {
       "components": [
         {
           "type": "application",
           "author": "anchore",
           "name": "syft",
-          "version": "1.38.2"
+          "version": "1.41.2"
         }
       ]
     },
@@ -25,7 +25,7 @@
     "properties": [
       {
         "name": "commit",
-        "value": "cb1ba5b229dc4895f391958dab60f14ce15521d1"
+        "value": "d9c79da0a04bc982dc749bc746748fe028790d7a"
       },
       {
         "name": "repository",
@@ -33,7 +33,7 @@
       },
       {
         "name": "generated",
-        "value": "2025-12-21T21:45:58Z"
+        "value": "2026-02-08T01:37:40Z"
       },
       {
         "name": "tool",
@@ -826,6 +826,32 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/radar-integration-tests.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/checkout@v6?package-id=1178a0004880c618",
+      "type": "library",
+      "name": "actions/checkout",
+      "version": "v6",
+      "cpe": "cpe:2.3:a:actions\\/checkout:actions\\/checkout:v6:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/checkout@v6",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/ruby-ci.yml"
         }
       ]
     },
@@ -2480,6 +2506,52 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/radar-integration-tests.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/actions/upload-artifact@v6?package-id=9639971f240659ca",
+      "type": "library",
+      "name": "actions/upload-artifact",
+      "version": "v6",
+      "cpe": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload-artifact:v6:*:*:*:*:*:*:*",
+      "purl": "pkg:github/actions/upload-artifact@v6",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload-artifact:actions\\/upload_artifact:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload-artifact:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload_artifact:actions\\/upload_artifact:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload-artifact:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:actions\\/upload:actions\\/upload_artifact:v6:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/ruby-ci.yml"
         }
       ]
     },
@@ -7092,6 +7164,190 @@
         {
           "name": "syft:location:0:path",
           "value": "/asterix-node/package-lock.json"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/codecov/codecov-action@v5?package-id=e1445ff26627c515",
+      "type": "library",
+      "name": "codecov/codecov-action",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:codecov\\/codecov-action:codecov\\/codecov-action:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/codecov/codecov-action@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov-action:codecov\\/codecov_action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov_action:codecov\\/codecov-action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov_action:codecov\\/codecov_action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov:codecov\\/codecov-action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov:codecov\\/codecov_action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/ada-ci.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/codecov/codecov-action@v5?package-id=b1d743357b5f4661",
+      "type": "library",
+      "name": "codecov/codecov-action",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:codecov\\/codecov-action:codecov\\/codecov-action:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/codecov/codecov-action@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov-action:codecov\\/codecov_action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov_action:codecov\\/codecov-action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov_action:codecov\\/codecov_action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov:codecov\\/codecov-action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov:codecov\\/codecov_action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/go-ci.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/codecov/codecov-action@v5?package-id=03e0f7920b0fb65c",
+      "type": "library",
+      "name": "codecov/codecov-action",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:codecov\\/codecov-action:codecov\\/codecov-action:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/codecov/codecov-action@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov-action:codecov\\/codecov_action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov_action:codecov\\/codecov-action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov_action:codecov\\/codecov_action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov:codecov\\/codecov-action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov:codecov\\/codecov_action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/node-ci.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/codecov/codecov-action@v5?package-id=55283259a8a91b6f",
+      "type": "library",
+      "name": "codecov/codecov-action",
+      "version": "v5",
+      "cpe": "cpe:2.3:a:codecov\\/codecov-action:codecov\\/codecov-action:v5:*:*:*:*:*:*:*",
+      "purl": "pkg:github/codecov/codecov-action@v5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov-action:codecov\\/codecov_action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov_action:codecov\\/codecov-action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov_action:codecov\\/codecov_action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov:codecov\\/codecov-action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:codecov\\/codecov:codecov\\/codecov_action:v5:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/ruby-ci.yml"
         }
       ]
     },
@@ -13236,12 +13492,12 @@
       ]
     },
     {
-      "bom-ref": "pkg:golang/github.com/montge/asterix?package-id=a1a16f9764d3927c#asterix-go",
+      "bom-ref": "pkg:golang/github.com/montge/asterix/asterix-go?package-id=a1a16f9764d3927c",
       "type": "library",
       "name": "github.com/montge/asterix/asterix-go",
       "version": "UNKNOWN",
       "cpe": "cpe:2.3:a:montge:asterix\\/asterix-go:*:*:*:*:*:*:*:*",
-      "purl": "pkg:golang/github.com/montge/asterix#asterix-go",
+      "purl": "pkg:golang/github.com/montge/asterix/asterix-go",
       "properties": [
         {
           "name": "syft:package:foundBy",
@@ -24404,6 +24660,52 @@
         {
           "name": "syft:location:0:path",
           "value": "/.github/workflows/doxygen.yml"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/ruby/setup-ruby@v1?package-id=caba4d603d6574b8",
+      "type": "library",
+      "name": "ruby/setup-ruby",
+      "version": "v1",
+      "cpe": "cpe:2.3:a:ruby\\/setup-ruby:ruby\\/setup-ruby:v1:*:*:*:*:*:*:*",
+      "purl": "pkg:github/ruby/setup-ruby@v1",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "github-actions-usage-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "github-action"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "github-actions-use-statement"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ruby\\/setup-ruby:ruby\\/setup_ruby:v1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ruby\\/setup_ruby:ruby\\/setup-ruby:v1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ruby\\/setup_ruby:ruby\\/setup_ruby:v1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ruby\\/setup:ruby\\/setup-ruby:v1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:ruby\\/setup:ruby\\/setup_ruby:v1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/.github/workflows/ruby-ci.yml"
         }
       ]
     },
@@ -39641,11 +39943,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "ff8c031bff0333e8e8de29473cb621d588eae5fa"
+          "content": "9ff8f753f32025523ababdb5ce7bbc5a6005e18f"
         },
         {
           "alg": "SHA-256",
-          "content": "0750ae176a1147f57ce46bd8822a50b4da2a5afc9377ddacef5c5b11cfe3570a"
+          "content": "86c8cac60f3ddb457b1e085efe0cea318aba3f433193bab188d3b206dc1b6c54"
         }
       ]
     },
@@ -39671,11 +39973,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "7284f9ae2e755167c257f40ac6de849343e12d7b"
+          "content": "a3b3988f13270aa3ede794dfcb3e4c269d02938d"
         },
         {
           "alg": "SHA-256",
-          "content": "043d40e1f313e8f1071380e108b9e65cb65410545968e56ef914405ff854a608"
+          "content": "1792e9eeed72a0f4e98ed3114f3829639899ba585bc3ff056c0380cb9482a8ec"
         }
       ]
     },
@@ -39746,11 +40048,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "c7a7cbbc8bbdddcad20ac9843c169bfbd2b541e1"
+          "content": "5940e98836ca1970106ad7672f0c2464198bfc8e"
         },
         {
           "alg": "SHA-256",
-          "content": "aed221bdd0b994c51d6701e7a1a37833b52495d11720123c579695d3d78008eb"
+          "content": "c58113b1e3e685bab51134ecd0134faba4878c7e925f5e969b45a530fbc1eea2"
         }
       ]
     },
@@ -39791,11 +40093,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "b74acbb70bb9c866e9764abf3172db18da9c3cd7"
+          "content": "c9ac75f10a72a529054d71a9499ffda055d96ef0"
         },
         {
           "alg": "SHA-256",
-          "content": "43e19f9025366e0c46fa63c602926c8b5dcd487059e2e269c0ea6ccb91a62e20"
+          "content": "046f2fe33efcd3102ae9d14ad272c0223cd2b24c9889d1fb68751b127fe011fb"
         }
       ]
     },
@@ -39856,6 +40158,21 @@
         {
           "alg": "SHA-256",
           "content": "093ffe81b8d10f525fb895fa773665557343e3d4289534efde298c06d2ff033a"
+        }
+      ]
+    },
+    {
+      "bom-ref": "e9cb4b3369b4bb21",
+      "type": "file",
+      "name": "/home/runner/work/asterix/asterix/.github/workflows/ruby-ci.yml",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "c46670522873dbb41c58d542a833516ae999e0db"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "0ce029bed9411a041df7798c864e7eb1d83e5e352c359359b6c47c96cc490d80"
         }
       ]
     },
@@ -40031,11 +40348,11 @@
       "hashes": [
         {
           "alg": "SHA-1",
-          "content": "39bd9cd98f43d78970c1c58bc00f6a3a6cf2f13b"
+          "content": "158c2b88f7fd553a3744c4fadc36cf51b7532170"
         },
         {
           "alg": "SHA-256",
-          "content": "9e933627df675dc9b9c0d16eccc6495a6f11a140db571194ce8acd0fc65eb5f1"
+          "content": "eb5864ca6543649406ba67908b0af8a2790677cf87c625f600c17c083d4bcb9d"
         }
       ]
     }
