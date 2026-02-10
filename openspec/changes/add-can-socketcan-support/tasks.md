@@ -66,10 +66,10 @@ _Validated 2026-02-07: All design references confirmed accurate. Gaps addressed 
 **File**: `src/main/asterix.cpp`
 **Validation**: `./asterix -c vcan0 -j` attempts to open vcan0
 
-- [ ] Add `strCANInput` variable
-- [ ] Add `-c`/`--can` argument parsing
-- [ ] Add help text explaining format: `interface[:fd[:timeout]]`
-- [ ] Build input string for CAN device in `buildInputString()`
+- [x] Add `strCANInput` variable
+- [x] Add `-c`/`--can` argument parsing
+- [x] Add help text explaining format: `interface[:fd[:timeout]]`
+- [x] Build input string for CAN device in `buildInputString()`
 
 ---
 
@@ -79,20 +79,20 @@ _Validated 2026-02-07: All design references confirmed accurate. Gaps addressed 
 **File**: `install/test/test_can.sh`
 **Validation**: Script runs without errors on GitHub Actions
 
-- [ ] Check if SocketCAN compiled in (`--help | grep socketcan`)
-- [ ] Setup vcan0 interface (requires sudo)
-- [ ] Basic device initialization test
-- [ ] Cleanup vcan0 interface
-- [ ] Skip gracefully if vcan not available (WSL2)
+- [x] Check if SocketCAN compiled in (`--help | grep socketcan`)
+- [x] Setup vcan0 interface (requires sudo)
+- [x] Basic device initialization test
+- [x] Cleanup vcan0 interface
+- [x] Skip gracefully if vcan not available (WSL2)
 
 ### Task 4.2: Add CI workflow support
 **File**: `.github/workflows/cross-platform-builds.yml` (Linux jobs only)
 **Validation**: CI runs CAN tests on Linux Ubuntu runners
 
-- [ ] Add vcan kernel module setup step (`sudo modprobe vcan && sudo ip link add dev vcan0 type vcan && sudo ip link set up vcan0`)
-- [ ] Add `-DENABLE_SOCKETCAN=ON` to CMake configure for Linux jobs
-- [ ] Run test_can.sh in test phase
-- [ ] Skip CAN tests on Windows and macOS jobs
+- [x] Add vcan kernel module setup step (`sudo modprobe vcan && sudo ip link add dev vcan0 type vcan && sudo ip link set up vcan0`)
+- [x] Add `-DENABLE_SOCKETCAN=ON` to CMake configure for Linux jobs
+- [x] Run test_can.sh in test phase
+- [x] Skip CAN tests on Windows and macOS jobs
 
 ---
 
@@ -101,10 +101,10 @@ _Validated 2026-02-07: All design references confirmed accurate. Gaps addressed 
 ### Task 5.1: Update README with CAN usage
 **Validation**: README shows CAN examples
 
-- [ ] Add CAN to supported transports list
-- [ ] Add CLI usage examples
-- [ ] Document vcan setup for testing
-- [ ] Note Linux-only limitation
+- [x] Add CAN to supported transports list
+- [x] Add CLI usage examples
+- [x] Document vcan setup for testing
+- [x] Note Linux-only limitation
 
 ### Task 5.2: Close GitHub issue #39
 **Validation**: Issue #39 closed with implementation summary

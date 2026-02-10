@@ -68,6 +68,7 @@ More about ASTERIX protocol: http://www.eurocontrol.int/services/asterix
 - **Cross-platform**: Linux, Windows, macOS (Intel & ARM M1)
 - **Multiple output formats**: JSON, XML, human-readable text
 - **Network streaming** via UDP multicast
+- **CAN Bus transport** via Linux SocketCAN (classic CAN and CAN FD)
 - **Radar simulation integration**: Mock radar data generator + ASTERIX CAT048 encoder
 - **Modern C++23 features**: Ranges algorithms, deduced this (5-10% faster, 15-20% potential)
 - **Memory safety**: Rust bindings with safe FFI via CXX crate
@@ -271,6 +272,12 @@ asterix -F -f data.final
 
 # Parse HDLC format
 asterix -H -f data.hdlc
+
+# Receive from CAN Bus via SocketCAN (Linux only, requires -DENABLE_SOCKETCAN=ON)
+asterix -c vcan0 -j
+
+# CAN FD mode with custom reassembly timeout
+asterix -c can0:fd:5000 -je
 ```
 
 **Output Format Options:**
@@ -454,6 +461,56 @@ decoded = asterix.parse(asterix_data)
 - Synthetic test data generation for CI/CD pipelines
 - Integration with commercial radar simulators (RadarSimPy for licensed users)
 - Educational demonstrations of radar-to-ASTERIX workflows
+
+## CAN Bus Transport (SocketCAN)
+
+ASTERIX data can be received over CAN Bus using the Linux SocketCAN subsystem. This enables integration with avionics buses and embedded systems that transmit ASTERIX surveillance data over CAN networks.
+
+**Requirements:**
+- Linux with kernel SocketCAN support (not available on Windows or macOS)
+- Build with `-DENABLE_SOCKETCAN=ON`
+
+**Build with SocketCAN support:**
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_SOCKETCAN=ON
+cmake --build build --parallel
+cmake --install build
+```
+
+**Usage:**
+```bash
+# Receive ASTERIX data from CAN interface with JSON output
+./install/bin/asterix -c can0 -j
+
+# CAN FD mode (64-byte frames)
+./install/bin/asterix -c can0:fd -j
+
+# Classic CAN with custom reassembly timeout (5 seconds)
+./install/bin/asterix -c can0:classic:5000 -je
+```
+
+**Setting up a virtual CAN interface for testing:**
+```bash
+# Load the vcan kernel module
+sudo modprobe vcan
+
+# Create and bring up vcan0
+sudo ip link add dev vcan0 type vcan
+sudo ip link set up vcan0
+
+# Run asterix on vcan0
+./install/bin/asterix -c vcan0 -j
+
+# Cleanup
+sudo ip link set down vcan0
+sudo ip link delete vcan0
+```
+
+**Limitations:**
+- Linux only (requires kernel SocketCAN support)
+- CAN ID encodes only the high 3 bits of the ASTERIX category (8 category groups)
+- Large ASTERIX messages are fragmented across multiple CAN frames and reassembled automatically
+- Write/transmit is not supported (receive only)
 
 ## Development
 

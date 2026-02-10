@@ -506,10 +506,28 @@ jobs:
           cmake \
           ninja-build \
           lcov \
-          valgrind
+          valgrind \
+          iproute2
+
+    - name: Setup vcan interface for SocketCAN tests
+      run: |
+        # Load vcan kernel module (may not be available on all runners)
+        if sudo modprobe vcan 2>/dev/null; then
+          sudo ip link add dev vcan0 type vcan
+          sudo ip link set up vcan0
+          echo "SOCKETCAN_AVAILABLE=true" >> $GITHUB_ENV
+          echo "SocketCAN vcan0 interface ready"
+        else
+          echo "SOCKETCAN_AVAILABLE=false" >> $GITHUB_ENV
+          echo "vcan kernel module not available - SocketCAN tests will be skipped"
+        fi
 
     - name: Configure CMake (C++${{ matrix.cpp_standard }})
       run: |
+        SOCKETCAN_FLAG=OFF
+        if [ "$SOCKETCAN_AVAILABLE" = "true" ]; then
+          SOCKETCAN_FLAG=ON
+        fi
         cmake -B build \
           -G Ninja \
           -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
@@ -517,6 +535,7 @@ jobs:
           -DCMAKE_CXX_STANDARD_REQUIRED=ON \
           -DCMAKE_C_COMPILER=gcc \
           -DCMAKE_CXX_COMPILER=g++ \
+          -DENABLE_SOCKETCAN=${SOCKETCAN_FLAG} \
           -DBUILD_SHARED_LIBS=ON \
           -DBUILD_STATIC_LIBS=ON \
           -DBUILD_EXECUTABLE=ON \
@@ -581,6 +600,24 @@ jobs:
         ./test.sh
 
         echo "✅ All integration tests passed"
+
+    - name: Run SocketCAN integration tests
+      if: matrix.config == 'Debug' && env.SOCKETCAN_AVAILABLE == 'true'
+      run: |
+        export LD_LIBRARY_PATH="${{ github.workspace }}/install/lib:${LD_LIBRARY_PATH:-}"
+        cd install/test
+        if [ -f ./test_can.sh ]; then
+          chmod +x ./test_can.sh
+          ./test_can.sh
+        else
+          echo "test_can.sh not found - skipping CAN tests"
+        fi
+
+    - name: Cleanup vcan interface
+      if: always() && env.SOCKETCAN_AVAILABLE == 'true'
+      run: |
+        sudo ip link set down vcan0 2>/dev/null || true
+        sudo ip link delete vcan0 2>/dev/null || true
 
     - name: Run valgrind memory check (Debug only)
       if: matrix.config == 'Debug' && matrix.os == 'ubuntu-24.04'
