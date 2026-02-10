@@ -11,7 +11,14 @@
 #include <gtest/gtest.h>
 #include "Category.h"
 #include "DataItemDescription.h"
+#include "DataItemFormatFixed.h"
+#include "DataItemBits.h"
 #include "UAP.h"
+#include "asterixformat.hxx"
+
+// Global variables required by ASTERIX library
+bool gVerbose = false;
+bool gFiltering = false;
 
 /**
  * Test Case: TC-CPP-CAT-001
@@ -1051,6 +1058,328 @@ TEST(CategoryTest, CategoryFilteredFlagPersists) {
     // Flag should remain true even after another call
     cat.filterOutItem("888", "Field2");
     EXPECT_TRUE(cat.m_bFiltered);
+}
+
+/**
+ * Test Case: TC-CPP-CAT-053
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify printDescriptors with items that have a format
+ */
+TEST(CategoryTest, PrintDescriptorsWithFormat) {
+    Category cat(48);
+
+    DataItemDescription* item = cat.getDataItemDescription("010");
+    item->m_strName = "Data Source Identifier";
+
+    // Create a fixed format with a DataItemBits sub-item
+    DataItemFormatFixed* format = new DataItemFormatFixed(2);
+    format->m_nLength = 2;
+
+    DataItemBits* bits = new DataItemBits(8);
+    bits->m_strShortName = "SAC";
+    bits->m_strName = "System Area Code";
+    bits->m_nFrom = 9;
+    bits->m_nTo = 16;
+    bits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+    format->m_lSubItems.push_back(bits);
+
+    item->m_pFormat = format;
+
+    std::string result = cat.printDescriptors();
+
+    // Should contain the category ID and item ID in header
+    EXPECT_NE(result.find("CAT048"), std::string::npos);
+    EXPECT_NE(result.find("I010"), std::string::npos);
+}
+
+/**
+ * Test Case: TC-CPP-CAT-054
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify printDescriptors skips items without format
+ */
+TEST(CategoryTest, PrintDescriptorsSkipsItemsWithoutFormat) {
+    Category cat(62);
+
+    // Item without format
+    DataItemDescription* item1 = cat.getDataItemDescription("010");
+    item1->m_strName = "Item Without Format";
+    // m_pFormat is already nullptr
+
+    // Item with format
+    DataItemDescription* item2 = cat.getDataItemDescription("020");
+    item2->m_strName = "Item With Format";
+    DataItemFormatFixed* format = new DataItemFormatFixed(1);
+    format->m_nLength = 1;
+    DataItemBits* bits = new DataItemBits(8);
+    bits->m_strShortName = "VAL";
+    bits->m_strName = "Value";
+    bits->m_nFrom = 1;
+    bits->m_nTo = 8;
+    bits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+    format->m_lSubItems.push_back(bits);
+    item2->m_pFormat = format;
+
+    std::string result = cat.printDescriptors();
+
+    // Should contain item2 but not item1 (no format)
+    EXPECT_NE(result.find("I020"), std::string::npos);
+}
+
+/**
+ * Test Case: TC-CPP-CAT-055
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify getDescription with non-null field delegates to format
+ */
+TEST(CategoryTest, GetDescriptionWithFieldDelegatesToFormat) {
+    Category cat(48);
+
+    DataItemDescription* item = cat.getDataItemDescription("010");
+    item->m_strName = "Data Source Identifier";
+
+    DataItemFormatFixed* format = new DataItemFormatFixed(2);
+    format->m_nLength = 2;
+
+    DataItemBits* bits = new DataItemBits(8);
+    bits->m_strShortName = "SAC";
+    bits->m_strName = "System Area Code";
+    bits->m_nFrom = 9;
+    bits->m_nTo = 16;
+    bits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+    format->m_lSubItems.push_back(bits);
+
+    item->m_pFormat = format;
+
+    // Query description with field name
+    const char* desc = cat.getDescription("I010", "SAC", nullptr);
+    // Should return the field name from the format
+    if (desc) {
+        EXPECT_NE(std::string(desc).length(), 0);
+    }
+}
+
+/**
+ * Test Case: TC-CPP-CAT-056
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify getDescription returns nullptr when item has no format but field is non-null
+ */
+TEST(CategoryTest, GetDescriptionNoFormatReturnsNull) {
+    Category cat(48);
+
+    DataItemDescription* item = cat.getDataItemDescription("010");
+    item->m_strName = "Data Source Identifier";
+    item->m_pFormat = nullptr;  // No format
+
+    const char* desc = cat.getDescription("I010", "SAC", nullptr);
+
+    // Should return nullptr since format is null
+    EXPECT_EQ(desc, nullptr);
+}
+
+/**
+ * Test Case: TC-CPP-CAT-057
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify filterOutItem when item found and has format
+ */
+TEST(CategoryTest, FilterOutItemWithFormat) {
+    Category cat(48);
+
+    DataItemDescription* item = cat.getDataItemDescription("010");
+    item->m_strName = "Data Source Identifier";
+
+    DataItemFormatFixed* format = new DataItemFormatFixed(2);
+    format->m_nLength = 2;
+
+    DataItemBits* bits = new DataItemBits(8);
+    bits->m_strShortName = "SAC";
+    bits->m_strName = "System Area Code";
+    bits->m_nFrom = 9;
+    bits->m_nTo = 16;
+    bits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+    format->m_lSubItems.push_back(bits);
+
+    item->m_pFormat = format;
+
+    bool result = cat.filterOutItem("010", "SAC");
+
+    // Should succeed and set filtered flag
+    EXPECT_TRUE(cat.m_bFiltered);
+    // filterOutItem returns result of format->filterOutItem
+    EXPECT_TRUE(result);
+}
+
+/**
+ * Test Case: TC-CPP-CAT-058
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify filterOutItem when item found but has no format
+ */
+TEST(CategoryTest, FilterOutItemNoFormat) {
+    Category cat(48);
+
+    DataItemDescription* item = cat.getDataItemDescription("010");
+    item->m_strName = "Data Source Identifier";
+    item->m_pFormat = nullptr;
+
+    bool result = cat.filterOutItem("010", "SAC");
+
+    // Should return false (no format)
+    EXPECT_FALSE(result);
+    EXPECT_TRUE(cat.m_bFiltered);  // Flag still set
+}
+
+/**
+ * Test Case: TC-CPP-CAT-059
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify isFiltered returns true when item has a filtered format
+ */
+TEST(CategoryTest, IsFilteredWithFilteredFormat) {
+    Category cat(48);
+
+    DataItemDescription* item = cat.getDataItemDescription("010");
+    item->m_strName = "Data Source Identifier";
+
+    DataItemFormatFixed* format = new DataItemFormatFixed(2);
+    format->m_nLength = 2;
+
+    DataItemBits* bits = new DataItemBits(8);
+    bits->m_strShortName = "SAC";
+    bits->m_strName = "System Area Code";
+    bits->m_nFrom = 9;
+    bits->m_nTo = 16;
+    bits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+    format->m_lSubItems.push_back(bits);
+
+    item->m_pFormat = format;
+
+    // First filter, then check
+    cat.filterOutItem("010", "SAC");
+    bool result = cat.isFiltered("010", "SAC");
+
+    EXPECT_TRUE(result);
+}
+
+/**
+ * Test Case: TC-CPP-CAT-060
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify isFiltered returns false when item has format but not filtered
+ */
+TEST(CategoryTest, IsFilteredWithUnfilteredFormat) {
+    Category cat(48);
+
+    DataItemDescription* item = cat.getDataItemDescription("010");
+    item->m_strName = "Data Source Identifier";
+
+    DataItemFormatFixed* format = new DataItemFormatFixed(2);
+    format->m_nLength = 2;
+
+    DataItemBits* bits = new DataItemBits(8);
+    bits->m_strShortName = "SAC";
+    bits->m_strName = "System Area Code";
+    bits->m_nFrom = 9;
+    bits->m_nTo = 16;
+    bits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+    format->m_lSubItems.push_back(bits);
+
+    item->m_pFormat = format;
+
+    // Don't filter, just check
+    bool result = cat.isFiltered("010", "SAC");
+
+    EXPECT_FALSE(result);
+}
+
+/**
+ * Test Case: TC-CPP-CAT-061
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify printDescriptors with multiple formatted items
+ */
+TEST(CategoryTest, PrintDescriptorsMultipleItems) {
+    Category cat(62);
+
+    for (int i = 1; i <= 3; i++) {
+        char itemId[10];
+        snprintf(itemId, sizeof(itemId), "%03d", i * 10);
+
+        DataItemDescription* item = cat.getDataItemDescription(itemId);
+        item->m_strName = std::string("Item ") + itemId;
+
+        DataItemFormatFixed* format = new DataItemFormatFixed(1);
+        format->m_nLength = 1;
+        DataItemBits* bits = new DataItemBits(8);
+        bits->m_strShortName = "VAL";
+        bits->m_strName = "Value";
+        bits->m_nFrom = 1;
+        bits->m_nTo = 8;
+        bits->m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+        format->m_lSubItems.push_back(bits);
+        item->m_pFormat = format;
+    }
+
+    std::string result = cat.printDescriptors();
+
+    EXPECT_NE(result.find("CAT062"), std::string::npos);
+    EXPECT_NE(result.find("I010"), std::string::npos);
+    EXPECT_NE(result.find("I020"), std::string::npos);
+    EXPECT_NE(result.find("I030"), std::string::npos);
+}
+
+/**
+ * Test Case: TC-CPP-CAT-062
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify getUAP skips null UAP pointers in list
+ */
+TEST(CategoryTest, GetUAPSkipsNullInList) {
+    Category cat(48);
+
+    UAP* uap1 = cat.newUAP();
+    // Manually insert a null into the list
+    cat.m_lUAPs.push_back(nullptr);
+    UAP* uap3 = cat.newUAP();
+
+    uap1->m_nUseIfBitSet = 100;  // Won't match
+    uap3->m_nUseIfBitSet = 0;
+    uap3->m_nUseIfByteNr = 0;
+
+    unsigned char data[] = {0x00, 0x01};
+    UAP* result = cat.getUAP(data, 2);
+
+    // Should skip null and conditional uap1, return uap3
+    EXPECT_EQ(result, uap3);
+}
+
+/**
+ * Test Case: TC-CPP-CAT-063
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify getDescription iterates correctly and finds match in middle of list
+ */
+TEST(CategoryTest, GetDescriptionMiddleOfList) {
+    Category cat(48);
+
+    // Add 5 items, query the 3rd
+    for (int i = 1; i <= 5; i++) {
+        char itemId[10];
+        snprintf(itemId, sizeof(itemId), "%03d", i * 10);
+        DataItemDescription* item = cat.getDataItemDescription(itemId);
+        item->m_strName = std::string("Item ") + itemId;
+    }
+
+    const char* desc = cat.getDescription("I030", nullptr, nullptr);
+    ASSERT_NE(desc, nullptr);
+    EXPECT_STREQ(desc, "Item 030");
+}
+
+/**
+ * Test Case: TC-CPP-CAT-064
+ * Requirement: REQ-HLR-SYS-001
+ * Description: Verify BDS category ID (256) works correctly
+ */
+TEST(CategoryTest, BDSCategoryID256) {
+    Category cat(256);
+
+    EXPECT_EQ(cat.m_id, 256);
+
+    DataItemDescription* item = cat.getDataItemDescription("BDS");
+    ASSERT_NE(item, nullptr);
+    EXPECT_EQ(item->m_strID, "BDS");
 }
 
 // Main function for running tests

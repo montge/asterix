@@ -169,6 +169,34 @@ add_executable(test_integration_cat252
     test_integration_cat252.cpp
 )
 
+add_executable(test_integration_cat001
+    test_integration_cat001.cpp
+)
+
+add_executable(test_integration_cat002
+    test_integration_cat002.cpp
+)
+
+add_executable(test_integration_cat010
+    test_integration_cat010.cpp
+)
+
+add_executable(test_integration_cat020
+    test_integration_cat020.cpp
+)
+
+add_executable(test_integration_cat021
+    test_integration_cat021.cpp
+)
+
+add_executable(test_integration_cat034
+    test_integration_cat034.cpp
+)
+
+add_executable(test_integration_output_formats
+    test_integration_output_formats.cpp
+)
+
 # List of all test executables for bulk operations
 set(ALL_TEST_TARGETS
     test_category
@@ -207,6 +235,13 @@ set(ALL_TEST_TARGETS
     test_integration_cat240
     test_integration_cat247
     test_integration_cat252
+    test_integration_cat001
+    test_integration_cat002
+    test_integration_cat010
+    test_integration_cat020
+    test_integration_cat021
+    test_integration_cat034
+    test_integration_output_formats
 )
 
 # Add WIRESHARK_WRAPPER compile definition to all tests
@@ -254,6 +289,13 @@ if(TARGET asterix_static)
     target_link_libraries(test_integration_cat240 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_integration_cat247 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
     target_link_libraries(test_integration_cat252 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat001 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat002 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat010 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat020 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat021 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_cat034 GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
+    target_link_libraries(test_integration_output_formats GTest::gtest_main asterix_static ${EXPAT_LIBRARIES})
 else()
     message(WARNING "asterix_static target not found, C++ tests will not be built")
 endif()
@@ -298,6 +340,13 @@ gtest_discover_tests(test_integration_cat205 WORKING_DIRECTORY ${CMAKE_BINARY_DI
 gtest_discover_tests(test_integration_cat240 WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 gtest_discover_tests(test_integration_cat247 WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 gtest_discover_tests(test_integration_cat252 WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+gtest_discover_tests(test_integration_cat001 WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+gtest_discover_tests(test_integration_cat002 WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+gtest_discover_tests(test_integration_cat010 WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+gtest_discover_tests(test_integration_cat020 WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+gtest_discover_tests(test_integration_cat021 WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+gtest_discover_tests(test_integration_cat034 WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+gtest_discover_tests(test_integration_output_formats WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # Coverage flags (if enabled)
 if(ENABLE_COVERAGE)
@@ -337,6 +386,13 @@ if(ENABLE_COVERAGE)
     target_compile_options(test_integration_cat240 PRIVATE --coverage)
     target_compile_options(test_integration_cat247 PRIVATE --coverage)
     target_compile_options(test_integration_cat252 PRIVATE --coverage)
+    target_compile_options(test_integration_cat001 PRIVATE --coverage)
+    target_compile_options(test_integration_cat002 PRIVATE --coverage)
+    target_compile_options(test_integration_cat010 PRIVATE --coverage)
+    target_compile_options(test_integration_cat020 PRIVATE --coverage)
+    target_compile_options(test_integration_cat021 PRIVATE --coverage)
+    target_compile_options(test_integration_cat034 PRIVATE --coverage)
+    target_compile_options(test_integration_output_formats PRIVATE --coverage)
 
     target_link_options(test_category PRIVATE --coverage)
     target_link_options(test_dataitem PRIVATE --coverage)
@@ -374,4 +430,11 @@ if(ENABLE_COVERAGE)
     target_link_options(test_integration_cat240 PRIVATE --coverage)
     target_link_options(test_integration_cat247 PRIVATE --coverage)
     target_link_options(test_integration_cat252 PRIVATE --coverage)
+    target_link_options(test_integration_cat001 PRIVATE --coverage)
+    target_link_options(test_integration_cat002 PRIVATE --coverage)
+    target_link_options(test_integration_cat010 PRIVATE --coverage)
+    target_link_options(test_integration_cat020 PRIVATE --coverage)
+    target_link_options(test_integration_cat021 PRIVATE --coverage)
+    target_link_options(test_integration_cat034 PRIVATE --coverage)
+    target_link_options(test_integration_output_formats PRIVATE --coverage)
 endif()

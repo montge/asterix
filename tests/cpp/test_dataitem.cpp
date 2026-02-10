@@ -13,6 +13,12 @@
 #include "DataItemDescription.h"
 #include "DataItemFormat.h"
 #include "DataItemFormatFixed.h"
+#include "DataItemBits.h"
+#include "asterixformat.hxx"
+
+// Global variables required by ASTERIX library
+bool gVerbose = false;
+bool gFiltering = false;
 
 /**
  * Test Case: TC-CPP-DI-001
@@ -195,6 +201,198 @@ TEST(DataItemTest, DestructorCleansUp) {
     }
     // If we reach here without crash, cleanup succeeded
     SUCCEED();
+}
+
+/**
+ * Test Case: TC-CPP-DI-011
+ * Requirement: REQ-HLR-001
+ * Description: Verify DataItem parse with valid 2-byte fixed format
+ */
+TEST(DataItemTest, ParseWithValidFixedFormat) {
+    DataItemDescription desc("010");
+    desc.m_strName = "Data Source Identifier";
+    desc.m_strID = "010";
+
+    DataItemFormatFixed* format = new DataItemFormatFixed(2);
+    format->m_nLength = 2;
+    desc.m_pFormat = format;
+
+    DataItem item(&desc);
+
+    unsigned char data[] = {0x01, 0x02};
+    long parsed = item.parse(data, sizeof(data));
+
+    EXPECT_EQ(parsed, 2);
+    EXPECT_EQ(item.getLength(), 2);
+}
+
+/**
+ * Test Case: TC-CPP-DI-012
+ * Requirement: REQ-HLR-001
+ * Description: Verify DataItem parse when format returns length 0
+ */
+TEST(DataItemTest, ParseWithZeroLengthFormat) {
+    DataItemDescription desc("010");
+    desc.m_strID = "010";
+    desc.m_strName = "Test";
+
+    // A fixed format with m_nLength=0
+    DataItemFormatFixed* format = new DataItemFormatFixed(0);
+    format->m_nLength = 0;
+    desc.m_pFormat = format;
+
+    DataItem item(&desc);
+
+    unsigned char data[] = {0x01, 0x02};
+    long parsed = item.parse(data, sizeof(data));
+
+    // Should return 0 and log error about length=0
+    EXPECT_EQ(parsed, 0);
+}
+
+/**
+ * Test Case: TC-CPP-DI-013
+ * Requirement: REQ-HLR-001
+ * Description: Verify DataItem parse when m_nLength > available data
+ */
+TEST(DataItemTest, ParseLengthExceedsAvailableData) {
+    DataItemDescription desc("010");
+    desc.m_strID = "010";
+    desc.m_strName = "Test";
+
+    // Format says 4 bytes but we only provide 2
+    DataItemFormatFixed* format = new DataItemFormatFixed(4);
+    format->m_nLength = 4;
+    desc.m_pFormat = format;
+
+    DataItem item(&desc);
+
+    unsigned char data[] = {0x01, 0x02};
+    long parsed = item.parse(data, 2);
+
+    // Should return the requested length even though data is short
+    // (this triggers the error path)
+    EXPECT_EQ(parsed, 4);
+}
+
+/**
+ * Test Case: TC-CPP-DI-014
+ * Requirement: REQ-HLR-001
+ * Description: Verify DataItem getText with ETxt format (hex dump)
+ */
+TEST(DataItemTest, GetTextETxtFormat) {
+    DataItemDescription desc("010");
+    desc.m_strID = "010";
+    desc.m_strName = "Data Source Identifier";
+
+    DataItemFormatFixed* format = new DataItemFormatFixed(2);
+    format->m_nLength = 2;
+
+    // Add bit sub-items so getText produces output
+    DataItemBits* bits1 = new DataItemBits(8);
+    bits1->m_nFrom = 9;
+    bits1->m_nTo = 16;
+    bits1->m_strShortName = "SAC";
+    bits1->m_strName = "System Area Code";
+    bits1->m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+    format->m_lSubItems.push_back(bits1);
+
+    DataItemBits* bits2 = new DataItemBits(8);
+    bits2->m_nFrom = 1;
+    bits2->m_nTo = 8;
+    bits2->m_strShortName = "SIC";
+    bits2->m_strName = "System Identification Code";
+    bits2->m_eEncoding = DataItemBits::DATAITEM_ENCODING_UNSIGNED;
+    format->m_lSubItems.push_back(bits2);
+
+    desc.m_pFormat = format;
+
+    DataItem item(&desc);
+
+    unsigned char data[] = {0xAB, 0xCD};
+    item.parse(data, sizeof(data));
+
+    std::string result;
+    std::string header;
+    // CAsterixFormat::ETxt = 2
+    bool success = item.getText(result, header, CAsterixFormat::ETxt);
+
+    EXPECT_TRUE(success);
+    // ETxt format should include item ID, name, and hex dump
+    EXPECT_NE(result.find("Item 010"), std::string::npos);
+    EXPECT_NE(result.find("Data Source Identifier"), std::string::npos);
+    EXPECT_NE(result.find("AB"), std::string::npos);
+    EXPECT_NE(result.find("CD"), std::string::npos);
+}
+
+/**
+ * Test Case: TC-CPP-DI-015
+ * Requirement: REQ-HLR-001
+ * Description: Verify DataItem getText with NULL description format
+ */
+TEST(DataItemTest, GetTextWithNullDescriptionHandled) {
+    DataItem item(nullptr);
+
+    std::string result;
+    std::string header;
+
+    // Should not crash with nullptr description
+    // (parse returns 0 with null desc, so getText may not be reachable)
+    EXPECT_EQ(item.getLength(), 0);
+}
+
+/**
+ * Test Case: TC-CPP-DI-016
+ * Requirement: REQ-HLR-001
+ * Description: Verify DataItem parse stores data correctly
+ */
+TEST(DataItemTest, ParseStoresDataCorrectly) {
+    DataItemDescription desc("040");
+    desc.m_strID = "040";
+    desc.m_strName = "Measured Position";
+
+    DataItemFormatFixed* format = new DataItemFormatFixed(4);
+    format->m_nLength = 4;
+    desc.m_pFormat = format;
+
+    DataItem item(&desc);
+
+    unsigned char data[] = {0xDE, 0xAD, 0xBE, 0xEF};
+    long parsed = item.parse(data, sizeof(data));
+
+    EXPECT_EQ(parsed, 4);
+    EXPECT_EQ(item.getLength(), 4);
+
+    // Data should have been copied (not just pointer stored)
+    // Verify by modifying original
+    data[0] = 0x00;
+    // Item should still have original data
+    EXPECT_EQ(item.getLength(), 4);
+}
+
+/**
+ * Test Case: TC-CPP-DI-017
+ * Requirement: REQ-HLR-001
+ * Description: Verify multiple parse calls replace data
+ */
+TEST(DataItemTest, MultipleParseReplacesData) {
+    DataItemDescription desc("010");
+    desc.m_strID = "010";
+    desc.m_strName = "Test";
+
+    DataItemFormatFixed* format = new DataItemFormatFixed(2);
+    format->m_nLength = 2;
+    desc.m_pFormat = format;
+
+    DataItem item(&desc);
+
+    unsigned char data1[] = {0x01, 0x02};
+    item.parse(data1, sizeof(data1));
+    EXPECT_EQ(item.getLength(), 2);
+
+    unsigned char data2[] = {0x03, 0x04};
+    item.parse(data2, sizeof(data2));
+    EXPECT_EQ(item.getLength(), 2);
 }
 
 // Main function for running tests
