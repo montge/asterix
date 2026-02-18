@@ -135,9 +135,9 @@ checksum = "825297538d77367557b912770ca3083f778a196054b3ee63b22673c4a3cae0a5"
 
 [[package]]
 name = "arbitrary-int"
-version = "2.1.0"
+version = "2.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2575572fb5455467946777af62fbed3b3f96df50f6af4f1aa825182a6e881207"
+checksum = "993a810118f8f37e9c4411c86f1c4c940a09a7ab34b7bf2d88d06f50c553fab7"
 dependencies = [
  "serde",
 ]
@@ -200,7 +200,7 @@ dependencies = [
 name = "asterix"
 version = "0.1.0"
 dependencies = [
- "arbitrary-int 2.1.0",
+ "arbitrary-int 2.1.1",
  "cc",
  "criterion",
  "cxx",
@@ -3670,7 +3670,7 @@ version = "0.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94979a990b4333f43667cba9fe9e72b9c4e9ada82e09fbe8fb250844358590cc"
 dependencies = [
- "arbitrary-int 2.1.0",
+ "arbitrary-int 2.1.1",
  "bitbybit",
  "chrono",
  "crc",
