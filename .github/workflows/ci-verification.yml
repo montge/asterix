@@ -74,7 +74,7 @@ jobs:
         }
 
     - name: Archive build artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: asterix-executable-ubuntu
         path: |
@@ -396,7 +396,7 @@ jobs:
         fi
 
     - name: Upload coverage HTML report
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: cpp-coverage-html
         path: coverage-html/
@@ -473,7 +473,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload cppcheck results
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: cppcheck-report
         path: cppcheck-report.xml

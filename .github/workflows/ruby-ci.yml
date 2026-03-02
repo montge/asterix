@@ -95,7 +95,7 @@ jobs:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     - name: Upload coverage artifact
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ruby-coverage-${{ matrix.os }}-${{ matrix.ruby }}
         path: asterix-ruby/coverage/
@@ -192,7 +192,7 @@ jobs:
         echo "Documentation generated successfully"
 
     - name: Upload documentation
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ruby-documentation
         path: asterix-ruby/doc/
@@ -290,7 +290,7 @@ jobs:
         gem build asterix.gemspec
 
     - name: Upload gem artifact
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ruby-gem
         path: asterix-ruby/asterix_decoder-*.gem
