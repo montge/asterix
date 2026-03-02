@@ -171,7 +171,7 @@ jobs:
     # UPLOAD ARTIFACTS FOR DEBUGGING
     # -------------------------------------------------------------------------
     - name: Upload coverage reports
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       if: always()
       with:
         name: sonarcloud-coverage-reports

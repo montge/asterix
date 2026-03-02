@@ -327,7 +327,7 @@ jobs:
       continue-on-error: false
 
     - name: Upload coverage reports
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: coverage-tarpaulin-reports
         path: |
@@ -416,7 +416,7 @@ jobs:
       continue-on-error: false
 
     - name: Upload llvm-cov reports
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: coverage-llvm-cov-reports
         path: |
@@ -460,7 +460,7 @@ jobs:
       continue-on-error: true
 
     - name: Store benchmark results
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: benchmark-results
         path: asterix-rs/benchmark-results.txt
@@ -588,7 +588,7 @@ jobs:
       continue-on-error: false
 
     - name: Upload documentation
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: rust-docs
         path: asterix-rs/target/doc
