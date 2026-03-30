@@ -236,7 +236,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload Python coverage
-      uses: codecov/codecov-action@v5.5.1
+      uses: codecov/codecov-action@v6
       with:
         files: ./coverage.xml
         flags: python,python-pytest
@@ -404,7 +404,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v5.5.1
+      uses: codecov/codecov-action@v6
       with:
         files: ./coverage.info
         flags: cpp,cpp-lcov
