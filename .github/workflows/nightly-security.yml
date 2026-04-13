@@ -31,7 +31,7 @@ jobs:
 
       - name: Create issue on failure
         if: failure() && steps.miri.outcome == 'failure'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const title = '[Nightly] Miri detected undefined behavior';
@@ -103,7 +103,7 @@ jobs:
 
       - name: Create issue on failure
         if: failure() && steps.valgrind.outcome == 'failure'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const title = '[Nightly] Valgrind detected memory leaks';
@@ -197,7 +197,7 @@ jobs:
 
       - name: Create issue on failure
         if: failure() && steps.asan.outcome == 'failure'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const title = '[Nightly] ASAN detected memory errors';
@@ -300,7 +300,7 @@ jobs:
 
       - name: Create issue on crashes
         if: steps.check_crashes.outputs.crashes_found == 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const title = '[Nightly] Fuzzing found crashes';
