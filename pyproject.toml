@@ -41,7 +41,7 @@ dependencies = []
 xml = ["lxml>=4.9.0"]
 dev = [
     "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
+    "pytest-cov>=7.1.0",
     "coverage>=7.0.0",
     "memory-profiler>=0.60.0",
 ]
