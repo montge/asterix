@@ -40,7 +40,7 @@ dependencies = []
 [project.optional-dependencies]
 xml = ["lxml>=4.9.0"]
 dev = [
-    "pytest>=7.0.0",
+    "pytest>=9.0.3",
     "pytest-cov>=4.0.0",
     "coverage>=7.0.0",
     "memory-profiler>=0.60.0",
