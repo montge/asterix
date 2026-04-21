@@ -38,7 +38,7 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-xml = ["lxml>=4.9.0"]
+xml = ["lxml>=6.1.0"]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
